@@ -9,42 +9,56 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TCPClient {
+import com.arpit.interfaces.Connector;
+
+public class TCPClient implements Connector {
+
+	String ip;
+	int nPort;
 	Socket clientSocket;
 	BufferedReader inFromServer;
 	DataOutputStream outToServer;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 
-	public TCPClient() {
+	public TCPClient(String ip, int nPort) {
+		this.ip = ip;
+		this.nPort = nPort;
 	}
 
-	public void connect(String ip, int Port) throws Exception {
-		System.out.println("Listening on Port : " + Port);
-		clientSocket = new Socket(ip, Port);
+	public void connect() throws Exception {
+
+		System.out.println("Connecting on Port : " + nPort);
+
+		clientSocket = new Socket(ip, nPort);
 		if (clientSocket.isConnected()) {
-			System.out.println("Connected to " + ip + ":" + Port);
+			System.out.println("Connected to " + ip + ":" + nPort);
 		}
+
 		// Start Reading task in parallel thread
 		readFromSocket();
 	}
 
-	public void Disconnect() throws Exception {
+	public boolean isConnected() {
+		return clientSocket.isConnected();
+	}
+
+	public void disconnect() throws Exception {
 		clientSocket.close();
 		System.out.println("Connection Closed");
 	}
 
-	public void writeToSocket(String MSGToWrite) throws Exception {
+	public void sendData(String data) throws Exception {
 		outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		outToServer.writeBytes(MSGToWrite);
+		outToServer.writeBytes(data);
 	}
 
-	public void writeToSocket(byte[] bytes) throws Exception {
+	public void sendData(byte[] data) throws Exception {
 		outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		outToServer.write(bytes);
+		outToServer.write(data);
 	}
 
-	public void cleanQueue() {
-		queue.clear();
+	public byte[] recieveData() {
+		return getNextMSG();
 	}
 
 	public boolean hasNextMSG() {
@@ -83,7 +97,7 @@ public class TCPClient {
 
 	private void readFromSocket() {
 		final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
-		final Runnable serverTask = new Runnable() {
+		final Runnable clientTask = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -93,41 +107,30 @@ public class TCPClient {
 				}
 			}
 		};
-		Thread serverThread = new Thread(serverTask);
-		serverThread.start();
+		Thread clientThread = new Thread(clientTask);
+		clientThread.start();
 	}
 
 	public Socket getConnector() {
 		return clientSocket;
 	}
 
-	public void setConnector(Socket connector) {
-		this.clientSocket = connector;
-	}
-
 	public BufferedReader getInFromClient() {
 		return inFromServer;
-	}
-
-	public void setInFromClient(BufferedReader inFromClient) {
-		this.inFromServer = inFromClient;
 	}
 
 	public DataOutputStream getOutToClient() {
 		return outToServer;
 	}
 
-	public void setOutToClient(DataOutputStream outToClient) {
-		this.outToServer = outToClient;
-	}
-
 	public Queue<byte[]> getQueue() {
 		return queue;
 	}
 
-	public void setQueue(Queue<byte[]> queue) {
-		this.queue = queue;
+	public void cleanQueue() {
+		queue.clear();
 	}
+
 }
 
 class ServerTask implements Runnable {

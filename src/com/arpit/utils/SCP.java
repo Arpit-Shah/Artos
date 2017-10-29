@@ -3,6 +3,7 @@ package com.arpit.utils;
 import java.io.File;
 import java.net.Socket;
 
+import com.arpit.infra.OrganisedLog.LOG_LEVEL;
 import com.arpit.infra.TestContext;
 import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2SCP1Client;
@@ -154,9 +155,9 @@ public class SCP {
 			setDirection(direction);
 			setSrcFilePath(srcFilePath);
 			setDestFilePath(destFilePath);
-			context.getLogger().println("SCP in Progress. Please Wait ...");
-			context.getLogger().println("Source :" + getSrcFilePath());
-			context.getLogger().println("Destination :" + getDestFilePath());
+			context.getLogger().println(LOG_LEVEL.INFO, "SCP in Progress. Please Wait ...");
+			context.getLogger().println(LOG_LEVEL.INFO, "Source :" + getSrcFilePath());
+			context.getLogger().println(LOG_LEVEL.INFO, "Destination :" + getDestFilePath());
 			SSHSCP1 scp = getScpClient().scp1();
 
 			if (getDirection().equals(SCPTransferDirection.COPY_TO_REMOTE)) {
@@ -164,9 +165,9 @@ public class SCP {
 			} else if (getDirection().equals(SCPTransferDirection.COPY_TO_LOCAL)) {
 				scp.copyToLocal(getSrcFilePath(), getDestFilePath(), false);
 			}
-			context.getLogger().println("SCP Completed");
+			context.getLogger().println(LOG_LEVEL.INFO, "SCP Completed");
 		} catch (Exception e) {
-			context.getLogger().println("SCP Failed");
+			context.getLogger().println(LOG_LEVEL.INFO, "SCP Failed");
 			e.printStackTrace();
 		}
 	}
@@ -176,7 +177,7 @@ public class SCP {
 	 */
 	public void Disconnect() {
 		getTransport().normalDisconnect("User disconnects");
-		context.getLogger().println("SCP disconnected");
+		context.getLogger().println(LOG_LEVEL.INFO, "SCP disconnected");
 	}
 
 	/**

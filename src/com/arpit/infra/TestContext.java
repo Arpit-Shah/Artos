@@ -3,6 +3,8 @@ package com.arpit.infra;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.arpit.infra.OrganisedLog.LOG_LEVEL;
+
 public class TestContext {
 
 	private OrganisedLog logger;
@@ -59,9 +61,9 @@ public class TestContext {
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
 			currentTestStatus = testStatus;
 			if (testStatus == Status.FAIL) {
-				logger.println_err("**********************************");
-				logger.println_err("*********** FAIL HERE ************");
-				logger.println_err("**********************************");
+				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
+				logger.println_err(LOG_LEVEL.WARNING, "*********** FAIL HERE ************");
+				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
 			}
 		}
 	}
@@ -78,9 +80,9 @@ public class TestContext {
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
 			if (getCurrentTestStatus() == Status.PASS) {
-				logger.println_err("**********************************");
-				logger.println_err("******** KTF TEST PASSED *********");
-				logger.println_err("**********************************");
+				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
+				logger.println_err(LOG_LEVEL.WARNING, "******** KTF TEST PASSED *********");
+				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
 				setCurrentTestStatus(Status.FAIL);
 			}
 		}
@@ -100,7 +102,7 @@ public class TestContext {
 		}
 
 		// Finalize and add test result in log file
-		getLogger().println("\nTest Result : " + getCurrentTestStatus().name());
+		getLogger().println(LOG_LEVEL.INFO, "\nTest Result : " + getCurrentTestStatus().name());
 		// Finalize and add test summary to Summary report
 		getLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrJIRARef(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount());
@@ -129,7 +131,7 @@ public class TestContext {
 	 */
 	public String printMethodName() {
 		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		getLogger().println("\nMethod : " + methodName + "()");
+		getLogger().println(LOG_LEVEL.INFO, "\nMethod : " + methodName + "()");
 		return methodName;
 	}
 

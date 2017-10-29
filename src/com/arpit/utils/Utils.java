@@ -3,6 +3,7 @@ package com.arpit.utils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import com.arpit.infra.OrganisedLog.LOG_LEVEL;
 import com.arpit.infra.TestContext;
 
 public class Utils {
@@ -75,7 +76,7 @@ public class Utils {
 	public static void writePrintStackTrace(TestContext context, Exception e) {
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
-		context.getLogger().print(sw.toString());
+		context.getLogger().print(LOG_LEVEL.INFO, sw.toString());
 	}
 
 	/**

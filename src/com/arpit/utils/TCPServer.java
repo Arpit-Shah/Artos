@@ -10,40 +10,56 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TCPServer {
+import com.arpit.interfaces.Connector;
+
+public class TCPServer implements Connector {
+
+	int nPort;
 	ServerSocket tcpSocket;
 	Socket serverSocket;
 	BufferedReader inFromClient;
 	DataOutputStream outToClient;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 
-	public TCPServer() {
+	public TCPServer(int nPort) {
+		this.nPort = nPort;
 	}
 
-	public void connect(int Port) throws Exception {
-		System.out.println("Listening on Port : " + Port);
-		tcpSocket = new ServerSocket(Port);
+	public void connect() throws Exception {
+		System.out.println("Listening on Port : " + nPort);
+
+		tcpSocket = new ServerSocket(nPort);
 		serverSocket = tcpSocket.accept();
 		if (serverSocket.isConnected()) {
 			System.out.println("Connected to " + serverSocket.getInetAddress().getHostAddress() + ":" + serverSocket.getLocalPort());
 		}
+
 		// Start Reading task in parallel thread
 		readFromSocket();
 	}
 
-	public void Disconnect() throws Exception {
+	public boolean isConnected() {
+		return serverSocket.isConnected();
+	}
+
+	public void disconnect() throws Exception {
 		serverSocket.close();
 		tcpSocket.close();
 		System.out.println("Connection Closed");
 	}
 
-	public void writeToSocket(String MSGToWrite) throws Exception {
+	public void sendData(String data) throws Exception {
 		outToClient = new DataOutputStream(serverSocket.getOutputStream());
-		outToClient.writeBytes(MSGToWrite);
+		outToClient.writeBytes(data);
 	}
 
-	public void cleanQueue() {
-		queue.clear();
+	public void sendData(byte[] data) throws Exception {
+		outToClient = new DataOutputStream(serverSocket.getOutputStream());
+		outToClient.write(data);
+	}
+
+	public byte[] recieveData() {
+		return getNextMSG();
 	}
 
 	public boolean hasNextMSG() {
@@ -100,44 +116,29 @@ public class TCPServer {
 		return tcpSocket;
 	}
 
-	public void setTcpSocket(ServerSocket tcpSocket) {
-		this.tcpSocket = tcpSocket;
-	}
-
 	public Socket getConnector() {
 		return serverSocket;
-	}
-
-	public void setConnector(Socket connector) {
-		this.serverSocket = connector;
-	}
-
-	public BufferedReader getInFromClient() {
-		return inFromClient;
-	}
-
-	public void setInFromClient(BufferedReader inFromClient) {
-		this.inFromClient = inFromClient;
-	}
-
-	public DataOutputStream getOutToClient() {
-		return outToClient;
-	}
-
-	public void setOutToClient(DataOutputStream outToClient) {
-		this.outToClient = outToClient;
 	}
 
 	public Queue<byte[]> getQueue() {
 		return queue;
 	}
 
-	public void setQueue(Queue<byte[]> queue) {
-		this.queue = queue;
+	public void cleanQueue() {
+		queue.clear();
 	}
+
 }
 
+/**
+ * Inner Class which acts as receiver thread for incoming data. All Data will be
+ * added to the Queue
+ * 
+ * @author arpit
+ *
+ */
 class ClientTask implements Runnable {
+
 	private final Socket connector;
 	int read = -1;
 	byte[] buffer = new byte[4 * 1024]; // a read buffer of 4KiB

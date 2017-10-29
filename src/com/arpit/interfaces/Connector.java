@@ -2,14 +2,14 @@ package com.arpit.interfaces;
 
 public interface Connector {
 
-	public void Connect();
+	public void connect() throws Exception;
 
-	public void Disconnect();
+	public void disconnect() throws Exception;
 
 	public boolean isConnected();
 
-	public void SendMsg(byte[] data);
+	public void sendData(byte[] data) throws Exception;
 
-	public byte[] RecieveMsg();
+	public byte[] recieveData() throws Exception;
 
 }

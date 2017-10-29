@@ -21,8 +21,9 @@ public class OrganisedLog {
 	private boolean EnableConsolLog = true;
 	private boolean EnableLogToFile = true;
 	private boolean EnableTimeStamp = false;
+	private LOG_LEVEL currentLogLevel = LOG_LEVEL.DEBUG;
 
-	public OrganisedLog(String strDestDirName, String strTestName) {
+	public OrganisedLog(String strDestDirName, String strTestName, LOG_LEVEL logLevel) {
 
 		File file = new File(getRootLogDir());
 		System.out.println(file.getAbsolutePath());
@@ -33,6 +34,36 @@ public class OrganisedLog {
 		setCurrentTestName(strTestName);
 		setLogDestDir(strDestDirName);
 		setTestName(strTestName);
+		setCurrentLogLevel(logLevel);
+	}
+
+	/**
+	 * Enums for setting log level
+	 * 
+	 * @author arpit_000
+	 *
+	 */
+	public enum LOG_LEVEL {
+		ALL(0), DEBUG(1), INFO(2), WARNING(3), SENSITIVE(4);
+
+		private final int value;
+
+		LOG_LEVEL(int value) {
+			this.value = value;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		public String getEnumName(int value) {
+			for (Status e : Status.values()) {
+				if (value == e.getValue()) {
+					return e.name();
+				}
+			}
+			return null;
+		}
 	}
 
 	public void setLogDestDir(String strDestDirName) {
@@ -79,7 +110,12 @@ public class OrganisedLog {
 		getOutputfile_summary().flush();
 	}
 
-	public void println(String strToWrite) {
+	public void println(LOG_LEVEL logLevel, String strToWrite) {
+
+		if (getCurrentLogLevel().value > logLevel.value) {
+			return;
+		}
+
 		if (null == strToWrite) {
 			strToWrite = "null";
 		}
@@ -98,27 +134,47 @@ public class OrganisedLog {
 		}
 	}
 
-	public void println(byte[] bytearray) {
+	public void println(LOG_LEVEL logLevel, byte[] bytearray) {
+
+		if (getCurrentLogLevel().value > logLevel.value) {
+			return;
+		}
+
 		if (null == bytearray) {
 			String strToWrite = "null";
-			println(strToWrite);
+			println(logLevel, strToWrite);
 		} else {
 			String strToWrite = new Convert().bytesToStringHex(bytearray, true);
-			println(strToWrite);
+			println(logLevel, strToWrite);
 		}
 	}
 
-	public void println(int integerValue) {
+	public void println(LOG_LEVEL logLevel, int integerValue) {
+
+		if (getCurrentLogLevel().value > logLevel.value) {
+			return;
+		}
+
 		String strToPrint = Integer.toString(integerValue);
-		println(strToPrint);
+		println(logLevel, strToPrint);
 	}
 
-	public void println(long longValue) {
+	public void println(LOG_LEVEL logLevel, long longValue) {
+
+		if (getCurrentLogLevel().value > logLevel.value) {
+			return;
+		}
+
 		String strToPrint = Long.toString(longValue);
-		println(strToPrint);
+		println(logLevel, strToPrint);
 	}
 
-	public void print(String strToWrite) {
+	public void print(LOG_LEVEL logLevel, String strToWrite) {
+
+		if (getCurrentLogLevel().value > logLevel.value) {
+			return;
+		}
+
 		if (null == strToWrite) {
 			strToWrite = "null";
 		}
@@ -137,7 +193,12 @@ public class OrganisedLog {
 		}
 	}
 
-	public void println_err(String strToWrite) {
+	public void println_err(LOG_LEVEL logLevel, String strToWrite) {
+
+		if (getCurrentLogLevel().value > logLevel.value) {
+			return;
+		}
+
 		if (null == strToWrite) {
 			strToWrite = "null";
 		}
@@ -236,4 +297,13 @@ public class OrganisedLog {
 	public void setEnableTimeStamp(boolean enableTimeStamp) {
 		EnableTimeStamp = enableTimeStamp;
 	}
+
+	public LOG_LEVEL getCurrentLogLevel() {
+		return currentLogLevel;
+	}
+
+	public void setCurrentLogLevel(LOG_LEVEL currentLogLevel) {
+		this.currentLogLevel = currentLogLevel;
+	}
+
 }

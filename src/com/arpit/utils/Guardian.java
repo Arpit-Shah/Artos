@@ -2,6 +2,7 @@ package com.arpit.utils;
 
 import java.util.Arrays;
 
+import com.arpit.infra.OrganisedLog.LOG_LEVEL;
 import com.arpit.infra.TestContext;
 
 public class Guardian {
@@ -51,22 +52,22 @@ public class Guardian {
 	 * @throws Exception
 	 */
 	public static void Guard(TestContext context, GuardCheckFor check, String desc, String refData, String targetData) throws Exception {
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + refData);
-		context.getLogger().println("Res : " + targetData);
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (!refData.equals(targetData)) {
-				context.getLogger().println(desc + strEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_fail);
 				throw new Exception(desc + strEqual_fail);
 			}
-			context.getLogger().println(desc + strEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (refData.equals(targetData)) {
-				context.getLogger().println(desc + strNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_fail);
 				throw new Exception(desc + strNotEqual_fail);
 			}
-			context.getLogger().println(desc + strNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}
@@ -95,22 +96,22 @@ public class Guardian {
 	 */
 	public static void Guard_Format_Compare(TestContext context, GuardCheckFor check, String desc, String format, String targetData)
 			throws Exception {
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + format);
-		context.getLogger().println("Res : " + targetData);
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + format);
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (!Utils.compareStringFormat(targetData, format)) {
-				context.getLogger().println(desc + strFormatEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strFormatEqual_fail);
 				throw new Exception(desc + strFormatEqual_fail);
 			}
-			context.getLogger().println(desc + strFormatEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strFormatEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (Utils.compareStringFormat(targetData, format)) {
-				context.getLogger().println(desc + strFormatNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strFormatNotEqual_fail);
 				throw new Exception(desc + strFormatNotEqual_fail);
 			}
-			context.getLogger().println(desc + strFormatNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strFormatNotEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}
@@ -141,22 +142,22 @@ public class Guardian {
 	 */
 	public static void Guard(TestContext context, GuardCheckFor check, String desc, byte[] refData, byte[] targetData) throws Exception {
 		Convert _con = new Convert();
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + _con.bytesToStringHex(refData, true));
-		context.getLogger().println("Res : " + _con.bytesToStringHex(targetData, true));
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + _con.bytesToStringHex(refData, true));
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + _con.bytesToStringHex(targetData, true));
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (!Arrays.equals(refData, targetData)) {
-				context.getLogger().println(desc + strEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_fail);
 				throw new Exception(desc + strEqual_fail);
 			}
-			context.getLogger().println(desc + strEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (Arrays.equals(refData, targetData)) {
-				context.getLogger().println(desc + strNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_fail);
 				throw new Exception(desc + strNotEqual_fail);
 			}
-			context.getLogger().println(desc + strNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}
@@ -186,46 +187,46 @@ public class Guardian {
 	 * @throws Exception
 	 */
 	public static void Guard(TestContext context, GuardCheckFor check, String desc, byte refData, byte targetData) throws Exception {
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + refData);
-		context.getLogger().println("Res : " + targetData);
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (refData != targetData) {
-				context.getLogger().println(desc + strEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_fail);
 				throw new Exception(desc + strEqual_fail);
 			}
-			context.getLogger().println(desc + strEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (refData == targetData) {
-				context.getLogger().println(desc + strNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_fail);
 				throw new Exception(desc + strNotEqual_fail);
 			}
-			context.getLogger().println(desc + strNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_pass);
 		} else if (check == GuardCheckFor.GREATER_THAN) {
 			if (refData <= targetData) {
-				context.getLogger().println(desc + strGreater_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_fail);
 				throw new Exception(desc + strGreater_fail);
 			}
-			context.getLogger().println(desc + strGreater_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_pass);
 		} else if (check == GuardCheckFor.LESS_THAN) {
 			if (refData >= targetData) {
-				context.getLogger().println(desc + strLess_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_fail);
 				throw new Exception(desc + strLess_fail);
 			}
-			context.getLogger().println(desc + strLess_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_pass);
 		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
 			if (refData < targetData) {
-				context.getLogger().println(desc + strGreaterOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_fail);
 				throw new Exception(desc + strGreaterOrEqual_fail);
 			}
-			context.getLogger().println(desc + strGreaterOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_pass);
 		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
 			if (refData > targetData) {
-				context.getLogger().println(desc + strLessOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_fail);
 				throw new Exception(desc + strLessOrEqual_fail);
 			}
-			context.getLogger().println(desc + strLessOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}
@@ -255,46 +256,46 @@ public class Guardian {
 	 * @throws Exception
 	 */
 	public static void Guard(TestContext context, GuardCheckFor check, String desc, short refData, short targetData) throws Exception {
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + refData);
-		context.getLogger().println("Res : " + targetData);
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (refData != targetData) {
-				context.getLogger().println(desc + strEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_fail);
 				throw new Exception(desc + strEqual_fail);
 			}
-			context.getLogger().println(desc + strEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (refData == targetData) {
-				context.getLogger().println(desc + strNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_fail);
 				throw new Exception(desc + strNotEqual_fail);
 			}
-			context.getLogger().println(desc + strNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_pass);
 		} else if (check == GuardCheckFor.GREATER_THAN) {
 			if (refData <= targetData) {
-				context.getLogger().println(desc + strGreater_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_fail);
 				throw new Exception(desc + strGreater_fail);
 			}
-			context.getLogger().println(desc + strGreater_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_pass);
 		} else if (check == GuardCheckFor.LESS_THAN) {
 			if (refData >= targetData) {
-				context.getLogger().println(desc + strLess_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_fail);
 				throw new Exception(desc + strLess_fail);
 			}
-			context.getLogger().println(desc + strLess_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_pass);
 		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
 			if (refData < targetData) {
-				context.getLogger().println(desc + strGreaterOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_fail);
 				throw new Exception(desc + strGreaterOrEqual_fail);
 			}
-			context.getLogger().println(desc + strGreaterOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_pass);
 		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
 			if (refData > targetData) {
-				context.getLogger().println(desc + strLessOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_fail);
 				throw new Exception(desc + strLessOrEqual_fail);
 			}
-			context.getLogger().println(desc + strLessOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}
@@ -324,46 +325,46 @@ public class Guardian {
 	 * @throws Exception
 	 */
 	public static void Guard(TestContext context, GuardCheckFor check, String desc, long refData, long targetData) throws Exception {
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + refData);
-		context.getLogger().println("Res : " + targetData);
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (refData != targetData) {
-				context.getLogger().println(desc + strEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_fail);
 				throw new Exception(desc + strEqual_fail);
 			}
-			context.getLogger().println(desc + strEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (refData == targetData) {
-				context.getLogger().println(desc + strNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_fail);
 				throw new Exception(desc + strNotEqual_fail);
 			}
-			context.getLogger().println(desc + strNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_pass);
 		} else if (check == GuardCheckFor.GREATER_THAN) {
 			if (refData <= targetData) {
-				context.getLogger().println(desc + strGreater_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_fail);
 				throw new Exception(desc + strGreater_fail);
 			}
-			context.getLogger().println(desc + strGreater_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_pass);
 		} else if (check == GuardCheckFor.LESS_THAN) {
 			if (refData >= targetData) {
-				context.getLogger().println(desc + strLess_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_fail);
 				throw new Exception(desc + strLess_fail);
 			}
-			context.getLogger().println(desc + strLess_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_pass);
 		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
 			if (refData < targetData) {
-				context.getLogger().println(desc + strGreaterOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_fail);
 				throw new Exception(desc + strGreaterOrEqual_fail);
 			}
-			context.getLogger().println(desc + strGreaterOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_pass);
 		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
 			if (refData > targetData) {
-				context.getLogger().println(desc + strLessOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_fail);
 				throw new Exception(desc + strLessOrEqual_fail);
 			}
-			context.getLogger().println(desc + strLessOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}
@@ -393,46 +394,46 @@ public class Guardian {
 	 * @throws Exception
 	 */
 	public static void Guard(TestContext context, GuardCheckFor check, String desc, int refData, int targetData) throws Exception {
-		context.getLogger().println("\nFinding");
-		context.getLogger().println("Ref : " + refData);
-		context.getLogger().println("Res : " + targetData);
+		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
+		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
+		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
 
 		if (check == GuardCheckFor.EQUAL_TO) {
 			if (refData != targetData) {
-				context.getLogger().println(desc + strEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_fail);
 				throw new Exception(desc + strEqual_fail);
 			}
-			context.getLogger().println(desc + strEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strEqual_pass);
 		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
 			if (refData == targetData) {
-				context.getLogger().println(desc + strNotEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_fail);
 				throw new Exception(desc + strNotEqual_fail);
 			}
-			context.getLogger().println(desc + strNotEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strNotEqual_pass);
 		} else if (check == GuardCheckFor.GREATER_THAN) {
 			if (refData <= targetData) {
-				context.getLogger().println(desc + strGreater_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_fail);
 				throw new Exception(desc + strGreater_fail);
 			}
-			context.getLogger().println(desc + strGreater_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreater_pass);
 		} else if (check == GuardCheckFor.LESS_THAN) {
 			if (refData >= targetData) {
-				context.getLogger().println(desc + strLess_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_fail);
 				throw new Exception(desc + strLess_fail);
 			}
-			context.getLogger().println(desc + strLess_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLess_pass);
 		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
 			if (refData < targetData) {
-				context.getLogger().println(desc + strGreaterOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_fail);
 				throw new Exception(desc + strGreaterOrEqual_fail);
 			}
-			context.getLogger().println(desc + strGreaterOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strGreaterOrEqual_pass);
 		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
 			if (refData > targetData) {
-				context.getLogger().println(desc + strLessOrEqual_fail);
+				context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_fail);
 				throw new Exception(desc + strLessOrEqual_fail);
 			}
-			context.getLogger().println(desc + strLessOrEqual_pass);
+			context.getLogger().println(LOG_LEVEL.INFO, desc + strLessOrEqual_pass);
 		} else {
 			throw new Exception("Invalid comparision");
 		}

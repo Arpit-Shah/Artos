@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import com.arpit.infra.OrganisedLog;
+import com.arpit.infra.OrganisedLog.LOG_LEVEL;
 import com.arpit.infra.TestContext;
 import com.arpit.interfaces.TestExecutor;
 
@@ -14,18 +15,18 @@ public class Tester {
 		// -------------------------------------------------------------------//
 		// Prep Conext
 		String productSerialNum = "A123456789";
-		OrganisedLog logger = new OrganisedLog(productSerialNum, TestPackageName);
+		OrganisedLog logger = new OrganisedLog(productSerialNum, TestPackageName, LOG_LEVEL.DEBUG);
 		logger.setEnableConsolLog(true);
 		logger.setEnableLogToFile(true);
 		logger.setEnableTimeStamp(false);
 		TestContext context = new TestContext(logger);
 
 		long startTime = System.currentTimeMillis();
-		context.getLogger().println("-------- Start -----------");
+		context.getLogger().println(LOG_LEVEL.INFO, "-------- Start -----------");
 		start.onExecute(context);
 
 		for (int index = 0; index < LoopCycle; index++) {
-			context.getLogger().println("-------- (" + index + ") -----------");
+			context.getLogger().println(LOG_LEVEL.INFO, "-------- (" + index + ") -----------");
 			// --------------------------------------------------------------------------------------------
 			for (TestExecutor t : tests) {
 				t.onExecute(context);
@@ -34,12 +35,12 @@ public class Tester {
 		}
 
 		finish.onExecute(context);
-		context.getLogger().println("-------- Finished -----------");
-		context.getLogger().println("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:"
+		context.getLogger().println(LOG_LEVEL.INFO, "-------- Finished -----------");
+		context.getLogger().println(LOG_LEVEL.INFO, "PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:"
 				+ context.getCurrentSkipCount() + " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
 		long endTime = System.currentTimeMillis();
-		context.getLogger()
-				.println("Total Test Time : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)),
+		context.getLogger().println(LOG_LEVEL.INFO,
+				"Total Test Time : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)),
 						TimeUnit.MILLISECONDS.toSeconds((endTime - startTime))
 								- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)))));
 		System.exit(0);

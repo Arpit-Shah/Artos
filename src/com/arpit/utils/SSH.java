@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import com.arpit.infra.OrganisedLog.LOG_LEVEL;
 import com.arpit.infra.TestContext;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -149,9 +150,9 @@ public class SSH {
 	 */
 	public void Write(String value) throws Exception {
 		/*
-		 * Do not use out.println(value) because it is considered as two enter
-		 * in unix environment, then one extra line will be returned which is
-		 * not expected
+		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
+		 * considered as two enter in unix environment, then one extra line will
+		 * be returned which is not expected
 		 */
 		out.print(value + "\n");
 		out.flush();
@@ -176,9 +177,9 @@ public class SSH {
 	 */
 	public String Write(String value, String pattern, long longTimeoutMilliseconds) throws Exception {
 		/*
-		 * Do not use out.println(value) because it is considered as two enter
-		 * in unix environment, then one extra line will be returned which is
-		 * not expected
+		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
+		 * considered as two enter in unix environment, then one extra line will
+		 * be returned which is not expected
 		 */
 		out.print(value + "\n");
 		out.flush();
@@ -222,14 +223,14 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().println("exit-status: " + getChannel().getExitStatus());
+					context.getLogger().println(LOG_LEVEL.INFO, "exit-status: " + getChannel().getExitStatus());
 					break;
 				}
 			}
 		}
-		context.getLogger().println("*************************************************");
-		context.getLogger().println("Pattern match could not be found");
-		context.getLogger().println("*************************************************");
+		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
+		context.getLogger().println(LOG_LEVEL.INFO, "Pattern match could not be found");
+		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
 		return sb.toString();
 	}
 
@@ -278,14 +279,14 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().println("exit-status: " + channel.getExitStatus());
+					context.getLogger().println(LOG_LEVEL.INFO, "exit-status: " + channel.getExitStatus());
 					break;
 				}
 			}
 		}
-		context.getLogger().println("*************************************************");
-		context.getLogger().println("Timed out before Pattern match could not be found");
-		context.getLogger().println("*************************************************");
+		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
+		context.getLogger().println(LOG_LEVEL.INFO, "Timed out before Pattern match could not be found");
+		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
 		return sb.toString();
 	}
 
@@ -327,7 +328,7 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().println("exit-status: " + channel.getExitStatus());
+					context.getLogger().println(LOG_LEVEL.INFO, "exit-status: " + channel.getExitStatus());
 					break;
 				}
 			}

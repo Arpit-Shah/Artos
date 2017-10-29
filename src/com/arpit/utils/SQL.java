@@ -56,7 +56,7 @@ public class SQL {
 		ResultSet rs = stmt.executeQuery(sqlQuery);
 		return rs;
 	}
-	
+
 	public void executeUpdate(String sqlQuery) throws Exception {
 		Statement stmt = conn.createStatement();
 		stmt.executeUpdate(sqlQuery);
@@ -72,19 +72,19 @@ public class SQL {
 		sql.executeUpdate(sqlQuery2);
 
 		// STEP 5: Extract data from result set
-//		while (rs.next()) {
-//			// Retrieve by column name
-//			int id = rs.getInt("id");
-//			String age = rs.getString("customer");
-//			String first = rs.getString("release_num");
-//			String last = rs.getString("release_keyword");
-//
-//			// Display values
-//			System.out.print("ID: " + id);
-//			System.out.print(", customer: " + age);
-//			System.out.print(", release_num: " + first);
-//			System.out.println(", relese_keyword: " + last);
-//		}
-//		rs.close();
+		// while (rs.next()) {
+		// // Retrieve by column name
+		// int id = rs.getInt("id");
+		// String age = rs.getString("customer");
+		// String first = rs.getString("release_num");
+		// String last = rs.getString("release_keyword");
+		//
+		// // Display values
+		// System.out.print("ID: " + id);
+		// System.out.print(", customer: " + age);
+		// System.out.print(", release_num: " + first);
+		// System.out.println(", relese_keyword: " + last);
+		// }
+		// rs.close();
 	}
 }
