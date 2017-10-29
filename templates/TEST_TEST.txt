@@ -1,0 +1,31 @@
+${:import(com.arpit.infra.TestContext, com.arpit.interfaces.TestExecutor, com.arpit.framework.Test)}
+/***
+ * 
+ * <PRE>
+ * START_OF_TEST_HEADER
+ * TEST_TARGET			= 	${primary_type_name}
+ * TEST_STEPS			=	???
+ * EXPECTED_RESULTS		=	???
+ * DEPENDENCY			=	None
+ * NOTES				=	None
+ * PREPARED_BY			=	${user}
+ * REVIEWED_BY			=	
+ * REVIEW_DATE			=	dd/mm/yyyy
+ * END_OF_TEST_HEADER
+ * </PRE>
+ */
+public class ${primary_type_name} extends Test implements TestExecutor {
+
+	public void onExecute(TestContext context) throws Exception {
+		onExecute(context, ${primary_type_name}.class, "${user}", "${date}", "");	
+	}
+
+	protected void execute(TestContext context) throws Exception {
+	
+		context.setKnownToFail(false, "");
+		//--------------------------------------------------------------------------------------------
+		//TODO Write Test Here
+		//--------------------------------------------------------------------------------------------
+
+	}
+}

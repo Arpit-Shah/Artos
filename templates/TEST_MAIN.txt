@@ -1,0 +1,15 @@
+${:import(com.arpit.framework.Tester, com.arpit.interfaces.TestExecutor)}
+
+public class ${primary_type_name} {
+
+	public static void main(String[] args) throws Exception {
+		int TestLoopCount = 1;
+		ArrayList<TestExecutor> tests = new ArrayList<TestExecutor>();
+
+		//--------------------------------------------------------------------------------------------
+		//TODO Write Test Sequence Here
+		//--------------------------------------------------------------------------------------------
+			
+		Tester.run(new START(), tests, new FINISH(),  Main.class.getPackage().getName(), TestLoopCount);	
+	}
+}
