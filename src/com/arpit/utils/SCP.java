@@ -32,13 +32,14 @@ public class SCP {
 	};
 
 	/**
+	 * Class Constructor
 	 * 
 	 * <PRE>
 	 * Example:
 	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22);
-	 * scp.Connect();
-	 * scp.SCPFileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
-	 * scp.Disconnect();
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
+	 * scp.disconnect();
 	 * </PRE>
 	 * 
 	 * @param context
@@ -57,14 +58,14 @@ public class SCP {
 	}
 
 	/**
-	 * Creates SCP Object
+	 * Class Constructor
 	 * 
 	 * <PRE>
 	 * Example:
 	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22, "./conf/ssh_key");
-	 * scp.Connect();
-	 * scp.SCPFileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
-	 * scp.Disconnect();
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
+	 * scp.disconnect();
 	 * </PRE>
 	 * 
 	 * @param context
@@ -93,9 +94,9 @@ public class SCP {
 	 * 3) User + PrivateKeyFromFile
 	 * Example:
 	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22);
-	 * scp.Connect();
-	 * scp.SCPFileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
-	 * scp.Disconnect();
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
+	 * scp.disconnect();
 	 * </pre>
 	 * 
 	 * @param server
@@ -104,7 +105,7 @@ public class SCP {
 	 * @param port
 	 * @return
 	 */
-	public SSH2SCP1Client Connect() {
+	public SSH2SCP1Client connect() {
 		SSH2SCP1Client scpClient = null;
 		try {
 			Socket serverSocket = new Socket(getServer(), getPort());
@@ -133,14 +134,14 @@ public class SCP {
 	 * <PRE>
 	 * Example 1:
 	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22);
-	 * scp.Connect();
-	 * scp.SCPFileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
-	 * scp.Disconnect();
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
+	 * scp.disconnect();
 	 * Example 2:
 	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22);
-	 * scp.Connect();
-	 * scp.SCPFileTransfer(SCPTransferDirection.COPY_TO_LOCAL, "/etc/temp/file/temp.txt", "./files");
-	 * scp.Disconnect();
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_LOCAL, "/etc/temp/file/temp.txt", "./files");
+	 * scp.disconnect();
 	 * </PRE>
 	 * 
 	 * @param context
@@ -150,7 +151,7 @@ public class SCP {
 	 * @param strHost
 	 * @throws Exception
 	 */
-	public void SCPFileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath) {
+	public void fileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath) {
 		try {
 			setDirection(direction);
 			setSrcFilePath(srcFilePath);
@@ -175,7 +176,7 @@ public class SCP {
 	/**
 	 * 
 	 */
-	public void Disconnect() {
+	public void disconnect() {
 		getTransport().normalDisconnect("User disconnects");
 		context.getLogger().println(LOG_LEVEL.INFO, "SCP disconnected");
 	}

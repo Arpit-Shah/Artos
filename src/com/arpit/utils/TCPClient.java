@@ -90,7 +90,7 @@ public class TCPClient implements Connector {
 				return null;
 			}
 			// Give system some time to do other things
-			Thread.sleep(100);
+			Thread.sleep(20);
 		}
 		return null;
 	}
@@ -133,6 +133,13 @@ public class TCPClient implements Connector {
 
 }
 
+/**
+ * Inner Class which acts as receiver thread for incoming data. All Data will be
+ * added to the Queue
+ * 
+ * @author arpit
+ *
+ */
 class ServerTask implements Runnable {
 	private final Socket connector;
 	int read = -1;

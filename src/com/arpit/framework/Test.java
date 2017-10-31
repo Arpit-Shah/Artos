@@ -10,7 +10,7 @@ public abstract class Test {
 	public void onExecute(TestContext context, Class<?> cls, String author, String date, String description) throws Exception {
 		try {
 
-			context.getLogger().println(LOG_LEVEL.INFO, "*************************************************************************");
+			context.getLogger().println(LOG_LEVEL.INFO, "\n*************************************************************************");
 			context.getLogger().println(LOG_LEVEL.INFO, "Test Name	: " + cls.getName());
 			context.getLogger().println(LOG_LEVEL.INFO, "Written BY	: " + author);
 			context.getLogger().println(LOG_LEVEL.INFO, "Date		: " + date);

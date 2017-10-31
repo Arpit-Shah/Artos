@@ -273,6 +273,19 @@ public class Convert {
 		}
 		return reverseData;
 	}
+	
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public byte[] listToByteArray(List<Byte> list) {
+		byte[] byteArray = new byte[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			byteArray[i] = list.get(i).byteValue();
+		}
+		return byteArray;
+	}
 
 	// ===================================================================
 	// Bits related manipulation
@@ -562,16 +575,4 @@ public class Convert {
 		return R;
 	}
 
-	/**
-	 * 
-	 * @param list
-	 * @return
-	 */
-	public byte[] listToByteArray(List<Byte> list) {
-		byte[] byteArray = new byte[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			byteArray[i] = list.get(i).byteValue();
-		}
-		return byteArray;
-	}
 }

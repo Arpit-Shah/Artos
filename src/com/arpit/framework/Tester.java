@@ -9,33 +9,38 @@ import com.arpit.infra.TestContext;
 import com.arpit.interfaces.TestExecutor;
 
 public class Tester {
+
 	public static void run(TestExecutor start, ArrayList<TestExecutor> tests, TestExecutor finish, String TestPackageName, int LoopCycle)
 			throws Exception {
 
 		// -------------------------------------------------------------------//
 		// Prep Conext
 		String productSerialNum = "A123456789";
-		OrganisedLog logger = new OrganisedLog(productSerialNum, TestPackageName, LOG_LEVEL.DEBUG);
-		logger.setEnableConsolLog(true);
-		logger.setEnableLogToFile(true);
-		logger.setEnableTimeStamp(false);
+		boolean bEnableConsoleLog = true;
+		boolean bEnableLogToFile = true;
+		boolean bEnableTimeStamp = false;
+		OrganisedLog logger = new OrganisedLog(productSerialNum, TestPackageName, LOG_LEVEL.DEBUG, bEnableConsoleLog, bEnableLogToFile, bEnableTimeStamp);
 		TestContext context = new TestContext(logger);
 
 		long startTime = System.currentTimeMillis();
-		context.getLogger().println(LOG_LEVEL.INFO, "-------- Start -----------");
+		context.getLogger().println(LOG_LEVEL.INFO, "\n-------- Start -----------");
 		start.onExecute(context);
 
 		for (int index = 0; index < LoopCycle; index++) {
-			context.getLogger().println(LOG_LEVEL.INFO, "-------- (" + index + ") -----------");
+			
+			context.getLogger().println(LOG_LEVEL.INFO, "\n-------- (" + index + ") -----------");
+			
 			// --------------------------------------------------------------------------------------------
 			for (TestExecutor t : tests) {
 				t.onExecute(context);
 			}
 			// --------------------------------------------------------------------------------------------
+			
 		}
 
 		finish.onExecute(context);
-		context.getLogger().println(LOG_LEVEL.INFO, "-------- Finished -----------");
+		context.getLogger().println(LOG_LEVEL.INFO, "\n-------- Finished -----------");
+		
 		context.getLogger().println(LOG_LEVEL.INFO, "PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:"
 				+ context.getCurrentSkipCount() + " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
 		long endTime = System.currentTimeMillis();
@@ -45,4 +50,5 @@ public class Tester {
 								- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)))));
 		System.exit(0);
 	}
+	
 }

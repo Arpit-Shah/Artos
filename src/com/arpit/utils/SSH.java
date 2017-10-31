@@ -24,15 +24,15 @@ public class SSH {
 	private String password;
 
 	/**
-	 * SSH object
+	 * Class Constructor
 	 * 
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil("#123", 2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil("#123", 2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param context
@@ -51,15 +51,15 @@ public class SSH {
 	}
 
 	/**
-	 * SSH object
+	 * Class Constructor
 	 * 
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil("#123", 2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil("#123", 2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param context
@@ -84,13 +84,13 @@ public class SSH {
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil("#123", 2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil("#123", 2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 */
-	public void Connect() {
+	public void connect() {
 		try {
 
 			if (getSsh() != null && getSsh().isConnected()) {
@@ -139,16 +139,16 @@ public class SSH {
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil("#123", 2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil("#123", 2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param value
 	 * @throws Exception
 	 */
-	public void Write(String value) throws Exception {
+	public void write(String value) throws Exception {
 		/*
 		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
 		 * considered as two enter in unix environment, then one extra line will
@@ -164,9 +164,9 @@ public class SSH {
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100", "#123", 2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100", "#123", 2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param value
@@ -175,7 +175,7 @@ public class SSH {
 	 * @return
 	 * @throws Exception
 	 */
-	public String Write(String value, String pattern, long longTimeoutMilliseconds) throws Exception {
+	public String write(String value, String pattern, long longTimeoutMilliseconds) throws Exception {
 		/*
 		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
 		 * considered as two enter in unix environment, then one extra line will
@@ -183,7 +183,7 @@ public class SSH {
 		 */
 		out.print(value + "\n");
 		out.flush();
-		return ReadUntil(pattern, longTimeoutMilliseconds);
+		return readUntil(pattern, longTimeoutMilliseconds);
 	}
 
 	/**
@@ -192,17 +192,17 @@ public class SSH {
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil("#123");
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil("#123");
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param pattern
 	 * @return
 	 * @throws Exception
 	 */
-	public String ReadUntil(String pattern) throws Exception {
+	public String readUntil(String pattern) throws Exception {
 		char lastChar = pattern.charAt(pattern.length() - 1);
 		StringBuffer sb = new StringBuffer();
 
@@ -240,10 +240,10 @@ public class SSH {
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil("#123", 2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil("#123", 2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param pattern
@@ -251,7 +251,7 @@ public class SSH {
 	 * @return
 	 * @throws Exception
 	 */
-	public String ReadUntil(String pattern, long longTimeoutMilliseconds) throws Exception {
+	public String readUntil(String pattern, long longTimeoutMilliseconds) throws Exception {
 		char lastChar = pattern.charAt(pattern.length() - 1);
 		StringBuffer sb = new StringBuffer();
 		long starttime = System.currentTimeMillis();
@@ -296,10 +296,10 @@ public class SSH {
 	 * <pre>
 	 * Example:
 	 * SSH ssh = new SSH(context, "192.168.1.100", "root", "1234", 22);
-	 * ssh.Connect();
-	 * ssh.Write("ping 192.168.3.100");
-	 * ssh.ReadUntil(2000);
-	 * ssh.Disconnect();
+	 * ssh.connect();
+	 * ssh.write("ping 192.168.3.100");
+	 * ssh.readUntil(2000);
+	 * ssh.disconnect();
 	 * </pre>
 	 * 
 	 * @param pattern
@@ -307,7 +307,7 @@ public class SSH {
 	 * @return
 	 * @throws Exception
 	 */
-	public String ReadUntil(long longTimeoutMilliseconds) throws Exception {
+	public String readUntil(long longTimeoutMilliseconds) throws Exception {
 
 		StringBuffer sb = new StringBuffer();
 		int readcount = 0;
@@ -347,7 +347,7 @@ public class SSH {
 	 * 
 	 * @throws Exception
 	 */
-	public void Disconnect() throws Exception {
+	public void disconnect() throws Exception {
 		getChannel().disconnect();
 		getSsh().disconnect();
 	}

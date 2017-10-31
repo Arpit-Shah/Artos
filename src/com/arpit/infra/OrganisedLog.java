@@ -23,7 +23,29 @@ public class OrganisedLog {
 	private boolean EnableTimeStamp = false;
 	private LOG_LEVEL currentLogLevel = LOG_LEVEL.DEBUG;
 
-	public OrganisedLog(String strDestDirName, String strTestName, LOG_LEVEL logLevel) {
+	/**
+	 * Class Constructor
+	 * 
+	 * <PRE>
+	 * OrganisedLog logger = new OrganisedLog("A123456789", com.arpitos.test, LOG_LEVEL.DEBUG, true, true, false);
+	 * </PRE>
+	 * 
+	 * @param strDestDirName
+	 *            Directory name which will contain logs for current context
+	 * @param strTestName
+	 *            Test Name which will be used as log file name
+	 * @param logLevel
+	 *            Log level allows user to only print Log with level selected or
+	 *            below
+	 * @param bEnableConsoleLog
+	 *            Enable/Disable log printing on console
+	 * @param bEnableLogToFile
+	 *            Enable/Disable log writing to log file
+	 * @param bEnableTimeStamp
+	 *            Enable/Disable time stamp priting
+	 */
+	public OrganisedLog(String strDestDirName, String strTestName, LOG_LEVEL logLevel, boolean bEnableConsoleLog, boolean bEnableLogToFile,
+			boolean bEnableTimeStamp) {
 
 		File file = new File(getRootLogDir());
 		System.out.println(file.getAbsolutePath());
@@ -35,6 +57,9 @@ public class OrganisedLog {
 		setLogDestDir(strDestDirName);
 		setTestName(strTestName);
 		setCurrentLogLevel(logLevel);
+		setEnableConsolLog(bEnableConsoleLog);
+		setEnableLogToFile(bEnableLogToFile);
+		setEnableTimeStamp(bEnableTimeStamp);
 	}
 
 	/**
@@ -66,6 +91,15 @@ public class OrganisedLog {
 		}
 	}
 
+	/**
+	 * Creates Root Directory if not present. Creates Directory with given Name
+	 * and all logs will be stored inside that directory. Generally Directory
+	 * name should be product serial number or unique ID which helps user
+	 * isolate log from different products
+	 * 
+	 * @param strDestDirName
+	 *            Name of the log directory (Unique Product ID)
+	 */
 	public void setLogDestDir(String strDestDirName) {
 		try {
 			File file = new File(getRootLogDir() + "/" + strDestDirName);
@@ -79,6 +113,14 @@ public class OrganisedLog {
 		}
 	}
 
+	/**
+	 * Name of the Test Class which gets used to generate Log file name. This
+	 * will help user collect log for same test case in directory under name of
+	 * the test case so if user runs same test case more than one time, it can
+	 * easily be detected
+	 * 
+	 * @param strTestName
+	 */
 	public void setTestName(String strTestName) {
 		try {
 			if (null != getOutputfile_log()) {
@@ -96,6 +138,24 @@ public class OrganisedLog {
 		}
 	}
 
+	/**
+	 * Generate summary report
+	 * 
+	 * @param status
+	 *            Test Status
+	 * @param strTestName
+	 *            TestName
+	 * @param JIRARef
+	 *            JIRA-BugTracking Number
+	 * @param passCount
+	 *            Passed Test Count
+	 * @param failCount
+	 *            Failed Test Count
+	 * @param skipCount
+	 *            Skipped Test Count
+	 * @param ktfCount
+	 *            Known to Fail Test Count
+	 */
 	public void appendSummaryReport(Status status, String strTestName, String JIRARef, long passCount, long failCount, long skipCount,
 			long ktfCount) {
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));

@@ -51,7 +51,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard(TestContext context, GuardCheckFor check, String desc, String refData, String targetData) throws Exception {
+	public static void guard(TestContext context, GuardCheckFor check, String desc, String refData, String targetData) throws Exception {
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
 		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
@@ -94,7 +94,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard_Format_Compare(TestContext context, GuardCheckFor check, String desc, String format, String targetData)
+	public static void guard_Format_Compare(TestContext context, GuardCheckFor check, String desc, String format, String targetData)
 			throws Exception {
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + format);
@@ -140,7 +140,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard(TestContext context, GuardCheckFor check, String desc, byte[] refData, byte[] targetData) throws Exception {
+	public static void guard(TestContext context, GuardCheckFor check, String desc, byte[] refData, byte[] targetData) throws Exception {
 		Convert _con = new Convert();
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + _con.bytesToStringHex(refData, true));
@@ -186,7 +186,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard(TestContext context, GuardCheckFor check, String desc, byte refData, byte targetData) throws Exception {
+	public static void guard(TestContext context, GuardCheckFor check, String desc, byte refData, byte targetData) throws Exception {
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
 		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
@@ -255,7 +255,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard(TestContext context, GuardCheckFor check, String desc, short refData, short targetData) throws Exception {
+	public static void guard(TestContext context, GuardCheckFor check, String desc, short refData, short targetData) throws Exception {
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
 		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
@@ -324,7 +324,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard(TestContext context, GuardCheckFor check, String desc, long refData, long targetData) throws Exception {
+	public static void guard(TestContext context, GuardCheckFor check, String desc, long refData, long targetData) throws Exception {
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
 		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);
@@ -393,7 +393,7 @@ public class Guardian {
 	 *            = data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void Guard(TestContext context, GuardCheckFor check, String desc, int refData, int targetData) throws Exception {
+	public static void guard(TestContext context, GuardCheckFor check, String desc, int refData, int targetData) throws Exception {
 		context.getLogger().println(LOG_LEVEL.INFO, "\nFinding");
 		context.getLogger().println(LOG_LEVEL.INFO, "Ref : " + refData);
 		context.getLogger().println(LOG_LEVEL.INFO, "Res : " + targetData);

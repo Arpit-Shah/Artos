@@ -91,7 +91,7 @@ public class TCPServer implements Connector {
 				return null;
 			}
 			// Give system some time to do other things
-			Thread.sleep(100);
+			Thread.sleep(20);
 		}
 		return null;
 	}
