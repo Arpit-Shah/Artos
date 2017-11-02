@@ -121,5 +121,4 @@ public class Zip {
 	private String generateZipEntry(String file) {
 		return file.substring(sourceDir.getAbsolutePath().length() + 1, file.length());
 	}
-
 }
