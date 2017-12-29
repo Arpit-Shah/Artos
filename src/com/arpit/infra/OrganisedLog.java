@@ -1,33 +1,34 @@
 package com.arpit.infra;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.AppenderRefComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import com.arpit.infra.TestContext.Status;
-import com.arpit.utils.Convert;
 
 public class OrganisedLog {
 
-	private String rootLogDir = "./reporting";
-	private String currentLogDir = getRootLogDir();
-	private String currentTestName = "NotSet";
-	private FileWriter fwriter_log;
-	private PrintWriter outputfile_log;
-	private FileWriter fwriter_summary;
-	private PrintWriter outputfile_summary;
-	private boolean EnableConsolLog = true;
-	private boolean EnableLogToFile = true;
-	private boolean EnableTimeStamp = false;
-	private LOG_LEVEL currentLogLevel = LOG_LEVEL.DEBUG;
+	private Logger generalLogger;
+	private Logger summaryLogger;
 
 	/**
 	 * Class Constructor
 	 * 
 	 * <PRE>
-	 * OrganisedLog logger = new OrganisedLog("A123456789", com.arpitos.test, LOG_LEVEL.DEBUG, true, true, false);
+	 * OrganisedLog logger = new OrganisedLog("A123456789", "com.arpitos.test", LOG_LEVEL.ALL);
 	 * </PRE>
 	 * 
 	 * @param strDestDirName
@@ -37,105 +38,17 @@ public class OrganisedLog {
 	 * @param logLevel
 	 *            Log level allows user to only print Log with level selected or
 	 *            below
-	 * @param bEnableConsoleLog
-	 *            Enable/Disable log printing on console
-	 * @param bEnableLogToFile
-	 *            Enable/Disable log writing to log file
 	 * @param bEnableTimeStamp
-	 *            Enable/Disable time stamp priting
+	 *            Enable/Disable time stamp printing
 	 */
-	public OrganisedLog(String strDestDirName, String strTestName, LOG_LEVEL logLevel, boolean bEnableConsoleLog, boolean bEnableLogToFile,
-			boolean bEnableTimeStamp) {
+	public OrganisedLog(String logDir, String strTestName, boolean disableLogDecoration) {
 
-		File file = new File(getRootLogDir());
-		System.out.println(file.getAbsolutePath());
-		if (!file.exists()) {
-			file.mkdir();
-		}
-
-		setCurrentTestName(strTestName);
-		setLogDestDir(strDestDirName);
-		setTestName(strTestName);
-		setCurrentLogLevel(logLevel);
-		setEnableConsolLog(bEnableConsoleLog);
-		setEnableLogToFile(bEnableLogToFile);
-		setEnableTimeStamp(bEnableTimeStamp);
-	}
-
-	/**
-	 * Enums for setting log level
-	 * 
-	 * @author arpit_000
-	 *
-	 */
-	public enum LOG_LEVEL {
-		ALL(0), DEBUG(1), INFO(2), WARNING(3), SENSITIVE(4);
-
-		private final int value;
-
-		LOG_LEVEL(int value) {
-			this.value = value;
-		}
-
-		public int getValue() {
-			return value;
-		}
-
-		public String getEnumName(int value) {
-			for (Status e : Status.values()) {
-				if (value == e.getValue()) {
-					return e.name();
-				}
-			}
-			return null;
-		}
-	}
-
-	/**
-	 * Creates Root Directory if not present. Creates Directory with given Name
-	 * and all logs will be stored inside that directory. Generally Directory
-	 * name should be product serial number or unique ID which helps user
-	 * isolate log from different products
-	 * 
-	 * @param strDestDirName
-	 *            Name of the log directory (Unique Product ID)
-	 */
-	public void setLogDestDir(String strDestDirName) {
-		try {
-			File file = new File(getRootLogDir() + "/" + strDestDirName);
-			if (!file.exists()) {
-				file.mkdir();
-			}
-			setCurrentLogDir(getRootLogDir() + "/" + strDestDirName);
-			setTestName(getCurrentTestName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Name of the Test Class which gets used to generate Log file name. This
-	 * will help user collect log for same test case in directory under name of
-	 * the test case so if user runs same test case more than one time, it can
-	 * easily be detected
-	 * 
-	 * @param strTestName
-	 */
-	public void setTestName(String strTestName) {
-		try {
-			if (null != getOutputfile_log()) {
-				getFwriter_log().close();
-				getOutputfile_log().close();
-			}
-			setCurrentTestName(strTestName);
-			String strCurrentTime = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-			setFwriter_log(new FileWriter(getCurrentLogDir() + "/" + strCurrentTime + "_" + strTestName + ".log", true));
-			setOutputfile_log(new PrintWriter(getFwriter_log()));
-			setFwriter_summary(new FileWriter(getCurrentLogDir() + "/" + strCurrentTime + "_" + strTestName + ".summary", true));
-			setOutputfile_summary(new PrintWriter(getFwriter_summary()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// System.setProperty("log4j.configurationFile",
+		// "./conf/log4j2.properties");
+		LoggerContext loggerContext = dynamicallyConfigureLog4J(logDir + File.separator + strTestName, strTestName + "_" + System.currentTimeMillis(),
+				disableLogDecoration);
+		setGeneralLogger(loggerContext.getLogger("TestLog"));
+		setSummaryLogger(loggerContext.getLogger("Summary"));
 	}
 
 	/**
@@ -158,6 +71,7 @@ public class OrganisedLog {
 	 */
 	public void appendSummaryReport(Status status, String strTestName, String JIRARef, long passCount, long failCount, long skipCount,
 			long ktfCount) {
+
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 60 + "s", strTestName).replace(" ", ".");
 		String JiraRef = String.format("%-" + 10 + "s", JIRARef);
@@ -165,205 +79,183 @@ public class OrganisedLog {
 		String FailCount = String.format("%-" + 10 + "s", failCount);
 		String SkipCount = String.format("%-" + 10 + "s", skipCount);
 		String KTFCount = String.format("%-" + 10 + "s", ktfCount);
-		getOutputfile_summary().println(
-				testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:" + KTFCount);
-		getOutputfile_summary().flush();
+		getSummaryLogger()
+				.info(testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:" + KTFCount);
 	}
 
-	public void println(LOG_LEVEL logLevel, String strToWrite) {
+	/**
+	 *@return 
+	 * @return 
+	 * @formatter:off
+	 * <PRE>
+	 * 
+	 * <?xml version="1.0" encoding="UTF-8"?>
+	 * <Configuration status="WARN">
+	 * 	<Properties>
+	 * 		<Property name="log-path">./reporting/logs</Property>
+	 * 	</Properties>
+	 * 
+	 * 	<Appenders>
+	 * 		<Console name="console-log" target="SYSTEM_OUT">
+	 * 			<PatternLayout pattern="[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable" />
+	 * 		</Console>
+	 * 
+	 * 		<RollingFile name="all-log" fileName="${log-path}/arpitos-all.log" filePattern="${log-path}/arpitos-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
+	 * 			<PatternLayout>
+	 * 				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
+	 * 			</PatternLayout>
+	 * 			<Policies>
+	 * 				<SizeBasedTriggeringPolicy size="200MB" />
+	 * 			</Policies>
+	 * 		</RollingFile>
+	 * 
+	 * 		<RollingFile name="error-log" fileName="${log-path}/arpitos-error.log" filePattern="${log-path}/arpitos-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
+	 * 			<PatternLayout>
+	 * 				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
+	 * 			</PatternLayout>
+	 * 			<Policies>
+	 * 				<SizeBasedTriggeringPolicy size="200MB" />
+	 * 			</Policies>
+	 * 		</RollingFile>
+	 * 	</Appenders>
+	 * 
+	 * 	<Loggers>
+	 * 		<Logger name="TestLog" level="debug" additivity="false">
+	 * 			<appender-ref ref="console-log" level="all" />
+	 * 			<appender-ref ref="all-log" level="all" />
+	 * 			<appender-ref ref="error-log" level="error" />
+	 * 		</Logger>
+	 * 	 	<Logger name="Summary" level="debug" additivity="false">
+	 * 			<appender-ref ref="summary-log" level="all" />
+	 * 		</Logger>
+	 * 		<Root level="all" additivity="false">
+	 * 			<AppenderRef ref="console-log" />
+	 * 		</Root>
+	 * 	</Loggers>
+	 * </Configuration>
+	 * 
+	 * </PRE>
+	 * @formatter:on
+	 */
+	public static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean disableLogDecoration) {
 
-		if (getCurrentLogLevel().value > logLevel.value) {
-			return;
+		if (!fileroot.endsWith("/") || !fileroot.endsWith("\\")) {
+			fileroot = fileroot + File.separator;
 		}
 
-		if (null == strToWrite) {
-			strToWrite = "null";
-		}
-		String[] logString = strToWrite.split("\n");
-		for (String log : logString) {
-			if (isEnableTimeStamp()) {
-				log = (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SS").format(new Date()) + " " + log);
-			}
-			if (isEnableConsolLog()) {
-				System.out.println(log);
-			}
-			if (isEnableLogToFile()) {
-				getOutputfile_log().println(log);
-				getOutputfile_log().flush();
-			}
-		}
-	}
+		ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+		builder.setStatusLevel(Level.WARN);
+		builder.setConfigurationName("RollingBuilder");
 
-	public void println(LOG_LEVEL logLevel, byte[] bytearray) {
-
-		if (getCurrentLogLevel().value > logLevel.value) {
-			return;
-		}
-
-		if (null == bytearray) {
-			String strToWrite = "null";
-			println(logLevel, strToWrite);
+		// Log Layout with timestamp
+		LayoutComponentBuilder layoutBuilder1 = builder.newLayout("PatternLayout");
+		if (disableLogDecoration) {
+			layoutBuilder1.addAttribute("pattern", "%msg%n%throwable");
 		} else {
-			String strToWrite = new Convert().bytesToStringHex(bytearray, true);
-			println(logLevel, strToWrite);
-		}
-	}
-
-	public void println(LOG_LEVEL logLevel, int integerValue) {
-
-		if (getCurrentLogLevel().value > logLevel.value) {
-			return;
-		}
-
-		String strToPrint = Integer.toString(integerValue);
-		println(logLevel, strToPrint);
-	}
-
-	public void println(LOG_LEVEL logLevel, long longValue) {
-
-		if (getCurrentLogLevel().value > logLevel.value) {
-			return;
+			/*
+			 * @formatter:off
+			 * [%-5level] = Log level upto 5 char max
+			 * [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
+			 * [%t] = Thread number
+			 * [%F] = File where logs are coming from
+			 * [%M] = Method which generated log
+			 * [%c{-1}] = ClassName which issued logCommand 
+			 * %msg = Actual msg to be logged 
+			 * %n = new line
+			 * %throwable = log exception
+			 * @formatter:on
+			 */
+			layoutBuilder1.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
 		}
 
-		String strToPrint = Long.toString(longValue);
-		println(logLevel, strToPrint);
+		// Log Layour without decoration
+		LayoutComponentBuilder layoutBuilder2 = builder.newLayout("PatternLayout");
+		layoutBuilder2.addAttribute("pattern", "%msg%n%throwable");
+
+		// File size based rollver Trigger Policy
+		ComponentBuilder<?> triggeringPolicy = builder.newComponent("Policies");
+		triggeringPolicy.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "200MB"));
+
+		// create a console appender
+		AppenderComponentBuilder appenderBuilder1 = builder.newAppender("console-log", "CONSOLE");
+		appenderBuilder1.addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
+		appenderBuilder1.add(layoutBuilder1);
+		builder.add(appenderBuilder1);
+
+		// create a rolling file appender
+		AppenderComponentBuilder appenderBuilder2 = builder.newAppender("all-log", "RollingFile");
+		appenderBuilder2.addAttribute("fileName", fileroot + fileName + "-all.log");
+		appenderBuilder2.addAttribute("filePattern", fileroot + fileName + "-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+		appenderBuilder2.add(layoutBuilder1);
+		appenderBuilder2.addComponent(triggeringPolicy);
+		builder.add(appenderBuilder2);
+
+		// create a rolling file appender for error
+		AppenderComponentBuilder appenderBuilder3 = builder.newAppender("error-log", "RollingFile");
+		appenderBuilder3.addAttribute("fileName", fileroot + fileName + "-error.log");
+		appenderBuilder3.addAttribute("filePattern", fileroot + fileName + "-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+		appenderBuilder3.add(layoutBuilder1);
+		appenderBuilder3.addComponent(triggeringPolicy);
+		builder.add(appenderBuilder3);
+
+		// create a rolling file appender for error
+		AppenderComponentBuilder appenderBuilder4 = builder.newAppender("summary-log", "RollingFile");
+		appenderBuilder4.addAttribute("fileName", fileroot + fileName + "-summary.log");
+		appenderBuilder4.addAttribute("filePattern", fileroot + fileName + "-summary-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+		appenderBuilder4.add(layoutBuilder2);
+		appenderBuilder4.addComponent(triggeringPolicy);
+		builder.add(appenderBuilder4);
+
+		// create the new logger
+		LoggerComponentBuilder loggerBuilder1 = builder.newLogger("TestLog", Level.DEBUG);
+		loggerBuilder1.addAttribute("additivity", false);
+		AppenderRefComponentBuilder appendRef1 = builder.newAppenderRef("console-log");
+		appendRef1.addAttribute("level", Level.ALL);
+		AppenderRefComponentBuilder appendRef2 = builder.newAppenderRef("all-log");
+		appendRef2.addAttribute("level", Level.ALL);
+		AppenderRefComponentBuilder appendRef3 = builder.newAppenderRef("error-log");
+		appendRef3.addAttribute("level", Level.ERROR);
+		loggerBuilder1.add(appendRef1);
+		loggerBuilder1.add(appendRef2);
+		loggerBuilder1.add(appendRef3);
+
+		builder.add(loggerBuilder1);
+
+		// create the new logger
+		LoggerComponentBuilder loggerBuilder2 = builder.newLogger("Summary", Level.DEBUG);
+		loggerBuilder2.addAttribute("additivity", false);
+		AppenderRefComponentBuilder appendRef11 = builder.newAppenderRef("summary-log");
+		appendRef1.addAttribute("level", Level.ALL);
+		loggerBuilder2.add(appendRef11);
+
+		builder.add(loggerBuilder2);
+
+		RootLoggerComponentBuilder rootlogggerBuilder = builder.newRootLogger(Level.ALL);
+		rootlogggerBuilder.addAttribute("additivity", false);
+		AppenderRefComponentBuilder appendRef0 = builder.newAppenderRef("console-log");
+		rootlogggerBuilder.add(appendRef0);
+
+		builder.add(rootlogggerBuilder);
+		System.out.println(builder.toXmlConfiguration().toString());
+
+		LoggerContext loggerContext = Configurator.initialize(builder.build());
+		return loggerContext;
 	}
 
-	public void print(LOG_LEVEL logLevel, String strToWrite) {
-
-		if (getCurrentLogLevel().value > logLevel.value) {
-			return;
-		}
-
-		if (null == strToWrite) {
-			strToWrite = "null";
-		}
-		String[] logString = strToWrite.split("\n");
-		for (String log : logString) {
-			if (isEnableTimeStamp()) {
-				log = (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SS").format(new Date()) + " " + log);
-			}
-			if (isEnableConsolLog()) {
-				System.out.print(log);
-			}
-			if (isEnableLogToFile()) {
-				getOutputfile_log().print(log);
-				getOutputfile_log().flush();
-			}
-		}
+	public Logger getGeneralLogger() {
+		return generalLogger;
 	}
 
-	public void println_err(LOG_LEVEL logLevel, String strToWrite) {
-
-		if (getCurrentLogLevel().value > logLevel.value) {
-			return;
-		}
-
-		if (null == strToWrite) {
-			strToWrite = "null";
-		}
-		String[] logString = strToWrite.split("\n");
-		for (String log : logString) {
-			if (isEnableTimeStamp()) {
-				log = (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SS").format(new Date()) + " " + log);
-			}
-			if (isEnableConsolLog()) {
-				System.err.println(log);
-			}
-			if (isEnableLogToFile()) {
-				getOutputfile_log().println(log);
-				getOutputfile_log().flush();
-			}
-		}
+	public void setGeneralLogger(Logger generalLogger) {
+		this.generalLogger = generalLogger;
 	}
 
-	private String getRootLogDir() {
-		return rootLogDir;
+	public Logger getSummaryLogger() {
+		return summaryLogger;
 	}
 
-	@SuppressWarnings("unused")
-	private void setRootLogDir(String rootLogDir) {
-		this.rootLogDir = rootLogDir;
-	}
-
-	private String getCurrentLogDir() {
-		return currentLogDir;
-	}
-
-	private void setCurrentLogDir(String currentLogDir) {
-		this.currentLogDir = currentLogDir;
-	}
-
-	private String getCurrentTestName() {
-		return currentTestName;
-	}
-
-	private void setCurrentTestName(String currentTestName) {
-		this.currentTestName = currentTestName;
-	}
-
-	private FileWriter getFwriter_log() {
-		return fwriter_log;
-	}
-
-	private void setFwriter_log(FileWriter fwriter) {
-		this.fwriter_log = fwriter;
-	}
-
-	private PrintWriter getOutputfile_log() {
-		return outputfile_log;
-	}
-
-	private void setOutputfile_log(PrintWriter outputfile) {
-		this.outputfile_log = outputfile;
-	}
-
-	public boolean isEnableConsolLog() {
-		return EnableConsolLog;
-	}
-
-	public void setEnableConsolLog(boolean enableConsolLog) {
-		EnableConsolLog = enableConsolLog;
-	}
-
-	public boolean isEnableLogToFile() {
-		return EnableLogToFile;
-	}
-
-	public void setEnableLogToFile(boolean enableLogToFile) {
-		EnableLogToFile = enableLogToFile;
-	}
-
-	private FileWriter getFwriter_summary() {
-		return fwriter_summary;
-	}
-
-	private void setFwriter_summary(FileWriter fwriter_summary) {
-		this.fwriter_summary = fwriter_summary;
-	}
-
-	private PrintWriter getOutputfile_summary() {
-		return outputfile_summary;
-	}
-
-	private void setOutputfile_summary(PrintWriter outputfile_summary) {
-		this.outputfile_summary = outputfile_summary;
-	}
-
-	public boolean isEnableTimeStamp() {
-		return EnableTimeStamp;
-	}
-
-	public void setEnableTimeStamp(boolean enableTimeStamp) {
-		EnableTimeStamp = enableTimeStamp;
-	}
-
-	public LOG_LEVEL getCurrentLogLevel() {
-		return currentLogLevel;
-	}
-
-	public void setCurrentLogLevel(LOG_LEVEL currentLogLevel) {
-		this.currentLogLevel = currentLogLevel;
+	public void setSummaryLogger(Logger summaryLogger) {
+		this.summaryLogger = summaryLogger;
 	}
 
 }

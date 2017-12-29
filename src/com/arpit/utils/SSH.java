@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import com.arpit.infra.OrganisedLog.LOG_LEVEL;
 import com.arpit.infra.TestContext;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -223,14 +222,14 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().println(LOG_LEVEL.INFO, "exit-status: " + getChannel().getExitStatus());
+					context.getLogger().info("exit-status: " + getChannel().getExitStatus());
 					break;
 				}
 			}
 		}
-		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
-		context.getLogger().println(LOG_LEVEL.INFO, "Pattern match could not be found");
-		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
+		context.getLogger().info("*************************************************");
+		context.getLogger().info("Pattern match could not be found");
+		context.getLogger().info("*************************************************");
 		return sb.toString();
 	}
 
@@ -279,14 +278,14 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().println(LOG_LEVEL.INFO, "exit-status: " + channel.getExitStatus());
+					context.getLogger().info("exit-status: " + channel.getExitStatus());
 					break;
 				}
 			}
 		}
-		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
-		context.getLogger().println(LOG_LEVEL.INFO, "Timed out before Pattern match could not be found");
-		context.getLogger().println(LOG_LEVEL.INFO, "*************************************************");
+		context.getLogger().info("*************************************************");
+		context.getLogger().info("Timed out before Pattern match could not be found");
+		context.getLogger().info("*************************************************");
 		return sb.toString();
 	}
 
@@ -328,7 +327,7 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().println(LOG_LEVEL.INFO, "exit-status: " + channel.getExitStatus());
+					context.getLogger().info("exit-status: " + channel.getExitStatus());
 					break;
 				}
 			}

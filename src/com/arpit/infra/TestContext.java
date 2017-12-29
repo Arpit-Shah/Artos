@@ -3,11 +3,11 @@ package com.arpit.infra;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.arpit.infra.OrganisedLog.LOG_LEVEL;
+import org.apache.logging.log4j.core.Logger;
 
 public class TestContext {
 
-	private OrganisedLog logger;
+	private OrganisedLog organiseLogger;
 	private Status currentTestStatus = Status.PASS;
 	private boolean KnownToFail = false;
 	private String strJIRARef = "";
@@ -18,8 +18,8 @@ public class TestContext {
 	private long currentKTFCount = 0;
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
 
-	public TestContext(OrganisedLog logger) {
-		this.logger = logger;
+	public TestContext(OrganisedLog organisedLog) {
+		this.organiseLogger = organisedLog;
 	}
 
 	/**
@@ -61,9 +61,9 @@ public class TestContext {
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
 			currentTestStatus = testStatus;
 			if (testStatus == Status.FAIL) {
-				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
-				logger.println_err(LOG_LEVEL.WARNING, "*********** FAIL HERE ************");
-				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
+				getLogger().warn("**********************************");
+				getLogger().warn("*********** FAIL HERE ************");
+				getLogger().warn("**********************************");
 			}
 		}
 	}
@@ -80,9 +80,9 @@ public class TestContext {
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
 			if (getCurrentTestStatus() == Status.PASS) {
-				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
-				logger.println_err(LOG_LEVEL.WARNING, "******** KTF TEST PASSED *********");
-				logger.println_err(LOG_LEVEL.WARNING, "**********************************");
+				getLogger().warn("**********************************");
+				getLogger().warn("******** KTF TEST PASSED *********");
+				getLogger().warn("**********************************");
 				setCurrentTestStatus(Status.FAIL);
 			}
 		}
@@ -102,9 +102,9 @@ public class TestContext {
 		}
 
 		// Finalize and add test result in log file
-		getLogger().println(LOG_LEVEL.INFO, "\nTest Result : " + getCurrentTestStatus().name());
+		getLogger().info("Test Result : " + getCurrentTestStatus().name());
 		// Finalize and add test summary to Summary report
-		getLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrJIRARef(), getCurrentPassCount(), getCurrentFailCount(),
+		getOrganiseLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrJIRARef(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount());
 
 		// reset statuses for next test
@@ -131,16 +131,12 @@ public class TestContext {
 	 */
 	public String printMethodName() {
 		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		getLogger().println(LOG_LEVEL.INFO, "\nMethod : " + methodName + "()");
+		getLogger().debug("\nMethod : " + methodName + "()");
 		return methodName;
 	}
 
-	public OrganisedLog getLogger() {
-		return logger;
-	}
-
-	public void setLogger(OrganisedLog logger) {
-		this.logger = logger;
+	public Logger getLogger() {
+		return (Logger) getOrganiseLogger().getGeneralLogger();
 	}
 
 	public Status getCurrentTestStatus() {
@@ -222,6 +218,14 @@ public class TestContext {
 
 	private void setTotalTestCount(long totalTestCount) {
 		this.totalTestCount = totalTestCount;
+	}
+
+	public OrganisedLog getOrganiseLogger() {
+		return organiseLogger;
+	}
+
+	public void setOrganiseLogger(OrganisedLog organiseLogger) {
+		this.organiseLogger = organiseLogger;
 	}
 
 }
