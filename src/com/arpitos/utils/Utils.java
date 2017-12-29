@@ -1,9 +1,9 @@
-package com.arpit.utils;
+package com.arpitos.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import com.arpit.infra.TestContext;
+import com.arpitos.infra.TestContext;
 
 public class Utils {
 

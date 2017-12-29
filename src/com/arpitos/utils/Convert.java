@@ -1,4 +1,4 @@
-package com.arpit.utils;
+package com.arpitos.utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

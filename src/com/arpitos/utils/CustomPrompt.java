@@ -1,4 +1,4 @@
-package com.arpit.utils;
+package com.arpitos.utils;
 
 import java.awt.Color;
 import java.awt.Dimension;

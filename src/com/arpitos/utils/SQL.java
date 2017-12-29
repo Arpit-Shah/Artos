@@ -1,4 +1,4 @@
-package com.arpit.utils;
+package com.arpitos.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

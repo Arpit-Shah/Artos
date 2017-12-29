@@ -1,9 +1,9 @@
-package com.arpit.utils;
+package com.arpitos.utils;
 
 import java.io.File;
 import java.net.Socket;
 
-import com.arpit.infra.TestContext;
+import com.arpitos.infra.TestContext;
 import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2SCP1Client;
 import com.mindbright.ssh2.SSH2SimpleClient;

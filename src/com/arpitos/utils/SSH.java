@@ -1,10 +1,10 @@
-package com.arpit.utils;
+package com.arpitos.utils;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import com.arpit.infra.TestContext;
+import com.arpitos.infra.TestContext;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;

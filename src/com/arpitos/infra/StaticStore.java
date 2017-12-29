@@ -1,4 +1,4 @@
-package com.arpit.infra;
+package com.arpitos.infra;
 
 public class StaticStore {
 

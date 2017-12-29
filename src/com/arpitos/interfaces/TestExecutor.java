@@ -1,6 +1,6 @@
-package com.arpit.interfaces;
+package com.arpitos.interfaces;
 
-import com.arpit.infra.TestContext;
+import com.arpitos.infra.TestContext;
 
 public interface TestExecutor {
 	public void onExecute(TestContext context) throws Exception;

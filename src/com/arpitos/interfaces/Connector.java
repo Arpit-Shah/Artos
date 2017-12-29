@@ -1,4 +1,4 @@
-package com.arpit.interfaces;
+package com.arpitos.interfaces;
 
 public interface Connector {
 

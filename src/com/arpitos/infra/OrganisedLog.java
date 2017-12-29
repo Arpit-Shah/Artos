@@ -1,4 +1,4 @@
-package com.arpit.infra;
+package com.arpitos.infra;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
-import com.arpit.infra.TestContext.Status;
+import com.arpitos.infra.TestContext.Status;
 
 public class OrganisedLog {
 
