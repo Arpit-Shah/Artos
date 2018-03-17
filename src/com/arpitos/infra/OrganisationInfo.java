@@ -11,6 +11,31 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * This class is responsible for storing Organization Information. During test
+ * suit execution XML file will be searched at location
+ * ./conf/organisation_info.xml
+ * 
+ * <PRE>
+ * 
+ * Sample file format is given below
+ * {@code
+ 	<?xml version="1.0" encoding="UTF-8"?>
+	<Configuration status="WARN">
+		<Organization>
+			<Property name="Name">Organisation_Name</Property>
+			<Property name="Address">XX, Test Street, Test address</Property>
+			<Property name="Country">NewZealand</Property>
+			<Property name="Contact_Number">+64 210762810</Property>
+			<Property name="Website">www.arpitos.com</Property>
+		</Organization>
+	</Configuration>
+	}
+ * </PRE>
+ * 
+ * @author ArpitS
+ *
+ */
 public class OrganisationInfo {
 
 	private String Organisation_Name = "Organisation_Name";
@@ -23,6 +48,10 @@ public class OrganisationInfo {
 		readConfig();
 	}
 
+	/**
+	 * Reads XML file from project root location, If not found then default info
+	 * is applied
+	 */
 	private void readConfig() {
 		try {
 			File fXmlFile = new File("./conf/organisation_info.xml");

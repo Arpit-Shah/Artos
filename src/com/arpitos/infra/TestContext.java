@@ -5,11 +5,21 @@ import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
 
+import com.arpitos.infra.Enums.TestStatus;
+
+/**
+ * This is TestContext which is wrapper around all objects/tools/loggers user
+ * may need during test case execution. This class is also responsible for
+ * summarizing test results.
+ * 
+ * @author ArpitS
+ *
+ */
 public class TestContext {
 
 	private OrganisedLog organiseLogger;
 	private OrganisationInfo organisationInfo;
-	private Status currentTestStatus = Status.PASS;
+	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
 	private String strJIRARef = "";
 	private long totalTestCount = 0;
@@ -20,6 +30,12 @@ public class TestContext {
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
 	public static TestContext context;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param organisedLog
+	 *            = Logger object
+	 */
 	public TestContext(OrganisedLog organisedLog) {
 		this.organisationInfo = new OrganisationInfo();
 		this.organiseLogger = organisedLog;
@@ -27,6 +43,9 @@ public class TestContext {
 		setTestContext(this);
 	}
 
+	/**
+	 * Prints Organization details to each log files
+	 */
 	private void printOrganisationInfo() {
 		getOrganiseLogger().getGeneralLogger().info("************************************ Header Start ******************************************");
 		getOrganiseLogger().getGeneralLogger().info("Organisation_Name : " + getOrganisationInfo().getOrganisation_Name());
@@ -46,44 +65,20 @@ public class TestContext {
 	}
 
 	/**
-	 * Enums for setting test status
-	 * 
-	 * @author arpit_000
-	 *
-	 */
-	public enum Status {
-		PASS(0), SKIP(1), KTF(2), FAIL(3);
-
-		private final int status;
-
-		Status(int status) {
-			this.status = status;
-		}
-
-		public int getValue() {
-			return status;
-		}
-
-		public String getEnumName(int status) {
-			for (Status e : Status.values()) {
-				if (status == e.getValue()) {
-					return e.name();
-				}
-			}
-			return null;
-		}
-	}
-
-	/**
 	 * Sets Test status in memory. Status is not finalized until
-	 * generateTestSummary() function is called
+	 * generateTestSummary() function is called. This function stamps "FAIL
+	 * HERE" warning as soon as status is set to FAIL so user can pin point
+	 * location of the failure
 	 * 
 	 * @param testStatus
+	 *            = Test Status
 	 */
-	public void setCurrentTestStatus(Status testStatus) {
+	public void setCurrentTestStatus(TestStatus testStatus) {
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
 			currentTestStatus = testStatus;
-			if (testStatus == Status.FAIL) {
+
+			// Append Warning in the log so user can pin point where test failed
+			if (testStatus == TestStatus.FAIL) {
 				getLogger().warn("**********************************");
 				getLogger().warn("*********** FAIL HERE ************");
 				getLogger().warn("**********************************");
@@ -92,21 +87,21 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. All Status and
-	 * flags are reset at the same time to avoid polluting next test result with
-	 * previous test status.
+	 * Concludes final test result and generates summary report. This also
+	 * includes bugTicketNumber if provided
 	 * 
 	 * @param strTestName
+	 *            = Test Name
 	 */
 	public void generateTestSummary(String strTestName) {
 		// Test is marked as known to fail and for some reason it pass then
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
-			if (getCurrentTestStatus() == Status.PASS) {
+			if (getCurrentTestStatus() == TestStatus.PASS) {
 				getLogger().warn("**********************************");
 				getLogger().warn("******** KTF TEST PASSED *********");
 				getLogger().warn("**********************************");
-				setCurrentTestStatus(Status.FAIL);
+				setCurrentTestStatus(TestStatus.FAIL);
 			}
 		}
 
@@ -114,13 +109,13 @@ public class TestContext {
 		setTotalTestCount(getTotalTestCount() + 1);
 
 		// Store count details per status
-		if (getCurrentTestStatus() == Status.PASS) {
+		if (getCurrentTestStatus() == TestStatus.PASS) {
 			setCurrentPassCount(getCurrentPassCount() + 1);
-		} else if (getCurrentTestStatus() == Status.FAIL) {
+		} else if (getCurrentTestStatus() == TestStatus.FAIL) {
 			setCurrentFailCount(getCurrentFailCount() + 1);
-		} else if (getCurrentTestStatus() == Status.SKIP) {
+		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
 			setCurrentSkipCount(getCurrentSkipCount() + 1);
-		} else if (getCurrentTestStatus() == Status.KTF) {
+		} else if (getCurrentTestStatus() == TestStatus.KTF) {
 			setCurrentKTFCount(getCurrentKTFCount() + 1);
 		}
 
@@ -137,7 +132,7 @@ public class TestContext {
 
 	private void resetTestStatus() {
 		// Reset for next test
-		currentTestStatus = Status.PASS;
+		currentTestStatus = TestStatus.PASS;
 	}
 
 	/**
@@ -162,7 +157,7 @@ public class TestContext {
 		return (Logger) getOrganiseLogger().getGeneralLogger();
 	}
 
-	public Status getCurrentTestStatus() {
+	public TestStatus getCurrentTestStatus() {
 		return currentTestStatus;
 	}
 
@@ -188,16 +183,19 @@ public class TestContext {
 	 * maintain Key for the HashTable
 	 * 
 	 * @param Key
+	 *            = Key to recognize an Object
 	 * @param obj
+	 *            = Object to be stored
 	 */
 	public void setGlobalObject(String key, Object obj) {
 		globalObjectsHashMap.put(key, obj);
 	}
 
 	/**
-	 * Gets Globally set Object provided valid key is supplied.
+	 * Gets Globally set Object from the Map using provided Key.
 	 * 
 	 * @param Key
+	 *            = String key to retrive an object
 	 */
 	public void getGlobalObject(String key) {
 		globalObjectsHashMap.get(key);

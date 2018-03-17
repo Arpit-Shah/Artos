@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
+import com.arpitos.infra.Enums.ExceptionValue;
+
 public class CustomPrompt implements ItemListener {
 
 	String title = "";
@@ -71,7 +73,7 @@ public class CustomPrompt implements ItemListener {
 			int width = bimg.getWidth();
 			int height = bimg.getHeight();
 			if (width > 700 || height > 700) {
-				throw new Exception("Image is oversized : " + getImage().getAbsolutePath());
+				throw new Exception(ExceptionValue.OVERSIZE_OBJECT.getValue() + " : " + getImage().getAbsolutePath());
 			}
 			iconlabel = new JLabel();
 			iconlabel.setIcon(icon);

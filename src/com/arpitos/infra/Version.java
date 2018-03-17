@@ -1,7 +1,10 @@
 package com.arpitos.infra;
 
 /**
- * This class defines the current version of JUnit
+ * This class defines the current version of Arpitos
+ * 
+ * @author ArpitS
+ *
  */
 public class Version {
 	private Version() {

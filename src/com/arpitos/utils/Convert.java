@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import com.arpitos.infra.Enums.ExceptionValue;
+
 public class Convert {
 
 	static final String HEXES = "0123456789ABCDEF";
@@ -22,7 +24,9 @@ public class Convert {
 	 * concatenates multiple byte arrays.
 	 * 
 	 * @param first
+	 *            = first byte array
 	 * @param rest
+	 *            = following bye arrays
 	 * @return concatenated byte array
 	 */
 	public byte[] concat(byte[] first, byte[]... rest) {
@@ -43,7 +47,9 @@ public class Convert {
 	 * concatenate chain of single byte in order it was provided in.
 	 * 
 	 * @param first
+	 *            = first byte
 	 * @param rest
+	 *            = following byte in sequence
 	 * @return concatenated byte array
 	 */
 	@SuppressWarnings("unused")
@@ -67,8 +73,10 @@ public class Convert {
 	 * provided in.
 	 * 
 	 * @param byteArray
+	 *            = first bye array
 	 * @param singleByte
-	 * @return concatenated byte array
+	 *            = following byte array
+	 * @return = concatenated byte array
 	 */
 	@SuppressWarnings("unused")
 	public byte[] concat(byte[] byteArray, byte... rest) {
@@ -97,6 +105,7 @@ public class Convert {
 	 * </PRE>
 	 * 
 	 * @param data
+	 *            = data to be converted
 	 * @param bDisplaySize
 	 *            = true/false
 	 * @return Hex formatted string
@@ -136,6 +145,7 @@ public class Convert {
 	 * </PRE>
 	 * 
 	 * @param data
+	 *            = data to be converted
 	 * @param bDisplaySize
 	 *            = true/false
 	 * @return Hex formatted string
@@ -151,8 +161,10 @@ public class Convert {
 	 * </PRE>
 	 * 
 	 * @param bytes
-	 * @return
+	 *            = data to be converted
+	 * @return = Ascii formatted String
 	 * @throws Exception
+	 *             = Exception is thrown if invalid input is provided
 	 */
 	public String bytesToAscii(byte[] data) throws Exception {
 		return new String(data, "UTF-8");
@@ -165,8 +177,10 @@ public class Convert {
 	 * </PRE>
 	 * 
 	 * @param bytes
-	 * @return
+	 *            = data to be converted
+	 * @return = Ascii formatted String
 	 * @throws Exception
+	 *             = Exception is returned if invalid input data is provided
 	 */
 	public String bytesToAscii(byte data) throws Exception {
 		return bytesToAscii(new byte[] { data });
@@ -179,9 +193,10 @@ public class Convert {
 	 * </pre>
 	 * 
 	 * @param bytes
+	 *            = data to be converted
 	 * @param bo
 	 *            byte order before converting it to long
-	 * @return
+	 * @return = long formatted data
 	 */
 	public long bytesToLong(byte[] bytes, ByteOrder bo) {
 		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
@@ -198,9 +213,10 @@ public class Convert {
 	 * </pre>
 	 * 
 	 * @param bytes
+	 *            = data to be converted
 	 * @param bo
 	 *            byte order before converting it to long
-	 * @return
+	 * @return = int formatted data
 	 */
 	public int bytesToDecimals(byte[] bytes, ByteOrder bo) {
 		return bytesToInteger(bytes, bo);
@@ -213,9 +229,10 @@ public class Convert {
 	 * </pre>
 	 * 
 	 * @param bytes
+	 *            = data to be converted
 	 * @param bo
 	 *            byte order before converting it to long
-	 * @return
+	 * @return = integer formatted data
 	 */
 	public int bytesToInteger(byte[] bytes, ByteOrder bo) {
 		ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
@@ -234,7 +251,7 @@ public class Convert {
 	 */
 	public int bytes2ToInt(byte[] bytes, ByteOrder bo) throws Exception {
 		if (bytes.length != 2) {
-			throw new Exception("Bytes length is not as expected");
+			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
 		}
 		if (bo == ByteOrder.BIG_ENDIAN) {
 			return ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
@@ -273,7 +290,7 @@ public class Convert {
 		}
 		return reverseData;
 	}
-	
+
 	/**
 	 * 
 	 * @param list
@@ -456,7 +473,7 @@ public class Convert {
 
 	public byte[] intTo4Bytes(int x, ByteOrder bo) throws Exception {
 		if (x > Integer.MAX_VALUE) {
-			throw new Exception("Given value is not an integer");
+			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
 		buffer.order(bo);
@@ -466,7 +483,7 @@ public class Convert {
 
 	public byte[] intTo2Bytes(int x, ByteOrder bo) throws Exception {
 		if (x > 65535) {
-			throw new Exception("Given value can not fit in two bytes");
+			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
 		buffer.order(bo);
@@ -518,7 +535,7 @@ public class Convert {
 		} else if (str.equals("1") || str.equals("true") || str.equals("TRUE") || str.equals("True")) {
 			return true;
 		} else {
-			throw new Exception("Invalid input : " + str);
+			throw new Exception(ExceptionValue.INVALID_INPUT.getValue() + " : " + str);
 		}
 	}
 

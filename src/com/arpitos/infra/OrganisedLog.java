@@ -17,8 +17,15 @@ import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
-import com.arpitos.infra.TestContext.Status;
+import com.arpitos.infra.Enums.TestStatus;
 
+/**
+ * This class is responsible for initializing all log streams which may require
+ * during test suit execution
+ * 
+ * @author arpit
+ *
+ */
 public class OrganisedLog {
 
 	private Logger generalLogger;
@@ -28,18 +35,19 @@ public class OrganisedLog {
 	 * Class Constructor
 	 * 
 	 * <PRE>
-	 * OrganisedLog logger = new OrganisedLog("A123456789", "com.arpitos.test", LOG_LEVEL.ALL);
+	 * {
+	 * 	&#64;code
+	 * 	OrganisedLog logger = new OrganisedLog("./reporting/A123456789", "com.arpitos.test", true);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param strDestDirName
-	 *            Directory name which will contain logs for current context
+	 *            Log destination directory
 	 * @param strTestName
-	 *            Test Name which will be used as log file name
-	 * @param logLevel
-	 *            Log level allows user to only print Log with level selected or
-	 *            below
-	 * @param bEnableTimeStamp
-	 *            Enable/Disable time stamp printing
+	 *            TestSuit name for sub directory structure
+	 * @param disableLogDecoration
+	 *            disable decoration around test (Time-stamp, source package,
+	 *            thread number etc..)
 	 */
 	public OrganisedLog(String logDir, String strTestName, boolean disableLogDecoration) {
 
@@ -52,7 +60,7 @@ public class OrganisedLog {
 	}
 
 	/**
-	 * Generate summary report
+	 * Append test summary to summary report
 	 * 
 	 * @param status
 	 *            Test Status
@@ -69,7 +77,7 @@ public class OrganisedLog {
 	 * @param ktfCount
 	 *            Known to Fail Test Count
 	 */
-	public void appendSummaryReport(Status status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
+	public void appendSummaryReport(TestStatus status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
 			long ktfCount) {
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
@@ -84,58 +92,65 @@ public class OrganisedLog {
 	}
 
 	/**
-	 *@return 
-	 * @return 
+	 * Dynamically Generates and applies Log4J configuration XML as per test suit requirement
+	 * 
+	 * {@code
+		LoggerContext loggerContext = dynamicallyConfigureLog4J("./reporting/A123456/com.arpitos.test", test + "_" + System.currentTimeMillis(), true);
+	 * }
 	 * @formatter:off
 	 * <PRE>
-	 * 
-	 * <?xml version="1.0" encoding="UTF-8"?>
-	 * <Configuration status="WARN">
-	 * 	<Properties>
-	 * 		<Property name="log-path">./reporting/logs</Property>
-	 * 	</Properties>
-	 * 
-	 * 	<Appenders>
-	 * 		<Console name="console-log" target="SYSTEM_OUT">
-	 * 			<PatternLayout pattern="[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable" />
-	 * 		</Console>
-	 * 
-	 * 		<RollingFile name="all-log" fileName="${log-path}/arpitos-all.log" filePattern="${log-path}/arpitos-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
-	 * 			<PatternLayout>
-	 * 				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
-	 * 			</PatternLayout>
-	 * 			<Policies>
-	 * 				<SizeBasedTriggeringPolicy size="200MB" />
-	 * 			</Policies>
-	 * 		</RollingFile>
-	 * 
-	 * 		<RollingFile name="error-log" fileName="${log-path}/arpitos-error.log" filePattern="${log-path}/arpitos-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
-	 * 			<PatternLayout>
-	 * 				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
-	 * 			</PatternLayout>
-	 * 			<Policies>
-	 * 				<SizeBasedTriggeringPolicy size="200MB" />
-	 * 			</Policies>
-	 * 		</RollingFile>
-	 * 	</Appenders>
-	 * 
-	 * 	<Loggers>
-	 * 		<Logger name="TestLog" level="debug" additivity="false">
-	 * 			<appender-ref ref="console-log" level="all" />
-	 * 			<appender-ref ref="all-log" level="all" />
-	 * 			<appender-ref ref="error-log" level="error" />
-	 * 		</Logger>
-	 * 	 	<Logger name="Summary" level="debug" additivity="false">
-	 * 			<appender-ref ref="summary-log" level="all" />
-	 * 		</Logger>
-	 * 		<Root level="all" additivity="false">
-	 * 			<AppenderRef ref="console-log" />
-	 * 		</Root>
-	 * 	</Loggers>
-	 * </Configuration>
-	 * 
+	 * {@code
+		 <?xml version="1.0" encoding="UTF-8"?>
+		  <Configuration status="WARN">
+		  	<Properties>
+		  		<Property name="log-path">./reporting/logs</Property>
+		  	</Properties>
+		  
+		  	<Appenders>
+		  		<Console name="console-log" target="SYSTEM_OUT">
+		  			<PatternLayout pattern="[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable" />
+		  		</Console>
+		  
+		  		<RollingFile name="all-log" fileName="${log-path}/arpitos-all.log" filePattern="${log-path}/arpitos-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
+		  			<PatternLayout>
+		  				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
+		  			</PatternLayout>
+		  			<Policies>
+		  				<SizeBasedTriggeringPolicy size="200MB" />
+		  			</Policies>
+		  		</RollingFile>
+		  
+		  		<RollingFile name="error-log" fileName="${log-path}/arpitos-error.log" filePattern="${log-path}/arpitos-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
+		  			<PatternLayout>
+		  				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
+		  			</PatternLayout>
+		  			<Policies>
+		  				<SizeBasedTriggeringPolicy size="200MB" />
+		  			</Policies>
+		  		</RollingFile>
+		  	</Appenders>
+		  
+		  	<Loggers>
+		  		<Logger name="TestLog" level="debug" additivity="false">
+		  			<appender-ref ref="console-log" level="all" />
+		  			<appender-ref ref="all-log" level="all" />
+		  			<appender-ref ref="error-log" level="error" />
+		  		</Logger>
+		  	 	<Logger name="Summary" level="debug" additivity="false">
+		  			<appender-ref ref="summary-log" level="all" />
+		  		</Logger>
+		  		<Root level="all" additivity="false">
+		  			<AppenderRef ref="console-log" />
+		  		</Root>
+		  	</Loggers>
+		  </Configuration>
+	 * }
 	 * </PRE>
 	 * @formatter:on
+	 * @param fileroot log file root
+	 * @param fileName log file name
+	 * @param disableLogDecoration true/false Disables decoration for the logs
+	 * @return
 	 */
 	public static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean disableLogDecoration) {
 
@@ -153,7 +168,8 @@ public class OrganisedLog {
 			layoutBuilder1.addAttribute("pattern", "%msg%n%throwable");
 		} else {
 			/*
-			 * @formatter:off
+		-	 * @formatter:off
+			 *
 			 * [%-5level] = Log level upto 5 char max
 			 * [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
 			 * [%t] = Thread number
@@ -163,6 +179,7 @@ public class OrganisedLog {
 			 * %msg = Actual msg to be logged 
 			 * %n = new line
 			 * %throwable = log exception
+			 * 
 			 * @formatter:on
 			 */
 			layoutBuilder1.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");

@@ -11,7 +11,9 @@ import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
 
 /**
- * This class is responsible in running test cases in provided sequence
+ * This class is responsible for running test cases. It initializing logger and
+ * context with provided information. It is also responsible for running test
+ * cases in given sequence (including pre/post methods)
  * 
  * @author ArpitS
  *
@@ -22,17 +24,19 @@ public class MAIN {
 	 * This method executes test cases
 	 * 
 	 * @param prePostCycle
-	 *            = The object which has implementation of pre or post
-	 *            processing for each test suit or test cases
+	 *            The class object which implements {@link PrePostRunnable}
 	 * @param tests
-	 *            = List of test cases in sequence which user would like to run
-	 * @param testPackageName
-	 *            = entire package name which user would like to report
+	 *            List of test cases which implements {@link TestExecutable}
+	 * @param cls
+	 *            TestSuit Main class (Used for getting package name to
+	 *            construct log directory structure)
 	 * @param serialNumber
-	 *            = Product serial number or unique reference
+	 *            Product serialNumber or unique identifier
 	 * @param loopCycle
-	 *            = number of time test suit require running
+	 *            Test Suit look time (Repeat count)
 	 * @throws Exception
+	 *             If test case exception is not handled then test execution
+	 *             stops at this point
 	 */
 	public static void run(PrePostRunnable prePostCycle, List<TestExecutable> tests, Class<?> cls, String serialNumber, int loopCycle)
 			throws Exception {
@@ -43,7 +47,7 @@ public class MAIN {
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, cls.getPackage().getName(), true);
 		TestContext context = new TestContext(organisedLogger);
 		Logger logger = context.getLogger();
-		
+
 		long startTime = System.currentTimeMillis();
 
 		// ********************************************************************************************
