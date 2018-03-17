@@ -284,7 +284,7 @@ public class SSH {
 			}
 		}
 		context.getLogger().info("*************************************************");
-		context.getLogger().info("Timed out before Pattern match could not be found");
+//		context.getLogger().info("Timed out before Pattern match could be found");
 		context.getLogger().info("*************************************************");
 		return sb.toString();
 	}

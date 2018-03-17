@@ -8,6 +8,57 @@ import com.arpitos.infra.TestContext;
 public class Utils {
 
 	/**
+	 * Escape string to convert it to HTML
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public String escape(String s) {
+		StringBuilder builder = new StringBuilder();
+		boolean previousWasASpace = false;
+		for (char c : s.toCharArray()) {
+			if (c == ' ') {
+				if (previousWasASpace) {
+					builder.append("&nbsp;");
+					previousWasASpace = false;
+					continue;
+				}
+				previousWasASpace = true;
+			} else {
+				previousWasASpace = false;
+			}
+			switch (c) {
+			case '<':
+				builder.append("&lt;");
+				break;
+			case '>':
+				builder.append("&gt;");
+				break;
+			case '&':
+				builder.append("&amp;");
+				break;
+			case '"':
+				builder.append("&quot;");
+				break;
+			case '\n':
+				builder.append("<br>");
+				break;
+			// We need Tab support here, because we print StackTraces as HTML
+			case '\t':
+				builder.append("&nbsp; &nbsp; &nbsp;");
+				break;
+			default:
+				if (c < 128) {
+					builder.append(c);
+				} else {
+					builder.append("&#").append((int) c).append(";");
+				}
+			}
+		}
+		return builder.toString();
+	}
+
+	/**
 	 * This function is used to compare string format $ sign is used to ignore
 	 * chars during format comparison
 	 * 
@@ -78,14 +129,4 @@ public class Utils {
 		context.getLogger().error(sw.toString());
 	}
 
-	/**
-	 * Performs Cleanup after test is completed
-	 * 
-	 * @param context
-	 */
-	public static void testCleanUp(TestContext context) {
-		// TODO Auto-generated method stub
-	}
-	
-	
 }

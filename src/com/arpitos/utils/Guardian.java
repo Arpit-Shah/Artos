@@ -6,435 +6,770 @@ import com.arpitos.infra.TestContext;
 
 public class Guardian {
 
-	static String strEqual_pass = " is as expected, expected to be same as Ref Data";
-	static String strNotEqual_pass = " is as expected, expected to be different from Ref Data";
-	static String strGreater_pass = " is as expected, expected value to be Greater than Ref Data";
-	static String strLess_pass = " is as expected, expected value to be Less than Ref Data";
-	static String strGreaterOrEqual_pass = " is as expected, expected value to be Greater or Equal to Ref Data";
-	static String strLessOrEqual_pass = " is as expected, expected value to be Less or Equal to Ref Data";
-	static String strFormatEqual_pass = " is as expected, exected format to match with ref format";
-	static String strFormatNotEqual_pass = " is as expected, exected format not to match with ref format";
+	static Convert _con = new Convert();
 
-	static String strEqual_fail = " is not as expected, expected to be same as Ref Data";
-	static String strNotEqual_fail = " is not as expected, expected to be different from Ref Data";
-	static String strGreater_fail = " is not as expected, expected value to be Greater than Ref Data";
-	static String strLess_fail = " is not as expected, expected value to be Less than Ref Data";
-	static String strGreaterOrEqual_fail = " is not as expected, expected value to be Greater or Equal to Ref Data";
-	static String strLessOrEqual_fail = " is not as expected, expected value to be Less or Equal to Ref Data";
-	static String strFormatEqual_fail = " is not as expected, exected format to match with ref format";
-	static String strFormatNotEqual_fail = " is not as expected, exected format not to match with ref format";
+	static String strEqual_fail = " values are not equal";
+	static String strNotEqual_fail = " values are equal";
+	static String strGreater_fail = " actual value is not greater than expected value";
+	static String strLess_fail = " actual value is not less than expected value";
+	static String strGreaterOrEqual_fail = " actual value is less than expected value";
+	static String strLessOrEqual_fail = " actual value is greater than expected value";
+	static String strFormatEqual_fail = " format are not same";
+	static String strFormatNotEqual_fail = " format are same";
 
-	public enum GuardCheckFor {
-		EQUAL_TO, NOT_EQUAL_TO, GREATER_OR_EQUAL_TO, LESS_OR_EQUAL_TO, GREATER_THAN, LESS_THAN
-	};
+	static void print(String reference, String actual) {
+		TestContext.getTestContext().getLogger().info("Finding:");
+		TestContext.getTestContext().getLogger().info("Reference : " + reference);
+		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+	}
 
+	static void print(byte reference, byte actual) {
+		TestContext.getTestContext().getLogger().info("Finding:");
+		TestContext.getTestContext().getLogger().info("Reference : " + _con.bytesToStringHex(reference, true));
+		TestContext.getTestContext().getLogger().info("   Actual : " + _con.bytesToStringHex(actual, true));
+	}
+
+	static void print(byte[] reference, byte[] actual) {
+		TestContext.getTestContext().getLogger().info("Finding:");
+		TestContext.getTestContext().getLogger().info("Reference : " + _con.bytesToStringHex(reference, true));
+		TestContext.getTestContext().getLogger().info("   Actual : " + _con.bytesToStringHex(actual, true));
+	}
+
+	static void print(int reference, int actual) {
+		TestContext.getTestContext().getLogger().info("Finding:");
+		TestContext.getTestContext().getLogger().info("Reference : " + reference);
+		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+	}
+
+	static void print(boolean reference, boolean actual) {
+		TestContext.getTestContext().getLogger().info("Finding:");
+		TestContext.getTestContext().getLogger().info("Reference : " + reference);
+		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+	}
+	
+	static void print(long reference, long actual) {
+		TestContext.getTestContext().getLogger().info("Finding:");
+		TestContext.getTestContext().getLogger().info("Reference : " + reference);
+		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+	}
+
+	// *******************************************************************************************
+	// String
+	// *******************************************************************************************
 	/**
-	 * Compares two string values as per requirement.
+	 * Validates String values are equal
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * xValue = "Test";
-	 * Sample : Guard(context, GuardCheckFor.EQUAL_TO, "Height of the table", "Test", xValue);
-	 * Result : true
+	 * Example: isEqual("01.02.0001", "01.02.0001");
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
+	 * @param reference
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isEquals(String reference, String actual) {
+		if (actual.equals(reference)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates String values are equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", "01.02.0001", "01.02.0001");
+	 * </PRE>
+	 * 
 	 * @param desc
-	 *            = pass or failure msg
-	 * @param refData
-	 *            = data which is used as reference during comparison, left side
-	 *            of equation
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
 	 * @throws Exception
 	 */
-	public static void guard(TestContext context, GuardCheckFor check, String desc, String refData, String targetData) throws Exception {
-		context.getLogger().info("\nFinding:");
-		context.getLogger().info("Ref : " + refData);
-		context.getLogger().info("Res : " + targetData);
-
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (!refData.equals(targetData)) {
-				context.getLogger().info(desc + strEqual_fail);
-				throw new Exception(desc + strEqual_fail);
-			}
-			context.getLogger().info(desc + strEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (refData.equals(targetData)) {
-				context.getLogger().info(desc + strNotEqual_fail);
-				throw new Exception(desc + strNotEqual_fail);
-			}
-			context.getLogger().info(desc + strNotEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	public static void guardEquals(String desc, String reference, String actual) throws Exception {
+		print(reference, actual);
+		if (!isEquals(reference, actual)) {
+			throw new Exception(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates string format as per requirement. *
+	 * Validates String values are not equal
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * xValue = "24.25.2266";
-	 * Sample : Guard_Format_Compare(context, GuardCheckFor.EQUAL_TO, "Version of the firmware", "$$.$$.$$$$", xValue);
-	 * Result : true
+	 * Example: guardE("Version of the firmware", "99.99.9999", "01.02.0001");
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
 	 * @param desc
-	 *            = pass or failure msg
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardNotEquals(String desc, String reference, String actual) throws Exception {
+		print(reference, actual);
+		if (isEquals(reference, actual)) {
+			throw new Exception(desc + strNotEqual_fail);
+		}
+	}
+
+	// *******************************************************************************************
+	// Boolean
+	// *******************************************************************************************
+	/**
+	 * Validates Boolean values are equal
+	 * 
+	 * <PRE>
+	 * Example: isEqual(true, true);
+	 * </PRE>
+	 * 
+	 * @param reference
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isEquals(boolean reference, boolean actual) {
+		if (reference == actual) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates Boolean values are equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", true, true);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardEquals(String desc, boolean reference, boolean actual) throws Exception {
+		print(reference, actual);
+		if (!isEquals(reference, actual)) {
+			throw new Exception(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Boolean values are not equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", true, true);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardNotEquals(String desc, boolean reference, boolean actual) throws Exception {
+		print(reference, actual);
+		if (isEquals(reference, actual)) {
+			throw new Exception(desc + strNotEqual_fail);
+		}
+	}
+
+	// *******************************************************************************************
+	// Format
+	// *******************************************************************************************
+
+	/**
+	 * Validates String follows reference format
+	 * 
+	 * <PRE>
+	 * Example: isFormatEqual("$$.$$.$$$$", "01.02.0001");
+	 * </PRE>
+	 * 
 	 * @param format
-	 *            = expected format "$$.$$.$$$$"
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isFormatEquals(String format, String actual) {
+		if (Utils.compareStringFormat(format, actual)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates String follows reference format
+	 * 
+	 * <PRE>
+	 * Example: guardFormatE("Version of the firmware", "$$.$$.$$$$", "01.02.0001");
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param format
+	 *            expected format "$$.$$.$$$$"
+	 * @param actual
+	 *            data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void guard_Format_Compare(TestContext context, GuardCheckFor check, String desc, String format, String targetData)
-			throws Exception {
-		context.getLogger().info("\nFinding");
-		context.getLogger().info("Ref : " + format);
-		context.getLogger().info("Res : " + targetData);
-
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (!Utils.compareStringFormat(targetData, format)) {
-				context.getLogger().info(desc + strFormatEqual_fail);
-				throw new Exception(desc + strFormatEqual_fail);
-			}
-			context.getLogger().info(desc + strFormatEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (Utils.compareStringFormat(targetData, format)) {
-				context.getLogger().info(desc + strFormatNotEqual_fail);
-				throw new Exception(desc + strFormatNotEqual_fail);
-			}
-			context.getLogger().info(desc + strFormatNotEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	public static void guardFormatEquals(String desc, String format, String actual) throws Exception {
+		print(format, actual);
+		if (!isFormatEquals(format, actual)) {
+			throw new Exception(desc + strFormatEqual_fail);
 		}
 	}
 
 	/**
-	 * Compares two byte arrays as per requirement.
+	 * Validates String is different than reference format
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * byte[] targetData = new byte(){0x01, 0x02, 0x03};
-	 * byte[] refData = new byte(){0x01, 0x02, 0x03};
-	 * Sample : Guard(context, GuardCheckFor.EQUAL_TO, "Version of the firmware", refData, targetData);
-	 * Result : true
+	 * Example: guardFormatNE("Version of the firmware", "$$.$$.$$$$", "01.02.0001");
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
 	 * @param desc
-	 *            = pass or failure msg
-	 * @param refData
-	 *            = data which is used as reference during comparison, left side
-	 *            of equation
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 *            pass or failure msg
+	 * @param format
+	 *            expected format "$$.$$.$$$$"
+	 * @param actual
+	 *            data which is being validated, right side of equation
 	 * @throws Exception
 	 */
-	public static void guard(TestContext context, GuardCheckFor check, String desc, byte[] refData, byte[] targetData) throws Exception {
-		Convert _con = new Convert();
-		context.getLogger().info("\nFinding");
-		context.getLogger().info("Ref : " + _con.bytesToStringHex(refData, true));
-		context.getLogger().info("Res : " + _con.bytesToStringHex(targetData, true));
+	public static void guardFormatNotEquals(String desc, String format, String actual) throws Exception {
+		print(format, actual);
+		if (isFormatEquals(format, actual)) {
+			throw new Exception(desc + strFormatNotEqual_fail);
+		}
+	}
 
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (!Arrays.equals(refData, targetData)) {
-				context.getLogger().info(desc + strEqual_fail);
-				throw new Exception(desc + strEqual_fail);
-			}
-			context.getLogger().info(desc + strEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (Arrays.equals(refData, targetData)) {
-				context.getLogger().info(desc + strNotEqual_fail);
-				throw new Exception(desc + strNotEqual_fail);
-			}
-			context.getLogger().info(desc + strNotEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	// *******************************************************************************************
+	// Byte
+	// *******************************************************************************************
+	/**
+	 * Validates Byte values are equal
+	 * 
+	 * <PRE>
+	 * Example: isEqual((byte) 0x01, (byte) 0x01);
+	 * </PRE>
+	 * 
+	 * @param reference
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isEquals(byte reference, byte actual) {
+		if (reference == actual) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates Byte values are equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", (byte) 0x01, (byte) 0x01);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardEquals(String desc, byte reference, byte actual) throws Exception {
+		print(reference, actual);
+		if (!isEquals(reference, actual)) {
+			throw new Exception(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Compares two byte values as per requirement.
+	 * Validates Byte values are not equal
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * byte targetData = (byte)0x01;
-	 * byte refData = (byte)0x01;
-	 * Sample : Guard(context, GuardCheckFor.EQUAL_TO, "Version of the firmware", refData, targetData);
-	 * Result : true
+	 * Example: guardE("Version of the firmware", (byte) 0x01, (byte) 0x01);
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
 	 * @param desc
-	 *            = pass or failure msg
-	 * @param refData
-	 *            = data which is used as reference during comparison, left side
-	 *            of equation
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
 	 * @throws Exception
 	 */
-	public static void guard(TestContext context, GuardCheckFor check, String desc, byte refData, byte targetData) throws Exception {
-		context.getLogger().info("\nFinding");
-		context.getLogger().info("Ref : " + refData);
-		context.getLogger().info("Res : " + targetData);
-
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (refData != targetData) {
-				context.getLogger().info(desc + strEqual_fail);
-				throw new Exception(desc + strEqual_fail);
-			}
-			context.getLogger().info(desc + strEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (refData == targetData) {
-				context.getLogger().info(desc + strNotEqual_fail);
-				throw new Exception(desc + strNotEqual_fail);
-			}
-			context.getLogger().info(desc + strNotEqual_pass);
-		} else if (check == GuardCheckFor.GREATER_THAN) {
-			if (refData <= targetData) {
-				context.getLogger().info(desc + strGreater_fail);
-				throw new Exception(desc + strGreater_fail);
-			}
-			context.getLogger().info(desc + strGreater_pass);
-		} else if (check == GuardCheckFor.LESS_THAN) {
-			if (refData >= targetData) {
-				context.getLogger().info(desc + strLess_fail);
-				throw new Exception(desc + strLess_fail);
-			}
-			context.getLogger().info(desc + strLess_pass);
-		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
-			if (refData < targetData) {
-				context.getLogger().info(desc + strGreaterOrEqual_fail);
-				throw new Exception(desc + strGreaterOrEqual_fail);
-			}
-			context.getLogger().info(desc + strGreaterOrEqual_pass);
-		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
-			if (refData > targetData) {
-				context.getLogger().info(desc + strLessOrEqual_fail);
-				throw new Exception(desc + strLessOrEqual_fail);
-			}
-			context.getLogger().info(desc + strLessOrEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	public static void guardNotEquals(String desc, byte reference, byte actual) throws Exception {
+		print(reference, actual);
+		if (isEquals(reference, actual)) {
+			throw new Exception(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
-	 * Compares two short values as per requirement.
+	 * Validates Actual Byte Value is greater than Reference Value
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * short targetData = 0x01;
-	 * short refData = 0x01;
-	 * Sample : Guard(context, GuardCheckFor.EQUAL_TO, "Version of the firmware", refData, targetData);
-	 * Result : true
+	 * Example: guardG("Version of the firmware", (byte) 0x01, (byte) 0x03);
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
 	 * @param desc
-	 *            = pass or failure msg
-	 * @param refData
-	 *            = data which is used as reference during comparison, left side
-	 *            of equation
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
 	 * @throws Exception
 	 */
-	public static void guard(TestContext context, GuardCheckFor check, String desc, short refData, short targetData) throws Exception {
-		context.getLogger().info("\nFinding");
-		context.getLogger().info("Ref : " + refData);
-		context.getLogger().info("Res : " + targetData);
-
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (refData != targetData) {
-				context.getLogger().info(desc + strEqual_fail);
-				throw new Exception(desc + strEqual_fail);
-			}
-			context.getLogger().info(desc + strEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (refData == targetData) {
-				context.getLogger().info(desc + strNotEqual_fail);
-				throw new Exception(desc + strNotEqual_fail);
-			}
-			context.getLogger().info(desc + strNotEqual_pass);
-		} else if (check == GuardCheckFor.GREATER_THAN) {
-			if (refData <= targetData) {
-				context.getLogger().info(desc + strGreater_fail);
-				throw new Exception(desc + strGreater_fail);
-			}
-			context.getLogger().info(desc + strGreater_pass);
-		} else if (check == GuardCheckFor.LESS_THAN) {
-			if (refData >= targetData) {
-				context.getLogger().info(desc + strLess_fail);
-				throw new Exception(desc + strLess_fail);
-			}
-			context.getLogger().info(desc + strLess_pass);
-		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
-			if (refData < targetData) {
-				context.getLogger().info(desc + strGreaterOrEqual_fail);
-				throw new Exception(desc + strGreaterOrEqual_fail);
-			}
-			context.getLogger().info(desc + strGreaterOrEqual_pass);
-		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
-			if (refData > targetData) {
-				context.getLogger().info(desc + strLessOrEqual_fail);
-				throw new Exception(desc + strLessOrEqual_fail);
-			}
-			context.getLogger().info(desc + strLessOrEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	public static void guardGreaterThan(String desc, byte reference, byte actual) throws Exception {
+		print(reference, actual);
+		if (reference <= actual) {
+			throw new Exception(desc + strGreater_fail);
 		}
 	}
 
 	/**
-	 * Compares two long values as per requirement.
+	 * Validates Actual Byte Value is greater or Equal to Reference Value
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * long targetData = 123456789l;
-	 * long refData = 123456789l;
-	 * Sample : Guard(context, GuardCheckFor.EQUAL_TO, "Version of the firmware", refData, targetData);
-	 * Result : true
+	 * Example: guardGE("Version of the firmware", (byte) 0x01, (byte) 0x03);
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
 	 * @param desc
-	 *            = pass or failure msg
-	 * @param refData
-	 *            = data which is used as reference during comparison, left side
-	 *            of equation
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
 	 * @throws Exception
 	 */
-	public static void guard(TestContext context, GuardCheckFor check, String desc, long refData, long targetData) throws Exception {
-		context.getLogger().info("\nFinding");
-		context.getLogger().info("Ref : " + refData);
-		context.getLogger().info("Res : " + targetData);
-
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (refData != targetData) {
-				context.getLogger().info(desc + strEqual_fail);
-				throw new Exception(desc + strEqual_fail);
-			}
-			context.getLogger().info(desc + strEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (refData == targetData) {
-				context.getLogger().info(desc + strNotEqual_fail);
-				throw new Exception(desc + strNotEqual_fail);
-			}
-			context.getLogger().info(desc + strNotEqual_pass);
-		} else if (check == GuardCheckFor.GREATER_THAN) {
-			if (refData <= targetData) {
-				context.getLogger().info(desc + strGreater_fail);
-				throw new Exception(desc + strGreater_fail);
-			}
-			context.getLogger().info(desc + strGreater_pass);
-		} else if (check == GuardCheckFor.LESS_THAN) {
-			if (refData >= targetData) {
-				context.getLogger().info(desc + strLess_fail);
-				throw new Exception(desc + strLess_fail);
-			}
-			context.getLogger().info(desc + strLess_pass);
-		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
-			if (refData < targetData) {
-				context.getLogger().info(desc + strGreaterOrEqual_fail);
-				throw new Exception(desc + strGreaterOrEqual_fail);
-			}
-			context.getLogger().info(desc + strGreaterOrEqual_pass);
-		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
-			if (refData > targetData) {
-				context.getLogger().info(desc + strLessOrEqual_fail);
-				throw new Exception(desc + strLessOrEqual_fail);
-			}
-			context.getLogger().info(desc + strLessOrEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	public static void guardGreaterOrEqualsTo(String desc, byte reference, byte actual) throws Exception {
+		print(reference, actual);
+		if (reference < actual) {
+			throw new Exception(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
-	 * Compares two integer values as per requirement. *
+	 * Validates Actual Byte Value is less than Reference Value
 	 * 
 	 * <PRE>
-	 * Example: 
-	 * int targetData = 222;
-	 * int refData = 222;
-	 * Sample : Guard(context, GuardCheckFor.EQUAL_TO, "Version of the firmware", refData, targetData);
-	 * Result : true
+	 * Example: guardL("Version of the firmware", (byte) 0x01, (byte) 0x03);
 	 * </PRE>
 	 * 
-	 * @param context
-	 * @param check
-	 *            = type of comparison
 	 * @param desc
-	 *            = pass or failure msg
-	 * @param refData
-	 *            = data which is used as reference during comparison, left side
-	 *            of equation
-	 * @param targetData
-	 *            = data which is being validated, right side of equation
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
 	 * @throws Exception
 	 */
-	public static void guard(TestContext context, GuardCheckFor check, String desc, int refData, int targetData) throws Exception {
-		context.getLogger().info("\nFinding");
-		context.getLogger().info("Ref : " + refData);
-		context.getLogger().info("Res : " + targetData);
+	public static void guardLessThan(String desc, byte reference, byte actual) throws Exception {
+		print(reference, actual);
+		if (reference >= actual) {
+			throw new Exception(desc + strLess_fail);
+		}
+	}
 
-		if (check == GuardCheckFor.EQUAL_TO) {
-			if (refData != targetData) {
-				context.getLogger().info(desc + strEqual_fail);
-				throw new Exception(desc + strEqual_fail);
-			}
-			context.getLogger().info(desc + strEqual_pass);
-		} else if (check == GuardCheckFor.NOT_EQUAL_TO) {
-			if (refData == targetData) {
-				context.getLogger().info(desc + strNotEqual_fail);
-				throw new Exception(desc + strNotEqual_fail);
-			}
-			context.getLogger().info(desc + strNotEqual_pass);
-		} else if (check == GuardCheckFor.GREATER_THAN) {
-			if (refData <= targetData) {
-				context.getLogger().info(desc + strGreater_fail);
-				throw new Exception(desc + strGreater_fail);
-			}
-			context.getLogger().info(desc + strGreater_pass);
-		} else if (check == GuardCheckFor.LESS_THAN) {
-			if (refData >= targetData) {
-				context.getLogger().info(desc + strLess_fail);
-				throw new Exception(desc + strLess_fail);
-			}
-			context.getLogger().info(desc + strLess_pass);
-		} else if (check == GuardCheckFor.GREATER_OR_EQUAL_TO) {
-			if (refData < targetData) {
-				context.getLogger().info(desc + strGreaterOrEqual_fail);
-				throw new Exception(desc + strGreaterOrEqual_fail);
-			}
-			context.getLogger().info(desc + strGreaterOrEqual_pass);
-		} else if (check == GuardCheckFor.LESS_OR_EQUAL_TO) {
-			if (refData > targetData) {
-				context.getLogger().info(desc + strLessOrEqual_fail);
-				throw new Exception(desc + strLessOrEqual_fail);
-			}
-			context.getLogger().info(desc + strLessOrEqual_pass);
-		} else {
-			throw new Exception("Invalid comparision");
+	/**
+	 * Validates Actual Byte Value is less or equal to Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardLE("Version of the firmware", (byte) 0x01, (byte) 0x03);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardLessOrEqualsTo(String desc, byte reference, byte actual) throws Exception {
+		print(reference, actual);
+		if (reference > actual) {
+			throw new Exception(desc + strLessOrEqual_fail);
+		}
+	}
+
+	// *******************************************************************************************
+	// Byte Array
+	// *******************************************************************************************
+	/**
+	 * Validates Byte Arrays are equal
+	 * 
+	 * <PRE>
+	 * Example: isEqual(new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * </PRE>
+	 * 
+	 * @param reference
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isEquals(byte[] reference, byte[] actual) {
+		if (Arrays.equals(reference, actual)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates Byte Arrays are equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardEquals(String desc, byte[] reference, byte[] actual) throws Exception {
+		print(reference, actual);
+		if (!isEquals(reference, actual)) {
+			throw new Exception(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Byte Arrays are not equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardNotEquals(String desc, byte[] reference, byte[] actual) throws Exception {
+		print(reference, actual);
+		if (isEquals(reference, actual)) {
+			throw new Exception(desc + strNotEqual_fail);
+		}
+	}
+
+	// *******************************************************************************************
+	// Integer
+	// *******************************************************************************************
+	/**
+	 * Validates int values are equal
+	 * 
+	 * <PRE>
+	 * Example: isEqual(1, 2);
+	 * </PRE>
+	 * 
+	 * @param reference
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isEquals(int reference, int actual) {
+		if (reference == actual) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates int values are equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardEquals(String desc, int reference, int actual) throws Exception {
+		print(reference, actual);
+		if (!isEquals(reference, actual)) {
+			throw new Exception(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates int values are not equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardNotEquals(String desc, int reference, int actual) throws Exception {
+		print(reference, actual);
+		if (isEquals(reference, actual)) {
+			throw new Exception(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual int Value is greater than Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardG("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardGreaterThan(String desc, int reference, int actual) throws Exception {
+		print(reference, actual);
+		if (reference <= actual) {
+			throw new Exception(desc + strGreater_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual int Value is greater or Equal to Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardGE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardGreaterOrEqualsTo(String desc, int reference, int actual) throws Exception {
+		print(reference, actual);
+		if (reference < actual) {
+			throw new Exception(desc + strGreaterOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual int Value is less than Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardL("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardLessThan(String desc, int reference, int actual) throws Exception {
+		print(reference, actual);
+		if (reference >= actual) {
+			throw new Exception(desc + strLess_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual int Value is less or equal to Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardLE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardLessOrEqualsTo(String desc, int reference, int actual) throws Exception {
+		print(reference, actual);
+		if (reference > actual) {
+			throw new Exception(desc + strLessOrEqual_fail);
+		}
+	}
+
+	// *******************************************************************************************
+	// Long
+	// *******************************************************************************************
+	/**
+	 * Validates Long values are equal
+	 * 
+	 * <PRE>
+	 * Example: isEqual(1, 2);
+	 * </PRE>
+	 * 
+	 * @param reference
+	 * @param actual
+	 * @return true | false
+	 */
+	public static boolean isEquals(long reference, long actual) {
+		if (reference == actual) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates Long values are equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardEquals(String desc, long reference, long actual) throws Exception {
+		print(reference, actual);
+		if (!isEquals(reference, actual)) {
+			throw new Exception(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Long values are not equal
+	 * 
+	 * <PRE>
+	 * Example: guardE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardNotEquals(String desc, long reference, long actual) throws Exception {
+		print(reference, actual);
+		if (isEquals(reference, actual)) {
+			throw new Exception(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual Long Value is greater than Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardG("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardGreaterThan(String desc, long reference, long actual) throws Exception {
+		print(reference, actual);
+		if (reference <= actual) {
+			throw new Exception(desc + strGreater_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual Long Value is greater or Equal to Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardGE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardGreaterOrEquals(String desc, long reference, long actual) throws Exception {
+		print(reference, actual);
+		if (reference < actual) {
+			throw new Exception(desc + strGreaterOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual Long Value is less than Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardL("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardLessThan(String desc, long reference, long actual) throws Exception {
+		print(reference, actual);
+		if (reference >= actual) {
+			throw new Exception(desc + strLess_fail);
+		}
+	}
+
+	/**
+	 * Validates Actual Long Value is less or equal to Reference Value
+	 * 
+	 * <PRE>
+	 * Example: guardLE("Version of the firmware", 1, 2);
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            pass or failure msg
+	 * @param reference
+	 *            expected String value
+	 * @param actual
+	 *            actual value to be compared
+	 * @throws Exception
+	 */
+	public static void guardLessOrEqualsTo(String desc, long reference, long actual) throws Exception {
+		print(reference, actual);
+		if (reference > actual) {
+			throw new Exception(desc + strLessOrEqual_fail);
 		}
 	}
 }

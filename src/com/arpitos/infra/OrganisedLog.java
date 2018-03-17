@@ -58,7 +58,7 @@ public class OrganisedLog {
 	 *            Test Status
 	 * @param strTestName
 	 *            TestName
-	 * @param JIRARef
+	 * @param bugTrackingNumber
 	 *            JIRA-BugTracking Number
 	 * @param passCount
 	 *            Passed Test Count
@@ -69,12 +69,12 @@ public class OrganisedLog {
 	 * @param ktfCount
 	 *            Known to Fail Test Count
 	 */
-	public void appendSummaryReport(Status status, String strTestName, String JIRARef, long passCount, long failCount, long skipCount,
+	public void appendSummaryReport(Status status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
 			long ktfCount) {
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
-		String testName = String.format("%-" + 60 + "s", strTestName).replace(" ", ".");
-		String JiraRef = String.format("%-" + 10 + "s", JIRARef);
+		String testName = String.format("%-" + 100 + "s", strTestName).replace(" ", ".");
+		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
 		String PassCount = String.format("%-" + 10 + "s", passCount);
 		String FailCount = String.format("%-" + 10 + "s", failCount);
 		String SkipCount = String.format("%-" + 10 + "s", skipCount);
@@ -225,7 +225,7 @@ public class OrganisedLog {
 		LoggerComponentBuilder loggerBuilder2 = builder.newLogger("Summary", Level.DEBUG);
 		loggerBuilder2.addAttribute("additivity", false);
 		AppenderRefComponentBuilder appendRef11 = builder.newAppenderRef("summary-log");
-		appendRef1.addAttribute("level", Level.ALL);
+		appendRef11.addAttribute("level", Level.ALL);
 		loggerBuilder2.add(appendRef11);
 
 		builder.add(loggerBuilder2);

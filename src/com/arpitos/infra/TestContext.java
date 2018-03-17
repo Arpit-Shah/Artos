@@ -8,6 +8,7 @@ import org.apache.logging.log4j.core.Logger;
 public class TestContext {
 
 	private OrganisedLog organiseLogger;
+	private OrganisationInfo organisationInfo;
 	private Status currentTestStatus = Status.PASS;
 	private boolean KnownToFail = false;
 	private String strJIRARef = "";
@@ -17,9 +18,31 @@ public class TestContext {
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
+	public static TestContext context;
 
 	public TestContext(OrganisedLog organisedLog) {
+		this.organisationInfo = new OrganisationInfo();
 		this.organiseLogger = organisedLog;
+		printOrganisationInfo();
+		setTestContext(this);
+	}
+
+	private void printOrganisationInfo() {
+		getOrganiseLogger().getGeneralLogger().info("************************************ Header Start ******************************************");
+		getOrganiseLogger().getGeneralLogger().info("Organisation_Name : " + getOrganisationInfo().getOrganisation_Name());
+		getOrganiseLogger().getGeneralLogger().info("Organisation_Country : " + getOrganisationInfo().getOrganisation_Country());
+		getOrganiseLogger().getGeneralLogger().info("Organisation_Address : " + getOrganisationInfo().getOrganisation_Address());
+		getOrganiseLogger().getGeneralLogger().info("Organisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number());
+		getOrganiseLogger().getGeneralLogger().info("Organisation_Website : " + getOrganisationInfo().getOrganisation_Website());
+		getOrganiseLogger().getGeneralLogger().info("************************************ Header End ********************************************");
+
+		getOrganiseLogger().getSummaryLogger().info("************************************ Header Start ******************************************");
+		getOrganiseLogger().getSummaryLogger().info("Organisation_Name : " + getOrganisationInfo().getOrganisation_Name());
+		getOrganiseLogger().getSummaryLogger().info("Organisation_Country : " + getOrganisationInfo().getOrganisation_Country());
+		getOrganiseLogger().getSummaryLogger().info("Organisation_Address : " + getOrganisationInfo().getOrganisation_Address());
+		getOrganiseLogger().getSummaryLogger().info("Organisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number());
+		getOrganiseLogger().getSummaryLogger().info("Organisation_Website : " + getOrganisationInfo().getOrganisation_Website());
+		getOrganiseLogger().getSummaryLogger().info("************************************ Header End ********************************************");
 	}
 
 	/**
@@ -226,6 +249,22 @@ public class TestContext {
 
 	public void setOrganiseLogger(OrganisedLog organiseLogger) {
 		this.organiseLogger = organiseLogger;
+	}
+
+	public static TestContext getTestContext() {
+		return context;
+	}
+
+	public static void setTestContext(TestContext currentTestContext) {
+		TestContext.context = currentTestContext;
+	}
+
+	public OrganisationInfo getOrganisationInfo() {
+		return organisationInfo;
+	}
+
+	public void setOrganisationInfo(OrganisationInfo organisationInfo) {
+		this.organisationInfo = organisationInfo;
 	}
 
 }

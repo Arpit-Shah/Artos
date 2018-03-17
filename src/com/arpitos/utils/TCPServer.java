@@ -10,9 +10,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.arpitos.interfaces.Connector;
+import com.arpitos.interfaces.Connectable;
 
-public class TCPServer implements Connector {
+public class TCPServer implements Connectable {
 
 	int nPort;
 	ServerSocket tcpSocket;

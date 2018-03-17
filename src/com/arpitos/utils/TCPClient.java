@@ -9,9 +9,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.arpitos.interfaces.Connector;
+import com.arpitos.interfaces.Connectable;
 
-public class TCPClient implements Connector {
+public class TCPClient implements Connectable {
 
 	String ip;
 	int nPort;

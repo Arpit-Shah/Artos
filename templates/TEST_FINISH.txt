@@ -1,9 +1,0 @@
-${:import(com.arpit.framework.Finish, com.arpit.infra.TestContext, com.arpit.interfaces.TestExecutor)}
-
-public class FINISH implements TestExecutor {
-
-	public void onExecute(TestContext context) throws Exception {
-		Finish f = new Finish();
-		f.onExecute(context, FINISH.class, "${user}", "${date}", "");
-	}
-}

@@ -1,6 +1,6 @@
 package com.arpitos.interfaces;
 
-public interface Connector {
+public interface Connectable {
 
 	public void connect() throws Exception;
 
