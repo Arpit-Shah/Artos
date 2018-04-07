@@ -5,10 +5,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
+import com.arpitos.infra.ContextConfiguration;
 import com.arpitos.infra.OrganisedLog;
 import com.arpitos.infra.TestContext;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
+
+import sun.java2d.pipe.hw.ContextCapabilities;
 
 /**
  * This class is responsible for running test cases. It initializing logger and
@@ -43,8 +46,13 @@ public class MAIN {
 
 		// -------------------------------------------------------------------//
 		// Prepare Context
-		String logDir = "./reporting/" + serialNumber;
-		OrganisedLog organisedLogger = new OrganisedLog(logDir, cls.getPackage().getName(), true);
+		ContextConfiguration contextconf = new ContextConfiguration();
+		String logDir = "./reporting/" + contextconf.getSerialNumber();
+		String strTestName = cls.getPackage().getName();
+		boolean enableLogDecoration = contextconf.isEnableLogDecoration();
+		boolean enableTextLog = contextconf.isEnableTextLog();
+		boolean enableHTMLLog = contextconf.isEnableHTMLLog();
+		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 		TestContext context = new TestContext(organisedLogger);
 		Logger logger = context.getLogger();
 

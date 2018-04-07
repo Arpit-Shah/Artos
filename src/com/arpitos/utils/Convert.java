@@ -587,9 +587,63 @@ public class Convert {
 	 * @return
 	 */
 	public int randInt(int low, int high) {
-		Random r = new Random();
+		SecureRandom r = new SecureRandom();
 		int R = r.nextInt(high - low) + low;
 		return R;
+	}
+
+	/**
+	 * Generate Random long number
+	 * 
+	 * @param low
+	 * @param high
+	 * @return
+	 */
+	public long randLong() {
+		SecureRandom r = new SecureRandom();
+		long R = r.nextLong();
+		return R;
+	}
+
+	/**
+	 * Generate Random char array
+	 * 
+	 * @param length
+	 * @return
+	 */
+	public char[] randChar(int length) {
+		SecureRandom r = new SecureRandom();
+		char[] chars = new char[length];
+
+		for (int i = 0; i < length; i++) {
+			chars[i] = (char) (r.nextInt(26) + 'a');
+		}
+
+		return chars;
+	}
+
+	/**
+	 * Generate Random char String
+	 * 
+	 * @param length
+	 * @return
+	 */
+	public String randString(int length) {
+		return String.valueOf(randChar(length));
+	}
+	
+	/**
+	 * Generate Random byte array
+	 * 
+	 * @param length
+	 * @return
+	 */
+	public byte[] randBytes(int length) {
+		byte[] b = new byte[length];
+		SecureRandom r = new SecureRandom();
+		r.nextBytes(b);
+		
+		return b;
 	}
 
 }

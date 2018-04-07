@@ -47,21 +47,25 @@ public class TestContext {
 	 * Prints Organization details to each log files
 	 */
 	private void printOrganisationInfo() {
-		getOrganiseLogger().getGeneralLogger().info("************************************ Header Start ******************************************");
-		getOrganiseLogger().getGeneralLogger().info("Organisation_Name : " + getOrganisationInfo().getOrganisation_Name());
-		getOrganiseLogger().getGeneralLogger().info("Organisation_Country : " + getOrganisationInfo().getOrganisation_Country());
-		getOrganiseLogger().getGeneralLogger().info("Organisation_Address : " + getOrganisationInfo().getOrganisation_Address());
-		getOrganiseLogger().getGeneralLogger().info("Organisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number());
-		getOrganiseLogger().getGeneralLogger().info("Organisation_Website : " + getOrganisationInfo().getOrganisation_Website());
-		getOrganiseLogger().getGeneralLogger().info("************************************ Header End ********************************************");
+		//@formatter:off
+		getOrganiseLogger().getGeneralLogger().info(Banner.getBanner());
+		getOrganiseLogger().getGeneralLogger().info("************************************ Header Start ******************************************"
+													+"\nOrganisation_Name : " + getOrganisationInfo().getOrganisation_Name()
+													+"\nOrganisation_Country : " + getOrganisationInfo().getOrganisation_Country()
+													+"\nOrganisation_Address : " + getOrganisationInfo().getOrganisation_Address()
+													+"\nOrganisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number()
+													+"\nOrganisation_Website : " + getOrganisationInfo().getOrganisation_Website()
+													+"\n************************************ Header End ********************************************");
 
-		getOrganiseLogger().getSummaryLogger().info("************************************ Header Start ******************************************");
-		getOrganiseLogger().getSummaryLogger().info("Organisation_Name : " + getOrganisationInfo().getOrganisation_Name());
-		getOrganiseLogger().getSummaryLogger().info("Organisation_Country : " + getOrganisationInfo().getOrganisation_Country());
-		getOrganiseLogger().getSummaryLogger().info("Organisation_Address : " + getOrganisationInfo().getOrganisation_Address());
-		getOrganiseLogger().getSummaryLogger().info("Organisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number());
-		getOrganiseLogger().getSummaryLogger().info("Organisation_Website : " + getOrganisationInfo().getOrganisation_Website());
-		getOrganiseLogger().getSummaryLogger().info("************************************ Header End ********************************************");
+		getOrganiseLogger().getSummaryLogger().info(Banner.getBanner());
+		getOrganiseLogger().getSummaryLogger().info("************************************ Header Start ******************************************"
+													+"\nOrganisation_Name : " + getOrganisationInfo().getOrganisation_Name()
+													+"\nOrganisation_Country : " + getOrganisationInfo().getOrganisation_Country()
+													+"\nOrganisation_Address : " + getOrganisationInfo().getOrganisation_Address()
+													+"\nOrganisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number()
+													+"\nOrganisation_Website : " + getOrganisationInfo().getOrganisation_Website()
+													+"\n************************************ Header End ********************************************");
+		//@formatter:on
 	}
 
 	/**
@@ -79,9 +83,11 @@ public class TestContext {
 
 			// Append Warning in the log so user can pin point where test failed
 			if (testStatus == TestStatus.FAIL) {
-				getLogger().warn("**********************************");
-				getLogger().warn("*********** FAIL HERE ************");
-				getLogger().warn("**********************************");
+				//@formatter:off
+				getLogger().warn("**********************************"
+								+ "\n*********** FAIL HERE ************"
+								+ "\n**********************************");
+				//@formatter:on
 			}
 		}
 	}
@@ -98,9 +104,11 @@ public class TestContext {
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
 			if (getCurrentTestStatus() == TestStatus.PASS) {
-				getLogger().warn("**********************************");
-				getLogger().warn("******** KTF TEST PASSED *********");
-				getLogger().warn("**********************************");
+				//@formatter:off
+				getLogger().warn("**********************************"
+								+ "\n******** KTF TEST PASSED *********"
+								+ "\n**********************************");
+				//@formatter:on
 				setCurrentTestStatus(TestStatus.FAIL);
 			}
 		}
