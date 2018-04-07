@@ -16,12 +16,14 @@ public interface TestExecutable {
 	default public void onExecute(TestContext context, Class<?> cls, String author, String date, String description) throws Exception {
 		try {
 
-			context.getLogger().info("*************************************************************************");
-			context.getLogger().info("Test Name	: " + cls.getName());
-			context.getLogger().info("Written BY	: " + author);
-			context.getLogger().info("Date		: " + date);
-			context.getLogger().info("Short Desc	: " + description);
-			context.getLogger().info("-------------------------------------------------------------------------");
+			// @formatter:off
+			context.getLogger().info("*************************************************************************"
+									+ "\nTest Name	: " + cls.getName()
+									+ "\nWritten BY	: " + author
+									+ "\nDate		: " + date
+									+ "\nShort Desc	: " + description
+									+ "\n-------------------------------------------------------------------------");
+			// @formatter:on
 
 			// --------------------------------------------------------------------------------------------
 			execute(context);

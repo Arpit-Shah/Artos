@@ -49,12 +49,12 @@ public class OrganisedLog {
 	 *            disable decoration around test (Time-stamp, source package,
 	 *            thread number etc..)
 	 */
-	public OrganisedLog(String logDir, String strTestName, boolean disableLogDecoration) {
+	public OrganisedLog(String logDir, String strTestName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
 		LoggerContext loggerContext = dynamicallyConfigureLog4J(logDir + File.separator + strTestName, strTestName + "_" + System.currentTimeMillis(),
-				disableLogDecoration);
+				enableLogDecoration, enableTextLog, enableHTMLLog);
 		setGeneralLogger(loggerContext.getLogger("TestLog"));
 		setSummaryLogger(loggerContext.getLogger("Summary"));
 	}
@@ -150,9 +150,12 @@ public class OrganisedLog {
 	 * @param fileroot log file root
 	 * @param fileName log file name
 	 * @param disableLogDecoration true/false Disables decoration for the logs
+	 * @param disableHTMLLog 
+	 * @param disableTextLog 
 	 * @return
 	 */
-	public static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean disableLogDecoration) {
+	public static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean enableLogDecoration, boolean enableTextLog,
+			boolean enableHTMLLog) {
 
 		if (!fileroot.endsWith("/") || !fileroot.endsWith("\\")) {
 			fileroot = fileroot + File.separator;
@@ -163,96 +166,180 @@ public class OrganisedLog {
 		builder.setConfigurationName("RollingBuilder");
 
 		// Log Layout with timestamp
-		LayoutComponentBuilder layoutBuilder1 = builder.newLayout("PatternLayout");
-		if (disableLogDecoration) {
-			layoutBuilder1.addAttribute("pattern", "%msg%n%throwable");
-		} else {
+		LayoutComponentBuilder logFileLayout = builder.newLayout("PatternLayout");
+		if (enableLogDecoration) {
 			/*
-		-	 * @formatter:off
-			 *
-			 * [%-5level] = Log level upto 5 char max
-			 * [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
-			 * [%t] = Thread number
-			 * [%F] = File where logs are coming from
-			 * [%M] = Method which generated log
-			 * [%c{-1}] = ClassName which issued logCommand 
-			 * %msg = Actual msg to be logged 
-			 * %n = new line
-			 * %throwable = log exception
-			 * 
-			 * @formatter:on
-			 */
-			layoutBuilder1.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
+			* @formatter:off
+			*
+			* [%-5level] = Log level upto 5 char max
+			* [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
+			* [%t] = Thread number
+			* [%F] = File where logs are coming from
+			* [%M] = Method which generated log
+			* [%c{-1}] = ClassName which issued logCommand 
+			* %msg = Actual msg to be logged 
+			* %n = new line
+			* %throwable = log exception
+			* 
+			* @formatter:on
+			*/
+			logFileLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
+		} else {
+			logFileLayout.addAttribute("pattern", "%msg%n%throwable");
 		}
 
-		// Log Layour without decoration
-		LayoutComponentBuilder layoutBuilder2 = builder.newLayout("PatternLayout");
-		layoutBuilder2.addAttribute("pattern", "%msg%n%throwable");
+		// Log Layout without decoration
+		LayoutComponentBuilder summaryFileLayout = builder.newLayout("PatternLayout");
+		summaryFileLayout.addAttribute("pattern", "%msg%n%throwable");
+
+		// HTML Log Layout for logs
+		LayoutComponentBuilder htmlLogFileLayout = builder.newLayout("HTMLLayout");
+		htmlLogFileLayout.addAttribute("title", "Test Logs");
+		// expensive if enabled
+		htmlLogFileLayout.addAttribute("locationInfo", false);
+		htmlLogFileLayout.addAttribute("fontSize", "small");
+
+		// HTML Log Layout for summary
+		LayoutComponentBuilder htmlSummaryFileLayout = builder.newLayout("HTMLLayout");
+		htmlSummaryFileLayout.addAttribute("title", "Test Summary");
+		// expensive if enabled
+		htmlSummaryFileLayout.addAttribute("locationInfo", false);
+		htmlLogFileLayout.addAttribute("fontSize", "small");
 
 		// File size based rollver Trigger Policy
 		ComponentBuilder<?> triggeringPolicy = builder.newComponent("Policies");
 		triggeringPolicy.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "200MB"));
 
 		// create a console appender
-		AppenderComponentBuilder appenderBuilder1 = builder.newAppender("console-log", "CONSOLE");
-		appenderBuilder1.addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
-		appenderBuilder1.add(layoutBuilder1);
-		builder.add(appenderBuilder1);
+		{
+			AppenderComponentBuilder appenderBuilder1 = builder.newAppender("console-log", "CONSOLE");
+			appenderBuilder1.addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
+			appenderBuilder1.add(logFileLayout);
+			builder.add(appenderBuilder1);
+		}
 
-		// create a rolling file appender
-		AppenderComponentBuilder appenderBuilder2 = builder.newAppender("all-log", "RollingFile");
-		appenderBuilder2.addAttribute("fileName", fileroot + fileName + "-all.log");
-		appenderBuilder2.addAttribute("filePattern", fileroot + fileName + "-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
-		appenderBuilder2.add(layoutBuilder1);
-		appenderBuilder2.addComponent(triggeringPolicy);
-		builder.add(appenderBuilder2);
+		// create a rolling file appender for logs
+		{
+			// Text
+			AppenderComponentBuilder appenderBuilder2 = builder.newAppender("all-log-text", "RollingFile");
+			appenderBuilder2.addAttribute("fileName", fileroot + fileName + "-all.log");
+			appenderBuilder2.addAttribute("filePattern", fileroot + fileName + "-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+			appenderBuilder2.add(logFileLayout);
+			appenderBuilder2.addComponent(triggeringPolicy);
+			if (enableTextLog) {
+				builder.add(appenderBuilder2);
+			}
+
+			// HTML
+			AppenderComponentBuilder appenderBuilder3 = builder.newAppender("all-log-html", "RollingFile");
+			appenderBuilder3.addAttribute("fileName", fileroot + fileName + "-all.html");
+			appenderBuilder3.addAttribute("filePattern", fileroot + fileName + "-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
+			appenderBuilder3.add(htmlLogFileLayout);
+			appenderBuilder3.addComponent(triggeringPolicy);
+			if (enableHTMLLog) {
+				builder.add(appenderBuilder3);
+			}
+		}
 
 		// create a rolling file appender for error
-		AppenderComponentBuilder appenderBuilder3 = builder.newAppender("error-log", "RollingFile");
-		appenderBuilder3.addAttribute("fileName", fileroot + fileName + "-error.log");
-		appenderBuilder3.addAttribute("filePattern", fileroot + fileName + "-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
-		appenderBuilder3.add(layoutBuilder1);
-		appenderBuilder3.addComponent(triggeringPolicy);
-		builder.add(appenderBuilder3);
+		{
+			// Text
+			AppenderComponentBuilder appenderBuilder4 = builder.newAppender("error-log-text", "RollingFile");
+			appenderBuilder4.addAttribute("fileName", fileroot + fileName + "-error.log");
+			appenderBuilder4.addAttribute("filePattern", fileroot + fileName + "-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+			appenderBuilder4.add(logFileLayout);
+			appenderBuilder4.addComponent(triggeringPolicy);
+			if (enableTextLog) {
+				builder.add(appenderBuilder4);
+			}
 
-		// create a rolling file appender for error
-		AppenderComponentBuilder appenderBuilder4 = builder.newAppender("summary-log", "RollingFile");
-		appenderBuilder4.addAttribute("fileName", fileroot + fileName + "-summary.log");
-		appenderBuilder4.addAttribute("filePattern", fileroot + fileName + "-summary-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
-		appenderBuilder4.add(layoutBuilder2);
-		appenderBuilder4.addComponent(triggeringPolicy);
-		builder.add(appenderBuilder4);
+			// HTML
+			AppenderComponentBuilder appenderBuilder5 = builder.newAppender("error-log-html", "RollingFile");
+			appenderBuilder5.addAttribute("fileName", fileroot + fileName + "-error.html");
+			appenderBuilder5.addAttribute("filePattern", fileroot + fileName + "-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
+			appenderBuilder5.add(htmlLogFileLayout);
+			appenderBuilder5.addComponent(triggeringPolicy);
+			if (enableHTMLLog) {
+				builder.add(appenderBuilder5);
+			}
+		}
 
-		// create the new logger
-		LoggerComponentBuilder loggerBuilder1 = builder.newLogger("TestLog", Level.DEBUG);
-		loggerBuilder1.addAttribute("additivity", false);
-		AppenderRefComponentBuilder appendRef1 = builder.newAppenderRef("console-log");
-		appendRef1.addAttribute("level", Level.ALL);
-		AppenderRefComponentBuilder appendRef2 = builder.newAppenderRef("all-log");
-		appendRef2.addAttribute("level", Level.ALL);
-		AppenderRefComponentBuilder appendRef3 = builder.newAppenderRef("error-log");
-		appendRef3.addAttribute("level", Level.ERROR);
-		loggerBuilder1.add(appendRef1);
-		loggerBuilder1.add(appendRef2);
-		loggerBuilder1.add(appendRef3);
+		// create a rolling file appender for summary
+		{
+			// Text
+			AppenderComponentBuilder appenderBuilder6 = builder.newAppender("summary-log-text", "RollingFile");
+			appenderBuilder6.addAttribute("fileName", fileroot + fileName + "-summary.log");
+			appenderBuilder6.addAttribute("filePattern", fileroot + fileName + "-summary-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+			appenderBuilder6.add(summaryFileLayout);
+			appenderBuilder6.addComponent(triggeringPolicy);
+			if (enableTextLog) {
+				builder.add(appenderBuilder6);
+			}
 
-		builder.add(loggerBuilder1);
+			// HTML
+			AppenderComponentBuilder appenderBuilder7 = builder.newAppender("summary-log-html", "RollingFile");
+			appenderBuilder7.addAttribute("fileName", fileroot + fileName + "-summary.html");
+			appenderBuilder7.addAttribute("filePattern", fileroot + fileName + "-summary-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
+			appenderBuilder7.add(htmlSummaryFileLayout);
+			appenderBuilder7.addComponent(triggeringPolicy);
+			if (enableHTMLLog) {
+				builder.add(appenderBuilder7);
+			}
+		}
 
-		// create the new logger
-		LoggerComponentBuilder loggerBuilder2 = builder.newLogger("Summary", Level.DEBUG);
-		loggerBuilder2.addAttribute("additivity", false);
-		AppenderRefComponentBuilder appendRef11 = builder.newAppenderRef("summary-log");
-		appendRef11.addAttribute("level", Level.ALL);
-		loggerBuilder2.add(appendRef11);
+		{
+			// create the new logger
+			LoggerComponentBuilder loggerBuilder1 = builder.newLogger("TestLog", Level.DEBUG);
+			loggerBuilder1.addAttribute("additivity", false);
+			AppenderRefComponentBuilder appendRef1 = builder.newAppenderRef("console-log");
+			appendRef1.addAttribute("level", Level.ALL);
+			AppenderRefComponentBuilder appendRef2 = builder.newAppenderRef("all-log-text");
+			appendRef2.addAttribute("level", Level.ALL);
+			AppenderRefComponentBuilder appendRef3 = builder.newAppenderRef("all-log-html");
+			appendRef3.addAttribute("level", Level.ALL);
+			AppenderRefComponentBuilder appendRef4 = builder.newAppenderRef("error-log-text");
+			appendRef4.addAttribute("level", Level.ERROR);
+			AppenderRefComponentBuilder appendRef5 = builder.newAppenderRef("error-log-html");
+			appendRef5.addAttribute("level", Level.ERROR);
 
-		builder.add(loggerBuilder2);
+			loggerBuilder1.add(appendRef1);
 
-		RootLoggerComponentBuilder rootlogggerBuilder = builder.newRootLogger(Level.ALL);
-		rootlogggerBuilder.addAttribute("additivity", false);
-		AppenderRefComponentBuilder appendRef0 = builder.newAppenderRef("console-log");
-		rootlogggerBuilder.add(appendRef0);
+			if (enableTextLog) {
+				loggerBuilder1.add(appendRef2);
+				loggerBuilder1.add(appendRef4);
+			}
+			if (enableHTMLLog) {
+				loggerBuilder1.add(appendRef3);
+				loggerBuilder1.add(appendRef5);
+			}
 
-		builder.add(rootlogggerBuilder);
+			builder.add(loggerBuilder1);
+
+			// create the new logger
+			LoggerComponentBuilder loggerBuilder2 = builder.newLogger("Summary", Level.DEBUG);
+			loggerBuilder2.addAttribute("additivity", false);
+			AppenderRefComponentBuilder appendRef11 = builder.newAppenderRef("summary-log-text");
+			appendRef11.addAttribute("level", Level.ALL);
+			AppenderRefComponentBuilder appendRef12 = builder.newAppenderRef("summary-log-html");
+			appendRef12.addAttribute("level", Level.ALL);
+
+			if (enableTextLog) {
+				loggerBuilder2.add(appendRef11);
+			}
+			if (enableHTMLLog) {
+				loggerBuilder2.add(appendRef12);
+			}
+
+			builder.add(loggerBuilder2);
+
+			RootLoggerComponentBuilder rootlogggerBuilder = builder.newRootLogger(Level.ALL);
+			rootlogggerBuilder.addAttribute("additivity", false);
+			AppenderRefComponentBuilder appendRef0 = builder.newAppenderRef("console-log");
+			rootlogggerBuilder.add(appendRef0);
+
+			builder.add(rootlogggerBuilder);
+		}
+
 		System.out.println(builder.toXmlConfiguration().toString());
 
 		LoggerContext loggerContext = Configurator.initialize(builder.build());

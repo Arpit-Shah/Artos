@@ -100,7 +100,7 @@ public class OrganisationInfo {
 				}
 			}
 		} catch (FileNotFoundException fe) {
-			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values will be used");
+			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
