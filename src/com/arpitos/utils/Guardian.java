@@ -18,39 +18,29 @@ public class Guardian {
 	static String strFormatNotEqual_fail = " format are same";
 
 	static void print(String reference, String actual) {
-		TestContext.getTestContext().getLogger().info("Finding:");
-		TestContext.getTestContext().getLogger().info("Reference : " + reference);
-		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+		TestContext.getTestContext().getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	static void print(byte reference, byte actual) {
-		TestContext.getTestContext().getLogger().info("Finding:");
-		TestContext.getTestContext().getLogger().info("Reference : " + _con.bytesToStringHex(reference, true));
-		TestContext.getTestContext().getLogger().info("   Actual : " + _con.bytesToStringHex(actual, true));
+		TestContext.getTestContext().getLogger().info(
+				"Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : " + _con.bytesToStringHex(actual, true));
 	}
 
 	static void print(byte[] reference, byte[] actual) {
-		TestContext.getTestContext().getLogger().info("Finding:");
-		TestContext.getTestContext().getLogger().info("Reference : " + _con.bytesToStringHex(reference, true));
-		TestContext.getTestContext().getLogger().info("   Actual : " + _con.bytesToStringHex(actual, true));
+		TestContext.getTestContext().getLogger().info(
+				"Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : " + _con.bytesToStringHex(actual, true));
 	}
 
 	static void print(int reference, int actual) {
-		TestContext.getTestContext().getLogger().info("Finding:");
-		TestContext.getTestContext().getLogger().info("Reference : " + reference);
-		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+		TestContext.getTestContext().getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	static void print(boolean reference, boolean actual) {
-		TestContext.getTestContext().getLogger().info("Finding:");
-		TestContext.getTestContext().getLogger().info("Reference : " + reference);
-		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+		TestContext.getTestContext().getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
-	
+
 	static void print(long reference, long actual) {
-		TestContext.getTestContext().getLogger().info("Finding:");
-		TestContext.getTestContext().getLogger().info("Reference : " + reference);
-		TestContext.getTestContext().getLogger().info("   Actual : " + actual);
+		TestContext.getTestContext().getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	// *******************************************************************************************
