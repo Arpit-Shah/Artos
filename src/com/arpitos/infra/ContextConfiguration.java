@@ -26,7 +26,6 @@ import org.w3c.dom.NodeList;
 			<Property name="enableLogDecoration">true</Property>
 			<Property name="enableTextLog">true</Property>
 			<Property name="enableHTMLLog">true</Property>
-			<Property name="serialNumber">ABC_1234</Property>
 		</Organization>
 	</Configuration>
 	}
@@ -40,7 +39,6 @@ public class ContextConfiguration {
 	private boolean enableLogDecoration = false;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
-	private String serialNumber = "A12345";
 
 	public ContextConfiguration() {
 		readConfig();
@@ -89,9 +87,6 @@ public class ContextConfiguration {
 						if ("enableHTMLLog".equals(eElement.getAttribute("name"))) {
 							setEnableHTMLLog(Boolean.parseBoolean(eElement.getTextContent()));
 						}
-						if ("serialNumber".equals(eElement.getAttribute("name"))) {
-							setSerialNumber(eElement.getTextContent());
-						}
 					}
 				}
 			}
@@ -124,14 +119,6 @@ public class ContextConfiguration {
 
 	public void setEnableHTMLLog(boolean enableHTMLLog) {
 		this.enableHTMLLog = enableHTMLLog;
-	}
-
-	public String getSerialNumber() {
-		return serialNumber;
-	}
-
-	public void setSerialNumber(String serialNumber) {
-		this.serialNumber = serialNumber;
 	}
 
 }
