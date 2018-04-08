@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
 
+import com.arpitos.framework.Banner;
 import com.arpitos.infra.Enums.TestStatus;
 
 /**
@@ -204,9 +205,10 @@ public class TestContext {
 	 * 
 	 * @param Key
 	 *            = String key to retrive an object
+	 * @return 
 	 */
-	public void getGlobalObject(String key) {
-		globalObjectsHashMap.get(key);
+	public Object getGlobalObject(String key) {
+		return globalObjectsHashMap.get(key);
 	}
 
 	public long getCurrentPassCount() {

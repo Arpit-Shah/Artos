@@ -3,6 +3,10 @@ package com.arpitos.interfaces;
 import org.apache.logging.log4j.Logger;
 
 import com.arpitos.infra.TestContext;
+import com.arpitos.infra.annotation.AfterTest;
+import com.arpitos.infra.annotation.AfterTestsuit;
+import com.arpitos.infra.annotation.BeforeTest;
+import com.arpitos.infra.annotation.BeforeTestsuit;
 
 /**
  * Used for classes which implements Pre Post methods for test cases
@@ -20,7 +24,8 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of pre execution failed
 	 */
-	default public void preTest(TestContext context) throws Exception {
+	@BeforeTest
+	default public void beforeTest(TestContext context) throws Exception {
 		Logger logger = context.getLogger();
 
 		// --------------------------------------------------------------------------------------------
@@ -38,7 +43,8 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of test of post execution failed
 	 */
-	default public void postTest(TestContext context) throws Exception {
+	@AfterTest
+	default public void afterTest(TestContext context) throws Exception {
 		Logger logger = context.getLogger();
 
 		// --------------------------------------------------------------------------------------------
@@ -56,7 +62,8 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of initialization failed
 	 */
-	default public void Init(TestContext context) throws Exception {
+	@BeforeTestsuit
+	default public void beforeTestsuit(TestContext context) throws Exception {
 		Logger logger = context.getLogger();
 
 		// --------------------------------------------------------------------------------------------
@@ -74,7 +81,8 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of cleanup failed
 	 */
-	default public void Cleanup(TestContext context) throws Exception {
+	@AfterTestsuit
+	default public void afterTestsuit(TestContext context) throws Exception {
 		Logger logger = context.getLogger();
 
 		// --------------------------------------------------------------------------------------------
@@ -83,4 +91,5 @@ public interface PrePostRunnable {
 		// --------------------------------------------------------------------------------------------
 
 	}
+	
 }

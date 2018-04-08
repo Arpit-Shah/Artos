@@ -1,6 +1,11 @@
 package com.arpitos.interfaces;
 
 import com.arpitos.infra.Enums.TestStatus;
+import com.arpitos.infra.annotation.TestObjectWrapper;
+
+import java.util.Map;
+
+import com.arpitos.framework.ArpitosStatic_Store;
 import com.arpitos.infra.TestContext;
 import com.arpitos.utils.Utils;
 
@@ -13,15 +18,20 @@ import com.arpitos.utils.Utils;
  */
 public interface TestExecutable {
 
-	default public void onExecute(TestContext context, Class<?> cls, String author, String date, String description) throws Exception {
+	default public void onExecute(TestContext context, Class<?> cls) throws Exception {
 		try {
+
+			@SuppressWarnings("unchecked")
+			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context
+					.getGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
+			TestObjectWrapper testObject = testMap.get(cls.getName());
 
 			// @formatter:off
 			context.getLogger().info("*************************************************************************"
 									+ "\nTest Name	: " + cls.getName()
-									+ "\nWritten BY	: " + author
-									+ "\nDate		: " + date
-									+ "\nShort Desc	: " + description
+									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
+									+ "\nDate		: " + testObject.getTestPlanPreparationDate()
+									+ "\nShort Desc	: " + testObject.getTestPlanDescription()
 									+ "\n-------------------------------------------------------------------------");
 			// @formatter:on
 
