@@ -340,9 +340,12 @@ public class OrganisedLog {
 			builder.add(rootlogggerBuilder);
 		}
 
-		System.out.println(builder.toXmlConfiguration().toString());
+		// System.out.println(builder.toXmlConfiguration().toString());
 
 		LoggerContext loggerContext = Configurator.initialize(builder.build());
+		// Print logger xml to log file
+		loggerContext.getLogger("TestLog").trace(builder.toXmlConfiguration().toString());
+
 		return loggerContext;
 	}
 
