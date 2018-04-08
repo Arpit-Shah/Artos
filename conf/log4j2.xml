@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Properties>
+		<Property name="log-path">./reporting/logs</Property>
+	</Properties>
+
+	<Appenders>
+		<Console name="console-log" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
+		</Console>
+
+		<RollingFile name="all-log" fileName="${log-path}/arpitos-all.log"
+			filePattern="${log-path}/arpitos-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
+			<PatternLayout>
+				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+				</pattern>
+			</PatternLayout>
+			<Policies>
+				<!-- <TimeBasedTriggeringPolicy interval="1" modulate="true" /> -->
+				<SizeBasedTriggeringPolicy size="200MB" />
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="error-log" fileName="${log-path}/arpitos-error.log"
+			filePattern="${log-path}/arpitos-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
+			<PatternLayout>
+				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+				</pattern>
+			</PatternLayout>
+			<Policies>
+				<!-- <TimeBasedTriggeringPolicy interval="1" modulate="true" /> -->
+				<SizeBasedTriggeringPolicy size="200MB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="com.arpit" level="debug" additivity="false">
+			<appender-ref ref="console-log" level="all" />
+			<appender-ref ref="all-log" level="all" />
+			<appender-ref ref="error-log" level="error" />
+		</Logger>
+		<Root level="all" additivity="false">
+			<AppenderRef ref="console-log" />
+		</Root>
+	</Loggers>
+
+</Configuration>
+
