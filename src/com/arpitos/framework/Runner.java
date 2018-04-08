@@ -1,17 +1,29 @@
 package com.arpitos.framework;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
+import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 import com.arpitos.infra.ContextConfiguration;
 import com.arpitos.infra.OrganisedLog;
 import com.arpitos.infra.TestContext;
+import com.arpitos.infra.annotation.AfterTest;
+import com.arpitos.infra.annotation.AfterTestsuit;
+import com.arpitos.infra.annotation.ScanTestSuitUsingReflection;
+import com.arpitos.infra.annotation.BeforeTest;
+import com.arpitos.infra.annotation.BeforeTestsuit;
+import com.arpitos.infra.annotation.TestObjectWrapper;
+import com.arpitos.infra.annotation.Testcase;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
-
-import sun.java2d.pipe.hw.ContextCapabilities;
 
 /**
  * This class is responsible for running test cases. It initializing logger and
@@ -21,7 +33,7 @@ import sun.java2d.pipe.hw.ContextCapabilities;
  * @author ArpitS
  *
  */
-public class MAIN {
+public class Runner {
 
 	/**
 	 * This method executes test cases
@@ -47,13 +59,15 @@ public class MAIN {
 		// -------------------------------------------------------------------//
 		// Prepare Context
 		ContextConfiguration contextconf = new ContextConfiguration();
-		String logDir = "./reporting/" + contextconf.getSerialNumber();
+		String logDir = "./reporting/" + serialNumber;
 		String strTestName = cls.getPackage().getName();
 		boolean enableLogDecoration = contextconf.isEnableLogDecoration();
 		boolean enableTextLog = contextconf.isEnableTextLog();
 		boolean enableHTMLLog = contextconf.isEnableHTMLLog();
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 		TestContext context = new TestContext(organisedLogger);
+
+		new ScanTestSuitUsingReflection(context, cls).invoke();
 		Logger logger = context.getLogger();
 
 		long startTime = System.currentTimeMillis();
@@ -63,23 +77,23 @@ public class MAIN {
 		// ********************************************************************************************
 		logger.info("\n-------- Start -----------");
 		// Run prior to each test suit
-		prePostCycle.Init(context);
+		prePostCycle.beforeTestsuit(context);
 		for (int index = 0; index < loopCycle; index++) {
 			logger.info("\n-------- (" + index + ") -----------");
 			// --------------------------------------------------------------------------------------------
 			for (TestExecutable t : tests) {
 				// Run Pre Method prior to any test Execution
-				prePostCycle.preTest(context);
+				prePostCycle.beforeTest(context);
 
 				t.onExecute(context);
 
 				// Run Post Method prior to any test Execution
-				prePostCycle.postTest(context);
+				prePostCycle.afterTest(context);
 			}
 			// --------------------------------------------------------------------------------------------
 		}
 		// Run at the end of each test suit
-		prePostCycle.Cleanup(context);
+		prePostCycle.afterTestsuit(context);
 		logger.info("\n-------- Finished -----------");
 		// ********************************************************************************************
 		// Test Finish
