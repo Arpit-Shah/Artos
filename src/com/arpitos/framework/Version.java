@@ -1,4 +1,4 @@
-package com.arpitos.infra;
+package com.arpitos.framework;
 
 /**
  * This class defines the current version of Arpitos

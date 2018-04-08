@@ -1,14 +1,4 @@
-package com.arpitos.infra;
-
-//@formatter:off
-//  ___                            
-// / _ \           _                     __ _ _
-//| |_) |__ _ _ __(_)  _    __ _   ____  \ \ \ \
-//| ,_  |  __| '_ | |_| |_ / _' \/ ____|  \ \ \ \
-//| | | | |  | |_)| |_| |_| (_) |\___  \   ) ) ) )
-//|_| |_|_|  | .__|_| | |_ \__ _/ ___) |  / / / /
-//===========|_|====++\__/=======|_____/ (_(_(_(
-//(*) Arpitos (*)				(Release v1.0.0)
+package com.arpitos.framework;
 
 //   ___    
 //  / _ \           _                     __ _ _
@@ -22,22 +12,6 @@ package com.arpitos.infra;
 //@formatter:on
 
 public class Banner {
-
-	public static String getBannerOld() {
-		// @formatter:off
-		String banner = "\n"
-				+ "\n  ___                            "
-				+ "\n / _ \\           _                     __ _ _"
-				+ "\n| |_) |__ _ _ __(_)  _    __ _   ____  \\ \\ \\ \\"
-				+ "\n| ,_  |  __| '_ | |_| |_ / _' \\/ ____|  \\ \\ \\ \\"
-				+ "\n| | | | |  | |_)| |_| |_| (_) |\\___  \\   ) ) ) )"
-				+ "\n|_| |_|_|  | .__|_| | |_ \\__ _/ ___) |  / / / /"
-				+ "\n===========|_|======\\__/=======|_____/ (_(_(_("
-				+ "\n(*) Arpitos (*)		(Release v"+Version.id()+")"
-				+ "\n";
-		// @formatter:on
-		return banner;
-	}
 	
 	public static String getBanner(){
 		// @formatter:off
