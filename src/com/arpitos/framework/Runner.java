@@ -67,7 +67,12 @@ public class Runner {
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 		TestContext context = new TestContext(organisedLogger);
 
-		new ScanTestSuitUsingReflection(context, cls).invoke();
+		// Scan all test cases with correct annotation and store it in global
+		// variable
+		String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
+		Map<String, TestObjectWrapper> testMap = new ScanTestSuitUsingReflection(context, packageName).invoke();
+		context.setGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testMap);
+
 		Logger logger = context.getLogger();
 
 		long startTime = System.currentTimeMillis();

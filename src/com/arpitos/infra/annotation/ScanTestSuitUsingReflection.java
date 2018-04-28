@@ -10,30 +10,27 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
-import com.arpitos.framework.ArpitosStatic_Store;
 import com.arpitos.infra.TestContext;
 
 public class ScanTestSuitUsingReflection {
 	TestContext context;
-	Class<?> cls;
+	String packageName;
 	Reflections reflaction;
 	Logger logger;
 
-	public ScanTestSuitUsingReflection(TestContext context, Class<?> cls) {
+	public ScanTestSuitUsingReflection(TestContext context, String packageName) {
 		this.context = context;
-		this.cls = cls;
+		this.packageName = packageName;
 		this.logger = context.getLogger();
 	}
 
 	private void prepareReflectionObject() {
 
-		String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
 		logger.trace("Scanning package using Reflections : " + packageName);
-
 		reflaction = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 	}
 
-	public void invoke() {
+	public Map<String, TestObjectWrapper> invoke() {
 		prepareReflectionObject();
 		
 		Map<String, TestObjectWrapper> testMap = new HashMap<String, TestObjectWrapper>();
@@ -69,7 +66,6 @@ public class ScanTestSuitUsingReflection {
 			logger.trace("@AfterTestsuit = " + method.getName() + " : " + method.getDeclaringClass().getName());
 		}
 
-		// Store as global variable
-		context.setGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testMap);
+		return testMap;
 	}
 }
