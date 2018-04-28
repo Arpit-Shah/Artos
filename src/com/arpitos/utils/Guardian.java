@@ -189,7 +189,7 @@ public class Guardian {
 	 * @return true | false
 	 */
 	public static boolean isFormatEquals(String format, String actual) {
-		if (Utils.compareStringFormat(format, actual)) {
+		if (UtilsString.compareStringFormat(format, actual)) {
 			return true;
 		}
 		return false;
