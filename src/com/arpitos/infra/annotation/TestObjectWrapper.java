@@ -9,7 +9,7 @@ public class TestObjectWrapper {
 	String testPlanPreparedBy = "";
 	String testPlanPreparationDate = "";
 	String testreviewedBy = "";
-	String testReviewData = "";
+	String testReviewDate = "";
 
 	public TestObjectWrapper(Class<?> cls, boolean skipTest, String testPlanScenario, String testPlanDescription, String testPlanPreparedBy,
 			String testPlanPreparationDate, String testreviewedBy, String testReviewData) {
@@ -21,7 +21,7 @@ public class TestObjectWrapper {
 		this.testPlanPreparedBy = testPlanPreparedBy;
 		this.testPlanPreparationDate = testPlanPreparationDate;
 		this.testreviewedBy = testreviewedBy;
-		this.testReviewData = testReviewData;
+		this.testReviewDate = testReviewDate;
 	}
 
 	public String getTestPlanScenario() {
@@ -64,12 +64,12 @@ public class TestObjectWrapper {
 		this.testreviewedBy = testreviewedBy;
 	}
 
-	public String getTestReviewData() {
-		return testReviewData;
+	public String getTestReviewDate() {
+		return testReviewDate;
 	}
 
-	public void setTestReviewData(String testReviewData) {
-		this.testReviewData = testReviewData;
+	public void setTestReviewDate(String testReviewDate) {
+		this.testReviewDate = testReviewDate;
 	}
 
 	public Class<?> getCls() {
