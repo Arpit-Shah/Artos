@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
 
-import com.arpitos.framework.ArpitosStatic_Store;
 import com.arpitos.infra.TestContext;
 
 public class GenerateTestPlan {
@@ -22,10 +21,10 @@ public class GenerateTestPlan {
 //		    if(entry.getKey().equals(packageName)){
 		    	TestObjectWrapper testObject = entry.getValue();
 		    	logger.info("\nScenario : " + testObject.getTestPlanScenario());
-		    	logger.info("\nPreparedBy : " + testObject.getTestPlanPreparedBy());
-		    	logger.info("\nPreparationDate : " + testObject.getTestPlanPreparationDate());
-		    	logger.info("\nReviewedBy : " + testObject.getTestreviewedBy());
-		    	logger.info("\nReviewedDate : " + testObject.getTestReviewDate());
+		    	logger.info("PreparedBy : " + testObject.getTestPlanPreparedBy());
+		    	logger.info("PreparationDate : " + testObject.getTestPlanPreparationDate());
+		    	logger.info("ReviewedBy : " + testObject.getTestreviewedBy());
+		    	logger.info("ReviewedDate : " + testObject.getTestReviewDate());
 //		    }
 			
 			
