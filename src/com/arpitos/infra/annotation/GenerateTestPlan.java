@@ -21,6 +21,7 @@ public class GenerateTestPlan {
 //		    if(entry.getKey().equals(packageName)){
 		    	TestObjectWrapper testObject = entry.getValue();
 		    	logger.info("\nScenario : " + testObject.getTestPlanScenario());
+		    	logger.info("Description : " + testObject.getTestPlanDescription());
 		    	logger.info("PreparedBy : " + testObject.getTestPlanPreparedBy());
 		    	logger.info("PreparationDate : " + testObject.getTestPlanPreparationDate());
 		    	logger.info("ReviewedBy : " + testObject.getTestreviewedBy());
