@@ -1,32 +1,21 @@
 package com.arpitos.framework;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
-import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
 
 import com.arpitos.infra.ContextConfiguration;
 import com.arpitos.infra.OrganisedLog;
 import com.arpitos.infra.TestContext;
-import com.arpitos.infra.annotation.AfterTest;
-import com.arpitos.infra.annotation.AfterTestsuit;
 import com.arpitos.infra.annotation.ScanTestSuitUsingReflection;
-import com.arpitos.infra.annotation.BeforeTest;
-import com.arpitos.infra.annotation.BeforeTestsuit;
 import com.arpitos.infra.annotation.TestObjectWrapper;
-import com.arpitos.infra.annotation.Testcase;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
 
 /**
- * This class is responsible for running test cases. It initializing logger and
+ * This class is responsible for running test cases. It initialising logger and
  * context with provided information. It is also responsible for running test
  * cases in given sequence (including pre/post methods)
  * 
@@ -74,7 +63,7 @@ public class Runner {
 		context.setGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testMap);
 
 		Logger logger = context.getLogger();
-
+		printUsefulInfo(logger);
 		long startTime = System.currentTimeMillis();
 
 		// ********************************************************************************************
@@ -111,6 +100,43 @@ public class Runner {
 				TimeUnit.MILLISECONDS.toSeconds((endTime - startTime))
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)))));
 		// System.exit(0);
+	}
+
+	private static void printUsefulInfo(Logger logger) {
+
+		// @formatter:off
+		
+		logger.info("\nTest FrameWork Info");
+		logger.info("* Arpitos version => " + Version.id());
+		logger.info("* Java Runtime Environment version => " + System.getProperty("java.version"));
+		logger.info("* Java Virtual Machine specification version => " + System.getProperty("java.vm.specification.version"));
+		logger.info("* Java Runtime Environment specification version => " + System.getProperty("java.specification.version"));
+		logger.info("* Java class path => " + System.getProperty("java.class.path"));
+		logger.info("* List of paths to search when loading libraries => " + System.getProperty("java.library.path"));
+		logger.info("* Operating system name => " + System.getProperty("os.name"));
+		logger.info("* Operating system architecture => " + System.getProperty("os.arch"));
+		logger.info("* Operating system version => " + System.getProperty("os.version"));
+		logger.info("* File separator (\"/\" on UNIX) => " + System.getProperty("file.separator"));
+		logger.info("* Path separator (\":\" on UNIX) => " + System.getProperty("path.separator"));
+		logger.info("* User's account name => " + System.getProperty("user.name"));
+		
+		// logger.info("Java installation directory => " + System.getProperty("java.home"));
+		// logger.info("Java Virtual Machine specification vendor => " + System.getProperty("java.vm.specification.vendor"));
+		// logger.info("Java Virtual Machine specification name => " + System.getProperty("java.vm.specification.name"));
+		// logger.info("Java Virtual Machine implementation version => " + System.getProperty("java.vm.version"));
+		// logger.info("Java Virtual Machine implementation vendor => " + System.getProperty("java.vm.vendor"));
+		// logger.info("Java Virtual Machine implementation name => " + System.getProperty("java.vm.name"));
+		// logger.info("Java Runtime Environment specification vendor => " + System.getProperty("java.specification.vendor"));
+		// logger.info("Java Runtime Environment specification name => " + System.getProperty("java.specification.name"));
+		// logger.info("Java class format version number => " + System.getProperty("java.class.version"));
+		// logger.info("Default temp file path => " + System.getProperty("java.io.tmpdir"));
+		// logger.info("Name of JIT compiler to use => " + System.getProperty("java.compiler"));
+		// logger.info("Path of extension directory or directories => " + System.getProperty("java.ext.dirs"));
+		// logger.info("Line separator (\"\\n\" on UNIX) => " + System.getProperty("line.separator"));
+		// logger.info("User's home directory => " + System.getProperty("user.home"));
+		// logger.info("User's current working directory => " + System.getProperty("user.dir"));
+		
+		// @formatter:on
 	}
 
 }
