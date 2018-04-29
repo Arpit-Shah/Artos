@@ -1,12 +1,11 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This project is distributed under MIT License. Please read "LICENSE.md" file for more details.
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Quick summary : Test Framework which can be used to write test scenario for any kind of application
+* Version : 01.00.0001
 
 ### How do I get set up? ###
 
@@ -25,5 +24,5 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* Repo owner or admin : Arpit Shah (+64 210762810)
+* Other community or team contact : NA
