@@ -1,7 +1,5 @@
 package com.arpitos.interfaces;
 
-import org.apache.logging.log4j.Logger;
-
 import com.arpitos.infra.TestContext;
 import com.arpitos.infra.annotation.AfterTest;
 import com.arpitos.infra.annotation.AfterTestsuit;
@@ -25,15 +23,7 @@ public interface PrePostRunnable {
 	 *             In case of pre execution failed
 	 */
 	@BeforeTest
-	default public void beforeTest(TestContext context) throws Exception {
-		Logger logger = context.getLogger();
-
-		// --------------------------------------------------------------------------------------------
-		// TODO Write Code Here
-		logger.info("--------This runs pre each test execution--------");
-		// --------------------------------------------------------------------------------------------
-
-	}
+	public void beforeTest(TestContext context) throws Exception;
 
 	/**
 	 * Runs post each test case execution
@@ -44,15 +34,7 @@ public interface PrePostRunnable {
 	 *             In case of test of post execution failed
 	 */
 	@AfterTest
-	default public void afterTest(TestContext context) throws Exception {
-		Logger logger = context.getLogger();
-
-		// --------------------------------------------------------------------------------------------
-		// TODO Write Code Here
-		logger.info("--------This runs post each test execution--------");
-		// --------------------------------------------------------------------------------------------
-
-	}
+	public void afterTest(TestContext context) throws Exception;
 
 	/**
 	 * Runs prior to test suit execution. Only run once
@@ -60,18 +42,10 @@ public interface PrePostRunnable {
 	 * @param context
 	 *            Test context
 	 * @throws Exception
-	 *             In case of initialization failed
+	 *             In case of initialisation failed
 	 */
 	@BeforeTestsuit
-	default public void beforeTestsuit(TestContext context) throws Exception {
-		Logger logger = context.getLogger();
-
-		// --------------------------------------------------------------------------------------------
-		// TODO Write Code Here
-		logger.info("--------This runs at the start of testsuit execution--------");
-		// --------------------------------------------------------------------------------------------
-
-	}
+	public void beforeTestsuit(TestContext context) throws Exception;
 
 	/**
 	 * Runs at the end of test suit execution. Only run once
@@ -82,14 +56,6 @@ public interface PrePostRunnable {
 	 *             In case of cleanup failed
 	 */
 	@AfterTestsuit
-	default public void afterTestsuit(TestContext context) throws Exception {
-		Logger logger = context.getLogger();
-
-		// --------------------------------------------------------------------------------------------
-		// TODO Write Code Here
-		logger.info("--------This runs at the end of testsuit execution--------");
-		// --------------------------------------------------------------------------------------------
-
-	}
+	public void afterTestsuit(TestContext context) throws Exception;
 	
 }
