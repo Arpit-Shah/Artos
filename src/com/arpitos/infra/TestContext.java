@@ -11,7 +11,7 @@ import com.arpitos.infra.Enums.TestStatus;
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
  * may need during test case execution. This class is also responsible for
- * summarizing test results.
+ * Summarising test results.
  * 
  * @author ArpitS
  *
@@ -45,7 +45,7 @@ public class TestContext {
 	}
 
 	/**
-	 * Prints Organization details to each log files
+	 * Prints Organisation details to each log files
 	 */
 	private void printOrganisationInfo() {
 		//@formatter:off
