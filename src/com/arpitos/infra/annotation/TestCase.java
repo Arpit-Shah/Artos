@@ -9,12 +9,10 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
 @Target(ElementType.TYPE)
-public @interface Testcase {
+public @interface TestCase {
 	boolean skip();
-	String scenario();
-	String decription();
-	String preparedBy();
-	String preparationDate();
-	String reviewedBy();
-	String reviewDate();
+
+	int sequence();
+
+	String label();
 }
