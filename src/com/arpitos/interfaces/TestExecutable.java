@@ -21,12 +21,11 @@ public interface TestExecutable {
 	default public void onExecute(TestContext context, Class<?> cls) throws Exception {
 		try {
 
-			@SuppressWarnings("unchecked")
-			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context
-					.getGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
-			TestObjectWrapper testObject = testMap.get(cls.getName());
-
 			// @formatter:off
+			@SuppressWarnings("unchecked")
+			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context.getGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
+			TestObjectWrapper testObject = testMap.get(cls.getName());
+			
 			context.getLogger().info("*************************************************************************"
 									+ "\nTest Name	: " + cls.getName()
 									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()

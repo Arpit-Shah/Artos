@@ -1,7 +1,10 @@
 package com.arpitos.infra.annotation;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
@@ -11,61 +14,156 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
 import com.arpitos.infra.TestContext;
+import com.arpitos.interfaces.TestExecutable;
 
 public class ScanTestSuitUsingReflection {
-	TestContext context;
-	String packageName;
 	Reflections reflaction;
-	Logger logger;
+	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
+	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
 
-	public ScanTestSuitUsingReflection(TestContext context, String packageName) {
-		this.context = context;
-		this.packageName = packageName;
-		this.logger = context.getLogger();
+	public ScanTestSuitUsingReflection(String packageName) throws Exception {
+		scan(packageName);
 	}
 
-	private void prepareReflectionObject() {
+	private void scan(String packageName) throws Exception {
 
-		logger.trace("Scanning package using Reflections : " + packageName);
 		reflaction = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
-	}
 
-	public Map<String, TestObjectWrapper> invoke() {
-		prepareReflectionObject();
-		
-		Map<String, TestObjectWrapper> testMap = new HashMap<String, TestObjectWrapper>();
-		for (Class<?> cl : reflaction.getTypesAnnotatedWith(Testcase.class)) {
-			Testcase testcase = cl.getAnnotation(Testcase.class);
+		for (Class<?> cl : reflaction.getTypesAnnotatedWith(TestCase.class)) {
+			TestCase testcase = cl.getAnnotation(TestCase.class);
+			TestPlan testplan = cl.getAnnotation(TestPlan.class);
 
 			// @formatter:off
-			logger.trace("@Testcase = " + cl.getName()
-			+ "\nskip : " + testcase.skip()
-			+ "\nscenario : " + testcase.scenario()
-			+ "\ndecription : " + testcase.decription()
-			+ "\npreparedBy : " + testcase.preparedBy()
-			+ "\npreparationDate : " + testcase.preparationDate()
-			+ "\nreviewedBy : " + testcase.reviewedBy()
-			+ "\nreviewDate : " + testcase.reviewDate()
-			);
+			//			System.out.println("@Testcase = " + cl.getName()
+			//			+ "\nskip : " + testcase.skip()
+			//			+ "\nscenario : " + testcase.sequence()
+			//			+ "\ndecription : " + testcase.label()
+			//			);
+			//			System.out.println("@Testcase = " + cl.getName()
+			//			+ "\ndecription : " + testplan.decription()
+			//			+ "\npreparedBy : " + testplan.preparedBy()
+			//			+ "\npreparationDate : " + testplan.preparationDate()
+			//			+ "\nreviewedBy : " + testplan.reviewedBy()
+			//			+ "\nreviewDate : " + testplan.reviewDate()
+			//			);
 			// @formatter:on
-			
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.scenario(), testcase.decription(), testcase.preparedBy(),
-					testcase.preparationDate(), testcase.reviewedBy(), testcase.reviewDate());
-			testMap.put(cl.getName(), testobj);
-		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTest.class)) {
-			logger.trace("@BeforeTest = " + method.getName() + " : " + method.getDeclaringClass().getName());
-		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTestsuit.class)) {
-			logger.trace("@BeforeTestsuit = " + method.getName() + " : " + method.getDeclaringClass().getName());
-		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(AfterTest.class)) {
-			logger.trace("@AfterTest = " + method.getName() + " : " + method.getDeclaringClass().getName());
-		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(AfterTestsuit.class)) {
-			logger.trace("@AfterTestsuit = " + method.getName() + " : " + method.getDeclaringClass().getName());
+
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label(), testplan.decription(),
+					testplan.preparedBy(), testplan.preparationDate(), testplan.reviewedBy(), testplan.reviewDate());
+
+			testObjWrapperList_All.add(testobj);
+			if (!testcase.skip()) {
+				testObjWrapperList_WithoutSkipped.add(testobj);
+			}
 		}
 
-		return testMap;
+		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTest.class)) {
+			// System.out.println("@BeforeTest = " + method.getName() + " : " +
+			// method.getDeclaringClass().getName());
+		}
+		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTestsuit.class)) {
+			// System.out.println("@BeforeTestsuit = " + method.getName() + " :
+			// " + method.getDeclaringClass().getName());
+		}
+		for (Method method : reflaction.getMethodsAnnotatedWith(AfterTest.class)) {
+			// System.out.println("@AfterTest = " + method.getName() + " : " +
+			// method.getDeclaringClass().getName());
+		}
+		for (Method method : reflaction.getMethodsAnnotatedWith(AfterTestsuit.class)) {
+			// System.out.println("@AfterTestsuit = " + method.getName() + " : "
+			// + method.getDeclaringClass().getName());
+		}
+	}
+
+	// logic to bubble sort the elements
+	private TestObjectWrapper[] bubble_srt(TestObjectWrapper[] array) {
+		int n = array.length;
+		int k;
+		for (int m = n; m >= 0; m--) {
+			for (int i = 0; i < n - 1; i++) {
+				k = i + 1;
+				if (array[i].getTestsequence() > array[k].getTestsequence()) {
+					swapNumbers(i, k, array);
+				}
+			}
+		}
+
+		System.out.println("Bubble sorted list of test cases");
+		printNumbers(array);
+
+		return array;
+	}
+
+	private void swapNumbers(int i, int j, TestObjectWrapper[] array) {
+
+		TestObjectWrapper temp;
+		temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	private void printNumbers(TestObjectWrapper[] array) {
+		for (int i = 0; i < array.length; i++) {
+			System.out.print(array[i].getTestsequence() + " " + array[i].getCls().getName() + "\n");
+		}
+	}
+
+	public void generateTestPlan(TestContext context) {
+		Logger logger = context.getLogger();
+
+		for (TestObjectWrapper testObject : testObjWrapperList_All) {
+			logger.info("\nTestCaseName : " + testObject.getCls().getName());
+			logger.info("SkipTest : " + Boolean.toString(testObject.isSkipTest()));
+			logger.info("TestSequence : " + testObject.getTestsequence());
+			logger.info("TestLabel : " + testObject.getTestCaseLabel());
+			logger.info("Description : " + testObject.getTestPlanDescription());
+			logger.info("PreparedBy : " + testObject.getTestPlanPreparedBy());
+			logger.info("PreparationDate : " + testObject.getTestPlanPreparationDate());
+			logger.info("ReviewedBy : " + testObject.getTestreviewedBy());
+			logger.info("ReviewedDate : " + testObject.getTestReviewDate());
+		}
+	}
+
+	public List<TestObjectWrapper> getTestObjWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
+		// Convert list to array and then do bubble sort based on sequence
+		// number
+		TestObjectWrapper[] sortedArray = null;
+
+		if (!sortBySeqNum) {
+			if (removeSkippedTests) {
+				return testObjWrapperList_WithoutSkipped;
+			} else {
+				return testObjWrapperList_All;
+			}
+		}
+
+		if (removeSkippedTests) {
+			sortedArray = bubble_srt(testObjWrapperList_WithoutSkipped.parallelStream().toArray(TestObjectWrapper[]::new));
+		} else {
+			sortedArray = bubble_srt(testObjWrapperList_All.parallelStream().toArray(TestObjectWrapper[]::new));
+		}
+		return Arrays.asList(sortedArray);
+	}
+
+	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws Exception {
+		List<TestExecutable> testList = new ArrayList<TestExecutable>();
+
+		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(sortBySeqNum, removeSkippedTests);
+		for (TestObjectWrapper t : testObjWrapperList) {
+			// create new Instance of test object so user can execute the test
+			testList.add((TestExecutable) t.getCls().newInstance());
+		}
+		return testList;
+	}
+
+	public Map<String, TestObjectWrapper> getTestObjWrapperMap(boolean removeSkippedTests) {
+		Map<String, TestObjectWrapper> testObjWrapperMap = new HashMap<>();
+
+		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(false, removeSkippedTests);
+		for (TestObjectWrapper t : testObjWrapperList) {
+			// create new Instance of test object so user can execute the test
+			testObjWrapperMap.put(t.getCls().getName(), t);
+		}
+		return testObjWrapperMap;
 	}
 }

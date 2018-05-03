@@ -42,7 +42,7 @@ public class Runner {
 	 *             If test case exception is not handled then test execution
 	 *             stops at this point
 	 */
-	public static void run(PrePostRunnable prePostCycle, List<TestExecutable> tests, Class<?> cls, String serialNumber, int loopCycle)
+	public static void run(List<TestExecutable> tests, Class<?> cls, String serialNumber, int loopCycle)
 			throws Exception {
 
 		// -------------------------------------------------------------------//
@@ -56,11 +56,14 @@ public class Runner {
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 		TestContext context = new TestContext(organisedLogger);
 
-		// Scan all test cases with correct annotation and store it in global
-		// variable
-		String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
-		Map<String, TestObjectWrapper> testMap = new ScanTestSuitUsingReflection(context, packageName).invoke();
-		context.setGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testMap);
+		// Using reflection grep all test cases
+		{
+			String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
+			ScanTestSuitUsingReflection reflection = new ScanTestSuitUsingReflection(packageName);
+			// Get all test case information and store it for later use
+			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
+			context.setGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
+		}
 
 		Logger logger = context.getLogger();
 		printUsefulInfo(logger);
@@ -70,24 +73,28 @@ public class Runner {
 		// Test Start
 		// ********************************************************************************************
 		logger.info("\n-------- Start -----------");
+
+		// Create an instance of Main class
+		PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
+
 		// Run prior to each test suit
-		prePostCycle.beforeTestsuit(context);
+		prePostCycleInstance.beforeTestsuit(context);
 		for (int index = 0; index < loopCycle; index++) {
 			logger.info("\n-------- (" + index + ") -----------");
 			// --------------------------------------------------------------------------------------------
 			for (TestExecutable t : tests) {
 				// Run Pre Method prior to any test Execution
-				prePostCycle.beforeTest(context);
+				prePostCycleInstance.beforeTest(context);
 
 				t.onExecute(context);
 
 				// Run Post Method prior to any test Execution
-				prePostCycle.afterTest(context);
+				prePostCycleInstance.afterTest(context);
 			}
 			// --------------------------------------------------------------------------------------------
 		}
 		// Run at the end of each test suit
-		prePostCycle.afterTestsuit(context);
+		prePostCycleInstance.afterTestsuit(context);
 		logger.info("\n-------- Finished -----------");
 		// ********************************************************************************************
 		// Test Finish
@@ -119,6 +126,7 @@ public class Runner {
 		logger.info("* File separator (\"/\" on UNIX) => " + System.getProperty("file.separator"));
 		logger.info("* Path separator (\":\" on UNIX) => " + System.getProperty("path.separator"));
 		logger.info("* User's account name => " + System.getProperty("user.name"));
+		logger.info("* User's home directory => " + System.getProperty("user.home"));
 		
 		// logger.info("Java installation directory => " + System.getProperty("java.home"));
 		// logger.info("Java Virtual Machine specification vendor => " + System.getProperty("java.vm.specification.vendor"));
@@ -133,7 +141,7 @@ public class Runner {
 		// logger.info("Name of JIT compiler to use => " + System.getProperty("java.compiler"));
 		// logger.info("Path of extension directory or directories => " + System.getProperty("java.ext.dirs"));
 		// logger.info("Line separator (\"\\n\" on UNIX) => " + System.getProperty("line.separator"));
-		// logger.info("User's home directory => " + System.getProperty("user.home"));
+		
 		// logger.info("User's current working directory => " + System.getProperty("user.dir"));
 		
 		// @formatter:on
