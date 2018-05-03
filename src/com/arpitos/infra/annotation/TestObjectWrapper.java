@@ -4,32 +4,30 @@ public class TestObjectWrapper {
 
 	Class<?> cls = null;
 	boolean skipTest = false;
-	String testPlanScenario = "";
+	int testsequence = 0;
+	String testCaseLabel="";
+
 	String testPlanDescription = "";
 	String testPlanPreparedBy = "";
 	String testPlanPreparationDate = "";
 	String testreviewedBy = "";
 	String testReviewDate = "";
 
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, String testPlanScenario, String testPlanDescription, String testPlanPreparedBy,
-			String testPlanPreparationDate, String testreviewedBy, String testReviewData) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel, String testPlanDescription, String testPlanPreparedBy,
+			String testPlanPreparationDate, String testreviewedBy, String testReviewDate) {
 		super();
-		this.skipTest = skipTest;
+		
 		this.cls = cls;
-		this.testPlanScenario = testPlanScenario;
+		
+		this.skipTest = skipTest;
+		this.testsequence = testsequence;
+		this.testCaseLabel = testCaseLabel;
+		
 		this.testPlanDescription = testPlanDescription;
 		this.testPlanPreparedBy = testPlanPreparedBy;
 		this.testPlanPreparationDate = testPlanPreparationDate;
 		this.testreviewedBy = testreviewedBy;
 		this.testReviewDate = testReviewDate;
-	}
-
-	public String getTestPlanScenario() {
-		return testPlanScenario;
-	}
-
-	public void setTestPlanScenario(String testPlanScenario) {
-		this.testPlanScenario = testPlanScenario;
 	}
 
 	public String getTestPlanDescription() {
@@ -86,6 +84,22 @@ public class TestObjectWrapper {
 
 	public void setSkipTest(boolean skipTest) {
 		this.skipTest = skipTest;
+	}
+
+	public int getTestsequence() {
+		return testsequence;
+	}
+
+	public void setTestsequence(int testsequence) {
+		this.testsequence = testsequence;
+	}
+
+	public String getTestCaseLabel() {
+		return testCaseLabel;
+	}
+
+	public void setTestCaseLabel(String testCaseLabel) {
+		this.testCaseLabel = testCaseLabel;
 	}
 
 }
