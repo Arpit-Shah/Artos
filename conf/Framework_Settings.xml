@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
-	<Organization>
-		<Property name="enableLogDecoration">false</Property>
-		<Property name="enableTextLog">true</Property>
-		<Property name="enableHTMLLog">false</Property>
-	</Organization>
-</Configuration>
-

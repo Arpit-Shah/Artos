@@ -1,12 +1,12 @@
-package com.arpitos.infra;
+package com.arpitos.framework.infra;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
 
-import com.arpitos.framework.Banner;
-import com.arpitos.infra.Enums.TestStatus;
+import com.arpitos.framework.Enums.TestStatus;
+import com.arpitos.framework.Static_Store;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -19,7 +19,6 @@ import com.arpitos.infra.Enums.TestStatus;
 public class TestContext {
 
 	private OrganisedLog organiseLogger;
-	private OrganisationInfo organisationInfo;
 	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
 	private String strJIRARef = "";
@@ -29,7 +28,6 @@ public class TestContext {
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
-	public static TestContext context;
 
 	/**
 	 * Constructor
@@ -38,34 +36,30 @@ public class TestContext {
 	 *            = Logger object
 	 */
 	public TestContext(OrganisedLog organisedLog) {
-		this.organisationInfo = new OrganisationInfo();
 		this.organiseLogger = organisedLog;
-		printOrganisationInfo();
-		setTestContext(this);
+		printMendatoryInfo();
+		Static_Store.SysProperties.printUsefulInfo(organisedLog.getGeneralLogger());
 	}
 
 	/**
 	 * Prints Organisation details to each log files
 	 */
-	private void printOrganisationInfo() {
+	private void printMendatoryInfo() {
 		//@formatter:off
+		
+		String organisationInfo = "************************************ Header Start ******************************************"
+								 +"\nOrganisation_Name : " + Static_Store.FWConfig.getOrganisation_Name()
+								 +"\nOrganisation_Country : " + Static_Store.FWConfig.getOrganisation_Country()
+								 +"\nOrganisation_Address : " + Static_Store.FWConfig.getOrganisation_Address()
+								 +"\nOrganisation_Phone : " + Static_Store.FWConfig.getOrganisation_Contact_Number()
+								 +"\nOrganisation_Email : " + Static_Store.FWConfig.getOrganisation_Email()
+								 +"\nOrganisation_Website : " + Static_Store.FWConfig.getOrganisation_Website()
+								 +"\n************************************ Header End ********************************************";
 		getOrganiseLogger().getGeneralLogger().info(Banner.getBanner());
-		getOrganiseLogger().getGeneralLogger().info("************************************ Header Start ******************************************"
-													+"\nOrganisation_Name : " + getOrganisationInfo().getOrganisation_Name()
-													+"\nOrganisation_Country : " + getOrganisationInfo().getOrganisation_Country()
-													+"\nOrganisation_Address : " + getOrganisationInfo().getOrganisation_Address()
-													+"\nOrganisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number()
-													+"\nOrganisation_Website : " + getOrganisationInfo().getOrganisation_Website()
-													+"\n************************************ Header End ********************************************");
+		getOrganiseLogger().getGeneralLogger().info(organisationInfo);
 
 		getOrganiseLogger().getSummaryLogger().info(Banner.getBanner());
-		getOrganiseLogger().getSummaryLogger().info("************************************ Header Start ******************************************"
-													+"\nOrganisation_Name : " + getOrganisationInfo().getOrganisation_Name()
-													+"\nOrganisation_Country : " + getOrganisationInfo().getOrganisation_Country()
-													+"\nOrganisation_Address : " + getOrganisationInfo().getOrganisation_Address()
-													+"\nOrganisation_Phone : " + getOrganisationInfo().getOrganisation_Contact_Number()
-													+"\nOrganisation_Website : " + getOrganisationInfo().getOrganisation_Website()
-													+"\n************************************ Header End ********************************************");
+		getOrganiseLogger().getSummaryLogger().info(organisationInfo);
 		//@formatter:on
 	}
 
@@ -86,8 +80,8 @@ public class TestContext {
 			if (testStatus == TestStatus.FAIL) {
 				//@formatter:off
 				getLogger().warn("**********************************"
-								+ "\n*********** FAIL HERE ************"
-								+ "\n**********************************");
+								+"\n*********** FAIL HERE ************"
+								+"\n**********************************");
 				//@formatter:on
 			}
 		}
@@ -107,8 +101,8 @@ public class TestContext {
 			if (getCurrentTestStatus() == TestStatus.PASS) {
 				//@formatter:off
 				getLogger().warn("**********************************"
-								+ "\n******** KTF TEST PASSED *********"
-								+ "\n**********************************");
+								+"\n******** KTF TEST PASSED *********"
+								+"\n**********************************");
 				//@formatter:on
 				setCurrentTestStatus(TestStatus.FAIL);
 			}
@@ -205,7 +199,7 @@ public class TestContext {
 	 * 
 	 * @param Key
 	 *            = String key to retrive an object
-	 * @return 
+	 * @return
 	 */
 	public Object getGlobalObject(String key) {
 		return globalObjectsHashMap.get(key);
@@ -257,22 +251,6 @@ public class TestContext {
 
 	public void setOrganiseLogger(OrganisedLog organiseLogger) {
 		this.organiseLogger = organiseLogger;
-	}
-
-	public static TestContext getTestContext() {
-		return context;
-	}
-
-	public static void setTestContext(TestContext currentTestContext) {
-		TestContext.context = currentTestContext;
-	}
-
-	public OrganisationInfo getOrganisationInfo() {
-		return organisationInfo;
-	}
-
-	public void setOrganisationInfo(OrganisationInfo organisationInfo) {
-		this.organisationInfo = organisationInfo;
 	}
 
 }

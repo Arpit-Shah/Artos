@@ -4,7 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import com.arpitos.infra.TestContext;
+import com.arpitos.framework.infra.TestContext;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;

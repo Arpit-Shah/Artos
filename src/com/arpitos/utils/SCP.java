@@ -3,7 +3,7 @@ package com.arpitos.utils;
 import java.io.File;
 import java.net.Socket;
 
-import com.arpitos.infra.TestContext;
+import com.arpitos.framework.infra.TestContext;
 import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2SCP1Client;
 import com.mindbright.ssh2.SSH2SimpleClient;

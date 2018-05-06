@@ -1,4 +1,4 @@
-package com.arpitos.infra.annotation;
+package com.arpitos.framework;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,15 +13,21 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
-import com.arpitos.infra.TestContext;
+import com.arpitos.annotation.AfterTest;
+import com.arpitos.annotation.AfterTestsuit;
+import com.arpitos.annotation.BeforeTest;
+import com.arpitos.annotation.BeforeTestsuit;
+import com.arpitos.annotation.TestCase;
+import com.arpitos.annotation.TestPlan;
+import com.arpitos.framework.infra.TestContext;
 import com.arpitos.interfaces.TestExecutable;
 
-public class ScanTestSuitUsingReflection {
+public class ScanTestSuit {
 	Reflections reflaction;
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
 
-	public ScanTestSuitUsingReflection(String packageName) throws Exception {
+	public ScanTestSuit(String packageName) throws Exception {
 		scan(packageName);
 	}
 
@@ -48,8 +54,16 @@ public class ScanTestSuitUsingReflection {
 			//			);
 			// @formatter:on
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label(), testplan.decription(),
-					testplan.preparedBy(), testplan.preparationDate(), testplan.reviewedBy(), testplan.reviewDate());
+			// Test Plan Attribute is optional, If user does not set it then
+			// test should continue
+			TestObjectWrapper testobj = null;
+			if (null == testplan) {
+				testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label(), "Warning : TestPlan Attribute is not set",
+						"???", "???", "???", "???");
+			} else {
+				testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label(), testplan.decription(),
+						testplan.preparedBy(), testplan.preparationDate(), testplan.reviewedBy(), testplan.reviewDate());
+			}
 
 			testObjWrapperList_All.add(testobj);
 			if (!testcase.skip()) {
@@ -87,25 +101,14 @@ public class ScanTestSuitUsingReflection {
 				}
 			}
 		}
-
-		System.out.println("Bubble sorted list of test cases");
-		printNumbers(array);
-
 		return array;
 	}
 
 	private void swapNumbers(int i, int j, TestObjectWrapper[] array) {
-
 		TestObjectWrapper temp;
 		temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
-	}
-
-	private void printNumbers(TestObjectWrapper[] array) {
-		for (int i = 0; i < array.length; i++) {
-			System.out.print(array[i].getTestsequence() + " " + array[i].getCls().getName() + "\n");
-		}
 	}
 
 	public void generateTestPlan(TestContext context) {

@@ -1,4 +1,4 @@
-package com.arpitos.framework;
+package com.arpitos.framework.infra;
 
 //   ___    
 //  / _ \           _                     __ _ _
@@ -11,7 +11,7 @@ package com.arpitos.framework;
 
 //@formatter:on
 
-public class Banner {
+class Banner {
 	
 	public static String getBanner(){
 		// @formatter:off

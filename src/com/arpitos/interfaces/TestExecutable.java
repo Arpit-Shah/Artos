@@ -1,12 +1,11 @@
 package com.arpitos.interfaces;
 
-import com.arpitos.infra.Enums.TestStatus;
-import com.arpitos.infra.annotation.TestObjectWrapper;
-
 import java.util.Map;
 
-import com.arpitos.framework.ArpitosStatic_Store;
-import com.arpitos.infra.TestContext;
+import com.arpitos.framework.Enums.TestStatus;
+import com.arpitos.framework.Static_Store;
+import com.arpitos.framework.TestObjectWrapper;
+import com.arpitos.framework.infra.TestContext;
 import com.arpitos.utils.Utils;
 
 /**
@@ -23,7 +22,7 @@ public interface TestExecutable {
 
 			// @formatter:off
 			@SuppressWarnings("unchecked")
-			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context.getGlobalObject(ArpitosStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
+			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context.getGlobalObject(Static_Store.GLOBAL_ANNOTATED_TEST_MAP);
 			TestObjectWrapper testObject = testMap.get(cls.getName());
 			
 			context.getLogger().info("*************************************************************************"

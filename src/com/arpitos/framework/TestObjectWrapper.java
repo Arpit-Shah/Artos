@@ -1,4 +1,4 @@
-package com.arpitos.infra.annotation;
+package com.arpitos.framework;
 
 public class TestObjectWrapper {
 

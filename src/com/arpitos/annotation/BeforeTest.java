@@ -1,4 +1,4 @@
-package com.arpitos.infra.annotation;
+package com.arpitos.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -9,6 +9,6 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
 @Target(ElementType.METHOD)
-public @interface AfterTest {
+public @interface BeforeTest {
 	
 }

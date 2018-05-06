@@ -1,10 +1,10 @@
 package com.arpitos.interfaces;
 
-import com.arpitos.infra.TestContext;
-import com.arpitos.infra.annotation.AfterTest;
-import com.arpitos.infra.annotation.AfterTestsuit;
-import com.arpitos.infra.annotation.BeforeTest;
-import com.arpitos.infra.annotation.BeforeTestsuit;
+import com.arpitos.annotation.AfterTest;
+import com.arpitos.annotation.AfterTestsuit;
+import com.arpitos.annotation.BeforeTest;
+import com.arpitos.annotation.BeforeTestsuit;
+import com.arpitos.framework.infra.TestContext;
 
 /**
  * Used for classes which implements Pre Post methods for test cases

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<organization_info>
+		<property name="Name">Arpitos PTY Ltd</property>
+		<property name="Address">01, Test Street, Test Suburb, Auckland
+		</property>
+		<property name="Country">NewZealand</property>
+		<property name="Contact_Number">+64 210762810</property>
+		<property name="Email">arpit.shah1@gmail.com</property>
+		<property name="Website">www.arpitos.com</property>
+	</organization_info>
+	<logger>
+	    <!--LogLevel Options : info:debug:trace:fatal:warn:all-->
+   		<property name="logLevel">debug</property>
+   		<property name="logRootDir">./reporting/</property>
+		<property name="enableLogDecoration">false</property>
+		<property name="enableTextLog">true</property>
+		<property name="enableHTMLLog">false</property>
+	</logger>
+</configuration>
+

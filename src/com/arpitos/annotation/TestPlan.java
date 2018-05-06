@@ -1,4 +1,4 @@
-package com.arpitos.infra.annotation;
+package com.arpitos.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

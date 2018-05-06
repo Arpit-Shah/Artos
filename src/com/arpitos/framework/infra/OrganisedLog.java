@@ -1,4 +1,4 @@
-package com.arpitos.infra;
+package com.arpitos.framework.infra;
 
 import java.io.File;
 
@@ -17,16 +17,18 @@ import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
-import com.arpitos.infra.Enums.TestStatus;
+import com.arpitos.framework.Enums.TestStatus;
+import com.arpitos.framework.Static_Store;
+
 
 /**
- * This class is responsible for initializing all log streams which may require
+ * This class is responsible for initialising all log streams which may require
  * during test suit execution
  * 
  * @author arpit
  *
  */
-public class OrganisedLog {
+class OrganisedLog {
 
 	private Logger generalLogger;
 	private Logger summaryLogger;
@@ -289,7 +291,8 @@ public class OrganisedLog {
 
 		{
 			// create the new logger
-			LoggerComponentBuilder loggerBuilder1 = builder.newLogger("TestLog", Level.DEBUG);
+			Level loglevel = getLoglevelFromXML();
+			LoggerComponentBuilder loggerBuilder1 = builder.newLogger("TestLog", loglevel);
 			loggerBuilder1.addAttribute("additivity", false);
 			AppenderRefComponentBuilder appendRef1 = builder.newAppenderRef("console-log");
 			appendRef1.addAttribute("level", Level.ALL);
@@ -347,6 +350,28 @@ public class OrganisedLog {
 		loggerContext.getLogger("TestLog").trace(builder.toXmlConfiguration().toString());
 
 		return loggerContext;
+	}
+
+	private static Level getLoglevelFromXML() {
+		if(Static_Store.FWConfig.getLogLevel().equals("info")){
+			return Level.INFO;
+		}
+		if(Static_Store.FWConfig.getLogLevel().equals("all")){
+			return Level.ALL;
+		}
+		if(Static_Store.FWConfig.getLogLevel().equals("fatal")){
+			return Level.FATAL;
+		}
+		if(Static_Store.FWConfig.getLogLevel().equals("trace")){
+			return Level.TRACE;
+		}
+		if(Static_Store.FWConfig.getLogLevel().equals("warn")){
+			return Level.WARN;
+		}
+		if(Static_Store.FWConfig.getLogLevel().equals("debug")){
+			return Level.DEBUG;
+		}
+		return Level.DEBUG;
 	}
 
 	public Logger getGeneralLogger() {

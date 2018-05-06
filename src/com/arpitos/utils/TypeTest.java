@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.arpitos.infra.Enums.ExceptionValue;
+import com.arpitos.framework.Enums.ExceptionValue;
 
 public class TypeTest {
 

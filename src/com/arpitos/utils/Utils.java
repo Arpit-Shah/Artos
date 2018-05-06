@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import com.arpitos.infra.TestContext;
+import com.arpitos.framework.infra.TestContext;
 
 public class Utils {
 

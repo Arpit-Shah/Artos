@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-import com.arpitos.infra.Enums.ExceptionValue;
+import com.arpitos.framework.Enums.ExceptionValue;
 
 public class CustomPrompt implements ItemListener {
 
