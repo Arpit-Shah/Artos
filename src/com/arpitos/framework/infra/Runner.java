@@ -1,14 +1,17 @@
 package com.arpitos.framework.infra;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
+import com.arpitos.framework.RunnerGUI;
 import com.arpitos.framework.ScanTestSuit;
 import com.arpitos.framework.Static_Store;
 import com.arpitos.framework.TestObjectWrapper;
+import com.arpitos.interfaces.TestRunnable;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
 
@@ -21,6 +24,22 @@ import com.arpitos.interfaces.TestExecutable;
  *
  */
 public class Runner {
+
+	public static void run(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
+
+		boolean showGUISelector = true;
+		if (showGUISelector) {
+			TestRunnable runObj = new TestRunnable() {
+				@Override
+				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception {
+					Runner.runTest(testList, cls, serialNumber, loopCount);
+				}
+			};
+			new RunnerGUI((ArrayList<TestExecutable>) testList, cls, serialNumber, loopCycle, runObj);
+		} else {
+			runTest(testList, cls, serialNumber, loopCycle);
+		}
+	}
 
 	/**
 	 * This method executes test cases
@@ -40,7 +59,7 @@ public class Runner {
 	 *             If test case exception is not handled then test execution
 	 *             stops at this point
 	 */
-	public static void run(List<TestExecutable> tests, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
+	public static void runTest(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
 
 		// -------------------------------------------------------------------//
 		// Prepare Context
@@ -79,7 +98,7 @@ public class Runner {
 		for (int index = 0; index < loopCycle; index++) {
 			logger.info("\n---------------- (Test Loop Count : " + index + 1 + ") -------------------");
 			// --------------------------------------------------------------------------------------------
-			for (TestExecutable t : tests) {
+			for (TestExecutable t : testList) {
 				// Run Pre Method prior to any test Execution
 				prePostCycleInstance.beforeTest(context);
 
