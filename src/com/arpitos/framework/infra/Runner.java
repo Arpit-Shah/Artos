@@ -7,13 +7,21 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
-import com.arpitos.framework.RunnerGUI;
+import com.arpitos.framework.GUITestSelector;
 import com.arpitos.framework.ScanTestSuit;
 import com.arpitos.framework.Static_Store;
 import com.arpitos.framework.TestObjectWrapper;
-import com.arpitos.interfaces.TestRunnable;
+import com.arpitos.framework.Version;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
+import com.arpitos.interfaces.TestRunnable;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  * This class is responsible for running test cases. It initialising logger and
@@ -26,16 +34,14 @@ import com.arpitos.interfaces.TestExecutable;
 public class Runner {
 
 	public static void run(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
-
-		boolean showGUISelector = true;
-		if (showGUISelector) {
+		if (Static_Store.FWConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
 				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception {
 					Runner.runTest(testList, cls, serialNumber, loopCount);
 				}
 			};
-			new RunnerGUI((ArrayList<TestExecutable>) testList, cls, serialNumber, loopCycle, runObj);
+			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, serialNumber, loopCycle, runObj);
 		} else {
 			runTest(testList, cls, serialNumber, loopCycle);
 		}

@@ -44,6 +44,9 @@ public class FrameworkConfig {
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
 
+	// Features
+	private boolean enableGUITestSelector = true;
+
 	public FrameworkConfig(boolean createIfNotPresent) {
 		readXMLConfig(createIfNotPresent);
 	}
@@ -75,6 +78,7 @@ public class FrameworkConfig {
 
 			readOrganisationInfo(doc);
 			readLoggerConfig(doc);
+			readFeatures(doc);
 		} catch (FileNotFoundException fe) {
 			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values");
 		} catch (Exception e) {
@@ -151,7 +155,7 @@ public class FrameworkConfig {
 			property.setAttributeNode(attr);
 		}
 
-		// Loger config elements
+		// Logger config elements
 		Element logger = doc.createElement("logger");
 		rootElement.appendChild(logger);
 		{
@@ -203,6 +207,18 @@ public class FrameworkConfig {
 			property.setAttributeNode(attr);
 		}
 
+		// Features
+		Element features = doc.createElement("features");
+		rootElement.appendChild(features);
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableGUITestSelector())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableGUITestSelector");
+			property.setAttributeNode(attr);
+		}
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -252,6 +268,33 @@ public class FrameworkConfig {
 					}
 					if ("enableHTMLLog".equals(eElement.getAttribute("name"))) {
 						setEnableHTMLLog(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+				}
+			}
+		}
+	}
+
+	private void readFeatures(Document doc) {
+		// System.out.println("Root element :" +
+		// doc.getDocumentElement().getNodeName());
+		NodeList nList = doc.getElementsByTagName("features");
+
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+			Node nNode = nList.item(temp);
+
+			NodeList nChildList = nNode.getChildNodes();
+			for (int i = 0; i < nChildList.getLength(); i++) {
+				Node nChildNode = nChildList.item(i);
+				if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nChildNode;
+					// System.out.println(eElement.getNodeName());
+					// System.out.println(eElement.getAttribute("name"));
+					// System.out.println(eElement.getAttribute("name")
+					// +
+					// ":" +
+					// eElement.getTextContent());
+					if ("enableGUITestSelector".equals(eElement.getAttribute("name"))) {
+						setEnableGUITestSelector(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -385,5 +428,13 @@ public class FrameworkConfig {
 
 	public void setLogRootDir(String logRootDir) {
 		this.logRootDir = logRootDir;
+	}
+
+	public boolean isEnableGUITestSelector() {
+		return enableGUITestSelector;
+	}
+
+	public void setEnableGUITestSelector(boolean enableGUITestSelector) {
+		this.enableGUITestSelector = enableGUITestSelector;
 	}
 }

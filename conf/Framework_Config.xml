@@ -17,5 +17,8 @@
 		<property name="enableTextLog">true</property>
 		<property name="enableHTMLLog">false</property>
 	</logger>
+	<features>
+		<property name="enableGUITestSelector">true</property>
+	</features>
 </configuration>
 

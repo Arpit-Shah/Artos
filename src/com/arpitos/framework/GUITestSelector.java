@@ -2,13 +2,18 @@ package com.arpitos.framework;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,16 +22,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import com.arpitos.interfaces.TestRunnable;
 import com.arpitos.interfaces.TestExecutable;
+import com.arpitos.interfaces.TestRunnable;
 
-public class RunnerGUI {
+public class GUITestSelector {
 
 	private JFrame container;
 	private Class<?> cls;
@@ -46,8 +53,17 @@ public class RunnerGUI {
 	 *            Number of times each test will execute
 	 * @param testRunner
 	 *            A TestRunner implementation that will execute the tests
+	 * @throws UnsupportedLookAndFeelException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws Exception
 	 */
-	public RunnerGUI(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount, TestRunnable testRunner) {
+	public GUITestSelector(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount, TestRunnable testRunner)
+			throws Exception {
+		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
+		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
 		testRunnerDataModel = new TestRunnerDataModel(testList);
 		this.cls = cls;
 		this.serialNumber = serialNumber;
@@ -66,7 +82,14 @@ public class RunnerGUI {
 
 			initMainFrame(packageName);
 			initMainViewComponents();
-
+			BufferedImage img64x64 = ImageIO.read(getClass().getResource("icons/arpitos_icon64x64.png"));
+			BufferedImage img32x32 = ImageIO.read(getClass().getResource("icons/arpitos_icon32x32.png"));
+			BufferedImage img16x16 = ImageIO.read(getClass().getResource("icons/arpitos_icon16x16.png"));
+			List<BufferedImage> imgList = new ArrayList<>();
+			imgList.add(img64x64);
+			imgList.add(img32x32);
+			imgList.add(img16x16);
+			container.setIconImages(imgList);
 			container.setVisible(true);
 		} else {
 			try {
@@ -86,8 +109,9 @@ public class RunnerGUI {
 	 *            Number of times each test will execute
 	 * @param testRunner
 	 *            A TestRunner implementation that will execute the tests
+	 * @throws IOException
 	 */
-	public RunnerGUI(ArrayList<TestExecutable> testList, int loopCount, TestRunnable testRunner, boolean forceRunAll) {
+	public GUITestSelector(ArrayList<TestExecutable> testList, int loopCount, TestRunnable testRunner, boolean forceRunAll) throws IOException {
 		testRunnerDataModel = new TestRunnerDataModel(testList);
 		this.loopCount = loopCount;
 		this.testRunner = testRunner;
@@ -104,6 +128,8 @@ public class RunnerGUI {
 			initMainFrame(packageName);
 			initMainViewComponents();
 
+			Image img = ImageIO.read(getClass().getResource("icons/arpitos_icon64x64.png"));
+			container.setIconImage(img);
 			container.setVisible(true);
 		} else {
 			try {
@@ -121,10 +147,11 @@ public class RunnerGUI {
 	 *            The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame("Test Runner - " + packageName);
+		container = new JFrame(
+				"Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		container.setSize(new Dimension(480, 600));
+		container.setSize(new Dimension(480, 515));
 		container.setResizable(false);
 		container.setLocation(new Point(100, 50));
 	}
