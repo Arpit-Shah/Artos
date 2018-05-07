@@ -11,17 +11,9 @@ import com.arpitos.framework.GUITestSelector;
 import com.arpitos.framework.ScanTestSuit;
 import com.arpitos.framework.Static_Store;
 import com.arpitos.framework.TestObjectWrapper;
-import com.arpitos.framework.Version;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
 import com.arpitos.interfaces.TestRunnable;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 /**
  * This class is responsible for running test cases. It initialising logger and
@@ -128,6 +120,6 @@ public class Runner {
 		logger.info("Total Test Time : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)),
 				TimeUnit.MILLISECONDS.toSeconds((endTime - startTime))
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)))));
-		// System.exit(0);
+		System.exit((int)context.getCurrentFailCount());
 	}
 }
