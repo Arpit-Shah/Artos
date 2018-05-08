@@ -11,6 +11,8 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
@@ -22,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 
 import com.arpitos.framework.Enums.ExceptionValue;
 
@@ -63,6 +66,10 @@ public class CustomPrompt implements ItemListener {
 	}
 
 	public void Start() throws Exception {
+
+		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
+		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		// Image panel
 		JPanel imagePanel = new JPanel();
@@ -171,6 +178,15 @@ public class CustomPrompt implements ItemListener {
 		jf.setTitle("CountDown Timer");
 		jf.pack();
 		jf.setLocationByPlatform(true);
+
+		BufferedImage img64x64 = ImageIO.read(getClass().getResource("../icons/arpitos_icon64x64.png"));
+		BufferedImage img32x32 = ImageIO.read(getClass().getResource("../icons/arpitos_icon32x32.png"));
+		BufferedImage img16x16 = ImageIO.read(getClass().getResource("../icons/arpitos_icon16x16.png"));
+		List<BufferedImage> imgList = new ArrayList<>();
+		imgList.add(img64x64);
+		imgList.add(img32x32);
+		imgList.add(img16x16);
+		jf.setIconImages(imgList);
 		jf.setVisible(true);
 
 		// Start Timer

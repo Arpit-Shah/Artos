@@ -82,9 +82,10 @@ public class GUITestSelector {
 
 			initMainFrame(packageName);
 			initMainViewComponents();
-			BufferedImage img64x64 = ImageIO.read(getClass().getResource("icons/arpitos_icon64x64.png"));
-			BufferedImage img32x32 = ImageIO.read(getClass().getResource("icons/arpitos_icon32x32.png"));
-			BufferedImage img16x16 = ImageIO.read(getClass().getResource("icons/arpitos_icon16x16.png"));
+			// System.out.println(getClass().getResource("../icons/arpitos_icon64x64.png"));
+			BufferedImage img64x64 = ImageIO.read(getClass().getResource("../icons/arpitos_icon64x64.png"));
+			BufferedImage img32x32 = ImageIO.read(getClass().getResource("../icons/arpitos_icon32x32.png"));
+			BufferedImage img16x16 = ImageIO.read(getClass().getResource("../icons/arpitos_icon16x16.png"));
 			List<BufferedImage> imgList = new ArrayList<>();
 			imgList.add(img64x64);
 			imgList.add(img32x32);
