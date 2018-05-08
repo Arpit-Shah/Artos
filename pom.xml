@@ -1,0 +1,201 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!-- Project Info -->
+	<name>${project.groupId}:${project.artifactId}</name>
+	<url>https://github.com/Arpit-Shah/Arpitos_TestFramework</url>
+	<description>Test Repository for arpitos features</description>
+
+	<!-- Project GAV Info -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.arpitos</groupId>
+	<artifactId>arpitos-fw</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<!-- Organisation Info -->
+	<organization>
+		<url>www.arpitos.com</url>
+		<name>Arpitos</name>
+	</organization>
+
+	<!-- Licence Info -->
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<!-- Developer Info -->
+	<developers>
+		<developer>
+			<name>Arpit Shah</name>
+			<email>arpit.shah1@gmail.com</email>
+			<organization>None</organization>
+			<organizationUrl>http://com.arpitos.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<!-- Source Repo Info -->
+	<scm>
+		<connection>scm:git:git://github.com/Arpit-Shah/Arpitos_TestFramework.git</connection>
+		<developerConnection>scm:git:ssh://github.com:Arpit-Shah/Arpitos_TestFramework.git</developerConnection>
+		<url>https://github.com/Arpit-Shah/Arpitos_TestFramework/tree/master</url>
+	</scm>
+
+	<!-- Distribution Model -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<!-- Dependencies -->
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.14</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
+		<dependency>
+			<groupId>com.arpitos</groupId>
+			<artifactId>javaassist</artifactId>
+			<version>3.21.0-GA</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/javassist-3.21.0-GA.jar</systemPath>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.clojure/java.jdbc -->
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>java.jdbc</artifactId>
+			<version>0.7.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.54</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.arpitos</groupId>
+			<artifactId>mindterm</artifactId>
+			<version>0.0.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/mindterm.signed.jar</systemPath>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.11</version>
+		</dependency>
+	</dependencies>
+
+	<!-- Build Plugins -->
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+
+		<!-- Maven Compiler Plugins -->
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- Nexus sonatype stagin Plugins -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+
+			<!-- Maven source tar generator Plugins -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Maven Javadoc generator Plugins -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<additionalOptions>
+						<additionalOption>-Xdoclint:none</additionalOption>
+					</additionalOptions>
+				</configuration>
+			</plugin>
+
+			<!-- Maven gpg/signing generator Plugins -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
