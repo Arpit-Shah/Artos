@@ -42,20 +42,15 @@ public class Runner {
 	/**
 	 * This method executes test cases
 	 * 
-	 * @param prePostCycle
-	 *            The class object which implements {@link PrePostRunnable}
-	 * @param tests
-	 *            List of test cases which implements {@link TestExecutable}
+	 * @param testList
+	 *            test object list
 	 * @param cls
-	 *            TestSuit Main class (Used for getting package name to
-	 *            construct log directory structure)
+	 *            class object which is executing test
 	 * @param serialNumber
-	 *            Product serialNumber or unique identifier
+	 *            product serial number
 	 * @param loopCycle
-	 *            Test Suit look time (Repeat count)
+	 *            test loop cycle
 	 * @throws Exception
-	 *             If test case exception is not handled then test execution
-	 *             stops at this point
 	 */
 	public static void runTest(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
 
@@ -120,6 +115,6 @@ public class Runner {
 		logger.info("Total Test Time : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)),
 				TimeUnit.MILLISECONDS.toSeconds((endTime - startTime))
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)))));
-		System.exit((int)context.getCurrentFailCount());
+		System.exit((int) context.getCurrentFailCount());
 	}
 }

@@ -301,7 +301,6 @@ public class SSH {
 	 * ssh.disconnect();
 	 * </pre>
 	 * 
-	 * @param pattern
 	 * @param longTimeoutMilliseconds
 	 * @return
 	 * @throws Exception

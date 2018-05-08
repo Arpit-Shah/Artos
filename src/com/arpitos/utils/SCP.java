@@ -98,10 +98,6 @@ public class SCP {
 	 * scp.disconnect();
 	 * </pre>
 	 * 
-	 * @param server
-	 * @param user
-	 * @param password
-	 * @param port
 	 * @return
 	 */
 	public SSH2SCP1Client connect() {
@@ -143,12 +139,9 @@ public class SCP {
 	 * scp.disconnect();
 	 * </PRE>
 	 * 
-	 * @param context
 	 * @param direction
-	 * @param strSourceFilePath
-	 * @param strDestinationFilePath
-	 * @param strHost
-	 * @throws Exception
+	 * @param srcFilePath
+	 * @param destFilePath
 	 */
 	public void fileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath) {
 		try {

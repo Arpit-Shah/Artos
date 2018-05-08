@@ -126,7 +126,7 @@ public class UtilsTar {
 	 * Method to decompress a gzip file
 	 *
 	 * @param gZippedFile
-	 * @param newFile
+	 * @param tarFile
 	 * @throws IOException
 	 */
 	public File deCompressGZipFile(File gZippedFile, File tarFile) throws Exception {

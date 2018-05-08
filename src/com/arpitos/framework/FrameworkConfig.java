@@ -51,11 +51,9 @@ public class FrameworkConfig {
 		readXMLConfig(createIfNotPresent);
 	}
 
-	/**
+	/*
 	 * Reads XML file from project root location, If not found then default info
 	 * is applied
-	 * 
-	 * @throws Exception
 	 */
 	public void readXMLConfig(boolean createIfNotPresent) {
 

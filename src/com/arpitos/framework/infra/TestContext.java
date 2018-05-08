@@ -185,7 +185,7 @@ public class TestContext {
 	 * Sets Object which is available globally to all test cases. User must
 	 * maintain Key for the HashTable
 	 * 
-	 * @param Key
+	 * @param key
 	 *            = Key to recognize an Object
 	 * @param obj
 	 *            = Object to be stored
@@ -197,7 +197,7 @@ public class TestContext {
 	/**
 	 * Gets Globally set Object from the Map using provided Key.
 	 * 
-	 * @param Key
+	 * @param key
 	 *            = String key to retrive an object
 	 * @return
 	 */

@@ -129,7 +129,7 @@ public class UtilsZip {
 	/**
 	 * Unzip file
 	 * 
-	 * @param zipFilePath
+	 * @param zipFile
 	 * @param destDir
 	 * @throws Exception
 	 */

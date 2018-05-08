@@ -73,7 +73,7 @@ public class Convert {
 	 * 
 	 * @param byteArray
 	 *            = first bye array
-	 * @param singleByte
+	 * @param rest
 	 *            = following byte array
 	 * @return = concatenated byte array
 	 */
@@ -159,7 +159,7 @@ public class Convert {
 	 * Answer : TEST
 	 * </PRE>
 	 * 
-	 * @param bytes
+	 * @param data
 	 *            = data to be converted
 	 * @return = Ascii formatted String
 	 * @throws Exception
@@ -175,7 +175,7 @@ public class Convert {
 	 * Answer : T
 	 * </PRE>
 	 * 
-	 * @param bytes
+	 * @param data
 	 *            = data to be converted
 	 * @return = Ascii formatted String
 	 * @throws Exception
@@ -244,7 +244,7 @@ public class Convert {
 	/**
 	 * 
 	 * @param bytes
-	 * @param flipbytes
+	 * @param bo
 	 * @return
 	 * @throws Exception
 	 */
@@ -594,8 +594,6 @@ public class Convert {
 	/**
 	 * Generate Random long number
 	 * 
-	 * @param low
-	 * @param high
 	 * @return
 	 */
 	public long randLong() {
