@@ -1,6 +1,7 @@
 package com.arpitos.framework.infra;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +20,6 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import com.arpitos.framework.Enums.TestStatus;
 import com.arpitos.framework.Static_Store;
-
 
 /**
  * This class is responsible for initialising all log streams which may require
@@ -78,19 +78,27 @@ class OrganisedLog {
 	 *            Skipped Test Count
 	 * @param ktfCount
 	 *            Known to Fail Test Count
+	 * @param totalTestTime
 	 */
 	public void appendSummaryReport(TestStatus status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
-			long ktfCount) {
+			long ktfCount, long totalTestTime) {
+
+		long hours = TimeUnit.MILLISECONDS.toHours(totalTestTime);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(totalTestTime) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(totalTestTime) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = totalTestTime - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestName).replace(" ", ".");
 		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
-		String PassCount = String.format("%-" + 10 + "s", passCount);
-		String FailCount = String.format("%-" + 10 + "s", failCount);
-		String SkipCount = String.format("%-" + 10 + "s", skipCount);
-		String KTFCount = String.format("%-" + 10 + "s", ktfCount);
-		getSummaryLogger()
-				.info(testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:" + KTFCount);
+		String PassCount = String.format("%-" + 4 + "s", passCount);
+		String FailCount = String.format("%-" + 4 + "s", failCount);
+		String SkipCount = String.format("%-" + 4 + "s", skipCount);
+		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
+
+		getSummaryLogger().info(testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:"
+				+ KTFCount + " " + testTime);
 	}
 
 	/**
@@ -353,22 +361,22 @@ class OrganisedLog {
 	}
 
 	private static Level getLoglevelFromXML() {
-		if(Static_Store.FWConfig.getLogLevel().equals("info")){
+		if (Static_Store.FWConfig.getLogLevel().equals("info")) {
 			return Level.INFO;
 		}
-		if(Static_Store.FWConfig.getLogLevel().equals("all")){
+		if (Static_Store.FWConfig.getLogLevel().equals("all")) {
 			return Level.ALL;
 		}
-		if(Static_Store.FWConfig.getLogLevel().equals("fatal")){
+		if (Static_Store.FWConfig.getLogLevel().equals("fatal")) {
 			return Level.FATAL;
 		}
-		if(Static_Store.FWConfig.getLogLevel().equals("trace")){
+		if (Static_Store.FWConfig.getLogLevel().equals("trace")) {
 			return Level.TRACE;
 		}
-		if(Static_Store.FWConfig.getLogLevel().equals("warn")){
+		if (Static_Store.FWConfig.getLogLevel().equals("warn")) {
 			return Level.WARN;
 		}
-		if(Static_Store.FWConfig.getLogLevel().equals("debug")){
+		if (Static_Store.FWConfig.getLogLevel().equals("debug")) {
 			return Level.DEBUG;
 		}
 		return Level.DEBUG;

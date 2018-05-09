@@ -21,6 +21,7 @@ public class TestContext {
 	private OrganisedLog organiseLogger;
 	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
+	private long testStartTime;
 	private String strJIRARef = "";
 	private long totalTestCount = 0;
 	private long currentPassCount = 0;
@@ -122,11 +123,12 @@ public class TestContext {
 			setCurrentKTFCount(getCurrentKTFCount() + 1);
 		}
 
-		// Finalize and add test result in log file
+		long totalTestTime = System.currentTimeMillis() - getTestStartTime();
+		// Finalise and add test result in log file
 		getLogger().info("Test Result : " + getCurrentTestStatus().name());
-		// Finalize and add test summary to Summary report
+		// Finalise and add test summary to Summary report
 		getOrganiseLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrJIRARef(), getCurrentPassCount(), getCurrentFailCount(),
-				getCurrentSkipCount(), getCurrentKTFCount());
+				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 
 		// reset statuses for next test
 		resetTestStatus();
@@ -171,6 +173,7 @@ public class TestContext {
 	public void setKnownToFail(boolean knownToFail, String strJIRARef) {
 		KnownToFail = knownToFail;
 		setStrJIRARef(strJIRARef);
+		setTestStartTime(System.currentTimeMillis());
 	}
 
 	private String getStrJIRARef() {
@@ -251,6 +254,14 @@ public class TestContext {
 
 	public void setOrganiseLogger(OrganisedLog organiseLogger) {
 		this.organiseLogger = organiseLogger;
+	}
+
+	public long getTestStartTime() {
+		return testStartTime;
+	}
+
+	public void setTestStartTime(long testStartTime) {
+		this.testStartTime = testStartTime;
 	}
 
 }
