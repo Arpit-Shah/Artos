@@ -1,5 +1,9 @@
 package com.arpitos.framework.infra;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,13 +25,21 @@ public class TestContext {
 	private OrganisedLog organiseLogger;
 	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
-	private long testStartTime;
+
 	private String strJIRARef = "";
 	private long totalTestCount = 0;
 	private long currentPassCount = 0;
 	private long currentFailCount = 0;
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
+
+	// Very first test start time
+	private long testSuitStartTime;
+	// Very first test start time
+	private long testSuitFinishTime;
+	// Individual test start time
+	private long testStartTime;
+
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
 
 	/**
@@ -184,6 +196,10 @@ public class TestContext {
 		this.strJIRARef = strJIRARef;
 	}
 
+	public long getTestSuitTimeDuration() {
+		return getTestSuitFinishTime() - getTestStartTime();
+	}
+
 	/**
 	 * Sets Object which is available globally to all test cases. User must
 	 * maintain Key for the HashTable
@@ -262,6 +278,29 @@ public class TestContext {
 
 	public void setTestStartTime(long testStartTime) {
 		this.testStartTime = testStartTime;
+	}
+
+	public long getTestSuitStartTime() {
+		return testSuitStartTime;
+	}
+
+	public void setTestSuitStartTime(long testSuitStartTime) {
+		this.testSuitStartTime = testSuitStartTime;
+	}
+
+	public long getTestSuitFinishTime() {
+		return testSuitFinishTime;
+	}
+
+	public void setTestSuitFinishTime(long testSuitFinishTime) {
+		this.testSuitFinishTime = testSuitFinishTime;
+
+		String timeStamp = "\nTest start time : " + Static_Store.convert.MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", testSuitStartTime);
+		getOrganiseLogger().getGeneralLogger().info(timeStamp);
+		getOrganiseLogger().getSummaryLogger().info(timeStamp);
+		timeStamp = "Test finish time : " + Static_Store.convert.MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", testSuitFinishTime);
+		getOrganiseLogger().getGeneralLogger().info(timeStamp);
+		getOrganiseLogger().getSummaryLogger().info(timeStamp);
 	}
 
 }

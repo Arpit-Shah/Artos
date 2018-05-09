@@ -76,12 +76,12 @@ public class Runner {
 		}
 
 		Logger logger = context.getLogger();
-		long startTime = System.currentTimeMillis();
 
 		// ********************************************************************************************
 		// Test Start
 		// ********************************************************************************************
 		logger.info("\n---------------- Start -------------------");
+		context.setTestSuitStartTime(System.currentTimeMillis());
 
 		// Create an instance of Main class
 		PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
@@ -109,12 +109,12 @@ public class Runner {
 		// Test Finish
 		// ********************************************************************************************
 
-		long endTime = System.currentTimeMillis();
 		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
 				+ " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
-		logger.info("Total Test Time : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)),
-				TimeUnit.MILLISECONDS.toSeconds((endTime - startTime))
-						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((endTime - startTime)))));
+		context.setTestSuitFinishTime(System.currentTimeMillis());
+		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuitTimeDuration()),
+				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuitTimeDuration())
+						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuitTimeDuration()))));
 		System.exit((int) context.getCurrentFailCount());
 	}
 }

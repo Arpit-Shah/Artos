@@ -542,6 +542,21 @@ public class Convert {
 	// Time related manipulation
 	// *******************************************************************************************
 
+	/**
+	 * MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", System.milliseconds())
+	 * 
+	 * @param dateFormat
+	 * @param timeInMilliseconds
+	 * @return
+	 */
+	public String MilliSecondsToFormattedDate(String dateFormat, long timeInMilliseconds) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(timeInMilliseconds);
+		return simpleDateFormat.format(calendar.getTime());
+	}
+
 	public long getCurrentEPOCHTime() throws Exception {
 		Date date = new Date();
 		return getEPOCHTime(date);
@@ -628,7 +643,7 @@ public class Convert {
 	public String randString(int length) {
 		return String.valueOf(randChar(length));
 	}
-	
+
 	/**
 	 * Generate Random byte array
 	 * 
@@ -639,7 +654,7 @@ public class Convert {
 		byte[] b = new byte[length];
 		SecureRandom r = new SecureRandom();
 		r.nextBytes(b);
-		
+
 		return b;
 	}
 
