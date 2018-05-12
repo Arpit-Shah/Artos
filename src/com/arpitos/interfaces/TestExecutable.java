@@ -18,6 +18,8 @@ import com.arpitos.utils.Utils;
 public interface TestExecutable {
 
 	default public void onExecute(TestContext context, Class<?> cls) throws Exception {
+		long testStartTime = System.currentTimeMillis();
+
 		try {
 
 			// @formatter:off
@@ -37,11 +39,11 @@ public interface TestExecutable {
 			execute(context);
 			// --------------------------------------------------------------------------------------------
 
-			context.generateTestSummary(cls.getName());
+			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		} catch (Exception e) {
 			context.setCurrentTestStatus(TestStatus.FAIL);
 			Utils.writePrintStackTrace(context, e);
-			context.generateTestSummary(cls.getName());
+			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		}
 	}
 

@@ -1,9 +1,5 @@
 package com.arpitos.framework.infra;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +33,6 @@ public class TestContext {
 	private long testSuitStartTime;
 	// Very first test start time
 	private long testSuitFinishTime;
-	// Individual test start time
-	private long testStartTime;
 
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
 
@@ -107,7 +101,7 @@ public class TestContext {
 	 * @param strTestName
 	 *            = Test Name
 	 */
-	public void generateTestSummary(String strTestName) {
+	public void generateTestSummary(String strTestName, long testStartTime, long testFinishTime) {
 		// Test is marked as known to fail and for some reason it pass then
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
@@ -135,7 +129,7 @@ public class TestContext {
 			setCurrentKTFCount(getCurrentKTFCount() + 1);
 		}
 
-		long totalTestTime = System.currentTimeMillis() - getTestStartTime();
+		long totalTestTime = testFinishTime - testStartTime;
 		// Finalise and add test result in log file
 		getLogger().info("Test Result : " + getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
@@ -185,7 +179,6 @@ public class TestContext {
 	public void setKnownToFail(boolean knownToFail, String strJIRARef) {
 		KnownToFail = knownToFail;
 		setStrJIRARef(strJIRARef);
-		setTestStartTime(System.currentTimeMillis());
 	}
 
 	private String getStrJIRARef() {
@@ -197,7 +190,7 @@ public class TestContext {
 	}
 
 	public long getTestSuitTimeDuration() {
-		return getTestSuitFinishTime() - getTestStartTime();
+		return getTestSuitFinishTime() - getTestSuitStartTime();
 	}
 
 	/**
@@ -270,14 +263,6 @@ public class TestContext {
 
 	public void setOrganiseLogger(OrganisedLog organiseLogger) {
 		this.organiseLogger = organiseLogger;
-	}
-
-	public long getTestStartTime() {
-		return testStartTime;
-	}
-
-	public void setTestStartTime(long testStartTime) {
-		this.testStartTime = testStartTime;
 	}
 
 	public long getTestSuitStartTime() {
