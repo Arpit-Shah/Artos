@@ -34,10 +34,12 @@ public class UtilsZip {
 	/**
 	 * 
 	 * @param source
-	 *            = List of source files or directories which requires to be zipped
+	 *            = List of source files or directories which requires to be
+	 *            zipped
 	 * @param destFile
 	 *            = destination file (Example : new File("./test/test.zip"))
 	 * @throws Exception
+	 *             if file io fails
 	 */
 	public static void zip(List<File> source, File destFile) throws Exception {
 		FileOutputStream fos = new FileOutputStream(destFile);
@@ -130,8 +132,12 @@ public class UtilsZip {
 	 * Unzip file
 	 * 
 	 * @param zipFile
+	 *            source zip file
 	 * @param destDir
+	 *            destination directory where content required to be unzipped
 	 * @throws Exception
+	 *             if file io fails
+	 * 
 	 */
 	public static void unzip(File zipFile, File destDir) throws Exception {
 
@@ -184,7 +190,13 @@ public class UtilsZip {
 	}
 
 	/**
-	 * Determine whether a file is a ZIP File.
+	 * Validates if file is a zip file
+	 * 
+	 * @param file
+	 *            file to be verified
+	 * @return boolean
+	 * @throws IOException
+	 *             if file io failed
 	 */
 	public static boolean isZipFile(File file) throws IOException {
 		if (file.isDirectory()) {

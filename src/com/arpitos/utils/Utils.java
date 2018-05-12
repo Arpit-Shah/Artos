@@ -12,7 +12,9 @@ public class Utils {
 	 * Writes Print StackTrace on console and log file as per choosen option
 	 * 
 	 * @param context
+	 *            test context
 	 * @param e
+	 *            exception
 	 */
 	public static void writePrintStackTrace(TestContext context, Exception e) {
 		StringWriter sw = new StringWriter();

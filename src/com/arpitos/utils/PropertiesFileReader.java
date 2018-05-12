@@ -23,7 +23,9 @@ public class PropertiesFileReader {
 	 * attempts to create empty file to provided location
 	 * 
 	 * @param file
+	 *            file to be read as property file
 	 * @throws Exception
+	 *             if file io fails
 	 */
 	public PropertiesFileReader(File file) throws Exception {
 		if (!file.exists()) {
@@ -65,7 +67,8 @@ public class PropertiesFileReader {
 	 * Gets value from properties file with given key
 	 * 
 	 * @param key
-	 * @return
+	 *            property file key string
+	 * @return String value of queried key
 	 */
 	public String getValue(String key) {
 		return hmap.get(key);
@@ -76,7 +79,9 @@ public class PropertiesFileReader {
 	 * default value is returned.
 	 * 
 	 * @param key
+	 *            property file key string
 	 * @param defaultValue
+	 *            property file default value
 	 * @return
 	 */
 	public String getValue(String key, String defaultValue) {
@@ -92,7 +97,9 @@ public class PropertiesFileReader {
 	 * Add Single Key Value pair to .properies file
 	 * 
 	 * @param key
+	 *            property key string
 	 * @param value
+	 *            property file value string
 	 */
 	public void setValue(String key, String value) {
 		HashMap<String, String> keyValueMap = new HashMap<String, String>();

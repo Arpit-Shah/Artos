@@ -35,10 +35,15 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param context
+	 *            test context
 	 * @param hostIP
+	 *            host ip address
 	 * @param username
+	 *            username
 	 * @param password
+	 *            password
 	 * @param portNumber
+	 *            SSH port number
 	 */
 	public SSH(TestContext context, String hostIP, String username, String password, int portNumber) {
 		this.context = context;
@@ -62,11 +67,17 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param context
+	 *            test context
 	 * @param hostIP
+	 *            host IP address
 	 * @param username
+	 *            username
 	 * @param password
+	 *            password
 	 * @param portNumber
+	 *            SSH port number
 	 * @param privateKeyPath
+	 *            private key file path
 	 */
 	public SSH(TestContext context, String hostIP, String username, String password, int portNumber, String privateKeyPath) {
 		this.context = context;
@@ -145,7 +156,9 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param value
+	 *            data to write
 	 * @throws Exception
+	 *             if can not flush data
 	 */
 	public void write(String value) throws Exception {
 		/*
@@ -169,9 +182,12 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param value
+	 *            write value
 	 * @param pattern
+	 *            pattern to look for in received msg
 	 * @param longTimeoutMilliseconds
-	 * @return
+	 *            timeout value
+	 * @return String response
 	 * @throws Exception
 	 */
 	public String write(String value, String pattern, long longTimeoutMilliseconds) throws Exception {
@@ -198,7 +214,8 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param pattern
-	 * @return
+	 *            pattern to look for in received msg
+	 * @return String msg
 	 * @throws Exception
 	 */
 	public String readUntil(String pattern) throws Exception {
@@ -246,7 +263,9 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param pattern
+	 *            pattern to look for in received msg
 	 * @param longTimeoutMilliseconds
+	 *            timeout value
 	 * @return
 	 * @throws Exception
 	 */
@@ -284,7 +303,8 @@ public class SSH {
 			}
 		}
 		context.getLogger().info("*************************************************");
-//		context.getLogger().info("Timed out before Pattern match could be found");
+		// context.getLogger().info("Timed out before Pattern match could be
+		// found");
 		context.getLogger().info("*************************************************");
 		return sb.toString();
 	}
@@ -302,8 +322,10 @@ public class SSH {
 	 * </pre>
 	 * 
 	 * @param longTimeoutMilliseconds
-	 * @return
+	 *            timeout
+	 * @return String formatted received data
 	 * @throws Exception
+	 *             if anything failed
 	 */
 	public String readUntil(long longTimeoutMilliseconds) throws Exception {
 
@@ -344,6 +366,7 @@ public class SSH {
 	 * Disconnects SSH session
 	 * 
 	 * @throws Exception
+	 *             if SSH failed to disconnect
 	 */
 	public void disconnect() throws Exception {
 		getChannel().disconnect();

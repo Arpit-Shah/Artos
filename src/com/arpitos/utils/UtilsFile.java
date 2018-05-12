@@ -14,8 +14,11 @@ public class UtilsFile {
 	 * Copy Directory from source to destination location
 	 * 
 	 * @param src
+	 *            source file location
 	 * @param dest
+	 *            destination file location
 	 * @param overwrite
+	 *            enable overwrite true|false
 	 */
 	public static void copyDir(String src, String dest, boolean overwrite) {
 		try {
@@ -38,9 +41,13 @@ public class UtilsFile {
 	 * Copy File from source to destination location
 	 * 
 	 * @param source
+	 *            source file location
 	 * @param dest
+	 *            destination file location
 	 * @param overwrite
+	 *            enable overwrite true|false
 	 * @throws Exception
+	 *             if file io fails
 	 */
 	public static void copyFile(File source, File dest, boolean overwrite) throws Exception {
 		Files.copy(source.toPath(), dest.toPath(), overwrite ? new CopyOption[] { StandardCopyOption.REPLACE_EXISTING } : new CopyOption[] {});

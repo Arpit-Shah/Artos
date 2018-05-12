@@ -42,10 +42,15 @@ public class SCP {
 	 * </PRE>
 	 * 
 	 * @param context
+	 *            test context
 	 * @param server
+	 *            server ip
 	 * @param username
+	 *            username
 	 * @param password
+	 *            password
 	 * @param port
+	 *            scp port number
 	 */
 	public SCP(TestContext context, String server, String username, String password, int port) {
 		this.context = context;
@@ -68,11 +73,17 @@ public class SCP {
 	 * </PRE>
 	 * 
 	 * @param context
+	 *            test context
 	 * @param server
+	 *            server IP
 	 * @param username
+	 *            username
 	 * @param password
+	 *            password
 	 * @param port
+	 *            SCP port number
 	 * @param privateKeyPath
+	 *            private key location
 	 */
 	public SCP(TestContext context, String server, String username, String password, int port, String privateKeyPath) {
 		this.context = context;
@@ -140,8 +151,11 @@ public class SCP {
 	 * </PRE>
 	 * 
 	 * @param direction
+	 *            scp direction
 	 * @param srcFilePath
+	 *            source file path
 	 * @param destFilePath
+	 *            destination file path
 	 */
 	public void fileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath) {
 		try {

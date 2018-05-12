@@ -54,7 +54,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param reference
+	 *            reference value
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isEquals(String reference, String actual) {
@@ -74,10 +76,11 @@ public class Guardian {
 	 * @param desc
 	 *            pass or failure msg
 	 * @param reference
-	 *            expected String value
+	 *            reference value
 	 * @param actual
-	 *            actual value to be compared
+	 *            actual value
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardEquals(String desc, String reference, String actual) throws Exception {
 		print(reference, actual);
@@ -96,10 +99,11 @@ public class Guardian {
 	 * @param desc
 	 *            pass or failure msg
 	 * @param reference
-	 *            expected String value
+	 *            reference value
 	 * @param actual
-	 *            actual value to be compared
+	 *            actual value
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardNotEquals(String desc, String reference, String actual) throws Exception {
 		print(reference, actual);
@@ -119,7 +123,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param reference
+	 *            reference value
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isEquals(boolean reference, boolean actual) {
@@ -139,10 +145,11 @@ public class Guardian {
 	 * @param desc
 	 *            pass or failure msg
 	 * @param reference
-	 *            expected String value
+	 *            reference value
 	 * @param actual
-	 *            actual value to be compared
+	 *            actual value
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardEquals(String desc, boolean reference, boolean actual) throws Exception {
 		print(reference, actual);
@@ -161,10 +168,11 @@ public class Guardian {
 	 * @param desc
 	 *            pass or failure msg
 	 * @param reference
-	 *            expected String value
+	 *            reference value
 	 * @param actual
-	 *            actual value to be compared
+	 *            actual value
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardNotEquals(String desc, boolean reference, boolean actual) throws Exception {
 		print(reference, actual);
@@ -185,7 +193,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param format
+	 *            String format ($ as wildcard)
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isFormatEquals(String format, String actual) {
@@ -209,6 +219,7 @@ public class Guardian {
 	 * @param actual
 	 *            data which is being validated, right side of equation
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardFormatEquals(String desc, String format, String actual) throws Exception {
 		print(format, actual);
@@ -250,7 +261,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param reference
+	 *            reference value
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte reference, byte actual) {
@@ -274,6 +287,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardEquals(String desc, byte reference, byte actual) throws Exception {
 		print(reference, actual);
@@ -318,6 +332,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardGreaterThan(String desc, byte reference, byte actual) throws Exception {
 		print(reference, actual);
@@ -340,6 +355,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardGreaterOrEqualsTo(String desc, byte reference, byte actual) throws Exception {
 		print(reference, actual);
@@ -362,6 +378,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardLessThan(String desc, byte reference, byte actual) throws Exception {
 		print(reference, actual);
@@ -384,6 +401,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardLessOrEqualsTo(String desc, byte reference, byte actual) throws Exception {
 		print(reference, actual);
@@ -403,7 +421,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param reference
+	 *            reference value
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte[] reference, byte[] actual) {
@@ -427,6 +447,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardEquals(String desc, byte[] reference, byte[] actual) throws Exception {
 		print(reference, actual);
@@ -449,6 +470,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardNotEquals(String desc, byte[] reference, byte[] actual) throws Exception {
 		print(reference, actual);
@@ -468,7 +490,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param reference
+	 *            reference value
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isEquals(int reference, int actual) {
@@ -492,6 +516,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardEquals(String desc, int reference, int actual) throws Exception {
 		print(reference, actual);
@@ -514,6 +539,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardNotEquals(String desc, int reference, int actual) throws Exception {
 		print(reference, actual);
@@ -536,6 +562,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardGreaterThan(String desc, int reference, int actual) throws Exception {
 		print(reference, actual);
@@ -558,6 +585,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardGreaterOrEqualsTo(String desc, int reference, int actual) throws Exception {
 		print(reference, actual);
@@ -580,6 +608,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardLessThan(String desc, int reference, int actual) throws Exception {
 		print(reference, actual);
@@ -602,6 +631,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardLessOrEqualsTo(String desc, int reference, int actual) throws Exception {
 		print(reference, actual);
@@ -621,7 +651,9 @@ public class Guardian {
 	 * </PRE>
 	 * 
 	 * @param reference
+	 *            reference value
 	 * @param actual
+	 *            actual value
 	 * @return true | false
 	 */
 	public static boolean isEquals(long reference, long actual) {
@@ -645,6 +677,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardEquals(String desc, long reference, long actual) throws Exception {
 		print(reference, actual);
@@ -667,6 +700,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardNotEquals(String desc, long reference, long actual) throws Exception {
 		print(reference, actual);
@@ -689,6 +723,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardGreaterThan(String desc, long reference, long actual) throws Exception {
 		print(reference, actual);
@@ -711,6 +746,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardGreaterOrEquals(String desc, long reference, long actual) throws Exception {
 		print(reference, actual);
@@ -733,6 +769,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardLessThan(String desc, long reference, long actual) throws Exception {
 		print(reference, actual);
@@ -755,6 +792,7 @@ public class Guardian {
 	 * @param actual
 	 *            actual value to be compared
 	 * @throws Exception
+	 *             if value condition is not met
 	 */
 	public static void guardLessOrEqualsTo(String desc, long reference, long actual) throws Exception {
 		print(reference, actual);

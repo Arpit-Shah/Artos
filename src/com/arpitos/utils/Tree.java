@@ -9,7 +9,7 @@ public class Tree {
 	 * 
 	 * @param dir
 	 *            directory
-	 * @return
+	 * @return String formatted tree structure
 	 */
 	public static String printDirectoryTree(File dir) {
 		if (!dir.isDirectory()) {

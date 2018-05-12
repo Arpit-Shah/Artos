@@ -34,6 +34,34 @@ public class Runner {
 		}
 	}
 
+	/**
+	 * Run Method runs a test case
+	 * 
+	 * @param testList
+	 *            test object list which required to be run
+	 * @param cls
+	 *            Main class object instance
+	 * @param loopCycle
+	 *            Number of time test list required to be executed
+	 * @throws Exception
+	 */
+	public static void run(List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
+		run(testList, cls, "", loopCycle);
+	}
+
+	/**
+	 * Run Method runs a test case
+	 * 
+	 * @param testList
+	 *            test object list which required to be run
+	 * @param cls
+	 *            Main class object instance
+	 * @param serialNumber
+	 *            SubDirectory name (Generally serial number)
+	 * @param loopCycle
+	 *            Number of time test list required to be executed
+	 * @throws Exception
+	 */
 	public static void run(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
 		if (Static_Store.FWConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {

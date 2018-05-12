@@ -46,11 +46,14 @@ public class GUITestSelector {
 	 * 
 	 * @param testList
 	 *            List of Tests defined in Main class
+	 * @param cls
+	 *            class object with main method
 	 * @param loopCount
 	 *            Number of times each test will execute
 	 * @param testRunner
 	 *            A TestRunner implementation that will execute the tests
 	 * @throws Exception
+	 *             if gui could not launch
 	 */
 	public GUITestSelector(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount, TestRunnable testRunner)
 			throws Exception {
