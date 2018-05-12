@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.core.Logger;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -22,17 +22,39 @@ import com.arpitos.annotation.TestPlan;
 import com.arpitos.framework.infra.TestContext;
 import com.arpitos.interfaces.TestExecutable;
 
+/**
+ * This class provides all utilities for reflection
+ * 
+ * @author arpit
+ *
+ */
 public class ScanTestSuit {
 	Reflections reflaction;
+	List<String> testLabels = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
 
+	/**
+	 * Default constructor. Scans all packages within provided package
+	 * 
+	 * @param packageName
+	 *            Base package name
+	 * @throws Exception
+	 */
 	public ScanTestSuit(String packageName) throws Exception {
 		scan(packageName);
 	}
 
+	/**
+	 * Scans for Test cases within provided packageName
+	 * 
+	 * @param packageName
+	 *            Base package name
+	 * @throws Exception
+	 */
 	private void scan(String packageName) throws Exception {
 
+		List<String> testLabels_withDuplicates = new ArrayList<>();
 		reflaction = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 
 		for (Class<?> cl : reflaction.getTypesAnnotatedWith(TestCase.class)) {
@@ -65,11 +87,22 @@ public class ScanTestSuit {
 						testplan.preparedBy(), testplan.preparationDate(), testplan.reviewedBy(), testplan.reviewDate());
 			}
 
+			// collect all labels
+			String[] labelArray = testcase.label().toLowerCase().trim().split(":");
+			for (String s : labelArray) {
+				if (null != s && !"".equals(s)) {
+					testLabels_withDuplicates.add(s.trim());
+				}
+			}
+
 			testObjWrapperList_All.add(testobj);
 			if (!testcase.skip()) {
 				testObjWrapperList_WithoutSkipped.add(testobj);
 			}
 		}
+
+		// Remove duplicates from the list
+		testLabels = testLabels_withDuplicates.stream().distinct().collect(Collectors.toList());
 
 		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTest.class)) {
 			// System.out.println("@BeforeTest = " + method.getName() + " : " +
@@ -89,7 +122,13 @@ public class ScanTestSuit {
 		}
 	}
 
-	// logic to bubble sort the elements
+	/**
+	 * logic to bubble sort the elements
+	 * 
+	 * @param array
+	 *            Array of all scanned test objects
+	 * @return
+	 */
 	private TestObjectWrapper[] bubble_srt(TestObjectWrapper[] array) {
 		int n = array.length;
 		int k;
@@ -104,6 +143,16 @@ public class ScanTestSuit {
 		return array;
 	}
 
+	/**
+	 * Swap object in the array
+	 * 
+	 * @param i
+	 *            To
+	 * @param j
+	 *            From
+	 * @param array
+	 *            Array of all scanned test objects
+	 */
 	private void swapNumbers(int i, int j, TestObjectWrapper[] array) {
 		TestObjectWrapper temp;
 		temp = array[i];
@@ -111,22 +160,49 @@ public class ScanTestSuit {
 		array[j] = temp;
 	}
 
-	public void generateTestPlan(TestContext context) {
-		Logger logger = context.getLogger();
-
+	/**
+	 * Generates test plan using annotation provided in the test case classes
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public String getTestPlan(TestContext context) {
+		StringBuilder sb = new StringBuilder();
+		
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
-			logger.info("\nTestCaseName : " + testObject.getCls().getName());
-			logger.info("SkipTest : " + Boolean.toString(testObject.isSkipTest()));
-			logger.info("TestSequence : " + testObject.getTestsequence());
-			logger.info("TestLabel : " + testObject.getTestCaseLabel());
-			logger.info("Description : " + testObject.getTestPlanDescription());
-			logger.info("PreparedBy : " + testObject.getTestPlanPreparedBy());
-			logger.info("PreparationDate : " + testObject.getTestPlanPreparationDate());
-			logger.info("ReviewedBy : " + testObject.getTestreviewedBy());
-			logger.info("ReviewedDate : " + testObject.getTestReviewDate());
+			sb.append("\nTestCaseName : " + testObject.getCls().getName());
+			sb.append("\nSkipTest : " + Boolean.toString(testObject.isSkipTest()));
+			sb.append("\nTestSequence : " + testObject.getTestsequence());
+			sb.append("\nTestLabel : " + testObject.getTestCaseLabel());
+			sb.append("\nDescription : " + testObject.getTestPlanDescription());
+			sb.append("\nPreparedBy : " + testObject.getTestPlanPreparedBy());
+			sb.append("\nPreparationDate : " + testObject.getTestPlanPreparationDate());
+			sb.append("\nReviewedBy : " + testObject.getTestreviewedBy());
+			sb.append("\nReviewedDate : " + testObject.getTestReviewDate());
 		}
+
+		return sb.toString();
 	}
 
+	public String getTestLabelsToPrint(TestContext context) {
+		StringBuilder sb = new StringBuilder();
+		
+		for (String label : testLabels) {
+			sb.append("\n" + label);
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * Returns all scanned test cases wrapped with TestObjWrapper components
+	 * 
+	 * @param sortBySeqNum
+	 *            Enables sorting of the test cases
+	 * @param removeSkippedTests
+	 *            Enables removal of test cases which are marked 'Skip'
+	 * @return
+	 */
 	public List<TestObjectWrapper> getTestObjWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
 		// Convert list to array and then do bubble sort based on sequence
 		// number
@@ -148,6 +224,15 @@ public class ScanTestSuit {
 		return Arrays.asList(sortedArray);
 	}
 
+	/**
+	 * Returns all scanned test cases
+	 * 
+	 * @param sortBySeqNum
+	 *            Enables sorting of the test cases
+	 * @param removeSkippedTests
+	 *            Enables removal of test cases which are marked 'Skip'
+	 * @return
+	 */
 	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws Exception {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
 
@@ -159,6 +244,13 @@ public class ScanTestSuit {
 		return testList;
 	}
 
+	/**
+	 * Returns scanned test cases HashMap so user can search test case by
+	 * TestCase Name
+	 * 
+	 * @param removeSkippedTests
+	 * @return
+	 */
 	public Map<String, TestObjectWrapper> getTestObjWrapperMap(boolean removeSkippedTests) {
 		Map<String, TestObjectWrapper> testObjWrapperMap = new HashMap<>();
 
@@ -168,5 +260,13 @@ public class ScanTestSuit {
 			testObjWrapperMap.put(t.getCls().getName(), t);
 		}
 		return testObjWrapperMap;
+	}
+
+	public List<String> getTestLabels() {
+		return testLabels;
+	}
+
+	public void setTestLabels(List<String> testLabels) {
+		this.testLabels = testLabels;
 	}
 }
