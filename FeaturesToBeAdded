@@ -1,0 +1,52 @@
+Features Already Present
+
+* Feature Framework Banner
+* Feature Reflection based Test suit running
+* Feature Manual Test Collector
+* Feature Tree call to run all child test suits
+* Feature Logging framework All + Summary + Error reporting
+	* Text Log
+	* HTML Log
+	* Log Decoration can be enabled/disabled
+* Feature Record Test Start Time, Finish Time, Individual Test duration
+* Feature GUI test selector
+* Feature Test Loop
+* Feature Organised Log in sub-directory
+* Feature Annotation based searching for @beforetest @aftertest @beforetestsuit @aftertestsuit
+* Feature Access to Java System Info
+* Feature Access to Framework Info
+* Feature Organisation Info
+
+* API for generating test plan based on package name
+* API for Zip
+* API for Tar
+* API for HipTest integration
+* API for PropertiesFile Reading
+* API for simple TCP Client
+* API for simple TCP server
+* API for SSH
+* API for SCP
+
+* Utils specific to string
+* Utils specific to File
+* Convert Class for ease of use
+* CustomPrompt/Timer for ease of use
+* Guradian for ease of use
+
+
+TO DO
+
+* Better Looking HTML reporting
+* Eclipse Plugging like JUnit/TestNG
+* API Documentation - HTML Based
+* Email Support (For Test Summary)
+* Improve Comments for JavaDoc
+* Finalise Logo
+* USB and Serial API
+* HTTP and HTTPs parser
+* Sellenium integration
+* Add label based Test case search
+* Basic Crypto Functionality
+* Password storage solution
+* Make Tutorial Videos
+* JIRA integration
