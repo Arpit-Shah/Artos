@@ -2,12 +2,10 @@ package com.arpitos.framework;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +21,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -48,14 +45,11 @@ public class GUITestSelector {
 	 * TestRunnerGui constructor
 	 * 
 	 * @param testList
-	 *            List of TestExecutors defined in Main class
+	 *            List of Tests defined in Main class
 	 * @param loopCount
 	 *            Number of times each test will execute
 	 * @param testRunner
 	 *            A TestRunner implementation that will execute the tests
-	 * @throws UnsupportedLookAndFeelException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
 	 * @throws Exception
 	 */
 	public GUITestSelector(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount, TestRunnable testRunner)
@@ -91,46 +85,6 @@ public class GUITestSelector {
 			imgList.add(img32x32);
 			imgList.add(img16x16);
 			container.setIconImages(imgList);
-			container.setVisible(true);
-		} else {
-			try {
-				testRunner.executeTest(testRunnerDataModel.getTestList(), cls, serialNumber, loopCount);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * TestRunnerGui constructor This is for CI
-	 * 
-	 * @param testList
-	 *            List of TestExecutors defined in Main class
-	 * @param loopCount
-	 *            Number of times each test will execute
-	 * @param testRunner
-	 *            A TestRunner implementation that will execute the tests
-	 * @throws IOException
-	 */
-	public GUITestSelector(ArrayList<TestExecutable> testList, int loopCount, TestRunnable testRunner, boolean forceRunAll) throws IOException {
-		testRunnerDataModel = new TestRunnerDataModel(testList);
-		this.loopCount = loopCount;
-		this.testRunner = testRunner;
-
-		selectedTests = new ArrayList<TestExecutable>();
-
-		String packageName = "Default";
-		if (testList.size() > 1 && !forceRunAll) {
-			// get the package name from testList
-			String fullPackageName = testList.get(0).getClass().getPackage().toString();
-			int last = fullPackageName.lastIndexOf(".") + 1;
-			packageName = fullPackageName.substring(last);
-
-			initMainFrame(packageName);
-			initMainViewComponents();
-
-			Image img = ImageIO.read(getClass().getResource("icons/arpitos_icon64x64.png"));
-			container.setIconImage(img);
 			container.setVisible(true);
 		} else {
 			try {
