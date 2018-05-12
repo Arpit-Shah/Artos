@@ -122,6 +122,12 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 
+		<resources>
+			<resource>
+				<directory>${project.basedir}/src/com/arpitos/icons</directory>
+			</resource>
+		</resources>
+
 		<!-- Maven Compiler Plugins -->
 		<plugins>
 			<plugin>
