@@ -7,7 +7,7 @@ public class Tree {
 	/**
 	 * Print the directory tree and its file names.
 	 * 
-	 * @param folder
+	 * @param dir
 	 *            directory
 	 * @return
 	 */

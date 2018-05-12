@@ -22,7 +22,6 @@ import org.w3c.dom.NodeList;
  * This class is responsible for storing framework Configuration. During test
  * suit execution XML file will be searched at location ./conf
  * 
- * @see ./conf/Framework_Config.xml
  * @author ArpitS
  *
  */
