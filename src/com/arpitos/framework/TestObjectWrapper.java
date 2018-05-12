@@ -1,11 +1,18 @@
 package com.arpitos.framework;
 
+/**
+ * This class wraps test object with other necessary information which is
+ * helpful during test execution
+ * 
+ * @author arpit
+ *
+ */
 public class TestObjectWrapper {
 
 	Class<?> cls = null;
 	boolean skipTest = false;
 	int testsequence = 0;
-	String testCaseLabel="";
+	String testCaseLabel = "";
 
 	String testPlanDescription = "";
 	String testPlanPreparedBy = "";
@@ -13,16 +20,38 @@ public class TestObjectWrapper {
 	String testreviewedBy = "";
 	String testReviewDate = "";
 
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel, String testPlanDescription, String testPlanPreparedBy,
-			String testPlanPreparationDate, String testreviewedBy, String testReviewDate) {
+	/**
+	 * Default constructor
+	 * 
+	 * @param cls
+	 *            test class object
+	 * @param skipTest
+	 *            skip property as specified in annotation
+	 * @param testsequence
+	 *            test sequence as specified in annotation
+	 * @param testCaseLabel
+	 *            test label as specified in annotation
+	 * @param testPlanDescription
+	 *            test plan as specified in annotation
+	 * @param testPlanPreparedBy
+	 *            info about test creator as specified in annotation
+	 * @param testPlanPreparationDate
+	 *            test preparation date as specified in annotation
+	 * @param testreviewedBy
+	 *            test reviewer name as specified in annotation
+	 * @param testReviewDate
+	 *            test review date as specified in annotation
+	 */
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel, String testPlanDescription,
+			String testPlanPreparedBy, String testPlanPreparationDate, String testreviewedBy, String testReviewDate) {
 		super();
-		
+
 		this.cls = cls;
-		
+
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
 		this.testCaseLabel = testCaseLabel;
-		
+
 		this.testPlanDescription = testPlanDescription;
 		this.testPlanPreparedBy = testPlanPreparedBy;
 		this.testPlanPreparationDate = testPlanPreparationDate;

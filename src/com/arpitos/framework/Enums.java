@@ -1,9 +1,15 @@
 package com.arpitos.framework;
 
+/**
+ * This class contains all generic enum which can be used by test framework
+ * 
+ * @author arpit
+ *
+ */
 public class Enums {
 
 	/**
-	 * Enums for setting test status
+	 * Enum for test status
 	 * 
 	 * @author ArpitS
 	 *
@@ -38,7 +44,7 @@ public class Enums {
 	}
 
 	/**
-	 * Enums for setting test status
+	 * Enum for exception value which can be used anywhere in test framework
 	 * 
 	 * @author ArpitS
 	 *

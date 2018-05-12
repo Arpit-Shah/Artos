@@ -22,6 +22,7 @@ import org.w3c.dom.NodeList;
  * This class is responsible for storing framework Configuration. During test
  * suit execution XML file will be searched at location ./conf
  * 
+ * @see ./conf/Framework_Config.xml
  * @author ArpitS
  *
  */
@@ -47,13 +48,22 @@ public class FrameworkConfig {
 	// Features
 	private boolean enableGUITestSelector = true;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param createIfNotPresent
+	 *            enables creation of default configuration file if not present
+	 */
 	public FrameworkConfig(boolean createIfNotPresent) {
 		readXMLConfig(createIfNotPresent);
 	}
 
-	/*
-	 * Reads XML file from project root location, If not found then default info
-	 * is applied
+	/**
+	 * Reads Framework configuration file and set global values so framework
+	 * configurations is available to everyone
+	 * 
+	 * @param createIfNotPresent
+	 *            enables creation of default configuration file if not present
 	 */
 	public void readXMLConfig(boolean createIfNotPresent) {
 
@@ -84,6 +94,13 @@ public class FrameworkConfig {
 		}
 	}
 
+	/**
+	 * Writes default framework configuration file
+	 * 
+	 * @param fXmlFile
+	 *            Destination file object
+	 * @throws Exception
+	 */
 	private void writeDefaultConfig(File fXmlFile) throws Exception {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -229,6 +246,12 @@ public class FrameworkConfig {
 
 	}
 
+	/**
+	 * Reads logger info from config file
+	 * 
+	 * @param doc
+	 *            Document object of XML file
+	 */
 	private void readLoggerConfig(Document doc) {
 		// System.out.println("Root element :" +
 		// doc.getDocumentElement().getNodeName());
@@ -272,6 +295,12 @@ public class FrameworkConfig {
 		}
 	}
 
+	/**
+	 * Reads features info from config file
+	 * 
+	 * @param doc
+	 *            Document object of an XML file
+	 */
 	private void readFeatures(Document doc) {
 		// System.out.println("Root element :" +
 		// doc.getDocumentElement().getNodeName());
@@ -299,6 +328,12 @@ public class FrameworkConfig {
 		}
 	}
 
+	/**
+	 * Reads organisationInfo from config file
+	 * 
+	 * @param doc
+	 *            Document object of an XML file
+	 */
 	private void readOrganisationInfo(Document doc) {
 		// System.out.println("Root element :" +
 		// doc.getDocumentElement().getNodeName());

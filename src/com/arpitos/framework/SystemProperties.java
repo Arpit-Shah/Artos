@@ -2,6 +2,12 @@ package com.arpitos.framework;
 
 import org.apache.logging.log4j.Logger;
 
+/**
+ * This class is a contained which holds all System properties
+ * 
+ * @author arpit
+ *
+ */
 public class SystemProperties {
 
 	private final String JavaRuntimeEnvironmentVersion = System.getProperty("java.version");
@@ -30,6 +36,11 @@ public class SystemProperties {
 	private final String PathOfExtensionDir = System.getProperty("java.ext.dirs");
 	private final String UserCurrentWorkingDirectory = System.getProperty("user.dir");
 
+	/**
+	 * Print selected System Info to log file
+	 * 
+	 * @param logger
+	 */
 	public void printUsefulInfo(Logger logger) {
 
 		// @formatter:off

@@ -1,7 +1,7 @@
 package com.arpitos.framework;
 
 /**
- * This class defines the current version of Arpitos
+ * This class defines the current version of arpitos
  * 
  * @author ArpitS
  *
