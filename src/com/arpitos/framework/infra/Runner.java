@@ -121,7 +121,7 @@ public class Runner {
 		// Run prior to each test suit
 		prePostCycleInstance.beforeTestsuit(context);
 		for (int index = 0; index < loopCycle; index++) {
-			logger.info("\n---------------- (Test Loop Count : " + index + 1 + ") -------------------");
+			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
 			// --------------------------------------------------------------------------------------------
 			for (TestExecutable t : testList) {
 				// Run Pre Method prior to any test Execution
