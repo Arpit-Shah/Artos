@@ -29,6 +29,7 @@ public class PropertiesFileReader {
 	 */
 	public PropertiesFileReader(File file) throws Exception {
 		if (!file.exists()) {
+			file.getParentFile().mkdirs();
 			file.createNewFile();
 		}
 		this.propFile = file;
