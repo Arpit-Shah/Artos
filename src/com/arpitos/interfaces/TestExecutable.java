@@ -44,6 +44,10 @@ public interface TestExecutable {
 			context.setCurrentTestStatus(TestStatus.FAIL);
 			Utils.writePrintStackTrace(context, e);
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
+		} catch (Throwable ex) {
+			context.setCurrentTestStatus(TestStatus.FAIL);
+			Utils.writePrintStackTrace(context, ex);
+			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		}
 	}
 
