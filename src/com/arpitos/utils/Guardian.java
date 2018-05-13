@@ -26,6 +26,11 @@ public class Guardian {
 				"Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : " + _con.bytesToStringHex(actual, true));
 	}
 
+	static void print(byte reference, byte actual, byte delta) {
+		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : "
+				+ _con.bytesToStringHex(actual, true) + "\n   Delta : " + _con.bytesToStringHex(delta, true));
+	}
+
 	static void print(byte[] reference, byte[] actual) {
 		Static_Store.context.getLogger().info(
 				"Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : " + _con.bytesToStringHex(actual, true));
@@ -33,6 +38,10 @@ public class Guardian {
 
 	static void print(int reference, int actual) {
 		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+	}
+
+	static void print(int reference, int actual, int delta) {
+		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
 	}
 
 	static void print(boolean reference, boolean actual) {
@@ -43,21 +52,27 @@ public class Guardian {
 		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
+	static void print(long reference, long actual, long delta) {
+		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
+	}
+
 	// *******************************************************************************************
 	// String
 	// *******************************************************************************************
 	/**
-	 * Validates String values are equal
+	 * Validates that two strings are equal and returns boolean as a result
 	 * 
 	 * <PRE>
-	 * Example: isEqual("01.02.0001", "01.02.0001");
+	 * {@code
+	 * Example : isEquals("Version of the firmware", "01.02.0001", "01.02.0001");
+	 * }
 	 * </PRE>
 	 * 
 	 * @param reference
-	 *            reference value
+	 *            Reference string value
 	 * @param actual
-	 *            actual value
-	 * @return true | false
+	 *            Actual string value
+	 * @return true|false
 	 */
 	public static boolean isEquals(String reference, String actual) {
 		if (actual.equals(reference)) {
@@ -67,48 +82,48 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates String values are equal
+	 * Validates that two strings are equal. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", "01.02.0001", "01.02.0001");
+	 * {@code
+	 * Example : guardEquals("Version of the firmware", "01.02.0001", "01.02.0001");
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            reference value
+	 *            Reference string value
 	 * @param actual
-	 *            actual value
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual string value
 	 */
-	public static void guardEquals(String desc, String reference, String actual) throws Exception {
+	public static void guardEquals(String desc, String reference, String actual) {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new Exception(desc + strEqual_fail);
+			throw new AssertionError(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates String values are not equal
+	 * Validates that two strings are <b>not</b> equal. If they are, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * Example: guardE("Version of the firmware", "99.99.9999", "01.02.0001");
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            reference value
+	 *            Reference string value
 	 * @param actual
-	 *            actual value
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual string value
 	 */
-	public static void guardNotEquals(String desc, String reference, String actual) throws Exception {
+	public static void guardNotEquals(String desc, String reference, String actual) {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new Exception(desc + strNotEqual_fail);
+			throw new AssertionError(desc + strNotEqual_fail);
 		}
 	}
 
@@ -116,16 +131,18 @@ public class Guardian {
 	// Boolean
 	// *******************************************************************************************
 	/**
-	 * Validates Boolean values are equal
+	 * Validates that two boolean values are equal. Returns boolean response
 	 * 
 	 * <PRE>
-	 * Example: isEqual(true, true);
+	 * {@code
+	 * Example : isEquals(true, doSomething());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param reference
-	 *            reference value
+	 *            Reference boolean value
 	 * @param actual
-	 *            actual value
+	 *            Actual boolean value
 	 * @return true | false
 	 */
 	public static boolean isEquals(boolean reference, boolean actual) {
@@ -136,49 +153,89 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates Boolean values are equal
+	 * Validates that two boolean values are equal. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", true, true);
+	 * {@code
+	 * Example : guardEquals("Day of the week", true, isTodaySunday());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            reference value
+	 *            Reference boolean value
 	 * @param actual
-	 *            actual value
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual boolean value
 	 */
-	public static void guardEquals(String desc, boolean reference, boolean actual) throws Exception {
+	public static void guardEquals(String desc, boolean reference, boolean actual) {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new Exception(desc + strEqual_fail);
+			throw new AssertionError(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Boolean values are not equal
+	 * Validates that two boolean values are <b>not</b> equal. If they are, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", true, true);
+	 * {@code
+	 * Example : guardNotEquals("Day of the week", true, isTodaySunday());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            reference value
+	 *            Reference boolean value
 	 * @param actual
-	 *            actual value
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual boolean value
 	 */
-	public static void guardNotEquals(String desc, boolean reference, boolean actual) throws Exception {
+	public static void guardNotEquals(String desc, boolean reference, boolean actual) {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new Exception(desc + strNotEqual_fail);
+			throw new AssertionError(desc + strNotEqual_fail);
 		}
+	}
+
+	/**
+	 * Validates that passed value is true. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardTrue("Day of the week", isTodaySunday());
+	 * }
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            Message to be printed
+	 * @param actual
+	 *            Actual boolean value
+	 */
+	public static void guardTrue(String desc, boolean actual) {
+		guardEquals(desc, true, actual);
+	}
+
+	/**
+	 * Validates that passed value is false. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardFalse("Day of the week", isTodaySunday());
+	 * }
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            Message to be printed
+	 * @param actual
+	 *            Actual boolean value
+	 */
+	public static void guardFalse(String desc, boolean actual) {
+		guardEquals(desc, false, actual);
 	}
 
 	// *******************************************************************************************
@@ -186,16 +243,21 @@ public class Guardian {
 	// *******************************************************************************************
 
 	/**
-	 * Validates String follows reference format
+	 * Validates that passed value follows reference format. Returns result in
+	 * boolean format. Wild card character is <b>$</b>, if value 01.05.0012
+	 * require format checking where . and 05 are static values then
+	 * {@code format} value can be $$.05.$$$$
 	 * 
 	 * <PRE>
-	 * Example: isFormatEqual("$$.$$.$$$$", "01.02.0001");
+	 * {@code
+	 * Example : isFormatEquals("$$.$$.$$$$", "01.02.0001");
+	 * }
 	 * </PRE>
 	 * 
 	 * @param format
-	 *            String format ($ as wildcard)
+	 *            Format string (using $ as a wild card character)
 	 * @param actual
-	 *            actual value
+	 *            Actual string to be compared
 	 * @return true | false
 	 */
 	public static boolean isFormatEquals(String format, String actual) {
@@ -206,47 +268,55 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates String follows reference format
+	 * Validates that passed value follows reference format. If they are not, an
+	 * {@link AssertionError} is thrown with the given message. Wild card
+	 * character is <b>$</b>, if value 01.05.0012 require format checking where
+	 * . and 05 are static values then {@code format} value can be $$.05.$$$$
 	 * 
 	 * <PRE>
-	 * Example: guardFormatE("Version of the firmware", "$$.$$.$$$$", "01.02.0001");
+	 * {@code
+	 * Example : isFormatEquals("Version format checking", "$$.$$.$$$$", "01.02.0001");
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param format
-	 *            expected format "$$.$$.$$$$"
+	 *            Format string (using $ as a wild card character)
 	 * @param actual
-	 *            data which is being validated, right side of equation
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual string to be compared
 	 */
-	public static void guardFormatEquals(String desc, String format, String actual) throws Exception {
+	public static void guardFormatEquals(String desc, String format, String actual) {
 		print(format, actual);
 		if (!isFormatEquals(format, actual)) {
-			throw new Exception(desc + strFormatEqual_fail);
+			throw new AssertionError(desc + strFormatEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates String is different than reference format
+	 * Validates that passed value <b>does not</b> follow reference format. If
+	 * it does, an {@link AssertionError} is thrown with the given message. Wild
+	 * card character is <b>$</b>, if value 01.05.0012 require format checking
+	 * where . and 05 are static values then {@code format} value can be
+	 * $$.05.$$$$
 	 * 
 	 * <PRE>
-	 * Example: guardFormatNE("Version of the firmware", "$$.$$.$$$$", "01.02.0001");
+	 * {@code
+	 * Example : guardFormatNotEquals("Version format checking", "$$.$$", "01.02.0001");
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param format
-	 *            expected format "$$.$$.$$$$"
+	 *            Format string (using $ as a wild card character)
 	 * @param actual
-	 *            data which is being validated, right side of equation
-	 * @throws Exception
+	 *            Actual string to be compared
 	 */
-	public static void guardFormatNotEquals(String desc, String format, String actual) throws Exception {
+	public static void guardFormatNotEquals(String desc, String format, String actual) {
 		print(format, actual);
 		if (isFormatEquals(format, actual)) {
-			throw new Exception(desc + strFormatNotEqual_fail);
+			throw new AssertionError(desc + strFormatNotEqual_fail);
 		}
 	}
 
@@ -254,16 +324,19 @@ public class Guardian {
 	// Byte
 	// *******************************************************************************************
 	/**
-	 * Validates Byte values are equal
+	 * Validates that two byte values are equal. Appropriate boolean value will
+	 * be returned based on comparison.
 	 * 
 	 * <PRE>
-	 * Example: isEqual((byte) 0x01, (byte) 0x01);
+	 * {@code
+	 * Example : isEquals((byte) 0x01, (byte) 0x01);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param reference
-	 *            reference value
+	 *            Reference byte value
 	 * @param actual
-	 *            actual value
+	 *            Actual byte value
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte reference, byte actual) {
@@ -274,139 +347,217 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates Byte values are equal
+	 * Validates that two byte values are equal with allowed {@code delta} on
+	 * either side. Appropriate boolean value will be returned based on
+	 * comparison.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", (byte) 0x01, (byte) 0x01);
+	 * {@code
+	 * Example : isEquals((byte) 0x05, (byte) 0x06, (byte) 0x01);
+	 * }
+	 * </PRE>
+	 * 
+	 * @param reference
+	 *            Reference byte value
+	 * @param actual
+	 *            Actual byte value
+	 * @param delta
+	 *            Variant allowed on either side of the reference value
+	 * @return true | false
+	 */
+	public static boolean isEquals(byte reference, byte actual, byte delta) {
+		// To ensure we do not exceed integer max boundary
+		byte MaxBoundry;
+		if (reference >= Byte.MAX_VALUE - delta) {
+			MaxBoundry = Byte.MAX_VALUE;
+		} else {
+			MaxBoundry = (byte) (reference + delta);
+		}
+		// To ensure we do not exceed integer min boundary
+		Byte MinBoundry;
+		if (reference <= Byte.MIN_VALUE + delta) {
+			MinBoundry = Byte.MIN_VALUE;
+		} else {
+			MinBoundry = (byte) (reference - delta);
+		}
+
+		if (actual >= MinBoundry && actual <= MaxBoundry) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates that two byte values are equal. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardEquals("Return value of the function", (byte) 0x01, (byte) 0x01);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte value
 	 */
-	public static void guardEquals(String desc, byte reference, byte actual) throws Exception {
+	public static void guardEquals(String desc, byte reference, byte actual) {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new Exception(desc + strEqual_fail);
+			throw new AssertionError(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Byte values are not equal
+	 * Validates that two byte values are equal with allowed {@code delta}. If
+	 * they are not, an {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", (byte) 0x01, (byte) 0x01);
+	 * {@code
+	 * Example : guardEquals("Return value of the function", (byte) 0x05, (byte) 0x06, (byte)0x01);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte value
+	 * @param delta
+	 *            Variant allowed on either side of reference value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
+	 *            Actual byte value
 	 */
-	public static void guardNotEquals(String desc, byte reference, byte actual) throws Exception {
+	public static void guardEquals(String desc, byte reference, byte actual, byte delta) {
+		print(reference, actual, delta);
+		if (!isEquals(reference, actual, delta)) {
+			throw new AssertionError(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two byte values are <b>not</b> equal. If they are, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardEquals("Return value of the function", (byte) 0x05, (byte) 0x01);
+	 * }
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            Message to be printed
+	 * @param reference
+	 *            Reference byte value
+	 * @param actual
+	 *            Actual byte value
+	 */
+	public static void guardNotEquals(String desc, byte reference, byte actual) {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new Exception(desc + strNotEqual_fail);
+			throw new AssertionError(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Byte Value is greater than Reference Value
+	 * Validates that {@code actual} byte value is greater than
+	 * {@code reference} byte value. If they are not, an {@link AssertionError}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardG("Version of the firmware", (byte) 0x01, (byte) 0x03);
+	 * {@code
+	 * Example : guardGreaterThan("Return value of the function", (byte) 0x01, (byte) 0x05);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte value
 	 */
-	public static void guardGreaterThan(String desc, byte reference, byte actual) throws Exception {
+	public static void guardGreaterThan(String desc, byte reference, byte actual) {
 		print(reference, actual);
 		if (reference <= actual) {
-			throw new Exception(desc + strGreater_fail);
+			throw new AssertionError(desc + strGreater_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Byte Value is greater or Equal to Reference Value
+	 * Validates that {@code actual} byte value is greater than or equal to
+	 * {@code reference} byte value. If they are not, an {@link AssertionError}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardGE("Version of the firmware", (byte) 0x01, (byte) 0x03);
+	 * {@code
+	 * Example : guardGreaterOrEqualsTo("Return value of the function", (byte) 0x01, (byte) 0x05);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte value
 	 */
-	public static void guardGreaterOrEqualsTo(String desc, byte reference, byte actual) throws Exception {
+	public static void guardGreaterOrEqualsTo(String desc, byte reference, byte actual) {
 		print(reference, actual);
 		if (reference < actual) {
-			throw new Exception(desc + strGreaterOrEqual_fail);
+			throw new AssertionError(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Byte Value is less than Reference Value
+	 * Validates that {@code actual} byte value is less than {@code reference}
+	 * byte value. If they are not, an {@link AssertionError} is thrown with the
+	 * given message.
 	 * 
 	 * <PRE>
-	 * Example: guardL("Version of the firmware", (byte) 0x01, (byte) 0x03);
+	 * {@code
+	 * Example : guardLessThan("Return value of the function", (byte) 0x05, (byte) 0x02);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte value
 	 */
-	public static void guardLessThan(String desc, byte reference, byte actual) throws Exception {
+	public static void guardLessThan(String desc, byte reference, byte actual) {
 		print(reference, actual);
 		if (reference >= actual) {
-			throw new Exception(desc + strLess_fail);
+			throw new AssertionError(desc + strLess_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Byte Value is less or equal to Reference Value
+	 * Validates that {@code actual} byte value is less than or equal to
+	 * {@code reference} byte value. If they are not, an {@link AssertionError}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardLE("Version of the firmware", (byte) 0x01, (byte) 0x03);
+	 * {@code
+	 * Example : guardLessOrEqualsTo("Return value of the function", (byte) 0x05, (byte) 0x02);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte value
 	 */
-	public static void guardLessOrEqualsTo(String desc, byte reference, byte actual) throws Exception {
+	public static void guardLessOrEqualsTo(String desc, byte reference, byte actual) {
 		print(reference, actual);
 		if (reference > actual) {
-			throw new Exception(desc + strLessOrEqual_fail);
+			throw new AssertionError(desc + strLessOrEqual_fail);
 		}
 	}
 
@@ -414,16 +565,19 @@ public class Guardian {
 	// Byte Array
 	// *******************************************************************************************
 	/**
-	 * Validates Byte Arrays are equal
+	 * Validates that two byte arrays are equal. Appropriate boolean value will
+	 * be returned based on comparison.
 	 * 
 	 * <PRE>
-	 * Example: isEqual(new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * {@code
+	 * Example : isEquals(new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * }
 	 * </PRE>
 	 * 
 	 * @param reference
-	 *            reference value
+	 *            Reference byte array
 	 * @param actual
-	 *            actual value
+	 *            Actual byte array
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte[] reference, byte[] actual) {
@@ -434,48 +588,50 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates Byte Arrays are equal
+	 * Validates that two byte arrays are equal. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * {@code
+	 * Example : guardEquals("Return value of the function", new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte array
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte array
 	 */
-	public static void guardEquals(String desc, byte[] reference, byte[] actual) throws Exception {
+	public static void guardEquals(String desc, byte[] reference, byte[] actual) {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new Exception(desc + strEqual_fail);
+			throw new AssertionError(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Byte Arrays are not equal
+	 * Validates that two byte arrays are <b>not</b> equal. If they are, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", new byte(){0x01, 0x02, 0x03}, new byte(){0x01, 0x02, 0x03});
+	 * {@code
+	 * Example : guardNotEquals("Return value of the function", new byte(){0x01, 0x02, 0x03}, new byte(){0x05, 0x02, 0x03});
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference byte array
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual byte array
 	 */
-	public static void guardNotEquals(String desc, byte[] reference, byte[] actual) throws Exception {
+	public static void guardNotEquals(String desc, byte[] reference, byte[] actual) {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new Exception(desc + strNotEqual_fail);
+			throw new AssertionError(desc + strNotEqual_fail);
 		}
 	}
 
@@ -483,16 +639,19 @@ public class Guardian {
 	// Integer
 	// *******************************************************************************************
 	/**
-	 * Validates int values are equal
+	 * Validates that two integer values are equal. Appropriate boolean value
+	 * will be returned based on comparison.
 	 * 
 	 * <PRE>
-	 * Example: isEqual(1, 2);
+	 * {@code
+	 * Example : isEquals(1, 2);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param reference
-	 *            reference value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value
+	 *            Actual integer value
 	 * @return true | false
 	 */
 	public static boolean isEquals(int reference, int actual) {
@@ -503,140 +662,218 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates int values are equal
+	 * Validates that two integer values are equal with allowed {@code delta} on
+	 * either side. Appropriate boolean value will be returned based on
+	 * comparison.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : isEquals(12, getValue(), 2);
+	 * }
+	 * </PRE>
+	 * 
+	 * @param reference
+	 *            Reference integer value
+	 * @param actual
+	 *            Actual integer value
+	 * @param delta
+	 *            Variant allowed on either side of the reference value
+	 * @return true | false
+	 */
+	public static boolean isEquals(int reference, int actual, int delta) {
+		// To ensure we do not exceed integer max boundary
+		int MaxBoundry;
+		if (reference >= Integer.MAX_VALUE - delta) {
+			MaxBoundry = Integer.MAX_VALUE;
+		} else {
+			MaxBoundry = reference + delta;
+		}
+		// To ensure we do not exceed integer min boundary
+		int MinBoundry;
+		if (reference <= Integer.MIN_VALUE + delta) {
+			MinBoundry = Integer.MIN_VALUE;
+		} else {
+			MinBoundry = reference - delta;
+		}
+
+		if (actual >= MinBoundry && actual <= MaxBoundry) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates that two integer values are equal. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardEquals("Return value of the function", 5, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual integer value
 	 */
-	public static void guardEquals(String desc, int reference, int actual) throws Exception {
+	public static void guardEquals(String desc, int reference, int actual) {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new Exception(desc + strEqual_fail);
+			throw new AssertionError(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates int values are not equal
+	 * Validates that two integer values are equal with allowed {@code delta} on
+	 * either side. If they are not, an {@link AssertionError} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardEquals("Return value of the function", 123, getValue(), 2);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual integer value
+	 * @param delta
+	 *            Variant allowed on either side of the reference value
 	 */
-	public static void guardNotEquals(String desc, int reference, int actual) throws Exception {
+	public static void guardEquals(String desc, int reference, int actual, int delta) {
+		print(reference, actual, delta);
+		if (!isEquals(reference, actual, delta)) {
+			throw new AssertionError(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two integer values are <b>not</b> equal. If they are, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardNotEquals("Return value of the function", 5, getValue());
+	 * }
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            Message to be printed
+	 * @param reference
+	 *            Reference integer value
+	 * @param actual
+	 *            Actual integer value
+	 */
+	public static void guardNotEquals(String desc, int reference, int actual) {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new Exception(desc + strNotEqual_fail);
+			throw new AssertionError(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual int Value is greater than Reference Value
+	 * Validates that {@code reference} integer value is greater than
+	 * {@code actual} integer value. If they are not, an {@link AssertionError}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardG("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardGreaterThan("Return value of the function", 5, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual integer value
 	 */
-	public static void guardGreaterThan(String desc, int reference, int actual) throws Exception {
+	public static void guardGreaterThan(String desc, int reference, int actual) {
 		print(reference, actual);
 		if (reference <= actual) {
-			throw new Exception(desc + strGreater_fail);
+			throw new AssertionError(desc + strGreater_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual int Value is greater or Equal to Reference Value
+	 * Validates that {@code reference} integer value is greater than or equal
+	 * to {@code actual} integer value. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardGE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardGreaterOrEqualsTo("Return value of the function", 5, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual integer value
 	 */
-	public static void guardGreaterOrEqualsTo(String desc, int reference, int actual) throws Exception {
+	public static void guardGreaterOrEqualsTo(String desc, int reference, int actual) {
 		print(reference, actual);
 		if (reference < actual) {
-			throw new Exception(desc + strGreaterOrEqual_fail);
+			throw new AssertionError(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual int Value is less than Reference Value
+	 * Validates that {@code reference} integer value is less than
+	 * {@code actual} integer value. If they are not, an {@link AssertionError}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardL("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardLessThan("Return value of the function", 5, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual integer value
 	 */
-	public static void guardLessThan(String desc, int reference, int actual) throws Exception {
+	public static void guardLessThan(String desc, int reference, int actual) {
 		print(reference, actual);
 		if (reference >= actual) {
-			throw new Exception(desc + strLess_fail);
+			throw new AssertionError(desc + strLess_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual int Value is less or equal to Reference Value
+	 * Validates that {@code reference} integer value is less than or equal to
+	 * {@code actual} integer value. If they are not, an {@link AssertionError}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardLE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardLessOrEqualsTo("Return value of the function", 5, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference integer value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual integer value
 	 */
-	public static void guardLessOrEqualsTo(String desc, int reference, int actual) throws Exception {
+	public static void guardLessOrEqualsTo(String desc, int reference, int actual) {
 		print(reference, actual);
 		if (reference > actual) {
-			throw new Exception(desc + strLessOrEqual_fail);
+			throw new AssertionError(desc + strLessOrEqual_fail);
 		}
 	}
 
@@ -644,16 +881,19 @@ public class Guardian {
 	// Long
 	// *******************************************************************************************
 	/**
-	 * Validates Long values are equal
+	 * Validates that two long values are equal. Appropriate boolean value will
+	 * be returned based on comparison.
 	 * 
 	 * <PRE>
-	 * Example: isEqual(1, 2);
+	 * {@code
+	 * Example : isEquals(123456l, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param reference
-	 *            reference value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value
+	 *            Actual long value
 	 * @return true | false
 	 */
 	public static boolean isEquals(long reference, long actual) {
@@ -664,140 +904,246 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates Long values are equal
+	 * Validates that two long values are equal with allowed {@code delta} on
+	 * either side. Appropriate boolean value will be returned based on
+	 * comparison.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : isEquals(123456l, getValue(), 2l);
+	 * }
+	 * </PRE>
+	 * 
+	 * @param reference
+	 *            Reference long value
+	 * @param actual
+	 *            Actual long value
+	 * @param delta
+	 *            Variant allowed on either side of the reference value
+	 * @return true | false
+	 */
+	public static boolean isEquals(long reference, long actual, long delta) {
+		// To ensure we do not exceed long max boundary
+		long MaxBoundry;
+		if (reference >= Long.MAX_VALUE - delta) {
+			MaxBoundry = Long.MAX_VALUE;
+		} else {
+			MaxBoundry = reference + delta;
+		}
+		// To ensure we do not exceed long min boundary
+		long MinBoundry;
+		if (reference <= Long.MIN_VALUE + delta) {
+			MinBoundry = Long.MIN_VALUE;
+		} else {
+			MinBoundry = reference - delta;
+		}
+
+		if (actual >= MinBoundry && actual <= MaxBoundry) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validates that two long values are equal. If they are not, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardEquals("Return value of the function", 1234567l, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual long value
 	 */
-	public static void guardEquals(String desc, long reference, long actual) throws Exception {
+	public static void guardEquals(String desc, long reference, long actual) {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new Exception(desc + strEqual_fail);
+			throw new AssertionError(desc + strEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Long values are not equal
+	 * Validates that two long values are equal with allowed {@code delta} on
+	 * either side. If they are not, an {@link AssertionError} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardEquals("Return value of the function", 1234567l, getValue(), 2l);
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual long value
+	 * @param delta
+	 *            Variant allowed on either side of the reference value
 	 */
-	public static void guardNotEquals(String desc, long reference, long actual) throws Exception {
+	public static void guardEquals(String desc, long reference, long actual, long delta) {
+		print(reference, actual, delta);
+		if (!isEquals(reference, actual, delta)) {
+			throw new AssertionError(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two long values are <b>not</b> equal. If they are, an
+	 * {@link AssertionError} is thrown with the given message.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardNotEquals("Return value of the function", 1234567l, getValue());
+	 * }
+	 * </PRE>
+	 * 
+	 * @param desc
+	 *            Message to be printed
+	 * @param reference
+	 *            Reference long value
+	 * @param actual
+	 *            Actual long value
+	 */
+	public static void guardNotEquals(String desc, long reference, long actual) {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new Exception(desc + strNotEqual_fail);
+			throw new AssertionError(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Long Value is greater than Reference Value
+	 * Validates that {@code reference} long value is greater than
+	 * {@code actual} long value. If they are not, an {@link AssertionError} is
+	 * thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardG("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardGreaterThan("Return value of the function", 123456l, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual long value
 	 */
-	public static void guardGreaterThan(String desc, long reference, long actual) throws Exception {
+	public static void guardGreaterThan(String desc, long reference, long actual) {
 		print(reference, actual);
 		if (reference <= actual) {
-			throw new Exception(desc + strGreater_fail);
+			throw new AssertionError(desc + strGreater_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Long Value is greater or Equal to Reference Value
+	 * Validates that {@code reference} long value is greater than or equal to
+	 * {@code actual} long value. If they are not, an {@link AssertionError} is
+	 * thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardGE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardGreaterOrEquals("Return value of the function", 123456l, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual long value
 	 */
-	public static void guardGreaterOrEquals(String desc, long reference, long actual) throws Exception {
+	public static void guardGreaterOrEquals(String desc, long reference, long actual) {
 		print(reference, actual);
 		if (reference < actual) {
-			throw new Exception(desc + strGreaterOrEqual_fail);
+			throw new AssertionError(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Long Value is less than Reference Value
+	 * Validates that {@code reference} long value is less than {@code actual}
+	 * long value. If they are not, an {@link AssertionError} is thrown with the
+	 * given message.
 	 * 
 	 * <PRE>
-	 * Example: guardL("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardLessThan("Return value of the function", 123456l, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual long value
 	 */
-	public static void guardLessThan(String desc, long reference, long actual) throws Exception {
+	public static void guardLessThan(String desc, long reference, long actual) {
 		print(reference, actual);
 		if (reference >= actual) {
-			throw new Exception(desc + strLess_fail);
+			throw new AssertionError(desc + strLess_fail);
 		}
 	}
 
 	/**
-	 * Validates Actual Long Value is less or equal to Reference Value
+	 * Validates that {@code reference} long value is less than or equal to
+	 * {@code actual} long value. If they are not, an {@link AssertionError} is
+	 * thrown with the given message.
 	 * 
 	 * <PRE>
-	 * Example: guardLE("Version of the firmware", 1, 2);
+	 * {@code
+	 * Example : guardLessOrEqualsTo("Return value of the function", 123456l, getValue());
+	 * }
 	 * </PRE>
 	 * 
 	 * @param desc
-	 *            pass or failure msg
+	 *            Message to be printed
 	 * @param reference
-	 *            expected String value
+	 *            Reference long value
 	 * @param actual
-	 *            actual value to be compared
-	 * @throws Exception
-	 *             if value condition is not met
+	 *            Actual long value
 	 */
-	public static void guardLessOrEqualsTo(String desc, long reference, long actual) throws Exception {
+	public static void guardLessOrEqualsTo(String desc, long reference, long actual) {
 		print(reference, actual);
 		if (reference > actual) {
-			throw new Exception(desc + strLessOrEqual_fail);
+			throw new AssertionError(desc + strLessOrEqual_fail);
 		}
 	}
+
+	// *******************************************************************************************
+	// Exception
+	// *******************************************************************************************
+
+	/**
+	 * Validates that exception msg matches, if it does not then same exception
+	 * is thrown back.
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardEquals(e, "invalid value");
+	 * }
+	 * </PRE>
+	 * 
+	 * @param e
+	 *            Exception which required to be verified
+	 * @param actual
+	 *            Actual string value
+	 * @throws Throwable 
+	 */
+	public static void guardEquals(Throwable e, String actual) throws Throwable {
+		print(e.getMessage(), actual);
+		if (!e.getMessage().contains(actual)) {
+			throw e;
+		}
+	}
+
 }
