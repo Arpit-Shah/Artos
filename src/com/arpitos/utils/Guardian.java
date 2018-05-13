@@ -2,6 +2,8 @@ package com.arpitos.utils;
 
 import java.util.Arrays;
 
+import com.arpitos.exception.ValueNotAsExpected;
+import com.arpitos.exception.WrongFlow;
 import com.arpitos.framework.Static_Store;
 
 public class Guardian {
@@ -83,7 +85,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two strings are equal. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -97,17 +99,19 @@ public class Guardian {
 	 *            Reference string value
 	 * @param actual
 	 *            Actual string value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, String reference, String actual) {
+	public static void guardEquals(String desc, String reference, String actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two strings are <b>not</b> equal. If they are, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * Example: guardE("Version of the firmware", "99.99.9999", "01.02.0001");
@@ -119,11 +123,13 @@ public class Guardian {
 	 *            Reference string value
 	 * @param actual
 	 *            Actual string value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardNotEquals(String desc, String reference, String actual) {
+	public static void guardNotEquals(String desc, String reference, String actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new AssertionError(desc + strNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strNotEqual_fail);
 		}
 	}
 
@@ -154,7 +160,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two boolean values are equal. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -168,17 +174,19 @@ public class Guardian {
 	 *            Reference boolean value
 	 * @param actual
 	 *            Actual boolean value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, boolean reference, boolean actual) {
+	public static void guardEquals(String desc, boolean reference, boolean actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two boolean values are <b>not</b> equal. If they are, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -192,17 +200,19 @@ public class Guardian {
 	 *            Reference boolean value
 	 * @param actual
 	 *            Actual boolean value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardNotEquals(String desc, boolean reference, boolean actual) {
+	public static void guardNotEquals(String desc, boolean reference, boolean actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new AssertionError(desc + strNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that passed value is true. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -214,14 +224,16 @@ public class Guardian {
 	 *            Message to be printed
 	 * @param actual
 	 *            Actual boolean value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardTrue(String desc, boolean actual) {
+	public static void guardTrue(String desc, boolean actual) throws ValueNotAsExpected {
 		guardEquals(desc, true, actual);
 	}
 
 	/**
 	 * Validates that passed value is false. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -233,8 +245,10 @@ public class Guardian {
 	 *            Message to be printed
 	 * @param actual
 	 *            Actual boolean value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardFalse(String desc, boolean actual) {
+	public static void guardFalse(String desc, boolean actual) throws ValueNotAsExpected {
 		guardEquals(desc, false, actual);
 	}
 
@@ -269,7 +283,7 @@ public class Guardian {
 
 	/**
 	 * Validates that passed value follows reference format. If they are not, an
-	 * {@link AssertionError} is thrown with the given message. Wild card
+	 * {@link ValueNotAsExpected} is thrown with the given message. Wild card
 	 * character is <b>$</b>, if value 01.05.0012 require format checking where
 	 * . and 05 are static values then {@code format} value can be $$.05.$$$$
 	 * 
@@ -285,20 +299,22 @@ public class Guardian {
 	 *            Format string (using $ as a wild card character)
 	 * @param actual
 	 *            Actual string to be compared
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardFormatEquals(String desc, String format, String actual) {
+	public static void guardFormatEquals(String desc, String format, String actual) throws ValueNotAsExpected {
 		print(format, actual);
 		if (!isFormatEquals(format, actual)) {
-			throw new AssertionError(desc + strFormatEqual_fail);
+			throw new ValueNotAsExpected(desc + strFormatEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that passed value <b>does not</b> follow reference format. If
-	 * it does, an {@link AssertionError} is thrown with the given message. Wild
-	 * card character is <b>$</b>, if value 01.05.0012 require format checking
-	 * where . and 05 are static values then {@code format} value can be
-	 * $$.05.$$$$
+	 * it does, an {@link ValueNotAsExpected} is thrown with the given message.
+	 * Wild card character is <b>$</b>, if value 01.05.0012 require format
+	 * checking where . and 05 are static values then {@code format} value can
+	 * be $$.05.$$$$
 	 * 
 	 * <PRE>
 	 * {@code
@@ -312,11 +328,13 @@ public class Guardian {
 	 *            Format string (using $ as a wild card character)
 	 * @param actual
 	 *            Actual string to be compared
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardFormatNotEquals(String desc, String format, String actual) {
+	public static void guardFormatNotEquals(String desc, String format, String actual) throws ValueNotAsExpected {
 		print(format, actual);
 		if (isFormatEquals(format, actual)) {
-			throw new AssertionError(desc + strFormatNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strFormatNotEqual_fail);
 		}
 	}
 
@@ -389,7 +407,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two byte values are equal. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -403,17 +421,20 @@ public class Guardian {
 	 *            Reference byte value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, byte reference, byte actual) {
+	public static void guardEquals(String desc, byte reference, byte actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two byte values are equal with allowed {@code delta}. If
-	 * they are not, an {@link AssertionError} is thrown with the given message.
+	 * they are not, an {@link ValueNotAsExpected} is thrown with the given
+	 * message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -429,17 +450,19 @@ public class Guardian {
 	 *            Variant allowed on either side of reference value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, byte reference, byte actual, byte delta) {
+	public static void guardEquals(String desc, byte reference, byte actual, byte delta) throws ValueNotAsExpected {
 		print(reference, actual, delta);
 		if (!isEquals(reference, actual, delta)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two byte values are <b>not</b> equal. If they are, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -453,18 +476,20 @@ public class Guardian {
 	 *            Reference byte value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardNotEquals(String desc, byte reference, byte actual) {
+	public static void guardNotEquals(String desc, byte reference, byte actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new AssertionError(desc + strNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code actual} byte value is greater than
-	 * {@code reference} byte value. If they are not, an {@link AssertionError}
-	 * is thrown with the given message.
+	 * {@code reference} byte value. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -478,18 +503,20 @@ public class Guardian {
 	 *            Reference byte value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardGreaterThan(String desc, byte reference, byte actual) {
+	public static void guardGreaterThan(String desc, byte reference, byte actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference <= actual) {
-			throw new AssertionError(desc + strGreater_fail);
+			throw new ValueNotAsExpected(desc + strGreater_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code actual} byte value is greater than or equal to
-	 * {@code reference} byte value. If they are not, an {@link AssertionError}
-	 * is thrown with the given message.
+	 * {@code reference} byte value. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -503,18 +530,20 @@ public class Guardian {
 	 *            Reference byte value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardGreaterOrEqualsTo(String desc, byte reference, byte actual) {
+	public static void guardGreaterOrEqualsTo(String desc, byte reference, byte actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference < actual) {
-			throw new AssertionError(desc + strGreaterOrEqual_fail);
+			throw new ValueNotAsExpected(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code actual} byte value is less than {@code reference}
-	 * byte value. If they are not, an {@link AssertionError} is thrown with the
-	 * given message.
+	 * byte value. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -528,18 +557,20 @@ public class Guardian {
 	 *            Reference byte value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardLessThan(String desc, byte reference, byte actual) {
+	public static void guardLessThan(String desc, byte reference, byte actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference >= actual) {
-			throw new AssertionError(desc + strLess_fail);
+			throw new ValueNotAsExpected(desc + strLess_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code actual} byte value is less than or equal to
-	 * {@code reference} byte value. If they are not, an {@link AssertionError}
-	 * is thrown with the given message.
+	 * {@code reference} byte value. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -553,11 +584,13 @@ public class Guardian {
 	 *            Reference byte value
 	 * @param actual
 	 *            Actual byte value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardLessOrEqualsTo(String desc, byte reference, byte actual) {
+	public static void guardLessOrEqualsTo(String desc, byte reference, byte actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference > actual) {
-			throw new AssertionError(desc + strLessOrEqual_fail);
+			throw new ValueNotAsExpected(desc + strLessOrEqual_fail);
 		}
 	}
 
@@ -589,7 +622,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two byte arrays are equal. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -603,17 +636,19 @@ public class Guardian {
 	 *            Reference byte array
 	 * @param actual
 	 *            Actual byte array
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, byte[] reference, byte[] actual) {
+	public static void guardEquals(String desc, byte[] reference, byte[] actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two byte arrays are <b>not</b> equal. If they are, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -627,11 +662,13 @@ public class Guardian {
 	 *            Reference byte array
 	 * @param actual
 	 *            Actual byte array
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardNotEquals(String desc, byte[] reference, byte[] actual) {
+	public static void guardNotEquals(String desc, byte[] reference, byte[] actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new AssertionError(desc + strNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strNotEqual_fail);
 		}
 	}
 
@@ -704,7 +741,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two integer values are equal. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -718,18 +755,20 @@ public class Guardian {
 	 *            Reference integer value
 	 * @param actual
 	 *            Actual integer value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, int reference, int actual) {
+	public static void guardEquals(String desc, int reference, int actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two integer values are equal with allowed {@code delta} on
-	 * either side. If they are not, an {@link AssertionError} is thrown with
-	 * the given message.
+	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown
+	 * with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -745,17 +784,19 @@ public class Guardian {
 	 *            Actual integer value
 	 * @param delta
 	 *            Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, int reference, int actual, int delta) {
+	public static void guardEquals(String desc, int reference, int actual, int delta) throws ValueNotAsExpected {
 		print(reference, actual, delta);
 		if (!isEquals(reference, actual, delta)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two integer values are <b>not</b> equal. If they are, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -769,18 +810,20 @@ public class Guardian {
 	 *            Reference integer value
 	 * @param actual
 	 *            Actual integer value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardNotEquals(String desc, int reference, int actual) {
+	public static void guardNotEquals(String desc, int reference, int actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new AssertionError(desc + strNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} integer value is greater than
-	 * {@code actual} integer value. If they are not, an {@link AssertionError}
-	 * is thrown with the given message.
+	 * {@code actual} integer value. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -794,18 +837,20 @@ public class Guardian {
 	 *            Reference integer value
 	 * @param actual
 	 *            Actual integer value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardGreaterThan(String desc, int reference, int actual) {
+	public static void guardGreaterThan(String desc, int reference, int actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference <= actual) {
-			throw new AssertionError(desc + strGreater_fail);
+			throw new ValueNotAsExpected(desc + strGreater_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} integer value is greater than or equal
 	 * to {@code actual} integer value. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -819,18 +864,20 @@ public class Guardian {
 	 *            Reference integer value
 	 * @param actual
 	 *            Actual integer value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardGreaterOrEqualsTo(String desc, int reference, int actual) {
+	public static void guardGreaterOrEqualsTo(String desc, int reference, int actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference < actual) {
-			throw new AssertionError(desc + strGreaterOrEqual_fail);
+			throw new ValueNotAsExpected(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} integer value is less than
-	 * {@code actual} integer value. If they are not, an {@link AssertionError}
-	 * is thrown with the given message.
+	 * {@code actual} integer value. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -844,18 +891,20 @@ public class Guardian {
 	 *            Reference integer value
 	 * @param actual
 	 *            Actual integer value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardLessThan(String desc, int reference, int actual) {
+	public static void guardLessThan(String desc, int reference, int actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference >= actual) {
-			throw new AssertionError(desc + strLess_fail);
+			throw new ValueNotAsExpected(desc + strLess_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} integer value is less than or equal to
-	 * {@code actual} integer value. If they are not, an {@link AssertionError}
-	 * is thrown with the given message.
+	 * {@code actual} integer value. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -869,11 +918,13 @@ public class Guardian {
 	 *            Reference integer value
 	 * @param actual
 	 *            Actual integer value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardLessOrEqualsTo(String desc, int reference, int actual) {
+	public static void guardLessOrEqualsTo(String desc, int reference, int actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference > actual) {
-			throw new AssertionError(desc + strLessOrEqual_fail);
+			throw new ValueNotAsExpected(desc + strLessOrEqual_fail);
 		}
 	}
 
@@ -946,7 +997,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two long values are equal. If they are not, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -960,18 +1011,20 @@ public class Guardian {
 	 *            Reference long value
 	 * @param actual
 	 *            Actual long value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, long reference, long actual) {
+	public static void guardEquals(String desc, long reference, long actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (!isEquals(reference, actual)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two long values are equal with allowed {@code delta} on
-	 * either side. If they are not, an {@link AssertionError} is thrown with
-	 * the given message.
+	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown
+	 * with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -987,17 +1040,19 @@ public class Guardian {
 	 *            Actual long value
 	 * @param delta
 	 *            Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardEquals(String desc, long reference, long actual, long delta) {
+	public static void guardEquals(String desc, long reference, long actual, long delta) throws ValueNotAsExpected {
 		print(reference, actual, delta);
 		if (!isEquals(reference, actual, delta)) {
-			throw new AssertionError(desc + strEqual_fail);
+			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that two long values are <b>not</b> equal. If they are, an
-	 * {@link AssertionError} is thrown with the given message.
+	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1011,18 +1066,20 @@ public class Guardian {
 	 *            Reference long value
 	 * @param actual
 	 *            Actual long value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardNotEquals(String desc, long reference, long actual) {
+	public static void guardNotEquals(String desc, long reference, long actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (isEquals(reference, actual)) {
-			throw new AssertionError(desc + strNotEqual_fail);
+			throw new ValueNotAsExpected(desc + strNotEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} long value is greater than
-	 * {@code actual} long value. If they are not, an {@link AssertionError} is
-	 * thrown with the given message.
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1036,18 +1093,20 @@ public class Guardian {
 	 *            Reference long value
 	 * @param actual
 	 *            Actual long value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardGreaterThan(String desc, long reference, long actual) {
+	public static void guardGreaterThan(String desc, long reference, long actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference <= actual) {
-			throw new AssertionError(desc + strGreater_fail);
+			throw new ValueNotAsExpected(desc + strGreater_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} long value is greater than or equal to
-	 * {@code actual} long value. If they are not, an {@link AssertionError} is
-	 * thrown with the given message.
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1061,18 +1120,20 @@ public class Guardian {
 	 *            Reference long value
 	 * @param actual
 	 *            Actual long value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardGreaterOrEquals(String desc, long reference, long actual) {
+	public static void guardGreaterOrEquals(String desc, long reference, long actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference < actual) {
-			throw new AssertionError(desc + strGreaterOrEqual_fail);
+			throw new ValueNotAsExpected(desc + strGreaterOrEqual_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} long value is less than {@code actual}
-	 * long value. If they are not, an {@link AssertionError} is thrown with the
-	 * given message.
+	 * long value. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1086,18 +1147,20 @@ public class Guardian {
 	 *            Reference long value
 	 * @param actual
 	 *            Actual long value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardLessThan(String desc, long reference, long actual) {
+	public static void guardLessThan(String desc, long reference, long actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference >= actual) {
-			throw new AssertionError(desc + strLess_fail);
+			throw new ValueNotAsExpected(desc + strLess_fail);
 		}
 	}
 
 	/**
 	 * Validates that {@code reference} long value is less than or equal to
-	 * {@code actual} long value. If they are not, an {@link AssertionError} is
-	 * thrown with the given message.
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1111,18 +1174,19 @@ public class Guardian {
 	 *            Reference long value
 	 * @param actual
 	 *            Actual long value
+	 * @throws ValueNotAsExpected
+	 *             Exception is thrown if value is not meeting defined criteria
 	 */
-	public static void guardLessOrEqualsTo(String desc, long reference, long actual) {
+	public static void guardLessOrEqualsTo(String desc, long reference, long actual) throws ValueNotAsExpected {
 		print(reference, actual);
 		if (reference > actual) {
-			throw new AssertionError(desc + strLessOrEqual_fail);
+			throw new ValueNotAsExpected(desc + strLessOrEqual_fail);
 		}
 	}
 
 	// *******************************************************************************************
 	// Exception
 	// *******************************************************************************************
-
 	/**
 	 * Validates that exception msg matches, if it does not then same exception
 	 * is thrown back.
@@ -1137,13 +1201,40 @@ public class Guardian {
 	 *            Exception which required to be verified
 	 * @param actual
 	 *            Actual string value
-	 * @throws Throwable 
+	 * @throws Exception
+	 *             if exception message is not as expected then same exception
+	 *             is thrown again
 	 */
-	public static void guardEquals(Throwable e, String actual) throws Throwable {
+	public static void guardEquals(Exception e, String actual) throws Exception {
 		print(e.getMessage(), actual);
 		if (!e.getMessage().contains(actual)) {
 			throw e;
 		}
+	}
+
+	// *******************************************************************************************
+	// Flow
+	// *******************************************************************************************
+	/**
+	 * Guard against wrong flow. If code hits this code then {@link WrongFlow}
+	 * is thrown
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardEquals(e, "invalid value");
+	 * }
+	 * </PRE>
+	 * 
+	 * @param e
+	 *            Exception which required to be verified
+	 * @param actual
+	 *            Actual string value
+	 * @throws Exception
+	 *             if code executes this function then code is flowing in wrong
+	 *             direction so exception should be thrown
+	 */
+	public static void guardWrongFlow(String msg) throws Exception {
+		throw new WrongFlow(msg);
 	}
 
 }
