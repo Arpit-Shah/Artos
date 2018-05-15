@@ -1,12 +1,18 @@
 package com.arpitos.framework.infra;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.AppenderRefComponentBuilder;
@@ -28,10 +34,10 @@ import com.arpitos.framework.Static_Store;
  * @author arpit
  *
  */
-class OrganisedLog {
+public class OrganisedLog {
 
-	private Logger generalLogger;
-	private Logger summaryLogger;
+	private org.apache.logging.log4j.core.Logger generalLogger;
+	private org.apache.logging.log4j.core.Logger summaryLogger;
 
 	/**
 	 * Class Constructor
@@ -99,6 +105,122 @@ class OrganisedLog {
 
 		getSummaryLogger().info(testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:"
 				+ KTFCount + " " + testTime);
+	}
+
+	/**
+	 * Returns current general error log files (Includes txt and html files)
+	 * 
+	 * @return General error log file list
+	 */
+	public List<File> getCurrentErrorLogFiles() {
+		List<File> textLog = new ArrayList<File>();
+		List<File> htmlLog = new ArrayList<File>();
+		getFilesFromGeneralLogAppenders("error-log-text", textLog);
+		getFilesFromGeneralLogAppenders("error-log-html", htmlLog);
+		List<File> mergedList = new ArrayList<>();
+		if (null != textLog) {
+			mergedList.addAll(textLog);
+		}
+		if (null != htmlLog) {
+			mergedList.addAll(htmlLog);
+		}
+		return mergedList;
+	}
+
+	public void disableGeneralLog() {
+		getGeneralLogger().setLevel(Level.OFF);
+	}
+
+	public void enableGeneralLog() {
+		getGeneralLogger().setLevel(getLoglevelFromXML());
+	}
+
+	/**
+	 * Returns current general log files (Includes txt and html files)
+	 * 
+	 * @return General log file list
+	 */
+	public List<File> getCurrentGeneralLogFiles() {
+		List<File> textLog = new ArrayList<File>();
+		List<File> htmlLog = new ArrayList<File>();
+		getFilesFromGeneralLogAppenders("all-log-text", textLog);
+		getFilesFromGeneralLogAppenders("all-log-html", htmlLog);
+		List<File> mergedList = new ArrayList<>();
+		if (null != textLog) {
+			mergedList.addAll(textLog);
+		}
+		if (null != htmlLog) {
+			mergedList.addAll(htmlLog);
+		}
+		return mergedList;
+	}
+
+	/**
+	 * Returns current summary log files (Includes txt and html files)
+	 * 
+	 * @return Summary log file list
+	 */
+	public List<File> getCurrentSummaryLogFiles() {
+		List<File> textLog = new ArrayList<File>();
+		List<File> htmlLog = new ArrayList<File>();
+		getFilesFromSummaryLogAppenders("summary-log-text", textLog);
+		getFilesFromSummaryLogAppenders("summary-log-html", htmlLog);
+		List<File> mergedList = new ArrayList<>();
+		if (null != textLog) {
+			mergedList.addAll(textLog);
+		}
+		if (null != htmlLog) {
+			mergedList.addAll(htmlLog);
+		}
+		return mergedList;
+	}
+
+	/**
+	 * Provides list of current general log files attached to provided appender
+	 * name
+	 * 
+	 * @param appenderName
+	 *            Appender Name
+	 * @param textLog
+	 *            File List
+	 */
+	private void getFilesFromGeneralLogAppenders(String appenderName, List<File> textLog) {
+		Map<String, Appender> appenders = getGeneralLogger().getAppenders();
+		Iterator<Entry<String, Appender>> it = appenders.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Appender> pair = (Map.Entry<String, Appender>) it.next();
+
+			getGeneralLogger().trace(pair.getKey() + "=" + pair.getValue());
+			if (pair.getValue() instanceof RollingFileAppender) {
+				if (appenderName.equals(pair.getValue().getName())) {
+					String appender = ((RollingFileAppender) pair.getValue()).getFileName();
+					textLog.add(new File(appender));
+					getGeneralLogger().trace(((RollingFileAppender) pair.getValue()).getFileName());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Provides list of current summary log files attached to provided appender
+	 * name
+	 * 
+	 * @param appenderName
+	 *            Appender Name
+	 * @param textLog
+	 *            File List
+	 */
+	private void getFilesFromSummaryLogAppenders(String appenderName, List<File> logFiles) {
+		Map<String, Appender> appenders = getSummaryLogger().getAppenders();
+		Iterator<Entry<String, Appender>> it = appenders.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Appender> pair = (Map.Entry<String, Appender>) it.next();
+			if (pair.getValue() instanceof RollingFileAppender) {
+				if (appenderName.equals(pair.getValue().getName())) {
+					logFiles.add(new File(((RollingFileAppender) pair.getValue()).getFileName()));
+				}
+			}
+		}
 	}
 
 	/**
@@ -218,7 +340,7 @@ class OrganisedLog {
 
 		// File size based rollver Trigger Policy
 		ComponentBuilder<?> triggeringPolicy = builder.newComponent("Policies");
-		triggeringPolicy.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "200MB"));
+		triggeringPolicy.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "1MB"));
 
 		// create a console appender
 		{
@@ -360,7 +482,7 @@ class OrganisedLog {
 		return loggerContext;
 	}
 
-	private static Level getLoglevelFromXML() {
+	public static Level getLoglevelFromXML() {
 		if (Static_Store.FWConfig.getLogLevel().equals("info")) {
 			return Level.INFO;
 		}
@@ -382,19 +504,20 @@ class OrganisedLog {
 		return Level.DEBUG;
 	}
 
-	public Logger getGeneralLogger() {
+	public org.apache.logging.log4j.core.Logger getGeneralLogger() {
 		return generalLogger;
 	}
 
-	public void setGeneralLogger(Logger generalLogger) {
+	public void setGeneralLogger(org.apache.logging.log4j.core.Logger generalLogger) {
 		this.generalLogger = generalLogger;
 	}
 
-	public Logger getSummaryLogger() {
+	// User should not be playing around with summary logger
+	public org.apache.logging.log4j.core.Logger getSummaryLogger() {
 		return summaryLogger;
 	}
 
-	public void setSummaryLogger(Logger summaryLogger) {
+	public void setSummaryLogger(org.apache.logging.log4j.core.Logger summaryLogger) {
 		this.summaryLogger = summaryLogger;
 	}
 
