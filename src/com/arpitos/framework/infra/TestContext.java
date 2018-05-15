@@ -3,6 +3,7 @@ package com.arpitos.framework.infra;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
 import com.arpitos.framework.Enums.TestStatus;
@@ -164,7 +165,7 @@ public class TestContext {
 		return methodName;
 	}
 
-	public Logger getLogger() {
+	public org.apache.logging.log4j.core.Logger getLogger() {
 		return (Logger) getOrganiseLogger().getGeneralLogger();
 	}
 

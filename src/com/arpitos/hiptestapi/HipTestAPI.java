@@ -77,7 +77,7 @@ public class HipTestAPI {
 
 		JSONObject obj = new JSONObject();
 		obj.put("email", "arpit.shah@invenco.com");
-		obj.put("password", "angel008");
+		obj.put("password", "test123");
 		System.out.println(obj.toString());
 		byte[] data = obj.toString().getBytes();
 		writeDataToHTTP(connector, data);

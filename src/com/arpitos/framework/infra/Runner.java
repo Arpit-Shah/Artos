@@ -187,7 +187,7 @@ public class Runner {
 		// Run prior to each test suit
 		prePostCycleInstance.beforeTestsuit(context);
 		for (int index = 0; index < loopCycle; index++) {
-			logger.info("\n---------------- (Test Loop Count : " + index + 1 + ") -------------------");
+			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
 			// --------------------------------------------------------------------------------------------
 			ExecutorService service = Executors.newFixedThreadPool(1000);
 			List<Future<Runnable>> futures = new ArrayList<>();
