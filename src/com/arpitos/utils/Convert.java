@@ -20,22 +20,39 @@ public class Convert {
 	// ===================================================================
 
 	/**
+	 * 
+	 * @param byteArray
+	 *            bytes to be converted to long
+	 * @return long value
+	 */
+	public long bytesToLong(byte[] byteArray) {
+		long total = 0;
+		for (int i = 0; i < byteArray.length; i++) {
+			int temp = byteArray[i];
+			if (temp < 0) {
+				total += (128 + (byteArray[i] & 0x7f)) * Math.pow(2, (byteArray.length - 1 - i) * 8);
+			} else {
+				total += ((byteArray[i] & 0x7f) * Math.pow(2, (byteArray.length - 1 - i) * 8));
+			}
+		}
+		return total;
+	}
+
+	/**
 	 * concatenates multiple byte arrays.
 	 * 
-	 * @param first
-	 *            = first byte array
-	 * @param rest
-	 *            = following bye arrays
+	 * @param arrays
+	 *            = byte arrays
 	 * @return concatenated byte array
 	 */
-	public byte[] concat(byte[] first, byte[]... rest) {
-		int totalLength = first.length;
-		for (byte[] array : rest) {
+	public byte[] concat(byte[]... arrays) {
+		int totalLength = 0;
+		for (byte[] array : arrays) {
 			totalLength += array.length;
 		}
-		byte[] result = Arrays.copyOf(first, totalLength);
-		int offset = first.length;
-		for (byte[] array : rest) {
+		byte[] result = new byte[totalLength];
+		int offset = 0;
+		for (byte[] array : arrays) {
 			System.arraycopy(array, 0, result, offset, array.length);
 			offset += array.length;
 		}
@@ -45,22 +62,19 @@ public class Convert {
 	/**
 	 * concatenate chain of single byte in order it was provided in.
 	 * 
-	 * @param first
-	 *            = first byte
-	 * @param rest
-	 *            = following byte in sequence
+	 * @param data
+	 *            = byte(s) in sequence
 	 * @return concatenated byte array
 	 */
 	@SuppressWarnings("unused")
-	public byte[] concat(byte first, byte... rest) {
-		int totalLength = 1;
-		for (byte currentByte : rest) {
+	public byte[] concat(byte... data) {
+		int totalLength = 0;
+		for (byte currentByte : data) {
 			totalLength += 1;
 		}
 		byte[] result = new byte[totalLength];
-		result[0] = first;
-		int offset = 1;
-		for (byte currentByte : rest) {
+		int offset = 0;
+		for (byte currentByte : data) {
 			result[offset] = currentByte;
 			offset++;
 		}
@@ -97,9 +111,26 @@ public class Convert {
 	 * 
 	 * <PRE>
 	 * Example: 
-	 * Sample : bytesToStringHex(new byte[]{0x01, 0x02, 0xFF}, true);
+	 * Sample : bytesToHexString(new byte[]{0x01, 0x02, 0xFF});
 	 * Result : [3][01 02 FF]
-	 * Sample : bytesToStringHex(new byte[]{0x01, 0x02, 0xFF}, false);
+	 * </PRE>
+	 * 
+	 * @param data
+	 *            = data to be converted
+	 * @return Hex formatted string
+	 */
+	public String bytesToHexString(byte[] data) {
+		return bytesToHexString(data, true);
+	}
+
+	/**
+	 * Converts Bytes to Hex String
+	 * 
+	 * <PRE>
+	 * Example: 
+	 * Sample : bytesToHexString(new byte[]{0x01, 0x02, 0xFF}, true);
+	 * Result : [3][01 02 FF]
+	 * Sample : bytesToHexString(new byte[]{0x01, 0x02, 0xFF}, false);
 	 * Result : 0102FF
 	 * </PRE>
 	 * 
@@ -109,7 +140,7 @@ public class Convert {
 	 *            = true/false
 	 * @return Hex formatted string
 	 */
-	public String bytesToStringHex(byte[] data, boolean bDisplaySize) {
+	public String bytesToHexString(byte[] data, boolean bDisplaySize) {
 		if (null == data) {
 			return null;
 		}
@@ -133,13 +164,30 @@ public class Convert {
 	}
 
 	/**
-	 * Converts Bytes to Hex String
+	 * Converts Byte to Hex String
 	 * 
 	 * <PRE>
 	 * Example: 
-	 * Sample : bytesToStringHex((byte)0xFF, true);
+	 * Sample : bytesToHexString((byte)0xFF);
 	 * Result : [1][FF]
-	 * Sample : bytesToStringHex((byte)0xFF, false);
+	 * </PRE>
+	 * 
+	 * @param data
+	 *            = data to be converted
+	 * @return Hex formatted string
+	 */
+	public String bytesToHexString(byte data) {
+		return bytesToHexString(data, true);
+	}
+
+	/**
+	 * Converts Byte to Hex String
+	 * 
+	 * <PRE>
+	 * Example: 
+	 * Sample : bytesToHexString((byte)0xFF, true);
+	 * Result : [1][FF]
+	 * Sample : bytesToHexString((byte)0xFF, false);
 	 * Result : FF
 	 * </PRE>
 	 * 
@@ -149,8 +197,8 @@ public class Convert {
 	 *            = true/false
 	 * @return Hex formatted string
 	 */
-	public String bytesToStringHex(byte data, boolean bDisplaySize) {
-		return bytesToStringHex(new byte[] { data }, bDisplaySize);
+	public String bytesToHexString(byte data, boolean bDisplaySize) {
+		return bytesToHexString(new byte[] { data }, bDisplaySize);
 	}
 
 	/**
@@ -379,8 +427,15 @@ public class Convert {
 	 * @param pos
 	 * @return
 	 */
-	public byte getBitOfTheByte(byte data, int pos) {
-		return (byte) (data & (0x01 << pos));
+	public int getBitOfTheByte(byte data, int pos) {
+		return (data & (0x01 << pos));
+	}
+
+	public boolean isBitSet(byte data, int pos) {
+		if (1 == getBitOfTheByte(data, pos)) {
+			return true;
+		}
+		return false;
 	}
 
 	// ===================================================================
@@ -389,6 +444,13 @@ public class Convert {
 
 	public byte[] stringToByteArray(String str) {
 		return str.getBytes();
+	}
+
+	public byte stringHexToByte(String strHex) {
+		if (strHex.length() != 2) {
+			throw new IllegalArgumentException("Input string must only contain 2 char");
+		}
+		return (stringHexToByteArray(strHex)[0]);
 	}
 
 	public byte[] stringHexToByteArray(String strHex) {
@@ -446,7 +508,7 @@ public class Convert {
 	 * @param asciiValue
 	 * @return
 	 */
-	public String asciiToStringHex(String asciiValue) {
+	public String asciiToHexString(String asciiValue) {
 		String result = "";
 		byte[] asciiArray = asciiValue.getBytes();
 		for (byte s : asciiArray) {
@@ -455,6 +517,26 @@ public class Convert {
 		return result;
 	}
 
+	public String stringEscapeForXML(String input) {
+		StringBuilder builder = new StringBuilder();
+		for (int index = 0; index < input.length(); index++) {
+			char chr = input.charAt(index);
+			if (chr == '<') {
+				builder.append("&lt;");
+			} else if (chr == '>') {
+				builder.append("&gt;");
+			} else if (chr == '&') {
+				builder.append("&amp;");
+			} else if (chr == '\'') {
+				builder.append("&apos;");
+			} else if (chr == '"') {
+				builder.append("&quot;");
+			} else {
+				builder.append(chr);
+			}
+		}
+		return builder.toString();
+	}
 	// ===================================================================
 	// Long related manipulation
 	// ===================================================================
@@ -469,6 +551,15 @@ public class Convert {
 	// ===================================================================
 	// Integer related manipulation
 	// ===================================================================
+
+	public boolean isInteger(String str) {
+		try {
+			Integer.parseInt(str);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
 
 	public byte[] intTo4Bytes(int x, ByteOrder bo) throws Exception {
 		if (x > Integer.MAX_VALUE) {
@@ -489,6 +580,13 @@ public class Convert {
 		buffer.putInt(x);
 		byte[] bytes = buffer.array();
 		return Arrays.copyOfRange(bytes, bytes.length - 2, bytes.length);
+	}
+
+	public byte intToByte(int x) throws Exception {
+		if (x > Byte.MAX_VALUE) {
+			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
+		}
+		return (byte) (x & (0xff));
 	}
 
 	public String integerToString(int x) {
@@ -529,13 +627,12 @@ public class Convert {
 	}
 
 	public boolean stringToBoolean(String str) throws Exception {
-		if (str.equals("0") || str.equals("false") || str.equals("FALSE") || str.equals("False")) {
-			return false;
-		} else if (str.equals("1") || str.equals("true") || str.equals("TRUE") || str.equals("True")) {
+		if (str.trim().equals("1") || str.trim().toLowerCase().equals("true")) {
 			return true;
-		} else {
-			throw new Exception(ExceptionValue.INVALID_INPUT.getValue() + " : " + str);
+		} else if (str.trim().equals("0") || str.trim().toLowerCase().equals("false")) {
+			return false;
 		}
+		throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
 	}
 
 	// *******************************************************************************************
