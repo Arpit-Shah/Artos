@@ -10,13 +10,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
+import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.GUITestSelector;
-import com.arpitos.framework.ScanTestSuit;
-import com.arpitos.framework.Static_Store;
+import com.arpitos.framework.ScanTestSuite;
 import com.arpitos.framework.TestObjectWrapper;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
 import com.arpitos.interfaces.TestRunnable;
+import com.arpitos.utils.Convert;
 
 /**
  * This class is responsible for running test cases. It initialising logger and
@@ -30,13 +31,15 @@ public class Runner {
 
 	public static void getTestWrapperList(List<TestExecutable> testList, Class<?> cls) throws Exception {
 		if (testList.isEmpty()) {
-			testList = (ArrayList<TestExecutable>) new ScanTestSuit(cls.getPackage().getName()).getTestList(true, true);
+			testList = (ArrayList<TestExecutable>) new ScanTestSuite(cls.getPackage().getName()).getTestList(true, true);
 		}
 	}
 
 	/**
 	 * Run Method runs a test case
 	 * 
+	 * @param args
+	 *            command line parameter
 	 * @param testList
 	 *            test object list which required to be run
 	 * @param cls
@@ -45,34 +48,24 @@ public class Runner {
 	 *            Number of time test list required to be executed
 	 * @throws Exception
 	 */
-	public static void run(List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
-		run(testList, cls, "", loopCycle);
-	}
+	public static void run(String[] args, List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
+		// Only process command line argument if provided
+		if (args.length > 0 && !CliProcessor.proessCommandLine(args)) {
+			return;
+		}
 
-	/**
-	 * Run Method runs a test case
-	 * 
-	 * @param testList
-	 *            test object list which required to be run
-	 * @param cls
-	 *            Main class object instance
-	 * @param serialNumber
-	 *            SubDirectory name (Generally serial number)
-	 * @param loopCycle
-	 *            Number of time test list required to be executed
-	 * @throws Exception
-	 */
-	public static void run(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
-		if (Static_Store.FWConfig.isEnableGUITestSelector()) {
+		String subDirName = FWStatic_Store.FWConfig.getLogSubDir();
+
+		if (FWStatic_Store.FWConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
 				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception {
 					Runner.runTest(testList, cls, serialNumber, loopCount);
 				}
 			};
-			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, serialNumber, loopCycle, runObj);
+			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, subDirName, loopCycle, runObj);
 		} else {
-			runTest(testList, cls, serialNumber, loopCycle);
+			runTest(testList, cls, subDirName, loopCycle);
 		}
 	}
 
@@ -83,33 +76,33 @@ public class Runner {
 	 *            test object list
 	 * @param cls
 	 *            class object which is executing test
-	 * @param serialNumber
+	 * @param subDirName
 	 *            product serial number
 	 * @param loopCycle
 	 *            test loop cycle
 	 * @throws Exception
 	 */
-	public static void runTest(List<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCycle) throws Exception {
+	public static void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
 
 		// -------------------------------------------------------------------//
 		// Prepare Context
 		// read configuration at start
-		String logDir = Static_Store.FWConfig.getLogRootDir() + serialNumber;
+		String logDir = FWStatic_Store.FWConfig.getLogRootDir() + subDirName;
 		String strTestName = cls.getPackage().getName();
-		boolean enableLogDecoration = Static_Store.FWConfig.isEnableLogDecoration();
-		boolean enableTextLog = Static_Store.FWConfig.isEnableTextLog();
-		boolean enableHTMLLog = Static_Store.FWConfig.isEnableHTMLLog();
+		boolean enableLogDecoration = FWStatic_Store.FWConfig.isEnableLogDecoration();
+		boolean enableTextLog = FWStatic_Store.FWConfig.isEnableTextLog();
+		boolean enableHTMLLog = FWStatic_Store.FWConfig.isEnableHTMLLog();
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 		TestContext context = new TestContext(organisedLogger);
-		Static_Store.context = context;
+		FWStatic_Store.context = context;
 
 		// Using reflection grep all test cases
 		{
 			String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
-			ScanTestSuit reflection = new ScanTestSuit(packageName);
+			ScanTestSuite reflection = new ScanTestSuite(packageName);
 			// Get all test case information and store it for later use
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
-			context.setGlobalObject(Static_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
+			context.setGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 		}
 
 		Logger logger = context.getLogger();
@@ -124,12 +117,25 @@ public class Runner {
 			runSingleThread(testList, cls, loopCycle, context);
 		}
 
+		// Print Test results
 		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
 				+ " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
-		context.setTestSuitFinishTime(System.currentTimeMillis());
-		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuitTimeDuration()),
-				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuitTimeDuration())
-						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuitTimeDuration()))));
+
+		// Set Test Finish Time
+		context.setTestSuiteFinishTime(System.currentTimeMillis());
+
+		// Print Test suite Start and Finish time
+		String timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
+		context.getOrganiseLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
+		context.getOrganiseLogger().getSummaryLogger().info("\nTest start time : " + timeStamp);
+		timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
+		context.getOrganiseLogger().getGeneralLogger().info("Test finish time : " + timeStamp);
+		context.getOrganiseLogger().getSummaryLogger().info("Test finish time : " + timeStamp);
+
+		// Print Test suite total duration
+		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
+				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
+						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
 		System.exit((int) context.getCurrentFailCount());
 	}
 
@@ -141,13 +147,13 @@ public class Runner {
 		// Test Start
 		// ********************************************************************************************
 		logger.info("\n---------------- Start -------------------");
-		context.setTestSuitStartTime(System.currentTimeMillis());
+		context.setTestSuiteStartTime(System.currentTimeMillis());
 
 		// Create an instance of Main class
 		PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
 
 		// Run prior to each test suit
-		prePostCycleInstance.beforeTestsuit(context);
+		prePostCycleInstance.beforeTestsuite(context);
 		for (int index = 0; index < loopCycle; index++) {
 			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
 			// --------------------------------------------------------------------------------------------
@@ -163,7 +169,7 @@ public class Runner {
 			// --------------------------------------------------------------------------------------------
 		}
 		// Run at the end of each test suit
-		prePostCycleInstance.afterTestsuit(context);
+		prePostCycleInstance.afterTestsuite(context);
 		logger.info("\n---------------- Finished -------------------");
 		// ********************************************************************************************
 		// Test Finish
@@ -179,13 +185,13 @@ public class Runner {
 		// Test Start
 		// ********************************************************************************************
 		logger.info("\n---------------- Start -------------------");
-		context.setTestSuitStartTime(System.currentTimeMillis());
+		context.setTestSuiteStartTime(System.currentTimeMillis());
 
 		// Create an instance of Main class
 		PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
 
 		// Run prior to each test suit
-		prePostCycleInstance.beforeTestsuit(context);
+		prePostCycleInstance.beforeTestsuite(context);
 		for (int index = 0; index < loopCycle; index++) {
 			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
 			// --------------------------------------------------------------------------------------------
@@ -209,7 +215,7 @@ public class Runner {
 			// --------------------------------------------------------------------------------------------
 		}
 		// Run at the end of each test suit
-		prePostCycleInstance.afterTestsuit(context);
+		prePostCycleInstance.afterTestsuite(context);
 		logger.info("\n---------------- Finished -------------------");
 		// ********************************************************************************************
 		// Test Finish
