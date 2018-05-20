@@ -48,32 +48,31 @@ public class TCPServer implements Connectable {
 		System.out.println("Connection Closed");
 	}
 
-	public void sendData(String data) throws Exception {
+	public void sendMsg(String data) throws Exception {
 		outToClient = new DataOutputStream(serverSocket.getOutputStream());
 		outToClient.writeBytes(data);
 	}
 
-	public void sendData(byte[] data) throws Exception {
+	@Override
+	public void sendMsg(byte[] data) throws Exception {
 		outToClient = new DataOutputStream(serverSocket.getOutputStream());
 		outToClient.write(data);
 	}
 
-	public byte[] recieveData() {
-		return getNextMSG();
+	@Override
+	public byte[] getNextMsg() {
+		if (hasNextMsg()) {
+			return queue.poll();
+		}
+		return null;
 	}
 
-	public boolean hasNextMSG() {
+	@Override
+	public boolean hasNextMsg() {
 		if (queue.isEmpty()) {
 			return false;
 		}
 		return true;
-	}
-
-	public byte[] getNextMSG() {
-		if (hasNextMSG()) {
-			return queue.poll();
-		}
-		return null;
 	}
 
 	public byte[] getNextMSG(long Timeout, TimeUnit timeunit) throws Exception {
@@ -83,7 +82,7 @@ public class TCPServer implements Connectable {
 		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(Timeout, timeunit);
 
 		while (!isTimeout) {
-			if (hasNextMSG()) {
+			if (hasNextMsg()) {
 				return queue.poll();
 			}
 			finishTime = System.nanoTime();

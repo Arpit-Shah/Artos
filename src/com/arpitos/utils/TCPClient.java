@@ -52,27 +52,26 @@ public class TCPClient implements Connectable {
 		outToServer.writeBytes(data);
 	}
 
-	public void sendData(byte[] data) throws Exception {
+	@Override
+	public void sendMsg(byte[] data) throws Exception {
 		outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		outToServer.write(data);
 	}
 
-	public byte[] recieveData() {
-		return getNextMSG();
+	@Override
+	public byte[] getNextMsg() {
+		if (hasNextMsg()) {
+			return queue.poll();
+		}
+		return null;
 	}
 
-	public boolean hasNextMSG() {
+	@Override
+	public boolean hasNextMsg() {
 		if (queue.isEmpty()) {
 			return false;
 		}
 		return true;
-	}
-
-	public byte[] getNextMSG() {
-		if (hasNextMSG()) {
-			return queue.poll();
-		}
-		return null;
 	}
 
 	public byte[] getNextMSG(long Timeout, TimeUnit timeunit) throws Exception {
@@ -82,7 +81,7 @@ public class TCPClient implements Connectable {
 		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(Timeout, timeunit);
 
 		while (!isTimeout) {
-			if (hasNextMSG()) {
+			if (hasNextMsg()) {
 				return queue.poll();
 			}
 			finishTime = System.nanoTime();

@@ -32,13 +32,13 @@ public class TypeTest {
 		List<Byte> byteTestList = new TypeTest().getByteTestList();
 		System.out.println("******* Byte ***********");
 		for (byte y : byteTestList) {
-			System.out.println(_con.bytesToStringHex(y, false));
+			System.out.println(_con.bytesToHexString(y, false));
 		}
 
 		List<byte[]> byteArrayTestList = new TypeTest().getByteArrayTestList(19);
 		System.out.println("******* Byte ***********");
 		for (byte[] y : byteArrayTestList) {
-			System.out.println(_con.bytesToStringHex(y, true));
+			System.out.println(_con.bytesToHexString(y, true));
 		}
 	}
 
