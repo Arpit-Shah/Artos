@@ -3,10 +3,10 @@ package com.arpitos.interfaces;
 import java.util.Map;
 
 import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.Static_Store;
+import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.TestObjectWrapper;
 import com.arpitos.framework.infra.TestContext;
-import com.arpitos.utils.Utils;
+import com.arpitos.utils.FWUtils;
 
 /**
  * Implemented by each test cases. Provides minimum decoration require for each
@@ -24,7 +24,7 @@ public interface TestExecutable {
 
 			// @formatter:off
 			@SuppressWarnings("unchecked")
-			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context.getGlobalObject(Static_Store.GLOBAL_ANNOTATED_TEST_MAP);
+			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context.getGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
 			TestObjectWrapper testObject = testMap.get(cls.getName());
 			
 			context.getLogger().info("*************************************************************************"
@@ -41,12 +41,12 @@ public interface TestExecutable {
 
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		} catch (Exception e) {
-			context.setCurrentTestStatus(TestStatus.FAIL);
-			Utils.writePrintStackTrace(context, e);
+			context.setTestStatus(TestStatus.FAIL);
+			FWUtils.writePrintStackTrace(context, e);
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		} catch (Throwable ex) {
-			context.setCurrentTestStatus(TestStatus.FAIL);
-			Utils.writePrintStackTrace(context, ex);
+			context.setTestStatus(TestStatus.FAIL);
+			FWUtils.writePrintStackTrace(context, ex);
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		}
 	}

@@ -15,8 +15,10 @@ public interface Connectable {
 
 	public boolean isConnected();
 
-	public void sendData(byte[] data) throws Exception;
+	public void sendMsg(byte[] data) throws Exception;
 
-	public byte[] recieveData() throws Exception;
+	public byte[] getNextMsg() throws Exception;
+
+	public boolean hasNextMsg();
 
 }

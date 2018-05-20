@@ -10,7 +10,7 @@ import com.arpitos.utils.Convert;
  * @author arpit
  *
  */
-public class Static_Store {
+public class FWStatic_Store {
 
 	public static final String toolName = "Arpitos";
 
@@ -18,6 +18,5 @@ public class Static_Store {
 	public static final String GLOBAL_ANNOTATED_TEST_MAP = "ANNOTATED_TEST_MAP";
 	public static final FrameworkConfig FWConfig = new FrameworkConfig(true);
 	public static final SystemProperties SysProperties = new SystemProperties();
-	public static final Convert convert = new Convert();
 	public static TestContext context;
 }

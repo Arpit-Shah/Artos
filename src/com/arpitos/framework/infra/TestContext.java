@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
 import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.Static_Store;
+import com.arpitos.framework.FWStatic_Store;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -31,9 +31,9 @@ public class TestContext {
 	private long currentKTFCount = 0;
 
 	// Very first test start time
-	private long testSuitStartTime;
+	private long testSuiteStartTime;
 	// Very first test start time
-	private long testSuitFinishTime;
+	private long testSuiteFinishTime;
 
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
 
@@ -46,7 +46,7 @@ public class TestContext {
 	public TestContext(OrganisedLog organisedLog) {
 		this.organiseLogger = organisedLog;
 		printMendatoryInfo();
-		Static_Store.SysProperties.printUsefulInfo(organisedLog.getGeneralLogger());
+		FWStatic_Store.SysProperties.printUsefulInfo(organisedLog.getGeneralLogger());
 	}
 
 	/**
@@ -56,12 +56,12 @@ public class TestContext {
 		//@formatter:off
 		
 		String organisationInfo = "************************************ Header Start ******************************************"
-								 +"\nOrganisation_Name : " + Static_Store.FWConfig.getOrganisation_Name()
-								 +"\nOrganisation_Country : " + Static_Store.FWConfig.getOrganisation_Country()
-								 +"\nOrganisation_Address : " + Static_Store.FWConfig.getOrganisation_Address()
-								 +"\nOrganisation_Phone : " + Static_Store.FWConfig.getOrganisation_Contact_Number()
-								 +"\nOrganisation_Email : " + Static_Store.FWConfig.getOrganisation_Email()
-								 +"\nOrganisation_Website : " + Static_Store.FWConfig.getOrganisation_Website()
+								 +"\nOrganisation_Name : " + FWStatic_Store.FWConfig.getOrganisation_Name()
+								 +"\nOrganisation_Country : " + FWStatic_Store.FWConfig.getOrganisation_Country()
+								 +"\nOrganisation_Address : " + FWStatic_Store.FWConfig.getOrganisation_Address()
+								 +"\nOrganisation_Phone : " + FWStatic_Store.FWConfig.getOrganisation_Contact_Number()
+								 +"\nOrganisation_Email : " + FWStatic_Store.FWConfig.getOrganisation_Email()
+								 +"\nOrganisation_Website : " + FWStatic_Store.FWConfig.getOrganisation_Website()
 								 +"\n************************************ Header End ********************************************";
 		getOrganiseLogger().getGeneralLogger().info(Banner.getBanner());
 		getOrganiseLogger().getGeneralLogger().info(organisationInfo);
@@ -80,7 +80,7 @@ public class TestContext {
 	 * @param testStatus
 	 *            = Test Status
 	 */
-	public void setCurrentTestStatus(TestStatus testStatus) {
+	public void setTestStatus(TestStatus testStatus) {
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
 			currentTestStatus = testStatus;
 
@@ -112,7 +112,7 @@ public class TestContext {
 								+"\n******** KTF TEST PASSED *********"
 								+"\n**********************************");
 				//@formatter:on
-				setCurrentTestStatus(TestStatus.FAIL);
+				setTestStatus(TestStatus.FAIL);
 			}
 		}
 
@@ -190,8 +190,8 @@ public class TestContext {
 		this.strJIRARef = strJIRARef;
 	}
 
-	public long getTestSuitTimeDuration() {
-		return getTestSuitFinishTime() - getTestSuitStartTime();
+	public long getTestSuiteTimeDuration() {
+		return getTestSuiteFinishTime() - getTestSuiteStartTime();
 	}
 
 	/**
@@ -266,27 +266,20 @@ public class TestContext {
 		this.organiseLogger = organiseLogger;
 	}
 
-	public long getTestSuitStartTime() {
-		return testSuitStartTime;
+	public long getTestSuiteStartTime() {
+		return testSuiteStartTime;
 	}
 
-	public void setTestSuitStartTime(long testSuitStartTime) {
-		this.testSuitStartTime = testSuitStartTime;
+	public void setTestSuiteStartTime(long testSuiteStartTime) {
+		this.testSuiteStartTime = testSuiteStartTime;
 	}
 
-	public long getTestSuitFinishTime() {
-		return testSuitFinishTime;
+	public long getTestSuiteFinishTime() {
+		return testSuiteFinishTime;
 	}
 
-	public void setTestSuitFinishTime(long testSuitFinishTime) {
-		this.testSuitFinishTime = testSuitFinishTime;
-
-		String timeStamp = "\nTest start time : " + Static_Store.convert.MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", testSuitStartTime);
-		getOrganiseLogger().getGeneralLogger().info(timeStamp);
-		getOrganiseLogger().getSummaryLogger().info(timeStamp);
-		timeStamp = "Test finish time : " + Static_Store.convert.MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", testSuitFinishTime);
-		getOrganiseLogger().getGeneralLogger().info(timeStamp);
-		getOrganiseLogger().getSummaryLogger().info(timeStamp);
+	public void setTestSuiteFinishTime(long testSuiteFinishTime) {
+		this.testSuiteFinishTime = testSuiteFinishTime;
 	}
 
 }

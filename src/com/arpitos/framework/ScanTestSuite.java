@@ -14,9 +14,9 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
 import com.arpitos.annotation.AfterTest;
-import com.arpitos.annotation.AfterTestsuit;
+import com.arpitos.annotation.AfterTestsuite;
 import com.arpitos.annotation.BeforeTest;
-import com.arpitos.annotation.BeforeTestsuit;
+import com.arpitos.annotation.BeforeTestsuite;
 import com.arpitos.annotation.TestCase;
 import com.arpitos.annotation.TestPlan;
 import com.arpitos.framework.infra.TestContext;
@@ -28,7 +28,7 @@ import com.arpitos.interfaces.TestExecutable;
  * @author arpit
  *
  */
-public class ScanTestSuit {
+public class ScanTestSuite {
 	Reflections reflection;
 	List<String> testLabels = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
@@ -41,7 +41,7 @@ public class ScanTestSuit {
 	 *            Base package name
 	 * @throws Exception
 	 */
-	public ScanTestSuit(String packageName) throws Exception {
+	public ScanTestSuite(String packageName) throws Exception {
 		scan(packageName);
 	}
 
@@ -108,16 +108,16 @@ public class ScanTestSuit {
 			// System.out.println("@BeforeTest = " + method.getName() + " : " +
 			// method.getDeclaringClass().getName());
 		}
-		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTestsuit.class)) {
-			// System.out.println("@BeforeTestsuit = " + method.getName() + " :
+		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTestsuite.class)) {
+			// System.out.println("@BeforeTestsuite = " + method.getName() + " :
 			// " + method.getDeclaringClass().getName());
 		}
 		for (Method method : reflection.getMethodsAnnotatedWith(AfterTest.class)) {
 			// System.out.println("@AfterTest = " + method.getName() + " : " +
 			// method.getDeclaringClass().getName());
 		}
-		for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuit.class)) {
-			// System.out.println("@AfterTestsuit = " + method.getName() + " : "
+		for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuite.class)) {
+			// System.out.println("@AfterTestsuite = " + method.getName() + " : "
 			// + method.getDeclaringClass().getName());
 		}
 	}

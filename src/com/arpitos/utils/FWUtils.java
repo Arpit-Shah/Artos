@@ -6,7 +6,7 @@ import java.io.StringWriter;
 
 import com.arpitos.framework.infra.TestContext;
 
-public class Utils {
+public class FWUtils {
 
 	/**
 	 * Writes Print StackTrace on console and log file as per chosen option

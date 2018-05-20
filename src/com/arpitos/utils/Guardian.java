@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.arpitos.exception.ValueNotAsExpected;
 import com.arpitos.exception.WrongFlow;
-import com.arpitos.framework.Static_Store;
+import com.arpitos.framework.FWStatic_Store;
 
 public class Guardian {
 
@@ -20,42 +20,42 @@ public class Guardian {
 	static String strFormatNotEqual_fail = " format are same";
 
 	static void print(String reference, String actual) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	static void print(byte reference, byte actual) {
-		Static_Store.context.getLogger().info(
-				"Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : " + _con.bytesToStringHex(actual, true));
+		FWStatic_Store.context.getLogger().info(
+				"Finding:" + "\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : " + _con.bytesToHexString(actual, true));
 	}
 
 	static void print(byte reference, byte actual, byte delta) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : "
-				+ _con.bytesToStringHex(actual, true) + "\n   Delta : " + _con.bytesToStringHex(delta, true));
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : "
+				+ _con.bytesToHexString(actual, true) + "\n   Delta : " + _con.bytesToHexString(delta, true));
 	}
 
 	static void print(byte[] reference, byte[] actual) {
-		Static_Store.context.getLogger().info(
-				"Finding:" + "\nReference : " + _con.bytesToStringHex(reference, true) + "\n   Actual : " + _con.bytesToStringHex(actual, true));
+		FWStatic_Store.context.getLogger().info(
+				"Finding:" + "\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : " + _con.bytesToHexString(actual, true));
 	}
 
 	static void print(int reference, int actual) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	static void print(int reference, int actual, int delta) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
 	}
 
 	static void print(boolean reference, boolean actual) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	static void print(long reference, long actual) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
 	}
 
 	static void print(long reference, long actual, long delta) {
-		Static_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
+		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
 	}
 
 	// *******************************************************************************************

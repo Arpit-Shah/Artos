@@ -1,9 +1,9 @@
 package com.arpitos.interfaces;
 
 import com.arpitos.annotation.AfterTest;
-import com.arpitos.annotation.AfterTestsuit;
+import com.arpitos.annotation.AfterTestsuite;
 import com.arpitos.annotation.BeforeTest;
-import com.arpitos.annotation.BeforeTestsuit;
+import com.arpitos.annotation.BeforeTestsuite;
 import com.arpitos.framework.infra.TestContext;
 
 /**
@@ -48,8 +48,8 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of initialisation failed
 	 */
-	@BeforeTestsuit
-	default public void beforeTestsuit(TestContext context) throws Exception {
+	@BeforeTestsuite
+	default public void beforeTestsuite(TestContext context) throws Exception {
 
 	}
 
@@ -61,8 +61,8 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of cleanup failed
 	 */
-	@AfterTestsuit
-	default public void afterTestsuit(TestContext context) throws Exception {
+	@AfterTestsuite
+	default public void afterTestsuite(TestContext context) throws Exception {
 
 	}
 

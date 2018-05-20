@@ -9,6 +9,6 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
 @Target(ElementType.METHOD)
-public @interface AfterTestsuit {
+public @interface AfterTestsuite {
 	
 }

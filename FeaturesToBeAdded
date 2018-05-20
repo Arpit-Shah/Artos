@@ -12,7 +12,7 @@ Features Already Present
 * Feature GUI test selector
 * Feature Test Loop
 * Feature Organised Log in sub-directory
-* Feature Annotation based searching for @beforetest @aftertest @beforetestsuit @aftertestsuit
+* Feature Annotation based searching for @beforetest @aftertest @beforetestsuite @aftertestsuite
 * Feature Access to Java System Info
 * Feature Access to Framework Info
 * Feature Organisation Info
