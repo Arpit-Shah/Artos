@@ -40,6 +40,7 @@ public class FrameworkConfig {
 	// Logger
 	private String logLevel = "debug";
 	private String logRootDir = "./reporting/";
+	private String logSubDir = "SN-123";
 	private boolean enableLogDecoration = false;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
@@ -195,6 +196,15 @@ public class FrameworkConfig {
 		}
 		{
 			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getLogSubDir()));
+			logger.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("logSubDir");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
 			property.appendChild(doc.createTextNode(Boolean.toString(isEnableLogDecoration())));
 			logger.appendChild(property);
 
@@ -278,6 +288,13 @@ public class FrameworkConfig {
 							setLogRootDir(eElement.getTextContent());
 						} else {
 							setLogRootDir(eElement.getTextContent() + File.separator);
+						}
+					}
+					if ("logSubDir".equals(eElement.getAttribute("name"))) {
+						if (eElement.getTextContent().endsWith("/") || eElement.getTextContent().endsWith("\\")) {
+							setLogSubDir(eElement.getTextContent());
+						} else {
+							setLogSubDir(eElement.getTextContent() + File.separator);
 						}
 					}
 					if ("enableLogDecoration".equals(eElement.getAttribute("name"))) {
@@ -468,5 +485,13 @@ public class FrameworkConfig {
 
 	public void setEnableGUITestSelector(boolean enableGUITestSelector) {
 		this.enableGUITestSelector = enableGUITestSelector;
+	}
+
+	public String getLogSubDir() {
+		return logSubDir;
+	}
+
+	public void setLogSubDir(String logSubDir) {
+		this.logSubDir = logSubDir;
 	}
 }
