@@ -25,7 +25,7 @@ import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuild
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.Static_Store;
+import com.arpitos.framework.FWStatic_Store;
 
 /**
  * This class is responsible for initialising all log streams which may require
@@ -38,6 +38,8 @@ public class OrganisedLog {
 
 	private org.apache.logging.log4j.core.Logger generalLogger;
 	private org.apache.logging.log4j.core.Logger summaryLogger;
+
+	private String logBaseDir = "./reporting";
 
 	/**
 	 * Class Constructor
@@ -52,7 +54,7 @@ public class OrganisedLog {
 	 * @param strDestDirName
 	 *            Log destination directory
 	 * @param strTestName
-	 *            TestSuit name for sub directory structure
+	 *            TestSuite name for sub directory structure
 	 * @param disableLogDecoration
 	 *            disable decoration around test (Time-stamp, source package,
 	 *            thread number etc..)
@@ -61,8 +63,9 @@ public class OrganisedLog {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
-		LoggerContext loggerContext = dynamicallyConfigureLog4J(logDir + File.separator + strTestName, strTestName + "_" + System.currentTimeMillis(),
-				enableLogDecoration, enableTextLog, enableHTMLLog);
+		setLogBaseDir(logDir + File.separator + strTestName);
+		LoggerContext loggerContext = dynamicallyConfigureLog4J(getLogBaseDir(), strTestName + "_" + System.currentTimeMillis(), enableLogDecoration,
+				enableTextLog, enableHTMLLog);
 		setGeneralLogger(loggerContext.getLogger("TestLog"));
 		setSummaryLogger(loggerContext.getLogger("Summary"));
 	}
@@ -483,22 +486,22 @@ public class OrganisedLog {
 	}
 
 	public static Level getLoglevelFromXML() {
-		if (Static_Store.FWConfig.getLogLevel().equals("info")) {
+		if (FWStatic_Store.FWConfig.getLogLevel().equals("info")) {
 			return Level.INFO;
 		}
-		if (Static_Store.FWConfig.getLogLevel().equals("all")) {
+		if (FWStatic_Store.FWConfig.getLogLevel().equals("all")) {
 			return Level.ALL;
 		}
-		if (Static_Store.FWConfig.getLogLevel().equals("fatal")) {
+		if (FWStatic_Store.FWConfig.getLogLevel().equals("fatal")) {
 			return Level.FATAL;
 		}
-		if (Static_Store.FWConfig.getLogLevel().equals("trace")) {
+		if (FWStatic_Store.FWConfig.getLogLevel().equals("trace")) {
 			return Level.TRACE;
 		}
-		if (Static_Store.FWConfig.getLogLevel().equals("warn")) {
+		if (FWStatic_Store.FWConfig.getLogLevel().equals("warn")) {
 			return Level.WARN;
 		}
-		if (Static_Store.FWConfig.getLogLevel().equals("debug")) {
+		if (FWStatic_Store.FWConfig.getLogLevel().equals("debug")) {
 			return Level.DEBUG;
 		}
 		return Level.DEBUG;
@@ -519,6 +522,14 @@ public class OrganisedLog {
 
 	public void setSummaryLogger(org.apache.logging.log4j.core.Logger summaryLogger) {
 		this.summaryLogger = summaryLogger;
+	}
+
+	public String getLogBaseDir() {
+		return logBaseDir;
+	}
+
+	public void setLogBaseDir(String logBaseDir) {
+		this.logBaseDir = logBaseDir;
 	}
 
 }
