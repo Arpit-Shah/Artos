@@ -29,7 +29,7 @@ import com.arpitos.interfaces.TestExecutable;
  *
  */
 public class ScanTestSuit {
-	Reflections reflaction;
+	Reflections reflection;
 	List<String> testLabels = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
@@ -55,9 +55,9 @@ public class ScanTestSuit {
 	private void scan(String packageName) throws Exception {
 
 		List<String> testLabels_withDuplicates = new ArrayList<>();
-		reflaction = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
+		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 
-		for (Class<?> cl : reflaction.getTypesAnnotatedWith(TestCase.class)) {
+		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
 			TestCase testcase = cl.getAnnotation(TestCase.class);
 			TestPlan testplan = cl.getAnnotation(TestPlan.class);
 
@@ -104,19 +104,19 @@ public class ScanTestSuit {
 		// Remove duplicates from the list
 		testLabels = testLabels_withDuplicates.stream().distinct().collect(Collectors.toList());
 
-		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTest.class)) {
+		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTest.class)) {
 			// System.out.println("@BeforeTest = " + method.getName() + " : " +
 			// method.getDeclaringClass().getName());
 		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(BeforeTestsuit.class)) {
+		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTestsuit.class)) {
 			// System.out.println("@BeforeTestsuit = " + method.getName() + " :
 			// " + method.getDeclaringClass().getName());
 		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(AfterTest.class)) {
+		for (Method method : reflection.getMethodsAnnotatedWith(AfterTest.class)) {
 			// System.out.println("@AfterTest = " + method.getName() + " : " +
 			// method.getDeclaringClass().getName());
 		}
-		for (Method method : reflaction.getMethodsAnnotatedWith(AfterTestsuit.class)) {
+		for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuit.class)) {
 			// System.out.println("@AfterTestsuit = " + method.getName() + " : "
 			// + method.getDeclaringClass().getName());
 		}
