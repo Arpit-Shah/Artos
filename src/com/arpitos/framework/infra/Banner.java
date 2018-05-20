@@ -15,7 +15,7 @@ class Banner {
 
 	public static String getBanner() {
 		// @formatter:off
-	/*	String banner = "\n"
+	String banner = "\n"
 				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 				+ "\n      ___                                                "
 				+ "\n     / _ \\           _                     __ _ _        "
@@ -28,8 +28,8 @@ class Banner {
 				+ "\n                                                         "
 				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 				+ "\n";
-		*/
-		String banner = "\n\n" +
+		
+		/* String banner = "\n\n" +
       "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"+
       "             UX                                                 :BBBBBBZ         iBv          :YqSbPKs:           .r2ddXP27           \n"+               
       "            rBB7                                                :BBBBBBD     :1QBBB:       iMBBBB   .7qQ5       uBBBBK   :uBI         \n"+           
@@ -45,7 +45,7 @@ class Banner {
       "  BQ           BQBBBBBBBB  BQBBBBB7        BBBBBBB   ....       uBBBBBBB     uBBBBQBRZ      7QBBB..ivqMZ:      7QQ2r..:BBBB5          \n"+       
       "  J             .       :  .     .         uL777v1               .              ::..           .rY1Y7.            i7jJs:.           \n\n"+
       "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-		// @formatter:on
+		// @formatter:on */
 		return banner;
 	}
 
