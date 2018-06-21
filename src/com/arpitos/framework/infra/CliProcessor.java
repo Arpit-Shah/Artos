@@ -59,7 +59,7 @@ public class CliProcessor {
 			// sub-directory name
 			if (line.hasOption("subdir")) {
 				PrintWriter pw = new PrintWriter(System.out);
-				FWStatic_Store.FWConfig.setLogSubDir(line.getOptionValue("subdir"));
+				FWStatic_Store.context.getFrameworkConfig().setLogSubDir(line.getOptionValue("subdir"));
 				pw.flush();
 			}
 

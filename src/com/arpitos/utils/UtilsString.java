@@ -55,8 +55,8 @@ public class UtilsString {
 	}
 
 	/**
-	 * This function is used to compare string format $ sign is used to ignore
-	 * chars during format comparison
+	 * This function is used to compare string format $ sign is used to ignore chars
+	 * during format comparison
 	 * 
 	 * <PRE>
 	 * Example: Boolean bSuccess = CompareStringFormat("1.00.0001", "$.$$.$$$$");
@@ -174,6 +174,20 @@ public class UtilsString {
 		}
 
 		return lookup[n][m];
+	}
+
+	public static String padRight(String s, String padChar, int maxStringLengthWithPadding) {
+		while (s.length() < maxStringLengthWithPadding) {
+			s = s + padChar;
+		}
+		return s;
+	}
+
+	public static String padLeft(String s, String padChar, int maxStringLengthWithPadding) {
+		while (s.length() < maxStringLengthWithPadding) {
+			s = padChar + s;
+		}
+		return s;
 	}
 
 }

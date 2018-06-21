@@ -57,7 +57,7 @@ public class UDPClient implements Connectable {
 	}
 
 	public void sendMsg(String hexString) throws Exception {
-		byte[] data = new Convert().stringHexToByteArray(hexString);
+		byte[] data = new Convert().strHexToByteArray(hexString);
 		packetToServer = new DatagramPacket(data, data.length, InetAddress.getByName(IP), Port);
 		clientSocket.send(packetToServer);
 	}

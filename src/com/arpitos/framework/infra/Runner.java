@@ -35,6 +35,24 @@ public class Runner {
 		}
 	}
 
+	public static TestContext initialiseContext(Class<?> cls) {
+		// Get Info from XML Configuration file
+		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
+		String logDir = FWStatic_Store.context.getFrameworkConfig().getLogRootDir() + subDirName;
+		String strTestName = cls.getPackage().getName();
+		boolean enableLogDecoration = FWStatic_Store.context.getFrameworkConfig().isEnableLogDecoration();
+		boolean enableTextLog = FWStatic_Store.context.getFrameworkConfig().isEnableTextLog();
+		boolean enableHTMLLog = FWStatic_Store.context.getFrameworkConfig().isEnableHTMLLog();
+
+		// Create Logger
+		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
+
+		// Create TestContext
+		FWStatic_Store.context.setOrganiseLogger(organisedLogger);
+
+		return FWStatic_Store.context;
+	}
+
 	/**
 	 * Run Method runs a test case
 	 * 
@@ -54,9 +72,9 @@ public class Runner {
 			return;
 		}
 
-		String subDirName = FWStatic_Store.FWConfig.getLogSubDir();
+		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
 
-		if (FWStatic_Store.FWConfig.isEnableGUITestSelector()) {
+		if (FWStatic_Store.context.getFrameworkConfig().isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
 				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception {
@@ -85,17 +103,20 @@ public class Runner {
 	public static void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
 
 		// -------------------------------------------------------------------//
-		// Prepare Context
-		// read configuration at start
-		String logDir = FWStatic_Store.FWConfig.getLogRootDir() + subDirName;
-		String strTestName = cls.getPackage().getName();
-		boolean enableLogDecoration = FWStatic_Store.FWConfig.isEnableLogDecoration();
-		boolean enableTextLog = FWStatic_Store.FWConfig.isEnableTextLog();
-		boolean enableHTMLLog = FWStatic_Store.FWConfig.isEnableHTMLLog();
-		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
-		TestContext context = new TestContext(organisedLogger);
-		FWStatic_Store.context = context;
+		// // Prepare Context
+		// // read configuration at start
+		// String logDir = FWStatic_Store.FWConfig.getLogRootDir() + subDirName;
+		// String strTestName = cls.getPackage().getName();
+		// boolean enableLogDecoration =
+		// FWStatic_Store.FWConfig.isEnableLogDecoration();
+		// boolean enableTextLog = FWStatic_Store.FWConfig.isEnableTextLog();
+		// boolean enableHTMLLog = FWStatic_Store.FWConfig.isEnableHTMLLog();
+		// OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName,
+		// enableLogDecoration, enableTextLog, enableHTMLLog);
+		// TestContext context = new TestContext(organisedLogger);
+		// FWStatic_Store.context = context;
 
+		TestContext context = FWStatic_Store.context;
 		// Using reflection grep all test cases
 		{
 			String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));

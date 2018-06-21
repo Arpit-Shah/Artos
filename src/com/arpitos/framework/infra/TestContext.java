@@ -3,11 +3,11 @@ package com.arpitos.framework.infra;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
 import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.FWStatic_Store;
+import com.arpitos.framework.FrameworkConfig;
+import com.arpitos.framework.SystemProperties;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -20,6 +20,8 @@ import com.arpitos.framework.FWStatic_Store;
 public class TestContext {
 
 	private OrganisedLog organiseLogger;
+	private FrameworkConfig frameworkConfig;
+	private SystemProperties systemProperties;
 	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
 
@@ -30,9 +32,9 @@ public class TestContext {
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
 
-	// Very first test start time
+	// Test suit start time
 	private long testSuiteStartTime;
-	// Very first test start time
+	// Test suit finish time
 	private long testSuiteFinishTime;
 
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
@@ -43,39 +45,16 @@ public class TestContext {
 	 * @param organisedLog
 	 *            = Logger object
 	 */
-	public TestContext(OrganisedLog organisedLog) {
-		this.organiseLogger = organisedLog;
-		printMendatoryInfo();
-		FWStatic_Store.SysProperties.printUsefulInfo(organisedLog.getGeneralLogger());
-	}
-
-	/**
-	 * Prints Organisation details to each log files
-	 */
-	private void printMendatoryInfo() {
-		//@formatter:off
-		
-		String organisationInfo = "************************************ Header Start ******************************************"
-								 +"\nOrganisation_Name : " + FWStatic_Store.FWConfig.getOrganisation_Name()
-								 +"\nOrganisation_Country : " + FWStatic_Store.FWConfig.getOrganisation_Country()
-								 +"\nOrganisation_Address : " + FWStatic_Store.FWConfig.getOrganisation_Address()
-								 +"\nOrganisation_Phone : " + FWStatic_Store.FWConfig.getOrganisation_Contact_Number()
-								 +"\nOrganisation_Email : " + FWStatic_Store.FWConfig.getOrganisation_Email()
-								 +"\nOrganisation_Website : " + FWStatic_Store.FWConfig.getOrganisation_Website()
-								 +"\n************************************ Header End ********************************************";
-		getOrganiseLogger().getGeneralLogger().info(Banner.getBanner());
-		getOrganiseLogger().getGeneralLogger().info(organisationInfo);
-
-		getOrganiseLogger().getSummaryLogger().info(Banner.getBanner());
-		getOrganiseLogger().getSummaryLogger().info(organisationInfo);
-		//@formatter:on
+	public TestContext() {
+		this.frameworkConfig = new FrameworkConfig(true);
+		this.systemProperties = new SystemProperties();
 	}
 
 	/**
 	 * Sets Test status in memory. Status is not finalized until
-	 * generateTestSummary() function is called. This function stamps "FAIL
-	 * HERE" warning as soon as status is set to FAIL so user can pin point
-	 * location of the failure
+	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
+	 * warning as soon as status is set to FAIL so user can pin point location of
+	 * the failure
 	 * 
 	 * @param testStatus
 	 *            = Test Status
@@ -96,8 +75,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. This also
-	 * includes bugTicketNumber if provided
+	 * Concludes final test result and generates summary report. This also includes
+	 * bugTicketNumber if provided
 	 * 
 	 * @param strTestName
 	 *            = Test Name
@@ -132,7 +111,7 @@ public class TestContext {
 
 		long totalTestTime = testFinishTime - testStartTime;
 		// Finalise and add test result in log file
-		getLogger().info("Test Result : " + getCurrentTestStatus().name());
+		getLogger().info("\nTest Result : " + getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
 		getOrganiseLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrJIRARef(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
@@ -161,7 +140,7 @@ public class TestContext {
 	 */
 	public String printMethodName() {
 		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		getLogger().debug("\nMethod : " + methodName + "()");
+		getLogger().debug("Method : " + methodName + "()");
 		return methodName;
 	}
 
@@ -195,8 +174,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Object which is available globally to all test cases. User must
-	 * maintain Key for the HashTable
+	 * Sets Object which is available globally to all test cases. User must maintain
+	 * Key for the HashTable
 	 * 
 	 * @param key
 	 *            = Key to recognize an Object
@@ -280,6 +259,22 @@ public class TestContext {
 
 	public void setTestSuiteFinishTime(long testSuiteFinishTime) {
 		this.testSuiteFinishTime = testSuiteFinishTime;
+	}
+
+	public FrameworkConfig getFrameworkConfig() {
+		return frameworkConfig;
+	}
+
+	public void setFrameworkConfig(FrameworkConfig frameworkConfig) {
+		this.frameworkConfig = frameworkConfig;
+	}
+
+	public SystemProperties getSystemProperties() {
+		return systemProperties;
+	}
+
+	public void setSystemProperties(SystemProperties systemProperties) {
+		this.systemProperties = systemProperties;
 	}
 
 }

@@ -6,7 +6,9 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,14 +82,22 @@ public class GUITestSelector {
 			initMainFrame(packageName);
 			initMainViewComponents();
 			// System.out.println(getClass().getResource("../icons/arpitos_icon64x64.png"));
-			BufferedImage img64x64 = ImageIO.read(getClass().getResource("../icons/arpitos_icon64x64.png"));
-			BufferedImage img32x32 = ImageIO.read(getClass().getResource("../icons/arpitos_icon32x32.png"));
-			BufferedImage img16x16 = ImageIO.read(getClass().getResource("../icons/arpitos_icon16x16.png"));
-			List<BufferedImage> imgList = new ArrayList<>();
-			imgList.add(img64x64);
-			imgList.add(img32x32);
-			imgList.add(img16x16);
-			container.setIconImages(imgList);
+
+			try {
+				URL pix64 = getClass().getResource("../icons/arpitos_icon64x64.png");
+				URL pix32 = getClass().getResource("../icons/arpitos_icon32x32.png");
+				URL pix16 = getClass().getResource("../icons/arpitos_icon16x16.png");
+				BufferedImage img64x64 = ImageIO.read(pix64);
+				BufferedImage img32x32 = ImageIO.read(pix32);
+				BufferedImage img16x16 = ImageIO.read(pix16);
+				List<BufferedImage> imgList = new ArrayList<>();
+				imgList.add(img64x64);
+				imgList.add(img32x32);
+				imgList.add(img16x16);
+				container.setIconImages(imgList);
+			} catch (Exception IllegalArgumentException) {
+				System.out.println("Can not find images");
+			}
 			container.setVisible(true);
 		} else {
 			try {
@@ -105,8 +115,7 @@ public class GUITestSelector {
 	 *            The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame(
-				"Test Selector"/* - packageName : " + packageName */);
+		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		container.setSize(new Dimension(480, 515));
@@ -200,8 +209,7 @@ public class GUITestSelector {
 	}
 
 	/**
-	 * Set column widths and text alignment (and other style attributes, if
-	 * needed)
+	 * Set column widths and text alignment (and other style attributes, if needed)
 	 * 
 	 * @param testTableView
 	 *            the table to style

@@ -1,7 +1,5 @@
 package com.arpitos.framework;
 
-import org.apache.logging.log4j.Logger;
-
 /**
  * This class is a contained which holds all System properties
  * 
@@ -35,33 +33,6 @@ public class SystemProperties {
 	private final String NameOfJITCompilerToUse = System.getProperty("java.compiler");
 	private final String PathOfExtensionDir = System.getProperty("java.ext.dirs");
 	private final String UserCurrentWorkingDirectory = System.getProperty("user.dir");
-
-	/**
-	 * Print selected System Info to log file
-	 * 
-	 * @param logger
-	 */
-	public void printUsefulInfo(Logger logger) {
-
-		// @formatter:off
-		
-		logger.debug("\nTest FrameWork Info");
-		logger.debug("* Arpitos version => " + Version.id());
-		logger.debug("* Java Runtime Environment version => " + getJavaRuntimeEnvironmentVersion()); 
-		logger.debug("* Java Virtual Machine specification version => " + getJavaVirtualMachineSpecificationVersion());
-		logger.debug("* Java Runtime Environment specification version => " + getJavaRuntimeEnvironmentSpecificationVersion());
-		logger.debug("* Java class path => " + getJavaClassPath());
-		logger.debug("* List of paths to search when loading libraries => " + getListofPathstoSearchWhenLoadingLibraries());
-		logger.debug("* Operating system name => " + getOperatingSystemName());
-		logger.debug("* Operating system architecture => " + getOperatingSystemArchitecture());
-		logger.debug("* Operating system version => " + getOperatingSystemVersion());
-		logger.debug("* File separator (\"/\" on UNIX) => " + getFileSeparator());
-		logger.debug("* Path separator (\":\" on UNIX) => " + getPathSeparator());
-		logger.debug("* User's account name => " + getUserAccountName());
-		logger.debug("* User's home directory => " + getUserHomeDir());
-		
-		// @formatter:on
-	}
 
 	public String getJavaRuntimeEnvironmentVersion() {
 		return JavaRuntimeEnvironmentVersion;

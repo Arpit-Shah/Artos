@@ -8,35 +8,17 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.arpitos.framework.Enums.ExceptionValue;
 
 public class Convert {
 
 	static final String HEXES = "0123456789ABCDEF";
-
+	static final ByteOrder BYTE_ORDER_DEFAULT = ByteOrder.LITTLE_ENDIAN;
 	// ===================================================================
 	// Bytes related manipulation
 	// ===================================================================
-
-	/**
-	 * 
-	 * @param byteArray
-	 *            bytes to be converted to long
-	 * @return long value
-	 */
-	public long bytesToLong(byte[] byteArray) {
-		long total = 0;
-		for (int i = 0; i < byteArray.length; i++) {
-			int temp = byteArray[i];
-			if (temp < 0) {
-				total += (128 + (byteArray[i] & 0x7f)) * Math.pow(2, (byteArray.length - 1 - i) * 8);
-			} else {
-				total += ((byteArray[i] & 0x7f) * Math.pow(2, (byteArray.length - 1 - i) * 8));
-			}
-		}
-		return total;
-	}
 
 	/**
 	 * concatenates multiple byte arrays.
@@ -82,11 +64,11 @@ public class Convert {
 	}
 
 	/**
-	 * concatenates byte array with subsequent single byte in order it was
-	 * provided in.
+	 * concatenates byte array with subsequent single byte in order it was provided
+	 * in.
 	 * 
 	 * @param byteArray
-	 *            = first bye array
+	 *            = first byte array
 	 * @param rest
 	 *            = following byte array
 	 * @return = concatenated byte array
@@ -107,12 +89,37 @@ public class Convert {
 	}
 
 	/**
+	 * concatenates byte with subsequent byte arrays in order it was provided in.
+	 * 
+	 * @param data
+	 *            = first byte
+	 * @param rest
+	 *            = following byte array
+	 * @return = concatenated byte array
+	 */
+	@SuppressWarnings("unused")
+	public byte[] concat(byte data, byte[]... rest) {
+		int totalLength = 1;
+		for (byte[] array : rest) {
+			totalLength += array.length;
+		}
+		byte[] result = new byte[totalLength];
+		result[0] = data;
+		int offset = 1;
+		for (byte[] array : rest) {
+			System.arraycopy(array, 0, result, offset, array.length);
+			offset += array.length;
+		}
+		return result;
+	}
+
+	/**
 	 * Converts Bytes to Hex String
 	 * 
 	 * <PRE>
 	 * Example: 
 	 * Sample : bytesToHexString(new byte[]{0x01, 0x02, 0xFF});
-	 * Result : [3][01 02 FF]
+	 * Result : 0102FF
 	 * </PRE>
 	 * 
 	 * @param data
@@ -120,7 +127,7 @@ public class Convert {
 	 * @return Hex formatted string
 	 */
 	public String bytesToHexString(byte[] data) {
-		return bytesToHexString(data, true);
+		return bytesToHexString(data, false);
 	}
 
 	/**
@@ -169,7 +176,7 @@ public class Convert {
 	 * <PRE>
 	 * Example: 
 	 * Sample : bytesToHexString((byte)0xFF);
-	 * Result : [1][FF]
+	 * Result : FF
 	 * </PRE>
 	 * 
 	 * @param data
@@ -177,7 +184,7 @@ public class Convert {
 	 * @return Hex formatted string
 	 */
 	public String bytesToHexString(byte data) {
-		return bytesToHexString(data, true);
+		return bytesToHexString(data, false);
 	}
 
 	/**
@@ -234,6 +241,17 @@ public class Convert {
 	}
 
 	/**
+	 * 
+	 * @param byteArray
+	 *            Reads the first eight bytes, composing them into a long value
+	 *            according to the byte order
+	 * @return long value
+	 */
+	public long bytesToLong(byte[] byteArray) {
+		return bytesToLong(byteArray, BYTE_ORDER_DEFAULT);
+	}
+
+	/**
 	 * <pre>
 	 * Sample : bytesToLong(new byte[]{0D, E0, B6, B3, A7, 63, FF, FF}, ByteOrder.BIG_ENDIAN);
 	 * Answer : 999999999999999999
@@ -246,10 +264,8 @@ public class Convert {
 	 * @return = long formatted data
 	 */
 	public long bytesToLong(byte[] bytes, ByteOrder bo) {
-		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		buffer.order(bo);
-		buffer.put(bytes);
-		buffer.flip();// need flip
 		return buffer.getLong();
 	}
 
@@ -261,12 +277,18 @@ public class Convert {
 	 * 
 	 * @param bytes
 	 *            = data to be converted
-	 * @param bo
-	 *            byte order before converting it to long
-	 * @return = int formatted data
+	 * @return = long formatted data
 	 */
-	public int bytesToDecimals(byte[] bytes, ByteOrder bo) {
-		return bytesToInteger(bytes, bo);
+	public long bytesToDecimals(byte[] bytes) {
+		int size = 8;
+		byte[] temp = new byte[size];
+		Arrays.fill(temp, (byte) 0x00);
+
+		for (int i = bytes.length - 1; i >= 0; i--) {
+			temp[size - 1] = bytes[i];
+			size--;
+		}
+		return bytesToLong(temp, ByteOrder.BIG_ENDIAN);
 	}
 
 	/**
@@ -282,10 +304,8 @@ public class Convert {
 	 * @return = integer formatted data
 	 */
 	public int bytesToInteger(byte[] bytes, ByteOrder bo) {
-		ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		buffer.order(bo);
-		buffer.put(bytes);
-		buffer.flip();// need flip
 		return buffer.getInt();
 	}
 
@@ -294,17 +314,21 @@ public class Convert {
 	 * @param bytes
 	 * @param bo
 	 * @return
-	 * @throws Exception
 	 */
-	public int bytes2ToInt(byte[] bytes, ByteOrder bo) throws Exception {
-		if (bytes.length != 2) {
-			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
-		}
-		if (bo == ByteOrder.BIG_ENDIAN) {
-			return ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
-		} else {
-			return ((bytes[1] & 0xff) << 8) | (bytes[0] & 0xff);
-		}
+	public int bytes2ToInt(byte[] bytes, ByteOrder bo) {
+		return bytesToShort(bytes, bo);
+	}
+
+	/**
+	 * 
+	 * @param bytes
+	 * @param bo
+	 * @return
+	 */
+	public short bytesToShort(byte[] bytes, ByteOrder bo) {
+		ByteBuffer buffer = ByteBuffer.wrap(bytes);
+		buffer.order(bo);
+		return buffer.getShort();
 	}
 
 	/**
@@ -405,7 +429,7 @@ public class Convert {
 	 * @param pos
 	 * @return
 	 */
-	public byte unSetBitOfTheByte(byte data, int pos) {
+	public byte clearBitOfTheByte(byte data, int pos) {
 		return (byte) (data & ~(1 << pos));
 	}
 
@@ -442,22 +466,22 @@ public class Convert {
 	// String related manipulation
 	// ===================================================================
 
-	public byte[] stringToByteArray(String str) {
+	public byte[] strToByteArray(String str) {
 		return str.getBytes();
 	}
 
-	public byte stringHexToByte(String strHex) {
+	public byte strHexToByte(String strHex) {
 		if (strHex.length() != 2) {
 			throw new IllegalArgumentException("Input string must only contain 2 char");
 		}
-		return (stringHexToByteArray(strHex)[0]);
+		return (strHexToByteArray(strHex)[0]);
 	}
 
-	public byte[] stringHexToByteArray(String strHex) {
-		return stringHexToByteArray(strHex, true);
+	public byte[] strHexToByteArray(String strHex) {
+		return strHexToByteArray(strHex, true);
 	}
 
-	public byte[] stringHexToByteArray(String strHex, boolean removeWhiteSpaceChar) {
+	public byte[] strHexToByteArray(String strHex, boolean removeWhiteSpaceChar) {
 
 		String s = strHex;
 		if (removeWhiteSpaceChar) {
@@ -475,11 +499,11 @@ public class Convert {
 		return data;
 	}
 
-	public byte[] stringAsciiToByteArray(String strAscii) {
+	public byte[] strAsciiToByteArray(String strAscii) {
 		return strAscii.getBytes();
 	}
 
-	public int stringToInteger(String string) {
+	public int strToInt(String string) {
 		return Integer.parseInt(string);
 	}
 
@@ -490,7 +514,7 @@ public class Convert {
 	 * @return
 	 * @throws Exception
 	 */
-	public String stringHexToAscii(String strHex) throws Exception {
+	public String strHexToAscii(String strHex) throws Exception {
 
 		if (strHex == null || strHex.length() % 2 != 0) {
 			throw new RuntimeException("Invalid data, null or odd length");
@@ -517,7 +541,7 @@ public class Convert {
 		return result;
 	}
 
-	public String stringEscapeForXML(String input) {
+	public String strEscapeForXML(String input) {
 		StringBuilder builder = new StringBuilder();
 		for (int index = 0; index < input.length(); index++) {
 			char chr = input.charAt(index);
@@ -561,35 +585,29 @@ public class Convert {
 		return true;
 	}
 
-	public byte[] intTo4Bytes(int x, ByteOrder bo) throws Exception {
-		if (x > Integer.MAX_VALUE) {
-			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
-		}
+	public byte[] intToByteArray(int x, ByteOrder bo) {
 		ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
 		buffer.order(bo);
 		buffer.putInt(x);
 		return buffer.array();
 	}
 
-	public byte[] intTo2Bytes(int x, ByteOrder bo) throws Exception {
-		if (x > 65535) {
-			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
-		}
-		ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+	public byte[] intToByteArray(int x) {
+		return intToByteArray(x, BYTE_ORDER_DEFAULT);
+	}
+
+	public byte intToByte(int x) {
+		return (byte) x;
+	}
+
+	public byte[] intTo2Bytes(int x, ByteOrder bo) {
+		ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
 		buffer.order(bo);
 		buffer.putInt(x);
-		byte[] bytes = buffer.array();
-		return Arrays.copyOfRange(bytes, bytes.length - 2, bytes.length);
+		return buffer.array();
 	}
 
-	public byte intToByte(int x) throws Exception {
-		if (x > Byte.MAX_VALUE) {
-			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
-		}
-		return (byte) (x & (0xff));
-	}
-
-	public String integerToString(int x) {
+	public String intToString(int x) {
 		return Integer.toString(x);
 	}
 
@@ -684,6 +702,11 @@ public class Convert {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		return cal;
+	}
+
+	public String getCurrentTimeZone() {
+		TimeZone tz = Calendar.getInstance().getTimeZone();
+		return tz.getID();
 	}
 
 	// ===================================================================

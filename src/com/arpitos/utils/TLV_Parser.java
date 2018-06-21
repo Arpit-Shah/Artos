@@ -57,12 +57,12 @@ public class TLV_Parser {
 		Convert _con = new Convert();
 
 		if (strValue != null) {
-			byte[] value = _con.stringHexToByteArray(strValue);
-			byte[] len = new byte[] { _con.intToByte(value.length) };
-			return _con.concat(_con.stringHexToByteArray(strTag), len, value);
+			byte[] value = _con.strHexToByteArray(strValue);
+			byte[] len = _con.intToByteArray(value.length);
+			return _con.concat(_con.strHexToByteArray(strTag), len, value);
 		} else {
 			byte[] length = { 0x00 };
-			return _con.concat(_con.stringHexToByteArray(strTag), length);
+			return _con.concat(_con.strHexToByteArray(strTag), length);
 		}
 	}
 
@@ -70,12 +70,12 @@ public class TLV_Parser {
 		Convert _con = new Convert();
 
 		if (strValue != null) {
-			byte[] value = _con.stringHexToByteArray(strValue);
-			byte[] len = new byte[] { _con.intToByte(value.length) };
-			return _con.concat(_con.stringHexToByteArray(strTag), len, value);
+			byte[] value = _con.strHexToByteArray(strValue);
+			byte[] len = _con.intToByteArray(value.length);
+			return _con.concat(_con.strHexToByteArray(strTag), len, value);
 		} else {
 			byte[] length = { 0x00 };
-			return _con.concat(_con.stringHexToByteArray(strTag), length);
+			return _con.concat(_con.strHexToByteArray(strTag), length);
 		}
 	}
 
@@ -187,8 +187,8 @@ public class TLV_Parser {
 	}
 
 	/**
-	 * This function takes single string value of of Ber-TLV Tag key It goes
-	 * through properties file of supported TLV tags and returns description
+	 * This function takes single string value of of Ber-TLV Tag key It goes through
+	 * properties file of supported TLV tags and returns description
 	 * 
 	 * <PRE>
 	 * Example : tlvLookUp("9F29"); or tlLookUp("9f29");

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -26,6 +27,8 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import com.arpitos.framework.Enums.TestStatus;
 import com.arpitos.framework.FWStatic_Store;
+import com.arpitos.framework.SystemProperties;
+import com.arpitos.framework.Version;
 
 /**
  * This class is responsible for initialising all log streams which may require
@@ -56,8 +59,8 @@ public class OrganisedLog {
 	 * @param strTestName
 	 *            TestSuite name for sub directory structure
 	 * @param disableLogDecoration
-	 *            disable decoration around test (Time-stamp, source package,
-	 *            thread number etc..)
+	 *            disable decoration around test (Time-stamp, source package, thread
+	 *            number etc..)
 	 */
 	public OrganisedLog(String logDir, String strTestName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 
@@ -68,6 +71,8 @@ public class OrganisedLog {
 				enableTextLog, enableHTMLLog);
 		setGeneralLogger(loggerContext.getLogger("TestLog"));
 		setSummaryLogger(loggerContext.getLogger("Summary"));
+		printMendatoryInfo();
+		printUsefulInfo();
 	}
 
 	/**
@@ -179,8 +184,7 @@ public class OrganisedLog {
 	}
 
 	/**
-	 * Provides list of current general log files attached to provided appender
-	 * name
+	 * Provides list of current general log files attached to provided appender name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -205,8 +209,7 @@ public class OrganisedLog {
 	}
 
 	/**
-	 * Provides list of current summary log files attached to provided appender
-	 * name
+	 * Provides list of current summary log files attached to provided appender name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -486,25 +489,77 @@ public class OrganisedLog {
 	}
 
 	public static Level getLoglevelFromXML() {
-		if (FWStatic_Store.FWConfig.getLogLevel().equals("info")) {
+		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("info")) {
 			return Level.INFO;
 		}
-		if (FWStatic_Store.FWConfig.getLogLevel().equals("all")) {
+		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("all")) {
 			return Level.ALL;
 		}
-		if (FWStatic_Store.FWConfig.getLogLevel().equals("fatal")) {
+		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("fatal")) {
 			return Level.FATAL;
 		}
-		if (FWStatic_Store.FWConfig.getLogLevel().equals("trace")) {
+		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("trace")) {
 			return Level.TRACE;
 		}
-		if (FWStatic_Store.FWConfig.getLogLevel().equals("warn")) {
+		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("warn")) {
 			return Level.WARN;
 		}
-		if (FWStatic_Store.FWConfig.getLogLevel().equals("debug")) {
+		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("debug")) {
 			return Level.DEBUG;
 		}
 		return Level.DEBUG;
+	}
+
+	/**
+	 * Prints Organisation details to each log files
+	 */
+	private void printMendatoryInfo() {
+		//@formatter:off
+		
+		String organisationInfo = "************************************ Header Start ******************************************"
+								 +"\nOrganisation_Name : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Name()
+								 +"\nOrganisation_Country : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Country()
+								 +"\nOrganisation_Address : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Address()
+								 +"\nOrganisation_Phone : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Contact_Number()
+								 +"\nOrganisation_Email : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Email()
+								 +"\nOrganisation_Website : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Website()
+								 +"\n************************************ Header End ********************************************";
+		getGeneralLogger().info(Banner.getBanner());
+		getGeneralLogger().info(organisationInfo);
+
+		getSummaryLogger().info(Banner.getBanner());
+		getSummaryLogger().info(organisationInfo);
+		//@formatter:on
+	}
+
+	/**
+	 * Print selected System Info to log file
+	 * 
+	 * @param logger
+	 */
+	public void printUsefulInfo() {
+
+		SystemProperties sysProp = FWStatic_Store.context.getSystemProperties();
+		Logger logger = getGeneralLogger();
+
+		// @formatter:off
+		
+		logger.debug("\nTest FrameWork Info");
+		logger.debug("* Arpitos version => " + Version.id());
+		logger.debug("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion()); 
+		logger.debug("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
+		logger.debug("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
+		logger.debug("* Java class path => " + sysProp.getJavaClassPath());
+		logger.debug("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
+		logger.debug("* Operating system name => " + sysProp.getOperatingSystemName());
+		logger.debug("* Operating system architecture => " + sysProp.getOperatingSystemArchitecture());
+		logger.debug("* Operating system version => " + sysProp.getOperatingSystemVersion());
+		logger.debug("* File separator (\"/\" on UNIX) => " + sysProp.getFileSeparator());
+		logger.debug("* Path separator (\":\" on UNIX) => " + sysProp.getPathSeparator());
+		logger.debug("* User's account name => " + sysProp.getUserAccountName());
+		logger.debug("* User's home directory => " + sysProp.getUserHomeDir());
+		
+		// @formatter:on
 	}
 
 	public org.apache.logging.log4j.core.Logger getGeneralLogger() {
