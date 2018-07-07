@@ -29,13 +29,18 @@ import com.arpitos.utils.Convert;
  */
 public class Runner {
 
-	public static void getTestWrapperList(List<TestExecutable> testList, Class<?> cls) throws Exception {
-		if (testList.isEmpty()) {
-			testList = (ArrayList<TestExecutable>) new ScanTestSuite(cls.getPackage().getName()).getTestList(true, true);
-		}
-	}
+	Class<?> cls;
 
-	public static TestContext initialiseContext(Class<?> cls) {
+	/**
+	 * This method initialise context with minimum required items (Logger,
+	 * default settings from Framework configuration files etc..)
+	 * 
+	 * @param cls
+	 *            Test class with main method
+	 */
+	public Runner(Class<?> cls) {
+		this.cls = cls;
+
 		// Get Info from XML Configuration file
 		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
 		String logDir = FWStatic_Store.context.getFrameworkConfig().getLogRootDir() + subDirName;
@@ -47,9 +52,11 @@ public class Runner {
 		// Create Logger
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 
-		// Create TestContext
+		// Add logger to context
 		FWStatic_Store.context.setOrganiseLogger(organisedLogger);
+	}
 
+	public TestContext getContext() {
 		return FWStatic_Store.context;
 	}
 
@@ -60,17 +67,13 @@ public class Runner {
 	 *            command line parameter
 	 * @param testList
 	 *            test object list which required to be run
-	 * @param cls
-	 *            Main class object instance
 	 * @param loopCycle
 	 *            Number of time test list required to be executed
 	 * @throws Exception
 	 */
-	public static void run(String[] args, List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
+	public void run(String[] args, List<TestExecutable> testList, int loopCycle) throws Exception {
 		// Only process command line argument if provided
-		if (args.length > 0 && !CliProcessor.proessCommandLine(args)) {
-			return;
-		}
+		CliProcessor.proessCommandLine(args);
 
 		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
 
@@ -78,12 +81,18 @@ public class Runner {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
 				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception {
-					Runner.runTest(testList, cls, serialNumber, loopCount);
+					runTest(testList, cls, serialNumber, loopCount);
 				}
 			};
 			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, subDirName, loopCycle, runObj);
 		} else {
 			runTest(testList, cls, subDirName, loopCycle);
+		}
+	}
+
+	public void getTestWrapperList(List<TestExecutable> testList, Class<?> cls) throws Exception {
+		if (testList.isEmpty()) {
+			testList = (ArrayList<TestExecutable>) new ScanTestSuite(cls.getPackage().getName()).getTestList(true, true);
 		}
 	}
 
@@ -100,7 +109,7 @@ public class Runner {
 	 *            test loop cycle
 	 * @throws Exception
 	 */
-	public static void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
+	public void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
 
 		// -------------------------------------------------------------------//
 		// // Prepare Context
@@ -160,7 +169,7 @@ public class Runner {
 		System.exit((int) context.getCurrentFailCount());
 	}
 
-	private static void runSingleThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
+	private void runSingleThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
 		Logger logger = context.getLogger();
 
@@ -198,7 +207,7 @@ public class Runner {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void runParallelThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
+	private void runParallelThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
 		Logger logger = context.getLogger();
 

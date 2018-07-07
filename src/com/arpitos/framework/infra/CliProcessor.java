@@ -15,7 +15,12 @@ import com.arpitos.framework.Version;
 
 public class CliProcessor {
 
-	public static boolean proessCommandLine(String[] args) {
+	public static void proessCommandLine(String[] args) {
+
+		if (args.length <= 0) {
+			return;
+		}
+
 		// create the command line parser
 		CommandLineParser parser = new DefaultParser();
 
@@ -62,12 +67,10 @@ public class CliProcessor {
 				FWStatic_Store.context.getFrameworkConfig().setLogSubDir(line.getOptionValue("subdir"));
 				pw.flush();
 			}
-
-			return true;
 		} catch (ParseException exp) {
+			// Do not do anything, just continue
 			System.out.println(exp.getMessage());
 		}
-		return false;
 	}
 
 }

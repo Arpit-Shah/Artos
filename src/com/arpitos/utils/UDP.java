@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.arpitos.interfaces.Connectable;
 
-public class UDPServer implements Connectable {
+public class UDP implements Connectable {
 	int localPort;
 	int remotePort;
 	private final InetSocketAddress localSocketAddress;
@@ -25,28 +26,56 @@ public class UDPServer implements Connectable {
 	Thread serverThread;
 
 	/**
-	 * Different send and receive port
+	 * Allows user to use different send and receive ports
 	 * 
 	 * @param localAddress
+	 *            Host IP
 	 * @param localPort
+	 *            Host Port
 	 * @param remoteAddress
+	 *            Remote IP
 	 * @param remotePort
+	 *            Remote Port
 	 */
-	public UDPServer(String localAddress, int localPort, String remoteAddress, int remotePort) {
+	public UDP(String localAddress, int localPort, String remoteAddress, int remotePort) {
 		this.localPort = localPort;
 		this.remotePort = remotePort;
 		localSocketAddress = new InetSocketAddress(localAddress, localPort);
 		remoteSocketAddress = new InetSocketAddress(remoteAddress, remotePort);
-
 	}
 
+	/**
+	 * Creates a datagram socket, bound to the specified local socket address.
+	 * If, if the address is null, creates an unbound socket. With Infinite
+	 * socket timeout
+	 * 
+	 */
 	public void connect() {
+		// set infinite timeout by default
+		connect(0);
+	}
+
+	/**
+	 * Creates a datagram socket, bound to the specified local socket address.
+	 * If, if the address is null, creates an unbound socket.
+	 * 
+	 * With timeout option set to a non-zero, a call to receive() for this
+	 * DatagramSocket will block for only this amount of time. If the timeout
+	 * expires, a java.net.SocketTimeoutException is raised, though the
+	 * DatagramSocket is still valid.
+	 * 
+	 * @param timeout
+	 *            the specified timeout in milliseconds.
+	 */
+	public void connect(int timeout) {
 		try {
 			// Start Reading task in parallel thread
 			System.out.println("Listening on Port : " + localPort);
 			serverSocket = new DatagramSocket(localSocketAddress);
-			serverSocket.setSoTimeout(5000);
+			// infinite timeout by default
+			serverSocket.setSoTimeout(timeout);
 			readFromSocket();
+			System.out.println("Send on Port : " + remotePort);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,6 +86,13 @@ public class UDPServer implements Connectable {
 		return serverSocket.isBound();
 	}
 
+	/**
+	 * Closes this datagram socket.
+	 * 
+	 * Any thread currently blocked in receive upon this socket will throw a
+	 * SocketException.
+	 * 
+	 */
 	public void disconnect() {
 		try {
 			serverThread.interrupt();
@@ -107,17 +143,38 @@ public class UDPServer implements Connectable {
 		return null;
 	}
 
-	public void sendMsg(String hexString) throws Exception {
-		byte[] data = new Convert().strHexToByteArray(hexString);
+	/**
+	 * Constructs and sends datagram packet to the specified port number on the
+	 * specified host. The length argument must be less than or equal to
+	 * buf.length. The DatagramPacket includes information indicating the data
+	 * to be sent, its length, the IP address of the remote host, and the port
+	 * number on the remote host.
+	 * 
+	 * @param stringMsg
+	 *            String data
+	 * @throws Exception
+	 */
+	public void sendMsg(String stringMsg) throws Exception {
+		byte[] data = stringMsg.getBytes();
 		sendMsg(data);
 	}
 
+	/**
+	 * Constructs and sends datagram packet to the specified port number on the
+	 * specified host. The length argument must be less than or equal to
+	 * buf.length. The DatagramPacket includes information indicating the data
+	 * to be sent, its length, the IP address of the remote host, and the port
+	 * number on the remote host.
+	 */
 	@Override
 	public void sendMsg(byte[] data) throws Exception {
 		DatagramPacket sendPacket = new DatagramPacket(data, data.length, remoteSocketAddress);
 		serverSocket.send(sendPacket);
 	}
 
+	/**
+	 * Cleans all message from the queue
+	 */
 	public void cleanQueue() {
 		queue.clear();
 	}
@@ -216,12 +273,12 @@ class UDPClientTask implements Runnable {
 			while (true) {
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				connector.receive(receivePacket);
-				readData = receivePacket.getData();
+				// readData = receivePacket.getData();
+				byte[] readData = new byte[receivePacket.getLength()];
+				readData = Arrays.copyOfRange(receiveData, 0, receivePacket.getLength());
 
-				// This to avoid non printable char in the buffer
-				String string = new String(receiveData, 0, receivePacket.getLength());
 				if (readData.length > 0) {
-					queue.add(string.getBytes());
+					queue.add(readData);
 				}
 			}
 		} catch (Exception e) {
