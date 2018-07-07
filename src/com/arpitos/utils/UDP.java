@@ -7,12 +7,14 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.arpitos.interfaces.Connectable;
+import com.arpitos.interfaces.ConnectableFilter;
 
 public class UDP implements Connectable {
 	int localPort;
@@ -24,6 +26,7 @@ public class UDP implements Connectable {
 	DataOutputStream outToClient;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	Thread serverThread;
+	List<ConnectableFilter> filterList = null;
 
 	/**
 	 * Allows user to use different send and receive ports
@@ -40,8 +43,31 @@ public class UDP implements Connectable {
 	public UDP(String localAddress, int localPort, String remoteAddress, int remotePort) {
 		this.localPort = localPort;
 		this.remotePort = remotePort;
-		localSocketAddress = new InetSocketAddress(localAddress, localPort);
-		remoteSocketAddress = new InetSocketAddress(remoteAddress, remotePort);
+		this.localSocketAddress = new InetSocketAddress(localAddress, localPort);
+		this.remoteSocketAddress = new InetSocketAddress(remoteAddress, remotePort);
+		this.filterList = null;
+	}
+
+	/**
+	 * Allows user to use different send and receive ports
+	 * 
+	 * @param localAddress
+	 *            Host IP
+	 * @param localPort
+	 *            Host Port
+	 * @param remoteAddress
+	 *            Remote IP
+	 * @param remotePort
+	 *            Remote Port
+	 * @param filterList
+	 *            list of filters
+	 */
+	public UDP(String localAddress, int localPort, String remoteAddress, int remotePort, List<ConnectableFilter> filterList) {
+		this.localPort = localPort;
+		this.remotePort = remotePort;
+		this.localSocketAddress = new InetSocketAddress(localAddress, localPort);
+		this.remoteSocketAddress = new InetSocketAddress(remoteAddress, remotePort);
+		this.filterList = filterList;
 	}
 
 	/**
@@ -185,7 +211,7 @@ public class UDP implements Connectable {
 			@Override
 			public void run() {
 				try {
-					clientProcessingPool.submit(new UDPClientTask(serverSocket, queue));
+					clientProcessingPool.submit(new UDPClientTask(serverSocket, queue, filterList));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -259,10 +285,17 @@ class UDPClientTask implements Runnable {
 	byte[] readData;
 	String redDataText;
 	Queue<byte[]> queue;
+	volatile List<ConnectableFilter> filterList = null;
 
 	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue) {
 		this.connector = connector;
 		this.queue = queue;
+	}
+
+	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, List<ConnectableFilter> filterList) {
+		this.connector = connector;
+		this.queue = queue;
+		this.filterList = filterList;
 	}
 
 	@Override
@@ -278,7 +311,7 @@ class UDPClientTask implements Runnable {
 				readData = Arrays.copyOfRange(receiveData, 0, receivePacket.getLength());
 
 				if (readData.length > 0) {
-					queue.add(readData);
+					applyFilter(readData);
 				}
 			}
 		} catch (Exception e) {
@@ -286,5 +319,19 @@ class UDPClientTask implements Runnable {
 			System.out.println(e.getMessage().toString());
 		}
 		System.out.println("Terminating thread");
+	}
+
+	private void applyFilter(byte[] readData) {
+		if (null != filterList && !filterList.isEmpty()) {
+			for (ConnectableFilter filter : filterList) {
+				if (filter.meetCriteria(readData)) {
+					// Do not add to queue if filter match is found
+					return;
+				}
+			}
+			queue.add(readData);
+		} else {
+			queue.add(readData);
+		}
 	}
 }
