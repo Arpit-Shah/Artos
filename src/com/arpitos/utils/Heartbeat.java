@@ -12,7 +12,21 @@ public class Heartbeat {
 	TestContext context;
 	volatile boolean running = true;
 
-	public Heartbeat(TestContext context, Connectable connector, byte[] heartbeatData, long intervalInMillis) {
+	/**
+	 * Constructor
+	 * 
+	 * @see Connectable
+	 * 
+	 * @param context
+	 *            TestContext object
+	 * @param connector
+	 *            Any Connector which implements {@code Connectable}
+	 * @param heartbeatData
+	 *            fix byte array which should be used in heart bit
+	 * @param intervalInMillis
+	 *            Interval value between each heartbeats
+	 */
+	public Heartbeat(TestContext context, Connectable connector, final byte[] heartbeatData, long intervalInMillis) {
 		this.context = context;
 		this.connector = connector;
 		this.heartbeatData = heartbeatData;
@@ -44,7 +58,7 @@ public class Heartbeat {
 						connector.wait(intervalInMillis);
 					}
 				} catch (Exception e) {
-					FWUtils.writePrintStackTrace(context, e);
+					UtilsFramework.writePrintStackTrace(context, e);
 					try {
 						Thread.sleep(intervalInMillis);
 					} catch (InterruptedException e1) {
