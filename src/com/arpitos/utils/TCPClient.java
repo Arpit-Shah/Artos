@@ -4,68 +4,104 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.arpitos.interfaces.Connectable;
+import com.arpitos.interfaces.ConnectableFilter;
 
+/**
+ * This class creates TCP Client
+ * 
+ * @author arpit
+ *
+ */
 public class TCPClient implements Connectable {
-
 	String ip;
 	int nPort;
 	Socket clientSocket;
 	BufferedReader inFromServer;
 	DataOutputStream outToServer;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
+	ServerTask serverTask = null;
+	List<ConnectableFilter> filterList = null;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param ip
+	 *            Server IP
+	 * @param nPort
+	 *            Server Port
+	 */
 	public TCPClient(String ip, int nPort) {
 		this.ip = ip;
 		this.nPort = nPort;
+		this.filterList = null;
 	}
 
+	/**
+	 * Constructor. Every filter adds overheads in processing received messages
+	 * which may have impact on performance
+	 * 
+	 * @param ip
+	 *            Server IP
+	 * @param nPort
+	 *            Server Port
+	 * @param filterList
+	 *            list of filters
+	 */
+	public TCPClient(String ip, int nPort, List<ConnectableFilter> filterList) {
+		this.ip = ip;
+		this.nPort = nPort;
+		this.filterList = null;
+	}
+
+	/**
+	 * Creates a stream socket and connects it to the specified port number on
+	 * the named host.
+	 */
 	public void connect() throws Exception {
 
 		System.out.println("Connecting on Port : " + nPort);
 
 		clientSocket = new Socket(ip, nPort);
 		if (clientSocket.isConnected()) {
-			System.out.println("Connected to " + ip + ":" + nPort);
+			System.out.println("Connected to " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
 		}
 
 		// Start Reading task in parallel thread
 		readFromSocket();
 	}
 
+	/**
+	 * Returns the connection state of the socket. true is returned if socket is
+	 * successfully connected and has not been closed
+	 */
 	public boolean isConnected() {
-		return clientSocket.isConnected();
+		if (clientSocket.isConnected() && !clientSocket.isClosed()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
+	/**
+	 * Closes this socket. Once a socket has been closed, it is not available
+	 * for further networking use (i.e. can't be reconnected or rebound). A new
+	 * socket needs to be created.
+	 */
 	public void disconnect() throws Exception {
 		clientSocket.close();
 		System.out.println("Connection Closed");
 	}
 
-	public void sendData(String data) throws Exception {
-		outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		outToServer.writeBytes(data);
-	}
-
-	@Override
-	public void sendMsg(byte[] data) throws Exception {
-		outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		outToServer.write(data);
-	}
-
-	@Override
-	public byte[] getNextMsg() {
-		if (hasNextMsg()) {
-			return queue.poll();
-		}
-		return null;
-	}
-
+	/**
+	 * Returns true if receive queue is not empty
+	 */
 	@Override
 	public boolean hasNextMsg() {
 		if (queue.isEmpty()) {
@@ -74,11 +110,23 @@ public class TCPClient implements Connectable {
 		return true;
 	}
 
-	public byte[] getNextMSG(long Timeout, TimeUnit timeunit) throws Exception {
+	/**
+	 * Polls the queue for msg, Function will block until msg is polled from the
+	 * queue or timeout has occurred. null is returned if no message received
+	 * within timeout period
+	 * 
+	 * @param timeout
+	 *            msg timeout
+	 * @param timeunit
+	 *            timeunit
+	 * @return byte[] from queue, null is returned if timeout has occurred
+	 * @throws Exception
+	 */
+	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws Exception {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
-		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(Timeout, timeunit);
+		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(timeout, timeunit);
 
 		while (!isTimeout) {
 			if (hasNextMsg()) {
@@ -94,13 +142,52 @@ public class TCPClient implements Connectable {
 		return null;
 	}
 
+	/**
+	 * Returns byte array from the queue, null is returned if queue is empty
+	 */
+	@Override
+	public byte[] getNextMsg() {
+		if (hasNextMsg()) {
+			return queue.poll();
+		}
+		return null;
+	}
+
+	/**
+	 * Send data to server in String format
+	 * 
+	 * @param data
+	 *            data to be sent in String format
+	 * @throws Exception
+	 */
+	public void sendMsg(String data) throws Exception {
+		sendMsg(data.getBytes());
+	}
+
+	/**
+	 * Send byte array to server
+	 */
+	@Override
+	public void sendMsg(byte[] data) throws Exception {
+		outToServer = new DataOutputStream(clientSocket.getOutputStream());
+		outToServer.write(data);
+	}
+
+	/**
+	 * Clean receive queue
+	 */
+	public void cleanQueue() {
+		queue.clear();
+	}
+
 	private void readFromSocket() {
 		final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 		final Runnable clientTask = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					clientProcessingPool.submit(new ServerTask(clientSocket, queue));
+					serverTask = new ServerTask(clientSocket, queue, filterList);
+					clientProcessingPool.submit(serverTask);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -126,10 +213,6 @@ public class TCPClient implements Connectable {
 		return queue;
 	}
 
-	public void cleanQueue() {
-		queue.clear();
-	}
-
 }
 
 /**
@@ -146,10 +229,18 @@ class ServerTask implements Runnable {
 	byte[] readData;
 	String redDataText;
 	Queue<byte[]> queue;
+	volatile List<ConnectableFilter> filterList = null;
 
 	ServerTask(Socket connector, Queue<byte[]> queue) {
 		this.connector = connector;
 		this.queue = queue;
+		this.filterList = null;
+	}
+
+	ServerTask(Socket connector, Queue<byte[]> queue, List<ConnectableFilter> filterList) {
+		this.connector = connector;
+		this.queue = queue;
+		this.filterList = filterList;
 	}
 
 	@Override
@@ -159,11 +250,30 @@ class ServerTask implements Runnable {
 				readData = new byte[read];
 				System.arraycopy(buffer, 0, readData, 0, read);
 				if (readData.length > 0) {
-					queue.add(readData);
+					applyFilter(readData);
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (connector.isClosed() && e.getMessage().contains("Socket closed")) {
+				// Do nothing because if connector was closed then this
+				// exception is as expected
+			} else {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void applyFilter(byte[] readData) {
+		if (null != filterList && !filterList.isEmpty()) {
+			for (ConnectableFilter filter : filterList) {
+				if (filter.meetCriteria(readData)) {
+					// Do not add to queue if filter match is found
+					return;
+				}
+			}
+			queue.add(readData);
+		} else {
+			queue.add(readData);
 		}
 	}
 }

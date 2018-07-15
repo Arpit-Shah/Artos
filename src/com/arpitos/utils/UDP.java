@@ -49,7 +49,10 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Allows user to use different send and receive ports
+	 * Allows user to use different send and receive ports. Every filter adds
+	 * overheads in processing received messages which may have impact on
+	 * performance. If filter logic takes too much time to make decision then
+	 * UDP message may be dropped.
 	 * 
 	 * @param localAddress
 	 *            Host IP
@@ -90,16 +93,16 @@ public class UDP implements Connectable {
 	 * expires, a java.net.SocketTimeoutException is raised, though the
 	 * DatagramSocket is still valid.
 	 * 
-	 * @param timeout
+	 * @param soTimeout
 	 *            the specified timeout in milliseconds.
 	 */
-	public void connect(int timeout) {
+	public void connect(int soTimeout) {
 		try {
 			// Start Reading task in parallel thread
 			System.out.println("Listening on Port : " + localPort);
 			serverSocket = new DatagramSocket(localSocketAddress);
 			// infinite timeout by default
-			serverSocket.setSoTimeout(timeout);
+			serverSocket.setSoTimeout(soTimeout);
 			readFromSocket();
 			System.out.println("Send on Port : " + remotePort);
 		} catch (Exception e) {
@@ -129,6 +132,9 @@ public class UDP implements Connectable {
 		}
 	}
 
+	/**
+	 * Returns true if queue is not empty
+	 */
 	@Override
 	public boolean hasNextMsg() {
 		if (queue.isEmpty()) {
@@ -137,11 +143,23 @@ public class UDP implements Connectable {
 		return true;
 	}
 
-	public byte[] getNextMsg(long Timeout, TimeUnit timeunit) {
+	/**
+	 * Polls the queue for msg, Function will block until msg is polled from the
+	 * queue or timeout has occurred. null is returned if no message received
+	 * within timeout period
+	 * 
+	 * @param timeout
+	 *            msg timeout
+	 * @param timeunit
+	 *            timeunit
+	 * @return byte[] from queue, null is returned if timeout has occurred
+	 * @throws Exception
+	 */
+	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws Exception {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
-		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(Timeout, timeunit);
+		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(timeout, timeunit);
 
 		while (!isTimeout) {
 			if (hasNextMsg()) {
@@ -152,15 +170,14 @@ public class UDP implements Connectable {
 				return null;
 			}
 			// Give system some time to do other things
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Thread.sleep(10);
 		}
 		return null;
 	}
 
+	/**
+	 * Returns byte array from the queue, null is returned if queue is empty
+	 */
 	@Override
 	public byte[] getNextMsg() {
 		if (hasNextMsg()) {
@@ -315,8 +332,7 @@ class UDPClientTask implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("caught exception");
-			System.out.println(e.getMessage().toString());
+			e.printStackTrace();
 		}
 		System.out.println("Terminating thread");
 	}

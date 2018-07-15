@@ -5,30 +5,88 @@ import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.arpitos.interfaces.Connectable;
+import com.arpitos.interfaces.ConnectableFilter;
 
+/**
+ * This class listens for client connection and accepts single client connection
+ * with server
+ * 
+ * @author arpit
+ *
+ */
 public class TCPServer implements Connectable {
-
 	int nPort;
 	ServerSocket tcpSocket;
 	Socket serverSocket;
 	BufferedReader inFromClient;
 	DataOutputStream outToClient;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
+	List<ConnectableFilter> filterList = null;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param nPort
+	 *            Port Number, or 0 to use a port number that is automatically
+	 *            allocated
+	 */
 	public TCPServer(int nPort) {
 		this.nPort = nPort;
+		this.filterList = null;
 	}
 
+	/**
+	 * Constructor. Every filter adds overheads in processing received messages
+	 * which may have impact on performance
+	 * 
+	 * @param nPort
+	 *            Port Number, or 0 to use a port number that is automatically
+	 *            allocated
+	 * @param filterList
+	 *            list of filters
+	 */
+	public TCPServer(int nPort, List<ConnectableFilter> filterList) {
+		this.nPort = nPort;
+		this.filterList = filterList;
+	}
+
+	/**
+	 * Creates a server socket, bound to the specified port. The method blocks
+	 * until a connection is made.
+	 * 
+	 * @throws Exception
+	 * 
+	 */
 	public void connect() throws Exception {
+		// set infinite timeout by default
+		connect(0);
+	}
+
+	/**
+	 * Creates a server socket, bound to the specified port. The method blocks
+	 * until a connection is made.
+	 * 
+	 * Setting soTimeout to a non-zero timeout, a call to accept() for this
+	 * ServerSocket will block for only this amount of time. If the timeout
+	 * expires, a java.net.SocketTimeoutException is raised, though the
+	 * ServerSocket is still valid.
+	 * 
+	 * @param soTimeout
+	 *            the specified timeout in milliseconds.
+	 * @throws Exception
+	 */
+	public void connect(int soTimeout) throws Exception {
 		System.out.println("Listening on Port : " + nPort);
 
 		tcpSocket = new ServerSocket(nPort);
+		tcpSocket.setSoTimeout(soTimeout);
 		serverSocket = tcpSocket.accept();
 		if (serverSocket.isConnected()) {
 			System.out.println("Connected to " + serverSocket.getInetAddress().getHostAddress() + ":" + serverSocket.getLocalPort());
@@ -38,35 +96,32 @@ public class TCPServer implements Connectable {
 		readFromSocket();
 	}
 
+	/**
+	 * Returns the connection state of the socket. true is returned if socket is
+	 * successfully connected and has not been closed
+	 */
 	public boolean isConnected() {
-		return serverSocket.isConnected();
+		if (serverSocket.isConnected() && !serverSocket.isClosed()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
+	/**
+	 * Closes this socket. Once a socket has been closed, it is not available
+	 * for further networking use (i.e. can't be reconnected or rebound). A new
+	 * socket needs to be created.
+	 */
 	public void disconnect() throws Exception {
 		serverSocket.close();
 		tcpSocket.close();
 		System.out.println("Connection Closed");
 	}
 
-	public void sendMsg(String data) throws Exception {
-		outToClient = new DataOutputStream(serverSocket.getOutputStream());
-		outToClient.writeBytes(data);
-	}
-
-	@Override
-	public void sendMsg(byte[] data) throws Exception {
-		outToClient = new DataOutputStream(serverSocket.getOutputStream());
-		outToClient.write(data);
-	}
-
-	@Override
-	public byte[] getNextMsg() {
-		if (hasNextMsg()) {
-			return queue.poll();
-		}
-		return null;
-	}
-
+	/**
+	 * Returns true if receive queue is not empty
+	 */
 	@Override
 	public boolean hasNextMsg() {
 		if (queue.isEmpty()) {
@@ -75,11 +130,23 @@ public class TCPServer implements Connectable {
 		return true;
 	}
 
-	public byte[] getNextMSG(long Timeout, TimeUnit timeunit) throws Exception {
+	/**
+	 * Polls the queue for msg, Function will block until msg is polled from the
+	 * queue or timeout has occurred. null is returned if no message received
+	 * within timeout period
+	 * 
+	 * @param timeout
+	 *            msg timeout
+	 * @param timeunit
+	 *            timeunit
+	 * @return byte[] from queue, null is returned if timeout has occurred
+	 * @throws Exception
+	 */
+	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws Exception {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
-		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(Timeout, timeunit);
+		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(timeout, timeunit);
 
 		while (!isTimeout) {
 			if (hasNextMsg()) {
@@ -90,9 +157,47 @@ public class TCPServer implements Connectable {
 				return null;
 			}
 			// Give system some time to do other things
-			Thread.sleep(20);
+			Thread.sleep(10);
 		}
 		return null;
+	}
+
+	/**
+	 * Returns byte array from the queue, null is returned if queue is empty
+	 */
+	@Override
+	public byte[] getNextMsg() {
+		if (hasNextMsg()) {
+			return queue.poll();
+		}
+		return null;
+	}
+
+	/**
+	 * Send data to client in String format
+	 * 
+	 * @param data
+	 *            data to be sent in String format
+	 * @throws Exception
+	 */
+	public void sendMsg(String data) throws Exception {
+		sendMsg(data.getBytes());
+	}
+
+	/**
+	 * Send byte array to client
+	 */
+	@Override
+	public void sendMsg(byte[] data) throws Exception {
+		outToClient = new DataOutputStream(serverSocket.getOutputStream());
+		outToClient.write(data);
+	}
+
+	/**
+	 * Clean receive queue
+	 */
+	public void cleanQueue() {
+		queue.clear();
 	}
 
 	private void readFromSocket() {
@@ -101,7 +206,7 @@ public class TCPServer implements Connectable {
 			@Override
 			public void run() {
 				try {
-					clientProcessingPool.submit(new ClientTask(serverSocket, queue));
+					clientProcessingPool.submit(new ClientTask(serverSocket, queue, filterList));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -123,8 +228,12 @@ public class TCPServer implements Connectable {
 		return queue;
 	}
 
-	public void cleanQueue() {
-		queue.clear();
+	public int getnPort() {
+		return nPort;
+	}
+
+	public void setnPort(int nPort) {
+		this.nPort = nPort;
 	}
 
 }
@@ -144,10 +253,18 @@ class ClientTask implements Runnable {
 	byte[] readData;
 	String redDataText;
 	Queue<byte[]> queue;
+	volatile List<ConnectableFilter> filterList = null;
 
 	ClientTask(Socket connector, Queue<byte[]> queue) {
 		this.connector = connector;
 		this.queue = queue;
+		this.filterList = null;
+	}
+
+	ClientTask(Socket connector, Queue<byte[]> queue, List<ConnectableFilter> filterList) {
+		this.connector = connector;
+		this.queue = queue;
+		this.filterList = filterList;
 	}
 
 	@Override
@@ -157,11 +274,30 @@ class ClientTask implements Runnable {
 				readData = new byte[read];
 				System.arraycopy(buffer, 0, readData, 0, read);
 				if (readData.length > 0) {
-					queue.add(readData);
+					applyFilter(readData);
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (connector.isClosed() && e.getMessage().contains("Socket closed")) {
+				// Do nothing because if connector was closed then this
+				// exception is as expected
+			} else {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void applyFilter(byte[] readData) throws Exception {
+		if (null != filterList && !filterList.isEmpty()) {
+			for (ConnectableFilter filter : filterList) {
+				if (filter.meetCriteria(readData)) {
+					// Do not add to queue if filter match is found
+					return;
+				}
+			}
+			queue.add(readData);
+		} else {
+			queue.add(readData);
 		}
 	}
 }
