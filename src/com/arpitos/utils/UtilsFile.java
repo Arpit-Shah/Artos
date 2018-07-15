@@ -38,6 +38,39 @@ public class UtilsFile {
 	}
 
 	/**
+	 * Deletes all the content of the directory if present, If directory is not
+	 * present and user has chosen appropriate flag then creates empty
+	 * directory(s)
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : cleanDir(new File("./conf", true);
+	 * }
+	 * </PRE>
+	 * 
+	 * @param dir
+	 *            Target directory
+	 * @param createIfNotPresent
+	 *            Boolean flag which enables directory creation if not already
+	 *            present
+	 */
+	public static void cleanDir(File dir, boolean createIfNotPresent) {
+		if (dir.exists() && dir.isDirectory()) {
+			cleanDir(dir);
+		}
+		dir.mkdirs();
+	}
+
+	private static void cleanDir(File dir) {
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				cleanDir(file);
+			}
+			file.delete();
+		}
+	}
+
+	/**
 	 * Copy File from source to destination location
 	 * 
 	 * @param source
