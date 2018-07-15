@@ -6,7 +6,7 @@ import com.arpitos.framework.Enums.TestStatus;
 import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.TestObjectWrapper;
 import com.arpitos.framework.infra.TestContext;
-import com.arpitos.utils.FWUtils;
+import com.arpitos.utils.UtilsFramework;
 
 /**
  * Implemented by each test cases. Provides minimum decoration require for each
@@ -42,11 +42,11 @@ public interface TestExecutable {
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		} catch (Exception e) {
 			context.setTestStatus(TestStatus.FAIL);
-			FWUtils.writePrintStackTrace(context, e);
+			UtilsFramework.writePrintStackTrace(context, e);
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		} catch (Throwable ex) {
 			context.setTestStatus(TestStatus.FAIL);
-			FWUtils.writePrintStackTrace(context, ex);
+			UtilsFramework.writePrintStackTrace(context, ex);
 			context.generateTestSummary(cls.getName(), testStartTime, System.currentTimeMillis());
 		}
 	}

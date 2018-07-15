@@ -1,8 +1,12 @@
 package com.arpitos.interfaces;
 
+import com.arpitos.utils.Heartbeat;
+
 /**
  * Used for any class which implements connections, If implemented then same
  * class can be used with common HeartBeat mechanism
+ * 
+ * @see Heartbeat
  * 
  * @author ArpitS
  *
