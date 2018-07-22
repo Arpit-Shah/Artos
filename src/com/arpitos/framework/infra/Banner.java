@@ -1,5 +1,55 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.framework.infra;
 
+import com.arpitos.framework.Version;
+
+/**
+ * Prints Framework Banner
+ * 
+ * @author ArpitS
+ */
+class Banner {
+
+	/**
+	 * Returns Banner in String format
+	 */
+	public static String getBanner() {
+
+	// @formatter:off
+	String banner = "\n"
+				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+				+ "\n      ___                                                "
+				+ "\n     / _ \\           _                     __ _ _        "
+				+ "\n    | |_| |__ _ _ __(_)  _    __ _  ____   \\ \\ \\ \\       "
+				+ "\n    |  _  |  __| '_ | |_| |_ / __ \\/ ____|  \\ \\ \\ \\      "
+				+ "\n    | | | | |  | |_)| |_| |_| (__) )___  \\   ) ) ) )     "
+				+ "\n    |_| |_|_|  | .__|_| | |_ \\__ _/| ___ /  / / / /      "
+				+ "\n    ===========|_|======\\__/============== (_(_(_(       "
+				+ "\n    == Arpitos ==    (RELEASE v"+Version.id()+")                 "
+				+ "\n                                                         "
+				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+				+ "\n";
+	// @formatter:on */
+		return banner;
+	}
+
+}
+
+//@formatter:off
 //   ___    
 //  / _ \           _                     __ _ _
 // | |_| |__ _ _ __(_)  _    __ _  ____   \ \ \ \
@@ -243,27 +293,6 @@ _/   |_/ (__/|_)_(_(__ (_)/_)_
             /|                
            (/                 
            
-           
- */
-//@formatter:on
-
-class Banner {
-
-	public static String getBanner() {
-		// @formatter:off
-	String banner = "\n"
-				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-				+ "\n      ___                                                "
-				+ "\n     / _ \\           _                     __ _ _        "
-				+ "\n    | |_| |__ _ _ __(_)  _    __ _  ____   \\ \\ \\ \\       "
-				+ "\n    |  _  |  __| '_ | |_| |_ / __ \\/ ____|  \\ \\ \\ \\      "
-				+ "\n    | | | | |  | |_)| |_| |_| (__) )___  \\   ) ) ) )     "
-				+ "\n    |_| |_|_|  | .__|_| | |_ \\__ _/| ___ /  / / / /      "
-				+ "\n    ===========|_|======\\__/============== (_(_(_(       "
-				+ "\n    == Arpitos ==       (RELEASE v1.0.0)                 "
-				+ "\n                                                         "
-				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-				+ "\n";
 		
 		/* String banner = "\n\n" +
       "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"+
@@ -280,9 +309,6 @@ class Banner {
       "   MBXddZdZdK5BBBQQQBQBB   BBQQQBBi        BBMRgQB:YK2BQBQBs    vQBRQQBQ    qQBQQQB: vB.  IBBBBBg      :MQ    1B:     rBBQBQB7        \n"+       
       "  BQ           BQBBBBBBBB  BQBBBBB7        BBBBBBB   ....       uBBBBBBB     uBBBBQBRZ      7QBBB..ivqMZ:      7QQ2r..:BBBB5          \n"+       
       "  J             .       :  .     .         uL777v1               .              ::..           .rY1Y7.            i7jJs:.           \n\n"+
-      "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-		// @formatter:on */
-		return banner;
-	}
-
-}
+      "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";           
+ */
+//@formatter:on

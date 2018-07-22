@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.utils;
 
 import java.io.BufferedInputStream;
@@ -12,6 +27,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * This class provides Zip related utilities
+ * 
+ * @author ArpitS
+ *
+ */
 public class UtilsZip {
 
 	/**
@@ -77,11 +98,11 @@ public class UtilsZip {
 	/**
 	 * Traverse a directory and get all files, and add the file into fileList
 	 * 
-	 * @param file
-	 *            file or directory
-	 * @return
+	 * @param source
+	 *            Source File object
+	 * @return Returns list of files
 	 */
-	private static List<String> generateFileList(File source) {
+	public static List<String> generateFileList(File source) {
 		List<String> zipList = new ArrayList<>();
 		List<String> fileList = new ArrayList<>();
 		walk(fileList, source);
@@ -98,7 +119,7 @@ public class UtilsZip {
 		return zipList;
 	}
 
-	public static void walk(List<String> fileList, File source) {
+	private static void walk(List<String> fileList, File source) {
 
 		File[] list = source.listFiles();
 
@@ -124,7 +145,7 @@ public class UtilsZip {
 	 *            file path
 	 * @return Formatted file path
 	 */
-	private static String generateZipEntry(File source, String file) {
+	public static String generateZipEntry(File source, String file) {
 		return file.substring(source.getAbsolutePath().length() + 1, file.length());
 	}
 
@@ -194,7 +215,7 @@ public class UtilsZip {
 	 * 
 	 * @param file
 	 *            file to be verified
-	 * @return boolean
+	 * @return true if file is a zip file otherwise false
 	 * @throws IOException
 	 *             if file io failed
 	 */

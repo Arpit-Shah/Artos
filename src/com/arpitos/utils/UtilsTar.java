@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.utils;
 
 import java.io.File;
@@ -14,14 +29,37 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
+/**
+ * 
+ * @author ArpitS
+ *
+ */
 public class UtilsTar {
 
+	/**
+	 * Tar File
+	 * 
+	 * @param source
+	 *            = Source File object
+	 * @param destFile
+	 *            = Tar destination File object
+	 * @throws IOException
+	 */
 	public static void tar(File source, File destFile) throws IOException {
 		List<File> files = new ArrayList<File>();
 		files.add(source);
 		tar(files, destFile);
 	}
 
+	/**
+	 * Tar list of files
+	 * 
+	 * @param files
+	 *            = List of files to be tarred
+	 * @param destFile
+	 *            Tar destination File object
+	 * @throws IOException
+	 */
 	public static void tar(List<File> files, File destFile) throws IOException {
 		try (TarArchiveOutputStream out = getTarArchiveOutputStream(destFile)) {
 			for (File file : files) {
@@ -29,13 +67,31 @@ public class UtilsTar {
 			}
 		}
 	}
-	
+
+	/**
+	 * Tar and Gzip file
+	 * 
+	 * @param source
+	 *            = Source file which requires Tarring and Gzipping
+	 * @param destFile
+	 *            Destination location of tgz file
+	 * @throws IOException
+	 */
 	public static void tarGZ(File source, File destFile) throws IOException {
 		List<File> files = new ArrayList<File>();
 		files.add(source);
 		tarGZ(files, destFile);
 	}
-	
+
+	/**
+	 * Tar and Gzip List of Files
+	 * 
+	 * @param source
+	 *            = List of files which requires Tarring and Gzipping
+	 * @param destFile
+	 *            Destination location of tgz file
+	 * @throws IOException
+	 */
 	public static void tarGZ(List<File> files, File destFile) throws IOException {
 		try (TarArchiveOutputStream out = getTgzArchiveOutputStream(destFile)) {
 			for (File file : files) {
@@ -45,9 +101,12 @@ public class UtilsTar {
 	}
 
 	/**
-	 *
+	 * Untar file
+	 * 
 	 * @param tarFile
+	 *            tar File object which requires untaring
 	 * @param destFile
+	 *            destination File object
 	 * @throws IOException
 	 */
 	public static void untar(File tarFile, File destFile) throws Exception {
@@ -90,7 +149,7 @@ public class UtilsTar {
 		taos.setAddPaxHeadersForNonAsciiNames(true);
 		return taos;
 	}
-	
+
 	private static TarArchiveOutputStream getTgzArchiveOutputStream(File file) throws IOException {
 		TarArchiveOutputStream taos = new TarArchiveOutputStream(new GzipCompressorOutputStream(new FileOutputStream(file)));
 		// TAR has an 8 gig file limit by default, this gets around that
@@ -126,7 +185,10 @@ public class UtilsTar {
 	 * Method to decompress a gzip file
 	 *
 	 * @param gZippedFile
+	 *            gzipped File object
 	 * @param tarFile
+	 *            destination Tar File object
+	 * @return Tar File object
 	 * @throws IOException
 	 */
 	public File deCompressGZipFile(File gZippedFile, File tarFile) throws Exception {

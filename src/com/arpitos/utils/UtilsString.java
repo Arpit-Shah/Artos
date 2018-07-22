@@ -1,13 +1,34 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.utils;
 
 import java.util.Arrays;
 
+/**
+ * 
+ * @author ArpitS
+ *
+ */
 public class UtilsString {
 	/**
 	 * Escape string to convert it to HTML
 	 * 
 	 * @param s
-	 * @return
+	 *            HTML string which requires char escaping
+	 * @return escaped HTML string
 	 */
 	public String escape(String s) {
 		StringBuilder builder = new StringBuilder();
@@ -55,8 +76,8 @@ public class UtilsString {
 	}
 
 	/**
-	 * This function is used to compare string format $ sign is used to ignore chars
-	 * during format comparison
+	 * This function is used to compare string format $ sign is used to ignore
+	 * chars during format comparison
 	 * 
 	 * <PRE>
 	 * Example: Boolean bSuccess = CompareStringFormat("1.00.0001", "$.$$.$$$$");
@@ -97,8 +118,11 @@ public class UtilsString {
 	 * This Function check and return the correct format of the version.
 	 * 
 	 * @param strSource
+	 *            String which contains version information
 	 * @param format
-	 * @return
+	 *            String of Format
+	 * @return Substring which matches the format, Null is returned if no match
+	 *         is found
 	 */
 	public static String fetchVersion(String strSource, String format) {
 		if ((null == strSource) || (strSource.length() < format.length())) {
@@ -120,7 +144,7 @@ public class UtilsString {
 	 *            input string
 	 * @param pattern
 	 *            wild card pattern
-	 * @return
+	 * @return true if wild card match is found, otherwise false is returned
 	 */
 	public static boolean wildCardMatch(String str, String pattern) {
 
