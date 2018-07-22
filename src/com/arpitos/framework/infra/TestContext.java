@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.framework.infra;
 
 import java.util.HashMap;
@@ -19,13 +34,13 @@ import com.arpitos.framework.SystemProperties;
  */
 public class TestContext {
 
-	private OrganisedLog organiseLogger;
+	private OrganisedLog organisedLogger;
 	private FrameworkConfig frameworkConfig;
 	private SystemProperties systemProperties;
 	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
 
-	private String strJIRARef = "";
+	private String strBugTrackingReference = "";
 	private long totalTestCount = 0;
 	private long currentPassCount = 0;
 	private long currentFailCount = 0;
@@ -41,9 +56,6 @@ public class TestContext {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param organisedLog
-	 *            = Logger object
 	 */
 	public TestContext() {
 		this.frameworkConfig = new FrameworkConfig(true);
@@ -52,9 +64,9 @@ public class TestContext {
 
 	/**
 	 * Sets Test status in memory. Status is not finalized until
-	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
-	 * warning as soon as status is set to FAIL so user can pin point location of
-	 * the failure
+	 * generateTestSummary() function is called. This function stamps "FAIL
+	 * HERE" warning as soon as status is set to FAIL so user can pin point
+	 * location of the failure
 	 * 
 	 * @param testStatus
 	 *            = Test Status
@@ -75,11 +87,15 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. This also includes
-	 * bugTicketNumber if provided
+	 * Concludes final test result and generates summary report. This also
+	 * includes bugTicketNumber if provided
 	 * 
 	 * @param strTestName
-	 *            = Test Name
+	 *            Test name (full package path)
+	 * @param testStartTime
+	 *            Test start Time
+	 * @param testFinishTime
+	 *            Test finish time
 	 */
 	public void generateTestSummary(String strTestName, long testStartTime, long testFinishTime) {
 		// Test is marked as known to fail and for some reason it pass then
@@ -113,8 +129,8 @@ public class TestContext {
 		// Finalise and add test result in log file
 		getLogger().info("\nTest Result : " + getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
-		getOrganiseLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrJIRARef(), getCurrentPassCount(), getCurrentFailCount(),
-				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
+		getOrganisedLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrBugTrackingReference(), getCurrentPassCount(),
+				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 
 		// reset statuses for next test
 		resetTestStatus();
@@ -127,7 +143,7 @@ public class TestContext {
 	}
 
 	/**
-	 * Get the method name for a depth in call stack.
+	 * Get the calling function/method name
 	 * 
 	 * <PRE>
 	 * depth in the call stack 
@@ -144,38 +160,72 @@ public class TestContext {
 		return methodName;
 	}
 
+	/**
+	 * Returns general logger object
+	 * 
+	 * @return
+	 * 
+	 * @see Logger
+	 */
 	public org.apache.logging.log4j.core.Logger getLogger() {
-		return (Logger) getOrganiseLogger().getGeneralLogger();
+		return (Logger) getOrganisedLogger().getGeneralLogger();
 	}
 
+	/**
+	 * Returns current test status
+	 * 
+	 * @return
+	 */
 	public TestStatus getCurrentTestStatus() {
 		return currentTestStatus;
 	}
 
+	/**
+	 * 
+	 * @return true if test is marked known to fail
+	 */
 	public boolean isKnownToFail() {
 		return KnownToFail;
 	}
 
-	public void setKnownToFail(boolean knownToFail, String strJIRARef) {
+	/**
+	 * This method should be exercised as initial line for every test case, this
+	 * allows user to set properties of test case as known to fail. If known to
+	 * fail test case passes then it will be marked as a fail. Which will help
+	 * user figure out if developer has fixed some feature without letting them
+	 * know and gives test engineer an opportunity to re-look at the test case
+	 * behaviour.
+	 * 
+	 * @param knownToFail
+	 *            true|false
+	 * @param strBugTrackingReference
+	 *            Bug Tracking reference (Example : JIRA number)
+	 */
+	public void setKnownToFail(boolean knownToFail, String strBugTrackingReference) {
 		KnownToFail = knownToFail;
-		setStrJIRARef(strJIRARef);
+		setStrBugTrackingReference(strBugTrackingReference);
 	}
 
-	private String getStrJIRARef() {
-		return strJIRARef;
+	private String getStrBugTrackingReference() {
+		return strBugTrackingReference;
 	}
 
-	private void setStrJIRARef(String strJIRARef) {
-		this.strJIRARef = strJIRARef;
+	private void setStrBugTrackingReference(String strBugTrackingRef) {
+		this.strBugTrackingReference = strBugTrackingRef;
 	}
 
+	/**
+	 * Returns Test suite run duration time
+	 * 
+	 * @return
+	 */
 	public long getTestSuiteTimeDuration() {
 		return getTestSuiteFinishTime() - getTestSuiteStartTime();
 	}
 
 	/**
-	 * Sets Object which is available globally to all test cases. User must maintain
-	 * Key for the HashTable
+	 * Sets Object which is available globally to all test cases. User must
+	 * maintain Key for the HashTable
 	 * 
 	 * @param key
 	 *            = Key to recognize an Object
@@ -190,13 +240,18 @@ public class TestContext {
 	 * Gets Globally set Object from the Map using provided Key.
 	 * 
 	 * @param key
-	 *            = String key to retrive an object
+	 *            = String key to retrieve an object
 	 * @return
 	 */
 	public Object getGlobalObject(String key) {
 		return globalObjectsHashMap.get(key);
 	}
 
+	/**
+	 * Returns total pass test count at the time of request
+	 * 
+	 * @return
+	 */
 	public long getCurrentPassCount() {
 		return currentPassCount;
 	}
@@ -205,6 +260,11 @@ public class TestContext {
 		this.currentPassCount = currentPassCount;
 	}
 
+	/**
+	 * Returns total fail test count at the time of request
+	 * 
+	 * @return
+	 */
 	public long getCurrentFailCount() {
 		return currentFailCount;
 	}
@@ -213,6 +273,11 @@ public class TestContext {
 		this.currentFailCount = currentFailCount;
 	}
 
+	/**
+	 * Returns total skip test count at the time of request
+	 * 
+	 * @return
+	 */
 	public long getCurrentSkipCount() {
 		return currentSkipCount;
 	}
@@ -221,6 +286,11 @@ public class TestContext {
 		this.currentSkipCount = currentSkipCount;
 	}
 
+	/**
+	 * Returns total known To fail test count at the time of request
+	 * 
+	 * @return
+	 */
 	public long getCurrentKTFCount() {
 		return currentKTFCount;
 	}
@@ -229,6 +299,11 @@ public class TestContext {
 		this.currentKTFCount = currentKTFCount;
 	}
 
+	/**
+	 * Returns total number of test count
+	 * 
+	 * @return
+	 */
 	public long getTotalTestCount() {
 		return totalTestCount;
 	}
@@ -237,14 +312,29 @@ public class TestContext {
 		this.totalTestCount = totalTestCount;
 	}
 
-	public OrganisedLog getOrganiseLogger() {
-		return organiseLogger;
+	/**
+	 * Get OrganisedLogger Object
+	 * 
+	 * @return
+	 */
+	public OrganisedLog getOrganisedLogger() {
+		return organisedLogger;
 	}
 
-	public void setOrganiseLogger(OrganisedLog organiseLogger) {
-		this.organiseLogger = organiseLogger;
+	/**
+	 * Set Organised logger object
+	 * 
+	 * @param organisedLogger
+	 */
+	public void setOrganisedLogger(OrganisedLog organisedLogger) {
+		this.organisedLogger = organisedLogger;
 	}
 
+	/**
+	 * Returns Test suite start time
+	 * 
+	 * @return
+	 */
 	public long getTestSuiteStartTime() {
 		return testSuiteStartTime;
 	}
@@ -253,6 +343,11 @@ public class TestContext {
 		this.testSuiteStartTime = testSuiteStartTime;
 	}
 
+	/**
+	 * Returns Test suite finish time
+	 * 
+	 * @return
+	 */
 	public long getTestSuiteFinishTime() {
 		return testSuiteFinishTime;
 	}
@@ -261,6 +356,13 @@ public class TestContext {
 		this.testSuiteFinishTime = testSuiteFinishTime;
 	}
 
+	/**
+	 * Returns FrameworkConfig object
+	 * 
+	 * @return
+	 * 
+	 * @see FrameworkConfig
+	 */
 	public FrameworkConfig getFrameworkConfig() {
 		return frameworkConfig;
 	}
@@ -269,6 +371,13 @@ public class TestContext {
 		this.frameworkConfig = frameworkConfig;
 	}
 
+	/**
+	 * Returns {@code SystemProperties} object
+	 * 
+	 * @return
+	 * 
+	 * @see SystemProperties
+	 */
 	public SystemProperties getSystemProperties() {
 		return systemProperties;
 	}

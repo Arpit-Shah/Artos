@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.framework.infra;
 
 import java.util.ArrayList;
@@ -53,11 +68,7 @@ public class Runner {
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 
 		// Add logger to context
-		FWStatic_Store.context.setOrganiseLogger(organisedLogger);
-	}
-
-	public TestContext getContext() {
-		return FWStatic_Store.context;
+		FWStatic_Store.context.setOrganisedLogger(organisedLogger);
 	}
 
 	/**
@@ -90,6 +101,15 @@ public class Runner {
 		}
 	}
 
+	/**
+	 * Returns All test case objects wrapped in TestWrapper
+	 * 
+	 * @param testList
+	 *            TestList collected using reflaction
+	 * @param cls
+	 *            Test Class
+	 * @throws Exception
+	 */
 	public void getTestWrapperList(List<TestExecutable> testList, Class<?> cls) throws Exception {
 		if (testList.isEmpty()) {
 			testList = (ArrayList<TestExecutable>) new ScanTestSuite(cls.getPackage().getName()).getTestList(true, true);
@@ -109,22 +129,9 @@ public class Runner {
 	 *            test loop cycle
 	 * @throws Exception
 	 */
-	public void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
+	private void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
 
 		// -------------------------------------------------------------------//
-		// // Prepare Context
-		// // read configuration at start
-		// String logDir = FWStatic_Store.FWConfig.getLogRootDir() + subDirName;
-		// String strTestName = cls.getPackage().getName();
-		// boolean enableLogDecoration =
-		// FWStatic_Store.FWConfig.isEnableLogDecoration();
-		// boolean enableTextLog = FWStatic_Store.FWConfig.isEnableTextLog();
-		// boolean enableHTMLLog = FWStatic_Store.FWConfig.isEnableHTMLLog();
-		// OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName,
-		// enableLogDecoration, enableTextLog, enableHTMLLog);
-		// TestContext context = new TestContext(organisedLogger);
-		// FWStatic_Store.context = context;
-
 		TestContext context = FWStatic_Store.context;
 		// Using reflection grep all test cases
 		{
@@ -156,11 +163,11 @@ public class Runner {
 
 		// Print Test suite Start and Finish time
 		String timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		context.getOrganiseLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
-		context.getOrganiseLogger().getSummaryLogger().info("\nTest start time : " + timeStamp);
+		context.getOrganisedLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
+		context.getOrganisedLogger().getSummaryLogger().info("\nTest start time : " + timeStamp);
 		timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
-		context.getOrganiseLogger().getGeneralLogger().info("Test finish time : " + timeStamp);
-		context.getOrganiseLogger().getSummaryLogger().info("Test finish time : " + timeStamp);
+		context.getOrganisedLogger().getGeneralLogger().info("Test finish time : " + timeStamp);
+		context.getOrganisedLogger().getSummaryLogger().info("Test finish time : " + timeStamp);
 
 		// Print Test suite total duration
 		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
