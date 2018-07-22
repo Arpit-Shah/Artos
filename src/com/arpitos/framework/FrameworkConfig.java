@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.framework;
 
 import java.io.File;
@@ -38,7 +53,6 @@ public class FrameworkConfig {
 	private String Organisation_Website = "www.arpitos.com";
 
 	// Email Settings Info
-
 	private String smtpServer = "smtp.gmail.com";
 	private String smtpSSLPort = "465";
 	private String smtpAuthRequired = "true";
@@ -61,6 +75,8 @@ public class FrameworkConfig {
 
 	// Features
 	private boolean enableGUITestSelector = true;
+	private boolean enableOrganisationInfo = true;
+	private boolean enableBanner = true;
 
 	/**
 	 * Constructor
@@ -102,11 +118,9 @@ public class FrameworkConfig {
 			readLoggerConfig(doc);
 			readFeatures(doc);
 			readEmailSettings(doc);
-		}
-		catch (FileNotFoundException fe) {
+		} catch (FileNotFoundException fe) {
 			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -365,6 +379,25 @@ public class FrameworkConfig {
 			attr.setValue("enableGUITestSelector");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableBanner())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableBanner");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableOrganisationInfo())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableOrganisationInfo");
+			property.setAttributeNode(attr);
+		}
+
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -408,16 +441,14 @@ public class FrameworkConfig {
 					if ("logRootDir".equals(eElement.getAttribute("name"))) {
 						if (eElement.getTextContent().endsWith("/") || eElement.getTextContent().endsWith("\\")) {
 							setLogRootDir(eElement.getTextContent());
-						}
-						else {
+						} else {
 							setLogRootDir(eElement.getTextContent() + File.separator);
 						}
 					}
 					if ("logSubDir".equals(eElement.getAttribute("name"))) {
 						if (eElement.getTextContent().endsWith("/") || eElement.getTextContent().endsWith("\\")) {
 							setLogSubDir(eElement.getTextContent());
-						}
-						else {
+						} else {
 							setLogSubDir(eElement.getTextContent() + File.separator);
 						}
 					}
@@ -462,6 +493,12 @@ public class FrameworkConfig {
 					// eElement.getTextContent());
 					if ("enableGUITestSelector".equals(eElement.getAttribute("name"))) {
 						setEnableGUITestSelector(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("enableBanner".equals(eElement.getAttribute("name"))) {
+						setEnableBanner(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("enableOrganisationInfo".equals(eElement.getAttribute("name"))) {
+						setEnableOrganisationInfo(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -753,5 +790,21 @@ public class FrameworkConfig {
 
 	public void setMessageText(String messageText) {
 		this.messageText = messageText;
+	}
+
+	public boolean isEnableBanner() {
+		return enableBanner;
+	}
+
+	public void setEnableBanner(boolean enableBanner) {
+		this.enableBanner = enableBanner;
+	}
+
+	public boolean isEnableOrganisationInfo() {
+		return enableOrganisationInfo;
+	}
+
+	public void setEnableOrganisationInfo(boolean enableOrganisationInfo) {
+		this.enableOrganisationInfo = enableOrganisationInfo;
 	}
 }
