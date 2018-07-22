@@ -1,24 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
-	<organization_info>
-		<property name="Name">Arpitos PTY Ltd</property>
-		<property name="Address">01, Test Street, Test Suburb, Auckland
-		</property>
-		<property name="Country">NewZealand</property>
-		<property name="Contact_Number">+64 210762810</property>
-		<property name="Email">arpit.shah1@gmail.com</property>
-		<property name="Website">www.arpitos.com</property>
-	</organization_info>
-	<logger>
-	    <!--LogLevel Options : info:debug:trace:fatal:warn:all-->
-   		<property name="logLevel">debug</property>
-   		<property name="logRootDir">./reporting/</property>
-		<property name="enableLogDecoration">false</property>
-		<property name="enableTextLog">true</property>
-		<property name="enableHTMLLog">false</property>
-	</logger>
-	<features>
-		<property name="enableGUITestSelector">true</property>
-	</features>
+  <organization_info>
+    <property name="Name">Organisation_Name</property>
+    <property name="Address">XX, Test Street, Test address</property>
+    <property name="Country">NewZealand</property>
+    <property name="Contact_Number">+64 1234567</property>
+    <property name="Email">test@gmail.com</property>
+    <property name="Website">www.arpitos.com</property>
+  </organization_info>
+  <logger>
+    <!--LogLevel Options : info:debug:trace:fatal:warn:all-->
+    <property name="logLevel">debug</property>
+    <property name="logRootDir">./reporting/</property>
+    <property name="logSubDir">SN-123</property>
+    <property name="enableLogDecoration">false</property>
+    <property name="enableTextLog">true</property>
+    <property name="enableHTMLLog">false</property>
+  </logger>
+  <smtp_settings>
+    <property name="ServerAddress">smtp.gmail.com</property>
+    <property name="SSLPort">465</property>
+    <property name="SMTPAuth">true</property>
+    <property name="SendersName">Test Sender</property>
+    <property name="SendersEmail">test@gmail.com</property>
+    <property name="SendersUserName">test@gmail.com</property>
+    <property name="Password">password</property>
+    <property name="ReceiversName">Test Receiver</property>
+    <property name="ReceiversEmail">test@gmail.com</property>
+    <property name="EmailSubject">ArpitOS Email Client</property>
+    <property name="EmailMessage">Test email from Arpitos</property>
+  </smtp_settings>
+  <features>
+    <property name="enableGUITestSelector">true</property>
+    <property name="enableBanner">true</property>
+    <property name="enableOrganisationInfo">true</property>
+  </features>
 </configuration>
-
