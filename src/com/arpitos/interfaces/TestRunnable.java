@@ -25,14 +25,16 @@ import java.util.ArrayList;
 public interface TestRunnable {
 
 	/**
-	 * Execute the tests in testList sequentially
+	 * Execute tests from testList sequentially
 	 * 
 	 * @param testList
 	 *            List of TestExecutors to run
+	 * @param cls
+	 *            Class Object
 	 * @param loopCount
 	 *            Number of times each TestExecutor will run
 	 * @throws Exception
 	 *             exceptions that happened within the tests
 	 */
-	public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception;
+	public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, int loopCount) throws Exception;
 }

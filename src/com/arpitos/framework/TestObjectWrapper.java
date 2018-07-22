@@ -29,11 +29,11 @@ public class TestObjectWrapper {
 	int testsequence = 0;
 	String testCaseLabel = "";
 
-	String testPlanDescription = "";
-	String testPlanPreparedBy = "";
-	String testPlanPreparationDate = "";
-	String testreviewedBy = "";
-	String testReviewDate = "";
+	String testPlanDescription = "Warning : TestPlan Attribute is not set";
+	String testPlanPreparedBy = "???";
+	String testPlanPreparationDate = "???";
+	String testreviewedBy = "???";
+	String testReviewDate = "???";
 
 	/**
 	 * Default constructor
@@ -46,19 +46,8 @@ public class TestObjectWrapper {
 	 *            test sequence as specified in annotation
 	 * @param testCaseLabel
 	 *            test label as specified in annotation
-	 * @param testPlanDescription
-	 *            test plan as specified in annotation
-	 * @param testPlanPreparedBy
-	 *            info about test creator as specified in annotation
-	 * @param testPlanPreparationDate
-	 *            test preparation date as specified in annotation
-	 * @param testreviewedBy
-	 *            test reviewer name as specified in annotation
-	 * @param testReviewDate
-	 *            test review date as specified in annotation
 	 */
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel, String testPlanDescription,
-			String testPlanPreparedBy, String testPlanPreparationDate, String testreviewedBy, String testReviewDate) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel) {
 		super();
 
 		this.cls = cls;
@@ -66,12 +55,6 @@ public class TestObjectWrapper {
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
 		this.testCaseLabel = testCaseLabel;
-
-		this.testPlanDescription = testPlanDescription;
-		this.testPlanPreparedBy = testPlanPreparedBy;
-		this.testPlanPreparationDate = testPlanPreparationDate;
-		this.testreviewedBy = testreviewedBy;
-		this.testReviewDate = testReviewDate;
 	}
 
 	public String getTestPlanDescription() {

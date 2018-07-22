@@ -91,15 +91,15 @@ public class ScanTestSuite {
 			//			);
 			// @formatter:on
 
-			// Test Plan Attribute is optional, If user does not set it then
-			// test should continue
-			TestObjectWrapper testobj = null;
-			if (null == testplan) {
-				testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label(), "Warning : TestPlan Attribute is not set",
-						"???", "???", "???", "???");
-			} else {
-				testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label(), testplan.decription(),
-						testplan.preparedBy(), testplan.preparationDate(), testplan.reviewedBy(), testplan.reviewDate());
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label());
+
+			// Test Plan is optional so it can be null
+			if (null != testplan) {
+				testobj.setTestPlanDescription(testplan.decription());
+				testobj.setTestPlanPreparedBy(testplan.preparedBy());
+				testobj.setTestPlanPreparationDate(testplan.preparationDate());
+				testobj.setTestreviewedBy(testplan.reviewedBy());
+				testobj.setTestReviewDate(testplan.reviewDate());
 			}
 
 			// collect all labels

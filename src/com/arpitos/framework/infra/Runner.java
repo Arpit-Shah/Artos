@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
+import com.arpitos.framework.Enums.TestStatus;
 import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.GUITestSelector;
 import com.arpitos.framework.ScanTestSuite;
@@ -33,6 +34,7 @@ import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
 import com.arpitos.interfaces.TestRunnable;
 import com.arpitos.utils.Convert;
+import com.arpitos.utils.UtilsFramework;
 
 /**
  * This class is responsible for running test cases. It initialising logger and
@@ -45,10 +47,11 @@ import com.arpitos.utils.Convert;
 public class Runner {
 
 	Class<?> cls;
+	TestContext context = FWStatic_Store.context;
 
 	/**
-	 * This method initialise context with minimum required items (Logger,
-	 * default settings from Framework configuration files etc..)
+	 * This method initialises context with information collected from
+	 * {@code FrameworkConfig}
 	 * 
 	 * @param cls
 	 *            Test class with main method
@@ -59,10 +62,27 @@ public class Runner {
 		// Get Info from XML Configuration file
 		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
 		String logDir = FWStatic_Store.context.getFrameworkConfig().getLogRootDir() + subDirName;
-		String strTestName = cls.getPackage().getName();
 		boolean enableLogDecoration = FWStatic_Store.context.getFrameworkConfig().isEnableLogDecoration();
 		boolean enableTextLog = FWStatic_Store.context.getFrameworkConfig().isEnableTextLog();
 		boolean enableHTMLLog = FWStatic_Store.context.getFrameworkConfig().isEnableHTMLLog();
+
+		initialise(logDir, subDirName, enableLogDecoration, enableTextLog, enableHTMLLog);
+	}
+
+	/**
+	 * This method initialise context with user provided information. This will
+	 * override information set in {@code FrameworkConfig}
+	 * 
+	 * @param cls
+	 *            Test class with main method
+	 */
+	public Runner(Class<?> cls, String logDir, String subDirName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+		this.cls = cls;
+		initialise(logDir, subDirName, enableLogDecoration, enableTextLog, enableHTMLLog);
+	}
+
+	private void initialise(String logDir, String subDirName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+		String strTestName = cls.getPackage().getName();
 
 		// Create Logger
 		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
@@ -86,18 +106,16 @@ public class Runner {
 		// Only process command line argument if provided
 		CliProcessor.proessCommandLine(args);
 
-		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
-
 		if (FWStatic_Store.context.getFrameworkConfig().isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
-				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount) throws Exception {
-					runTest(testList, cls, serialNumber, loopCount);
+				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, int loopCount) throws Exception {
+					runTest(testList, cls, loopCount);
 				}
 			};
-			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, subDirName, loopCycle, runObj);
+			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, loopCycle, runObj);
 		} else {
-			runTest(testList, cls, subDirName, loopCycle);
+			runTest(testList, cls, loopCycle);
 		}
 	}
 
@@ -123,16 +141,13 @@ public class Runner {
 	 *            test object list
 	 * @param cls
 	 *            class object which is executing test
-	 * @param subDirName
-	 *            product serial number
 	 * @param loopCycle
 	 *            test loop cycle
 	 * @throws Exception
 	 */
-	private void runTest(List<TestExecutable> testList, Class<?> cls, String subDirName, int loopCycle) throws Exception {
+	private void runTest(List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
 
 		// -------------------------------------------------------------------//
-		TestContext context = FWStatic_Store.context;
 		// Using reflection grep all test cases
 		{
 			String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
@@ -198,7 +213,7 @@ public class Runner {
 				// Run Pre Method prior to any test Execution
 				prePostCycleInstance.beforeTest(context);
 
-				t.onExecute(context);
+				runIndividualTest(t);
 
 				// Run Post Method prior to any test Execution
 				prePostCycleInstance.afterTest(context);
@@ -211,6 +226,38 @@ public class Runner {
 		// ********************************************************************************************
 		// Test Finish
 		// ********************************************************************************************
+	}
+
+	private void runIndividualTest(TestExecutable t) {
+		long testStartTime = System.currentTimeMillis();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context
+					.getGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
+			TestObjectWrapper testObject = testMap.get(t.getClass().getName());
+
+			// @formatter:off
+			context.getLogger().info("*************************************************************************"
+									+ "\nTest Name	: " + t.getClass().getName()
+									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
+									+ "\nDate		: " + testObject.getTestPlanPreparationDate()
+									+ "\nShort Desc	: " + testObject.getTestPlanDescription()
+									+ "\n-------------------------------------------------------------------------");
+			// @formatter:on
+
+			// --------------------------------------------------------------------------------------------
+			t.execute(context);
+			// --------------------------------------------------------------------------------------------
+
+		} catch (Exception e) {
+			context.setTestStatus(TestStatus.FAIL);
+			UtilsFramework.writePrintStackTrace(context, e);
+		} catch (Throwable ex) {
+			context.setTestStatus(TestStatus.FAIL);
+			UtilsFramework.writePrintStackTrace(context, ex);
+		} finally {
+			context.generateTestSummary(t.getClass().getName(), testStartTime, System.currentTimeMillis());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -278,12 +325,44 @@ class runTestInParallel implements Runnable {
 		try {
 			prePostCycleInstance.beforeTest(context);
 
-			test.onExecute(context);
+			runIndividualTest(test);
 
 			// Run Post Method prior to any test Execution
 			prePostCycleInstance.afterTest(context);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void runIndividualTest(TestExecutable t) {
+		long testStartTime = System.currentTimeMillis();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context
+					.getGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
+			TestObjectWrapper testObject = testMap.get(t.getClass().getName());
+
+			// @formatter:off
+			context.getLogger().info("*************************************************************************"
+									+ "\nTest Name	: " + t.getClass().getName()
+									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
+									+ "\nDate		: " + testObject.getTestPlanPreparationDate()
+									+ "\nShort Desc	: " + testObject.getTestPlanDescription()
+									+ "\n-------------------------------------------------------------------------");
+			// @formatter:on
+
+			// --------------------------------------------------------------------------------------------
+			t.execute(context);
+			// --------------------------------------------------------------------------------------------
+
+		} catch (Exception e) {
+			context.setTestStatus(TestStatus.FAIL);
+			UtilsFramework.writePrintStackTrace(context, e);
+		} catch (Throwable ex) {
+			context.setTestStatus(TestStatus.FAIL);
+			UtilsFramework.writePrintStackTrace(context, ex);
+		} finally {
+			context.generateTestSummary(t.getClass().getName(), testStartTime, System.currentTimeMillis());
 		}
 	}
 }

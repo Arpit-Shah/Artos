@@ -55,7 +55,6 @@ public class GUITestSelector {
 
 	private JFrame container;
 	private Class<?> cls;
-	String serialNumber;
 	private TestRunnerDataModel testRunnerDataModel;
 	private int loopCount;
 	private JTextField loopCountField;
@@ -76,15 +75,13 @@ public class GUITestSelector {
 	 * @throws Exception
 	 *             if gui could not launch
 	 */
-	public GUITestSelector(ArrayList<TestExecutable> testList, Class<?> cls, String serialNumber, int loopCount, TestRunnable testRunner)
-			throws Exception {
+	public GUITestSelector(ArrayList<TestExecutable> testList, Class<?> cls, int loopCount, TestRunnable testRunner) throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		testRunnerDataModel = new TestRunnerDataModel(testList);
 		this.cls = cls;
-		this.serialNumber = serialNumber;
 		this.loopCount = loopCount;
 		this.testRunner = testRunner;
 		selectedTests = new ArrayList<TestExecutable>();
@@ -120,7 +117,7 @@ public class GUITestSelector {
 			container.setVisible(true);
 		} else {
 			try {
-				testRunner.executeTest(testRunnerDataModel.getTestList(), cls, serialNumber, loopCount);
+				testRunner.executeTest(testRunnerDataModel.getTestList(), cls, loopCount);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -134,7 +131,8 @@ public class GUITestSelector {
 	 *            The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
+		container = new JFrame(
+				"Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		container.setSize(new Dimension(480, 515));
@@ -228,7 +226,8 @@ public class GUITestSelector {
 	}
 
 	/**
-	 * Set column widths and text alignment (and other style attributes, if needed)
+	 * Set column widths and text alignment (and other style attributes, if
+	 * needed)
 	 * 
 	 * @param testTableView
 	 *            the table to style
@@ -266,9 +265,9 @@ public class GUITestSelector {
 			public void run() {
 				try {
 					if (selectedOnly) {
-						testRunner.executeTest(selectedTests, cls, serialNumber, loopCount);
+						testRunner.executeTest(selectedTests, cls, loopCount);
 					} else {
-						testRunner.executeTest(testRunnerDataModel.getTestList(), cls, serialNumber, loopCount);
+						testRunner.executeTest(testRunnerDataModel.getTestList(), cls, loopCount);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
