@@ -52,7 +52,7 @@ import com.arpitos.framework.Version;
  * @author ArpitS
  *
  */
-public class OrganisedLog {
+class OrganisedLog {
 
 	private org.apache.logging.log4j.core.Logger generalLogger;
 	private org.apache.logging.log4j.core.Logger summaryLogger;
@@ -136,6 +136,20 @@ public class OrganisedLog {
 	}
 
 	/**
+	 * Disables Logging
+	 */
+	public void disableGeneralLog() {
+		getGeneralLogger().setLevel(Level.OFF);
+	}
+
+	/**
+	 * Enable Logging
+	 */
+	public void enableGeneralLog() {
+		getGeneralLogger().setLevel(getLoglevelFromXML());
+	}
+
+	/**
 	 * Returns current general error log files (Includes txt and html files)
 	 * 
 	 * @return General error log file list
@@ -153,20 +167,6 @@ public class OrganisedLog {
 			mergedList.addAll(htmlLog);
 		}
 		return mergedList;
-	}
-
-	/**
-	 * Disables Logging
-	 */
-	public void disableGeneralLog() {
-		getGeneralLogger().setLevel(Level.OFF);
-	}
-
-	/**
-	 * Enable Logging
-	 */
-	public void enableGeneralLog() {
-		getGeneralLogger().setLevel(getLoglevelFromXML());
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class OrganisedLog {
 	 * 
 	 * @see LoggerContext
 	 */
-	public static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean enableLogDecoration, boolean enableTextLog,
+	private static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean enableLogDecoration, boolean enableTextLog,
 			boolean enableHTMLLog) {
 
 		if (!fileroot.endsWith("/") || !fileroot.endsWith("\\")) {
@@ -527,7 +527,7 @@ public class OrganisedLog {
 	 * 
 	 * @return
 	 */
-	public static Level getLoglevelFromXML() {
+	private static Level getLoglevelFromXML() {
 		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("info")) {
 			return Level.INFO;
 		}
@@ -555,7 +555,7 @@ public class OrganisedLog {
 	private void printMendatoryInfo() {
 		//@formatter:off
 		
-		String organisationInfo = "************************************ Header Start ******************************************"
+		String organisationInfo = "\n************************************ Header Start ******************************************"
 								 +"\nOrganisation_Name : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Name()
 								 +"\nOrganisation_Country : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Country()
 								 +"\nOrganisation_Address : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Address()
@@ -579,7 +579,7 @@ public class OrganisedLog {
 	/**
 	 * Print selected System Info to log file
 	 * 
-	 * @param logger
+	 * @param generalLogger
 	 */
 	public void printUsefulInfo() {
 
