@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.framework.infra;
 
 import java.io.File;
@@ -34,7 +49,7 @@ import com.arpitos.framework.Version;
  * This class is responsible for initialising all log streams which may require
  * during test suit execution
  * 
- * @author arpit
+ * @author ArpitS
  *
  */
 public class OrganisedLog {
@@ -54,13 +69,17 @@ public class OrganisedLog {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param strDestDirName
+	 * @param logDir
 	 *            Log destination directory
 	 * @param strTestName
 	 *            TestSuite name for sub directory structure
-	 * @param disableLogDecoration
-	 *            disable decoration around test (Time-stamp, source package, thread
-	 *            number etc..)
+	 * @param enableLogDecoration
+	 *            enables decoration around test (Time-stamp, source package,
+	 *            thread number etc..)
+	 * @param enableTextLog
+	 *            enables log output in Text format
+	 * @param enableHTMLLog
+	 *            enables log output in HTML format
 	 */
 	public OrganisedLog(String logDir, String strTestName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 
@@ -93,6 +112,7 @@ public class OrganisedLog {
 	 * @param ktfCount
 	 *            Known to Fail Test Count
 	 * @param totalTestTime
+	 *            Test time
 	 */
 	public void appendSummaryReport(TestStatus status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
 			long ktfCount, long totalTestTime) {
@@ -135,10 +155,16 @@ public class OrganisedLog {
 		return mergedList;
 	}
 
+	/**
+	 * Disables Logging
+	 */
 	public void disableGeneralLog() {
 		getGeneralLogger().setLevel(Level.OFF);
 	}
 
+	/**
+	 * Enable Logging
+	 */
 	public void enableGeneralLog() {
 		getGeneralLogger().setLevel(getLoglevelFromXML());
 	}
@@ -184,7 +210,8 @@ public class OrganisedLog {
 	}
 
 	/**
-	 * Provides list of current general log files attached to provided appender name
+	 * Provides list of current general log files attached to provided appender
+	 * name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -209,7 +236,8 @@ public class OrganisedLog {
 	}
 
 	/**
-	 * Provides list of current summary log files attached to provided appender name
+	 * Provides list of current summary log files attached to provided appender
+	 * name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -285,12 +313,15 @@ public class OrganisedLog {
 	 * }
 	 * </PRE>
 	 * @formatter:on
-	 * @param fileroot log file root
+	 * 
+	 * @param fileroot log file root directory
 	 * @param fileName log file name
-	 * @param disableLogDecoration true/false Disables decoration for the logs
-	 * @param disableHTMLLog 
-	 * @param disableTextLog 
-	 * @return
+	 * @param enableLogDecoration enables decoration around test (Time-stamp, source package, thread number etc..)
+	 * @param enableTextLog enables log output in Text format
+	 * @param enableHTMLLog enables log output in HTML format
+	 * @return {@code LoggerContext}
+	 * 
+	 * @see LoggerContext
 	 */
 	public static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean enableLogDecoration, boolean enableTextLog,
 			boolean enableHTMLLog) {
@@ -488,6 +519,14 @@ public class OrganisedLog {
 		return loggerContext;
 	}
 
+	/**
+	 * Returns Log Level Enum value based on Framework configuration set in XML
+	 * file
+	 * 
+	 * @see Level
+	 * 
+	 * @return
+	 */
 	public static Level getLoglevelFromXML() {
 		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("info")) {
 			return Level.INFO;
@@ -524,12 +563,17 @@ public class OrganisedLog {
 								 +"\nOrganisation_Email : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Email()
 								 +"\nOrganisation_Website : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Website()
 								 +"\n************************************ Header End ********************************************";
-		getGeneralLogger().info(Banner.getBanner());
-		getGeneralLogger().info(organisationInfo);
-
-		getSummaryLogger().info(Banner.getBanner());
-		getSummaryLogger().info(organisationInfo);
 		//@formatter:on
+
+		if (FWStatic_Store.context.getFrameworkConfig().isEnableBanner()) {
+			getGeneralLogger().info(Banner.getBanner());
+			getSummaryLogger().info(Banner.getBanner());
+		}
+
+		if (FWStatic_Store.context.getFrameworkConfig().isEnableOrganisationInfo()) {
+			getGeneralLogger().info(organisationInfo);
+			getSummaryLogger().info(organisationInfo);
+		}
 	}
 
 	/**
@@ -562,27 +606,47 @@ public class OrganisedLog {
 		// @formatter:on
 	}
 
+	/**
+	 * Returns Logger which writes log to Log file.
+	 * 
+	 * @return Logger
+	 */
 	public org.apache.logging.log4j.core.Logger getGeneralLogger() {
 		return generalLogger;
 	}
 
-	public void setGeneralLogger(org.apache.logging.log4j.core.Logger generalLogger) {
+	private void setGeneralLogger(org.apache.logging.log4j.core.Logger generalLogger) {
 		this.generalLogger = generalLogger;
 	}
 
-	// User should not be playing around with summary logger
+	/**
+	 * Returns Logger which writes log to Summary file. User should avoid using
+	 * this logger directly
+	 * 
+	 * @return Logger
+	 */
 	public org.apache.logging.log4j.core.Logger getSummaryLogger() {
 		return summaryLogger;
 	}
 
-	public void setSummaryLogger(org.apache.logging.log4j.core.Logger summaryLogger) {
+	private void setSummaryLogger(org.apache.logging.log4j.core.Logger summaryLogger) {
 		this.summaryLogger = summaryLogger;
 	}
 
+	/**
+	 * Returns Log Files Base Directory
+	 * 
+	 * @return
+	 */
 	public String getLogBaseDir() {
 		return logBaseDir;
 	}
 
+	/**
+	 * Sets Log Files Base Directory
+	 * 
+	 * @param logBaseDir
+	 */
 	public void setLogBaseDir(String logBaseDir) {
 		this.logBaseDir = logBaseDir;
 	}
