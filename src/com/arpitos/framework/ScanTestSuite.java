@@ -1,3 +1,18 @@
+// Copyright <2018> <Arpitos>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+// and associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.framework;
 
 import java.lang.reflect.Method;
@@ -25,7 +40,7 @@ import com.arpitos.interfaces.TestExecutable;
 /**
  * This class provides all utilities for reflection
  * 
- * @author arpit
+ * @author ArpitS
  *
  */
 public class ScanTestSuite {
@@ -117,7 +132,8 @@ public class ScanTestSuite {
 			// method.getDeclaringClass().getName());
 		}
 		for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuite.class)) {
-			// System.out.println("@AfterTestsuite = " + method.getName() + " : "
+			// System.out.println("@AfterTestsuite = " + method.getName() + " :
+			// "
 			// + method.getDeclaringClass().getName());
 		}
 	}
@@ -168,7 +184,7 @@ public class ScanTestSuite {
 	 */
 	public String getTestPlan(TestContext context) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
 			sb.append("\nTestCaseName : " + testObject.getCls().getName());
 			sb.append("\nSkipTest : " + Boolean.toString(testObject.isSkipTest()));
@@ -186,7 +202,7 @@ public class ScanTestSuite {
 
 	public String getTestLabelsToPrint(TestContext context) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (String label : testLabels) {
 			sb.append("\n" + label);
 		}
