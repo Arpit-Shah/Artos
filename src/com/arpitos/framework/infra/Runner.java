@@ -23,8 +23,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.Logger;
-
 import com.arpitos.framework.Enums.TestStatus;
 import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.GUITestSelector;
@@ -85,10 +83,10 @@ public class Runner {
 		String strTestName = cls.getPackage().getName();
 
 		// Create Logger
-		OrganisedLog organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
+		LogWrapper logWrapper = new LogWrapper(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
 
 		// Add logger to context
-		FWStatic_Store.context.setOrganisedLogger(organisedLogger);
+		FWStatic_Store.context.setOrganisedLogger(logWrapper);
 	}
 
 	/**
@@ -157,7 +155,7 @@ public class Runner {
 			context.setGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 		}
 
-		Logger logger = context.getLogger();
+		LogWrapper logger = context.getLogger();
 
 		// TODO : Parallel running test case can not work with current
 		// architecture so should not enable this feature until solution is
@@ -178,11 +176,11 @@ public class Runner {
 
 		// Print Test suite Start and Finish time
 		String timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		context.getOrganisedLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
-		context.getOrganisedLogger().getSummaryLogger().info("\nTest start time : " + timeStamp);
+		context.getLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
+		context.getLogger().getSummaryLogger().info("\nTest start time : " + timeStamp);
 		timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
-		context.getOrganisedLogger().getGeneralLogger().info("Test finish time : " + timeStamp);
-		context.getOrganisedLogger().getSummaryLogger().info("Test finish time : " + timeStamp);
+		context.getLogger().getGeneralLogger().info("Test finish time : " + timeStamp);
+		context.getLogger().getSummaryLogger().info("Test finish time : " + timeStamp);
 
 		// Print Test suite total duration
 		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
@@ -193,7 +191,7 @@ public class Runner {
 
 	private void runSingleThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
-		Logger logger = context.getLogger();
+		LogWrapper logger = context.getLogger();
 
 		// ********************************************************************************************
 		// Test Start
@@ -237,7 +235,7 @@ public class Runner {
 			TestObjectWrapper testObject = testMap.get(t.getClass().getName());
 
 			// @formatter:off
-			context.getLogger().info("*************************************************************************"
+			context.getLogger().info("\n*************************************************************************"
 									+ "\nTest Name	: " + t.getClass().getName()
 									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
 									+ "\nDate		: " + testObject.getTestPlanPreparationDate()
@@ -263,7 +261,7 @@ public class Runner {
 	@SuppressWarnings("unchecked")
 	private void runParallelThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
-		Logger logger = context.getLogger();
+		LogWrapper logger = context.getLogger();
 
 		// ********************************************************************************************
 		// Test Start
@@ -343,7 +341,7 @@ class runTestInParallel implements Runnable {
 			TestObjectWrapper testObject = testMap.get(t.getClass().getName());
 
 			// @formatter:off
-			context.getLogger().info("*************************************************************************"
+			context.getLogger().info("\n*************************************************************************"
 									+ "\nTest Name	: " + t.getClass().getName()
 									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
 									+ "\nDate		: " + testObject.getTestPlanPreparationDate()

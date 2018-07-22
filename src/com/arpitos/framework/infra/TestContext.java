@@ -34,7 +34,7 @@ import com.arpitos.framework.SystemProperties;
  */
 public class TestContext {
 
-	private OrganisedLog organisedLogger;
+	private LogWrapper logWrapper;
 	private FrameworkConfig frameworkConfig;
 	private SystemProperties systemProperties;
 	private TestStatus currentTestStatus = TestStatus.PASS;
@@ -129,7 +129,7 @@ public class TestContext {
 		// Finalise and add test result in log file
 		getLogger().info("\nTest Result : " + getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
-		getOrganisedLogger().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrBugTrackingReference(), getCurrentPassCount(),
+		getLogWrapper().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrBugTrackingReference(), getCurrentPassCount(),
 				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 
 		// reset statuses for next test
@@ -167,8 +167,8 @@ public class TestContext {
 	 * 
 	 * @see Logger
 	 */
-	public org.apache.logging.log4j.core.Logger getLogger() {
-		return (Logger) getOrganisedLogger().getGeneralLogger();
+	public LogWrapper getLogger() {
+		return getLogWrapper();
 	}
 
 	/**
@@ -315,19 +315,20 @@ public class TestContext {
 	/**
 	 * Get OrganisedLogger Object
 	 * 
-	 * @return
+	 * @return {@link LogWrapper}
 	 */
-	public OrganisedLog getOrganisedLogger() {
-		return organisedLogger;
+	public LogWrapper getLogWrapper() {
+		return logWrapper;
 	}
 
 	/**
-	 * Set Organised logger object
+	 * Set LogWrapper object
 	 * 
-	 * @param organisedLogger
+	 * @param logWrapper
+	 *            logWrapper Object
 	 */
-	public void setOrganisedLogger(OrganisedLog organisedLogger) {
-		this.organisedLogger = organisedLogger;
+	public void setOrganisedLogger(LogWrapper logWrapper) {
+		this.logWrapper = logWrapper;
 	}
 
 	/**
