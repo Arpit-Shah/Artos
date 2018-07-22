@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * @author ArpitS
  *
  */
-//Make the annotation available at runtime:
+// Make the annotation available at runtime:
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
 @Target(ElementType.TYPE)
