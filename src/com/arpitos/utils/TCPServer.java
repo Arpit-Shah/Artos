@@ -17,6 +17,7 @@ package com.arpitos.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ import com.arpitos.interfaces.ConnectableFilter;
  * This class listens for client connection and accepts single client connection
  * with server
  * 
- * @author ArpitS
+ * 
  *
  */
 public class TCPServer implements Connectable {
@@ -76,10 +77,10 @@ public class TCPServer implements Connectable {
 	 * Creates a server socket, bound to the specified port. The method blocks
 	 * until a connection is made.
 	 * 
-	 * @throws Exception
-	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs when opening the socket.
 	 */
-	public void connect() throws Exception {
+	public void connect() throws IOException {
 		// set infinite timeout by default
 		connect(0);
 	}
@@ -95,9 +96,10 @@ public class TCPServer implements Connectable {
 	 * 
 	 * @param soTimeout
 	 *            the specified timeout in milliseconds.
-	 * @throws Exception
+	 * @throws IOException
+	 *             if an I/O error occurs when opening the socket.
 	 */
-	public void connect(int soTimeout) throws Exception {
+	public void connect(int soTimeout) throws IOException {
 		System.out.println("Listening on Port : " + nPort);
 
 		tcpSocket = new ServerSocket(nPort);
@@ -127,8 +129,11 @@ public class TCPServer implements Connectable {
 	 * Closes this socket. Once a socket has been closed, it is not available
 	 * for further networking use (i.e. can't be reconnected or rebound). A new
 	 * socket needs to be created.
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs when closing this socket.
 	 */
-	public void disconnect() throws Exception {
+	public void disconnect() throws IOException {
 		serverSocket.close();
 		tcpSocket.close();
 		System.out.println("Connection Closed");
@@ -155,9 +160,12 @@ public class TCPServer implements Connectable {
 	 * @param timeunit
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
-	 * @throws Exception
+	 * @throws InterruptedException
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
 	 */
-	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws Exception {
+	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
@@ -193,17 +201,21 @@ public class TCPServer implements Connectable {
 	 * 
 	 * @param data
 	 *            data to be sent in String format
-	 * @throws Exception
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
-	public void sendMsg(String data) throws Exception {
+	public void sendMsg(String data) throws IOException {
 		sendMsg(data.getBytes());
 	}
 
 	/**
 	 * Send byte array to client
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
 	@Override
-	public void sendMsg(byte[] data) throws Exception {
+	public void sendMsg(byte[] data) throws IOException {
 		outToClient = new DataOutputStream(serverSocket.getOutputStream());
 		outToClient.write(data);
 	}
@@ -257,7 +269,7 @@ public class TCPServer implements Connectable {
  * Inner Class which acts as receiver thread for incoming data. All Data will be
  * added to the Queue
  * 
- * @author ArpitS
+ * 
  *
  */
 class ClientTask implements Runnable {

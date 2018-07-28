@@ -21,7 +21,7 @@ import com.arpitos.framework.infra.TestContext;
  * This class provides container which holds all static element of test
  * framework
  * 
- * @author ArpitS
+ * 
  *
  */
 public class FWStatic_Store {

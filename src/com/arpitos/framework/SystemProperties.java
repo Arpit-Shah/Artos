@@ -16,9 +16,9 @@
 package com.arpitos.framework;
 
 /**
- * This class is a contained which holds all System properties
+ * This class holds all System properties
  * 
- * @author ArpitS
+ * 
  *
  */
 public class SystemProperties {

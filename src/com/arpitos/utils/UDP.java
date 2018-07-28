@@ -17,6 +17,7 @@ package com.arpitos.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -33,7 +34,7 @@ import com.arpitos.interfaces.ConnectableFilter;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class UDP implements Connectable {
@@ -173,9 +174,12 @@ public class UDP implements Connectable {
 	 * @param timeunit
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
-	 * @throws Exception
+	 * @throws InterruptedException
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
 	 */
-	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws Exception {
+	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
@@ -215,9 +219,10 @@ public class UDP implements Connectable {
 	 * 
 	 * @param stringMsg
 	 *            String data
-	 * @throws Exception
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
-	public void sendMsg(String stringMsg) throws Exception {
+	public void sendMsg(String stringMsg) throws IOException {
 		byte[] data = stringMsg.getBytes();
 		sendMsg(data);
 	}
@@ -228,9 +233,12 @@ public class UDP implements Connectable {
 	 * buf.length. The DatagramPacket includes information indicating the data
 	 * to be sent, its length, the IP address of the remote host, and the port
 	 * number on the remote host.
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
 	@Override
-	public void sendMsg(byte[] data) throws Exception {
+	public void sendMsg(byte[] data) throws IOException {
 		DatagramPacket sendPacket = new DatagramPacket(data, data.length, remoteSocketAddress);
 		serverSocket.send(sendPacket);
 	}

@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class UtilsTar {
@@ -44,6 +44,7 @@ public class UtilsTar {
 	 * @param destFile
 	 *            = Tar destination File object
 	 * @throws IOException
+	 *             If IO operation failed
 	 */
 	public static void tar(File source, File destFile) throws IOException {
 		List<File> files = new ArrayList<File>();
@@ -59,6 +60,7 @@ public class UtilsTar {
 	 * @param destFile
 	 *            Tar destination File object
 	 * @throws IOException
+	 *             If IP operation failed
 	 */
 	public static void tar(List<File> files, File destFile) throws IOException {
 		try (TarArchiveOutputStream out = getTarArchiveOutputStream(destFile)) {
@@ -76,6 +78,7 @@ public class UtilsTar {
 	 * @param destFile
 	 *            Destination location of tgz file
 	 * @throws IOException
+	 *             If IO operation failed
 	 */
 	public static void tarGZ(File source, File destFile) throws IOException {
 		List<File> files = new ArrayList<File>();
@@ -86,11 +89,12 @@ public class UtilsTar {
 	/**
 	 * Tar and Gzip List of Files
 	 * 
-	 * @param source
+	 * @param files
 	 *            = List of files which requires Tarring and Gzipping
 	 * @param destFile
 	 *            Destination location of tgz file
 	 * @throws IOException
+	 *             if an I/O error has occurred
 	 */
 	public static void tarGZ(List<File> files, File destFile) throws IOException {
 		try (TarArchiveOutputStream out = getTgzArchiveOutputStream(destFile)) {
@@ -108,6 +112,7 @@ public class UtilsTar {
 	 * @param destFile
 	 *            destination File object
 	 * @throws IOException
+	 *             if an I/O error has occurred
 	 */
 	public static void untar(File tarFile, File destFile) throws Exception {
 		FileInputStream fis = new FileInputStream(tarFile);
@@ -190,6 +195,7 @@ public class UtilsTar {
 	 *            destination Tar File object
 	 * @return Tar File object
 	 * @throws IOException
+	 *             if an I/O error has occurred
 	 */
 	public File deCompressGZipFile(File gZippedFile, File tarFile) throws Exception {
 		FileInputStream fis = new FileInputStream(gZippedFile);

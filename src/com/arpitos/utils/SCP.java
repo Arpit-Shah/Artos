@@ -29,7 +29,7 @@ import com.mindbright.util.SecureRandomAndPad;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class SCP {
@@ -129,7 +129,8 @@ public class SCP {
 	 * scp.disconnect();
 	 * </pre>
 	 * 
-	 * @return
+	 * @return SSH2SCP1Client object
+	 * @see SSH2SCP1Client
 	 */
 	public SSH2SCP1Client connect() {
 		SSH2SCP1Client scpClient = null;

@@ -23,7 +23,7 @@ import com.arpitos.utils.Heartbeat;
  * 
  * @see Heartbeat
  * 
- * @author ArpitS
+ * 
  *
  */
 public interface Connectable {

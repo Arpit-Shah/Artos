@@ -28,12 +28,7 @@ import org.apache.commons.cli.ParseException;
 import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.Version;
 
-/**
- * Process Command Line argument and act accordingly
- * 
- * @author ArpitS
- *
- */
+/** Process Command Line arguments */
 public class CliProcessor {
 
 	/**

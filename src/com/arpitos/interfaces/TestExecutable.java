@@ -21,7 +21,7 @@ import com.arpitos.framework.infra.TestContext;
  * Implemented by each test cases. Provides minimum decoration require for each
  * test cases
  * 
- * @author ArpitS
+ * 
  *
  */
 public interface TestExecutable {

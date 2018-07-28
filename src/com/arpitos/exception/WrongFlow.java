@@ -20,7 +20,7 @@ package com.arpitos.exception;
  * Checked Exception mainly used to highlight code is travelling through
  * wrong/unexpected flow
  * 
- * @author ArpitS
+ * 
  *
  */
 public class WrongFlow extends Exception {

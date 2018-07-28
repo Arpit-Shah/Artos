@@ -23,7 +23,7 @@ import com.arpitos.framework.FWStatic_Store;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class Guardian {
@@ -86,18 +86,16 @@ public class Guardian {
 	 * 
 	 * <PRE>
 	 * {@code
-	 * Example : isNull("Version of the firmware", null);
+	 * Example : isNull(object);
 	 * }
 	 * </PRE>
 	 * 
-	 * @param reference
-	 *            Reference string value
-	 * @param actual
-	 *            Actual string value
+	 * @param obj
+	 *            Object to be verified
 	 * @return true|false
 	 */
-	public static boolean isNull(Object actual) {
-		if (null == actual) {
+	public static boolean isNull(Object obj) {
+		if (null == obj) {
 			return true;
 		}
 		return false;
@@ -111,7 +109,7 @@ public class Guardian {
 	 * 
 	 * <PRE>
 	 * {@code
-	 * Example : isEquals("Version of the firmware", "01.02.0001", "01.02.0001");
+	 * Example : isEquals("01.02.0001", "01.02.0001");
 	 * }
 	 * </PRE>
 	 * 
@@ -1266,19 +1264,16 @@ public class Guardian {
 	 * 
 	 * <PRE>
 	 * {@code
-	 * Example : guardEquals(e, "invalid value");
+	 * Example : guardWrongFlow("invalid flow");
 	 * }
 	 * </PRE>
 	 * 
-	 * @param e
-	 *            Exception which required to be verified
-	 * @param actual
-	 *            Actual string value
-	 * @throws Exception
-	 *             if code executes this function then code is flowing in wrong
-	 *             direction so exception should be thrown
+	 * @param msg
+	 *            Message to be printed
+	 * @throws WrongFlow
+	 *             Indicates that code is following wrong flow
 	 */
-	public static void guardWrongFlow(String msg) throws Exception {
+	public static void guardWrongFlow(String msg) throws WrongFlow {
 		throw new WrongFlow(msg);
 	}
 

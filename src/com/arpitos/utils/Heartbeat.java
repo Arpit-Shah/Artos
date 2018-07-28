@@ -20,7 +20,7 @@ import com.arpitos.interfaces.Connectable;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class Heartbeat {

@@ -48,7 +48,7 @@ import com.arpitos.interfaces.TestRunnable;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class GUITestSelector {

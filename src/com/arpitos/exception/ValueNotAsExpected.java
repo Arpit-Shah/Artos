@@ -20,7 +20,7 @@ package com.arpitos.exception;
  * Checked Exception used mainly for Guardian class. This Exception can be used
  * if Values are not as expected
  * 
- * @author ArpitS
+ * 
  *
  */
 public class ValueNotAsExpected extends Exception {

@@ -15,6 +15,7 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;
@@ -29,7 +30,7 @@ import com.arpitos.framework.Enums.ExceptionValue;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class Convert {
@@ -237,10 +238,10 @@ public class Convert {
 	 * @param data
 	 *            = data to be converted
 	 * @return = Ascii formatted String
-	 * @throws Exception
-	 *             = Exception is thrown if invalid input is provided
+	 * @throws UnsupportedEncodingException
+	 *             Exception is thrown if invalid input is provided
 	 */
-	public String bytesToAscii(byte[] data) throws Exception {
+	public String bytesToAscii(byte[] data) throws UnsupportedEncodingException {
 		return new String(data, "UTF-8");
 	}
 
@@ -332,8 +333,10 @@ public class Convert {
 	/**
 	 * 
 	 * @param bytes
+	 *            Byte array
 	 * @param bo
-	 * @return
+	 *            Byte order
+	 * @return Integer value	
 	 */
 	public int bytes2ToInt(byte[] bytes, ByteOrder bo) {
 		return bytesToShort(bytes, bo);
@@ -342,8 +345,10 @@ public class Convert {
 	/**
 	 * 
 	 * @param bytes
+	 *            Byte array
 	 * @param bo
-	 * @return
+	 *            Byte order
+	 * @return Short value
 	 */
 	public short bytesToShort(byte[] bytes, ByteOrder bo) {
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -355,6 +360,7 @@ public class Convert {
 	 * Generates requested number of random bytes. Uses SecureRandom function
 	 * 
 	 * @param numberOfBytes
+	 *            Number of bytes
 	 * @return random number byte array
 	 */
 	public byte[] generateRandomBytes(int numberOfBytes) {
@@ -369,6 +375,7 @@ public class Convert {
 	 * Reverse order of bytes
 	 * 
 	 * @param data
+	 *            Byte array
 	 * @return reversed byte array
 	 */
 	public byte[] bytesReverseOrder(byte[] data) {
@@ -385,7 +392,8 @@ public class Convert {
 	/**
 	 * 
 	 * @param list
-	 * @return
+	 *            List of byte
+	 * @return byte array
 	 */
 	public byte[] listToByteArray(List<Byte> list) {
 		byte[] byteArray = new byte[list.size()];
@@ -408,7 +416,8 @@ public class Convert {
 	 * </PRE>
 	 * 
 	 * @param data
-	 * @return
+	 *            Byte value
+	 * @return Low Nibble in byte format
 	 */
 	public byte getLowNibble(byte data) {
 		byte lowNibble = (byte) (data & 0x0F);
@@ -424,7 +433,8 @@ public class Convert {
 	 * </PRE>
 	 * 
 	 * @param data
-	 * @return
+	 *            Byte Value
+	 * @return High Nibble in byte format
 	 */
 	public byte getHighNibble(byte data) {
 		byte lowNibble = (byte) ((data >> 4) & 0x0F);
@@ -435,8 +445,10 @@ public class Convert {
 	 * Sets Particular bit of the byte to high
 	 * 
 	 * @param data
+	 *            Byte Value
 	 * @param pos
-	 * @return
+	 *            Bit position
+	 * @return Byte with set bit
 	 */
 	public byte setBitOfTheByte(byte data, int pos) {
 		return (byte) (data | (1 << pos));
@@ -446,8 +458,10 @@ public class Convert {
 	 * Sets Particular bit of the byte to low
 	 * 
 	 * @param data
+	 *            Byte Value
 	 * @param pos
-	 * @return
+	 *            Bit Position
+	 * @return Byte with cleated bit
 	 */
 	public byte clearBitOfTheByte(byte data, int pos) {
 		return (byte) (data & ~(1 << pos));
@@ -457,8 +471,10 @@ public class Convert {
 	 * Toggles particular bit of the byte
 	 * 
 	 * @param data
+	 *            Byte value
 	 * @param pos
-	 * @return
+	 *            Bit position
+	 * @return Byte with toogled bit
 	 */
 	public byte toogleBitOfTheByte(byte data, int pos) {
 		return (byte) (data ^ (1 << pos));
@@ -468,8 +484,10 @@ public class Convert {
 	 * Returns particular bit of the byte
 	 * 
 	 * @param data
+	 *            Byte value
 	 * @param pos
-	 * @return
+	 *            Bit Position
+	 * @return Value of the Bit (1 or 0)
 	 */
 	public int getBitOfTheByte(byte data, int pos) {
 		return (data & (0x01 << pos));
@@ -531,10 +549,12 @@ public class Convert {
 	 * Converts String Hex to ASCII
 	 * 
 	 * @param strHex
-	 * @return
-	 * @throws Exception
+	 *            Hex formatter string
+	 * @return ASCII String
+	 * @throws UnsupportedEncodingException
+	 *             Exception is thrown if invalid input is provided
 	 */
-	public String strHexToAscii(String strHex) throws Exception {
+	public String strHexToAscii(String strHex) throws UnsupportedEncodingException {
 
 		if (strHex == null || strHex.length() % 2 != 0) {
 			throw new RuntimeException("Invalid data, null or odd length");
@@ -550,7 +570,8 @@ public class Convert {
 	/**
 	 * 
 	 * @param asciiValue
-	 * @return
+	 *            ASCII string
+	 * @return Hex String
 	 */
 	public String asciiToHexString(String asciiValue) {
 		String result = "";
@@ -635,8 +656,10 @@ public class Convert {
 	 * Returns fix length string regardless of integer value
 	 * 
 	 * @param nNumber
+	 *            Integer value
 	 * @param nFixLenght
-	 * @return
+	 *            String length
+	 * @return Fix length string
 	 */
 	public String intToFixLengthString(int nNumber, int nFixLenght) {
 		String numberAsString = String.format("%0" + nFixLenght + "d", nNumber);
@@ -650,7 +673,8 @@ public class Convert {
 	/**
 	 * 
 	 * @param b
-	 * @return
+	 *            Boolean value
+	 * @return integer representation of boolean value
 	 */
 	public int booleanToInt(boolean b) {
 		return b ? 1 : 0;
@@ -681,8 +705,10 @@ public class Convert {
 	 * MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", System.milliseconds())
 	 * 
 	 * @param dateFormat
+	 *            the pattern describing the date and time format
 	 * @param timeInMilliseconds
-	 * @return
+	 *            EPoch time value
+	 * @return date formatter with given pattern
 	 */
 	public String MilliSecondsToFormattedDate(String dateFormat, long timeInMilliseconds) {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
@@ -737,8 +763,10 @@ public class Convert {
 	 * Generate Random number between provided high and low value
 	 * 
 	 * @param low
+	 *            random number low boundary
 	 * @param high
-	 * @return
+	 *            random number high boundary
+	 * @return random integer value between high and low boundary
 	 */
 	public int randInt(int low, int high) {
 		SecureRandom r = new SecureRandom();
@@ -749,7 +777,7 @@ public class Convert {
 	/**
 	 * Generate Random long number
 	 * 
-	 * @return
+	 * @return random long value
 	 */
 	public long randLong() {
 		SecureRandom r = new SecureRandom();
@@ -761,7 +789,8 @@ public class Convert {
 	 * Generate Random char array
 	 * 
 	 * @param length
-	 * @return
+	 *            Char array length
+	 * @return random char array
 	 */
 	public char[] randChar(int length) {
 		SecureRandom r = new SecureRandom();
@@ -778,7 +807,8 @@ public class Convert {
 	 * Generate Random char String
 	 * 
 	 * @param length
-	 * @return
+	 *            String length
+	 * @return random character string
 	 */
 	public String randString(int length) {
 		return String.valueOf(randChar(length));
@@ -788,7 +818,8 @@ public class Convert {
 	 * Generate Random byte array
 	 * 
 	 * @param length
-	 * @return
+	 *            Byte array length
+	 * @return random value byte array
 	 */
 	public byte[] randBytes(int length) {
 		byte[] b = new byte[length];

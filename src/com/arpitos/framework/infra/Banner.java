@@ -17,11 +17,7 @@ package com.arpitos.framework.infra;
 
 import com.arpitos.framework.Version;
 
-/**
- * Prints Framework Banner
- * 
- * @author ArpitS
- */
+/** Prints Framework Banner */
 class Banner {
 
 	/**

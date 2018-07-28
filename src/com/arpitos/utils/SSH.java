@@ -16,6 +16,7 @@
 package com.arpitos.utils;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
@@ -26,7 +27,7 @@ import com.jcraft.jsch.Session;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class SSH {
@@ -208,9 +209,14 @@ public class SSH {
 	 * @param longTimeoutMilliseconds
 	 *            timeout value
 	 * @return String response
-	 * @throws Exception
+	 * @throws InterruptedException
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
-	public String write(String value, String pattern, long longTimeoutMilliseconds) throws Exception {
+	public String write(String value, String pattern, long longTimeoutMilliseconds) throws IOException, InterruptedException {
 		/*
 		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
 		 * considered as two enter in unix environment, then one extra line will
@@ -235,10 +241,16 @@ public class SSH {
 	 * 
 	 * @param pattern
 	 *            pattern to look for in received msg
-	 * @return String msg
-	 * @throws Exception
+	 * @return returns string data read from console up until pattern match is
+	 *         found
+	 * @throws InterruptedException
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
-	public String readUntil(String pattern) throws Exception {
+	public String readUntil(String pattern) throws IOException, InterruptedException {
 		char lastChar = pattern.charAt(pattern.length() - 1);
 		StringBuffer sb = new StringBuffer();
 
@@ -286,10 +298,16 @@ public class SSH {
 	 *            pattern to look for in received msg
 	 * @param longTimeoutMilliseconds
 	 *            timeout value
-	 * @return
-	 * @throws Exception
+	 * @return returns string data which are read from console within provided
+	 *         timeout
+	 * @throws InterruptedException
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown
+	 * @throws IOException
+	 *             if an I/O error occurs.
 	 */
-	public String readUntil(String pattern, long longTimeoutMilliseconds) throws Exception {
+	public String readUntil(String pattern, long longTimeoutMilliseconds) throws IOException, InterruptedException {
 		char lastChar = pattern.charAt(pattern.length() - 1);
 		StringBuffer sb = new StringBuffer();
 		long starttime = System.currentTimeMillis();

@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * This class provides Zip related utilities
  * 
- * @author ArpitS
+ * 
  *
  */
 public class UtilsZip {
@@ -41,9 +41,10 @@ public class UtilsZip {
 	 *            = source file or directory which requires to be zipped
 	 * @param destFile
 	 *            = destination file (Example : new File("./test/test.zip"))
-	 * @throws Exception
+	 * @throws IOException
+	 *             if an I/O error has occurred
 	 */
-	public static void zip(File source, File destFile) throws Exception {
+	public static void zip(File source, File destFile) throws IOException {
 		FileOutputStream fos = new FileOutputStream(destFile);
 		ZipOutputStream zipOut = new ZipOutputStream(fos);
 
@@ -141,6 +142,8 @@ public class UtilsZip {
 	/**
 	 * Format the file path for ZIP
 	 * 
+	 * @param source
+	 *            source file
 	 * @param file
 	 *            file path
 	 * @return Formatted file path

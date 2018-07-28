@@ -20,7 +20,7 @@ package com.arpitos.interfaces;
  * 
  * @see Connectable
  * 
- * @author ArpitS
+ * 
  */
 public interface ConnectableFilter {
 

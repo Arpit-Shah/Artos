@@ -28,7 +28,7 @@ import java.util.Properties;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 public class PropertiesFileReader {
@@ -103,7 +103,7 @@ public class PropertiesFileReader {
 	 *            property file key string
 	 * @param defaultValue
 	 *            property file default value
-	 * @return
+	 * @return value for provided key from Hash Map
 	 */
 	public String getValue(String key, String defaultValue) {
 		String value = hmap.get(key);
@@ -132,6 +132,7 @@ public class PropertiesFileReader {
 	 * Adds/updates all KeyValues from HashMap to .properties file
 	 * 
 	 * @param keyValueMap
+	 *            Hashmap with KeyValue pair
 	 */
 	public void setValue(HashMap<String, String> keyValueMap) {
 		OutputStream output = null;

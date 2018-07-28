@@ -17,7 +17,9 @@ package com.arpitos.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -31,7 +33,7 @@ import com.arpitos.interfaces.ConnectableFilter;
 /**
  * This class creates TCP Client
  * 
- * @author ArpitS
+ * 
  *
  */
 public class TCPClient implements Connectable {
@@ -78,8 +80,11 @@ public class TCPClient implements Connectable {
 	/**
 	 * Creates a stream socket and connects it to the specified port number on
 	 * the named host.
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs when creating the socket.
 	 */
-	public void connect() throws Exception {
+	public void connect() throws UnknownHostException, IOException {
 
 		System.out.println("Connecting on Port : " + nPort);
 
@@ -108,8 +113,11 @@ public class TCPClient implements Connectable {
 	 * Closes this socket. Once a socket has been closed, it is not available
 	 * for further networking use (i.e. can't be reconnected or rebound). A new
 	 * socket needs to be created.
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs when closing this socket.
 	 */
-	public void disconnect() throws Exception {
+	public void disconnect() throws IOException {
 		clientSocket.close();
 		System.out.println("Connection Closed");
 	}
@@ -135,9 +143,12 @@ public class TCPClient implements Connectable {
 	 * @param timeunit
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
-	 * @throws Exception
+	 * @throws InterruptedException
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
 	 */
-	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws Exception {
+	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
@@ -173,17 +184,23 @@ public class TCPClient implements Connectable {
 	 * 
 	 * @param data
 	 *            data to be sent in String format
-	 * @throws Exception
+	 * @throws IOException
+	 *             if an I/O error occurs when creating the output stream or if
+	 *             the socket is not connected.
 	 */
-	public void sendMsg(String data) throws Exception {
+	public void sendMsg(String data) throws IOException {
 		sendMsg(data.getBytes());
 	}
 
 	/**
 	 * Send byte array to server
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs when creating the output stream or if
+	 *             the socket is not connected.
 	 */
 	@Override
-	public void sendMsg(byte[] data) throws Exception {
+	public void sendMsg(byte[] data) throws IOException {
 		outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		outToServer.write(data);
 	}
@@ -234,7 +251,7 @@ public class TCPClient implements Connectable {
  * Inner Class which acts as receiver thread for incoming data. All Data will be
  * added to the Queue
  * 
- * @author ArpitS
+ * 
  *
  */
 class ServerTask implements Runnable {
