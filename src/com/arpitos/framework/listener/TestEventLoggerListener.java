@@ -28,6 +28,14 @@ public class TestEventLoggerListener implements TestExecutionListner {
 	@Override
 	public void testExecutionStarted(TestObjectWrapper t) {
 		// logger.info("\n---------------- Test Start -------------------");
+		// @formatter:off
+		context.getLogger().info("*************************************************************************"
+								+ "\nTest Name	: " + t.getTestClassObject().getName()
+								+ "\nWritten BY	: " + t.getTestPlanPreparedBy()
+								+ "\nDate		: " + t.getTestPlanPreparationDate()
+								+ "\nShort Desc	: " + t.getTestPlanDescription()
+								+ "\n*************************************************************************");
+		// @formatter:on
 	}
 
 	@Override

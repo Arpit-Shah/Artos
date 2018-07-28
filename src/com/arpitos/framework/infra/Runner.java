@@ -170,7 +170,7 @@ public class Runner {
 		// found
 		boolean enableParallelTestRunning = false;
 		if (enableParallelTestRunning) {
-			runParallelThread(testList, cls, loopCycle, context);
+			runParallelThread(transformedTestList, cls, loopCycle, context);
 		} else {
 			runSingleThread(transformedTestList, cls, loopCycle, context);
 		}
@@ -240,18 +240,17 @@ public class Runner {
 		// ********************************************************************************************
 	}
 
+	/**
+	 * This method executes the test case and handles all the exception and set
+	 * the test status correctly
+	 * 
+	 * @param t
+	 *            TestCase {@code TestObjectWrapper}
+	 */
 	private void runIndividualTest(TestObjectWrapper t) {
 		long testStartTime = System.currentTimeMillis();
 		try {
-			// @formatter:off
-			context.getLogger().info("\n*************************************************************************"
-									+ "\nTest Name	: " + t.getTestClassObject().getName()
-									+ "\nWritten BY	: " + t.getTestPlanPreparedBy()
-									+ "\nDate		: " + t.getTestPlanPreparationDate()
-									+ "\nShort Desc	: " + t.getTestPlanDescription()
-									+ "\n-------------------------------------------------------------------------");
-			// @formatter:on
-
+			// Set Default Known to fail information
 			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
 
 			// --------------------------------------------------------------------------------------------
@@ -266,19 +265,18 @@ public class Runner {
 			context.setTestStatus(TestStatus.FAIL);
 			UtilsFramework.writePrintStackTrace(context, ex);
 		} finally {
-			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, System.currentTimeMillis());
+			long testFinishTime = System.currentTimeMillis();
+			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, testFinishTime);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void runParallelThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
+	private void runParallelThread(List<TestObjectWrapper> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
-		LogWrapper logger = context.getLogger();
-
 		// ********************************************************************************************
 		// Test Start
 		// ********************************************************************************************
-		logger.info("\n---------------- Start -------------------");
+		notifyTestSuiteExecutionStarted(cls.getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 
 		// Create an instance of Main class
@@ -287,12 +285,17 @@ public class Runner {
 		// Run prior to each test suit
 		prePostCycleInstance.beforeTestsuite(context);
 		for (int index = 0; index < loopCycle; index++) {
-			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
+			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
 			ExecutorService service = Executors.newFixedThreadPool(1000);
 			List<Future<Runnable>> futures = new ArrayList<>();
 
-			for (TestExecutable t : testList) {
+			for (TestObjectWrapper t : testList) {
+				// Skip execution of the test if marked skip
+				if (t.isSkipTest()) {
+					notifyTestExecutionSkipped(t);
+					continue;
+				}
 
 				Future<?> f = service.submit(new runTestInParallel(context, t, prePostCycleInstance));
 				futures.add((Future<Runnable>) f);
@@ -310,14 +313,13 @@ public class Runner {
 		}
 		// Run at the end of each test suit
 		prePostCycleInstance.afterTestsuite(context);
-		logger.info("\n---------------- Finished -------------------");
 		// ********************************************************************************************
 		// Test Finish
 		// ********************************************************************************************
 	}
 
 	// ==================================================================================
-	// Event Listener update
+	// Notify Event Listeners
 	// ==================================================================================
 	void notifyTestSuiteExecutionStarted(String testSuiteName) {
 		for (TestExecutionListner listener : getListenerList()) {
@@ -404,48 +406,40 @@ class runTestInParallel implements Runnable {
 
 	PrePostRunnable prePostCycleInstance;
 	TestContext context;
-	TestExecutable test;
+	TestObjectWrapper t;
 
-	public runTestInParallel(TestContext context, TestExecutable test, PrePostRunnable prePostCycleInstance) {
+	public runTestInParallel(TestContext context, TestObjectWrapper test, PrePostRunnable prePostCycleInstance) {
 		this.context = context;
-		this.test = test;
+		this.t = test;
 		this.prePostCycleInstance = prePostCycleInstance;
 	}
 
 	@Override
 	public void run() {
-		// Run Pre Method prior to any test Execution
 		try {
+			// notifyTestExecutionStarted(t);
+			// Run Pre Method prior to any test Execution
 			prePostCycleInstance.beforeTest(context);
 
-			runIndividualTest(test);
+			runIndividualTest(t);
 
 			// Run Post Method prior to any test Execution
 			prePostCycleInstance.afterTest(context);
+			// notifyTestExecutionFinished(t);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void runIndividualTest(TestExecutable t) {
+	private void runIndividualTest(TestObjectWrapper t) {
 		long testStartTime = System.currentTimeMillis();
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context
-					.getGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
-			TestObjectWrapper testObject = testMap.get(t.getClass().getName());
-
-			// @formatter:off
-			context.getLogger().info("\n*************************************************************************"
-									+ "\nTest Name	: " + t.getClass().getName()
-									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
-									+ "\nDate		: " + testObject.getTestPlanPreparationDate()
-									+ "\nShort Desc	: " + testObject.getTestPlanDescription()
-									+ "\n-------------------------------------------------------------------------");
-			// @formatter:on
+			// Set Default Known to fail information
+			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
 
 			// --------------------------------------------------------------------------------------------
-			t.execute(context);
+			// get test objects new instance and cast it to TestExecutable type
+			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {
@@ -455,7 +449,8 @@ class runTestInParallel implements Runnable {
 			context.setTestStatus(TestStatus.FAIL);
 			UtilsFramework.writePrintStackTrace(context, ex);
 		} finally {
-			context.generateTestSummary(t.getClass().getName(), testStartTime, System.currentTimeMillis());
+			long testFinishTime = System.currentTimeMillis();
+			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, testFinishTime);
 		}
 	}
 }
