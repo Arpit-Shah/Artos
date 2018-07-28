@@ -20,15 +20,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * 
- * 
- *
- */
 // Make the annotation available at runtime:
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
-@Target(ElementType.METHOD)
-public @interface BeforeTest {
+@Target(ElementType.TYPE)
+public @interface KnownToFail {
 
+	/** Weather test is known to fail */
+	boolean ktf() default false;
+
+	/** bug reference number */
+	String bugref() default "";
 }

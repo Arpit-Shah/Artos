@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 // Make the annotation available at runtime:
@@ -30,9 +30,13 @@ import java.lang.annotation.Target;
 // Allow to use only on types:
 @Target(ElementType.TYPE)
 public @interface TestCase {
-	boolean skip();
+	
+	/** Weather to skip this test or not */
+	boolean skip() default false;
 
-	int sequence();
+	/** Sequence of the test case */
+	int sequence() default 1;
 
-	String label();
+	/** Specific Label this test case belong to */
+	String label() default "all";
 }

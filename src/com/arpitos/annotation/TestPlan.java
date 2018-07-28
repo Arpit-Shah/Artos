@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * @author ArpitS
+ * 
  *
  */
 // Make the annotation available at runtime:
@@ -30,13 +30,19 @@ import java.lang.annotation.Target;
 // Allow to use only on types:
 @Target(ElementType.TYPE)
 public @interface TestPlan {
-	String decription();
 
-	String preparedBy();
+	/** Test Description */
+	String decription() default "";
 
-	String preparationDate();
+	/** Name of the person who prepared the test */
+	String preparedBy() default "";
 
-	String reviewedBy();
+	/** Date of the test preparation */
+	String preparationDate() default "";
 
-	String reviewDate();
+	/** Test reviewer name */
+	String reviewedBy() default "";
+
+	/** Test review date */
+	String reviewDate() default "";
 }
