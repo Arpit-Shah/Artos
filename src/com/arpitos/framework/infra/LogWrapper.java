@@ -114,6 +114,15 @@ public class LogWrapper {
 	// ===================================================================
 	// Trace
 	// ===================================================================
+
+	public void trace(String msg) {
+		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg);
+	}
+
+	public void trace(final Object message) {
+		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, message, null);
+	}
+
 	public void trace(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, t);
 	}
@@ -158,17 +167,18 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0);
 	}
 
-	public void trace(String msg) {
-		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg);
-	}
-
-	public void trace(final Object message) {
-		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, message, null);
-	}
-
 	// ===================================================================
 	// Debug
 	// ===================================================================
+
+	public void debug(String msg) {
+		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg);
+	}
+
+	public void debug(final Object message) {
+		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, message, null);
+	}
+
 	public void debug(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, t);
 	}
@@ -213,17 +223,18 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0);
 	}
 
-	public void debug(String msg) {
-		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg);
-	}
-
-	public void debug(final Object message) {
-		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, message, null);
-	}
-
 	// ===================================================================
 	// Info
 	// ===================================================================
+
+	public void info(String msg) {
+		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg);
+	}
+
+	public void info(final Object message) {
+		generalLogger.logIfEnabled(FQCN, Level.INFO, null, message, null);
+	}
+
 	public void info(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, t);
 	}
@@ -268,17 +279,18 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0);
 	}
 
-	public void info(String msg) {
-		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg);
-	}
-
-	public void info(final Object message) {
-		generalLogger.logIfEnabled(FQCN, Level.INFO, null, message, null);
-	}
-
 	// ===================================================================
 	// Error
 	// ===================================================================
+
+	public void error(String msg) {
+		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg);
+	}
+
+	public void error(final Object message) {
+		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, message, null);
+	}
+
 	public void error(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, t);
 	}
@@ -323,17 +335,18 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0);
 	}
 
-	public void error(String msg) {
-		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg);
-	}
-
-	public void error(final Object message) {
-		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, message, null);
-	}
-
 	// ===================================================================
 	// Warning
 	// ===================================================================
+
+	public void warn(String msg) {
+		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg);
+	}
+
+	public void warn(final Object message) {
+		generalLogger.logIfEnabled(FQCN, Level.WARN, null, message, null);
+	}
+
 	public void warn(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, t);
 	}
@@ -378,17 +391,18 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0);
 	}
 
-	public void warn(String msg) {
-		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg);
-	}
-
-	public void warn(final Object message) {
-		generalLogger.logIfEnabled(FQCN, Level.WARN, null, message, null);
-	}
-
 	// ===================================================================
 	// Fatal
 	// ===================================================================
+
+	public void fatal(String msg) {
+		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg);
+	}
+
+	public void fatal(final Object message) {
+		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, message, null);
+	}
+
 	public void fatal(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, t);
 	}
@@ -431,14 +445,6 @@ public class LogWrapper {
 
 	public void fatal(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0);
-	}
-
-	public void fatal(String msg) {
-		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg);
-	}
-
-	public void fatal(final Object message) {
-		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, message, null);
 	}
 
 	// ===================================================================
