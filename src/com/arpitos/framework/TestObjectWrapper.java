@@ -19,21 +19,27 @@ package com.arpitos.framework;
  * This class wraps test object with other necessary information which is
  * helpful during test execution
  * 
- * @author ArpitS
+ * 
  *
  */
 public class TestObjectWrapper {
 
-	Class<?> cls = null;
+	// TestCase
+	Class<?> testClassObject = null;
 	boolean skipTest = false;
 	int testsequence = 0;
 	String testCaseLabel = "";
 
+	// TestPlan
 	String testPlanDescription = "Warning : TestPlan Attribute is not set";
 	String testPlanPreparedBy = "???";
 	String testPlanPreparationDate = "???";
 	String testreviewedBy = "???";
 	String testReviewDate = "???";
+
+	// KnowToFail
+	boolean KTF = false;
+	String bugTrackingNumber = "";
 
 	/**
 	 * Default constructor
@@ -50,7 +56,7 @@ public class TestObjectWrapper {
 	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel) {
 		super();
 
-		this.cls = cls;
+		this.testClassObject = cls;
 
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
@@ -97,12 +103,12 @@ public class TestObjectWrapper {
 		this.testReviewDate = testReviewDate;
 	}
 
-	public Class<?> getCls() {
-		return cls;
+	public Class<?> getTestClassObject() {
+		return testClassObject;
 	}
 
-	public void setCls(Class<?> cls) {
-		this.cls = cls;
+	public void setTestClassObject(Class<?> testClassObject) {
+		this.testClassObject = testClassObject;
 	}
 
 	public boolean isSkipTest() {
@@ -127,6 +133,22 @@ public class TestObjectWrapper {
 
 	public void setTestCaseLabel(String testCaseLabel) {
 		this.testCaseLabel = testCaseLabel;
+	}
+
+	public boolean isKTF() {
+		return KTF;
+	}
+
+	public void setKTF(boolean kTF) {
+		KTF = kTF;
+	}
+
+	public String getBugTrackingNumber() {
+		return bugTrackingNumber;
+	}
+
+	public void setBugTrackingNumber(String bugTrackingNumber) {
+		this.bugTrackingNumber = bugTrackingNumber;
 	}
 
 }
