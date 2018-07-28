@@ -32,6 +32,7 @@ import com.arpitos.annotation.AfterTest;
 import com.arpitos.annotation.AfterTestsuite;
 import com.arpitos.annotation.BeforeTest;
 import com.arpitos.annotation.BeforeTestsuite;
+import com.arpitos.annotation.KnownToFail;
 import com.arpitos.annotation.TestCase;
 import com.arpitos.annotation.TestPlan;
 import com.arpitos.framework.infra.TestContext;
@@ -40,7 +41,7 @@ import com.arpitos.interfaces.TestExecutable;
 /**
  * This class provides all utilities for reflection
  * 
- * @author ArpitS
+ * 
  *
  */
 public class ScanTestSuite {
@@ -54,9 +55,8 @@ public class ScanTestSuite {
 	 * 
 	 * @param packageName
 	 *            Base package name
-	 * @throws Exception
 	 */
-	public ScanTestSuite(String packageName) throws Exception {
+	public ScanTestSuite(String packageName) {
 		scan(packageName);
 	}
 
@@ -65,9 +65,8 @@ public class ScanTestSuite {
 	 * 
 	 * @param packageName
 	 *            Base package name
-	 * @throws Exception
 	 */
-	private void scan(String packageName) throws Exception {
+	private void scan(String packageName) {
 
 		List<String> testLabels_withDuplicates = new ArrayList<>();
 		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
@@ -75,6 +74,7 @@ public class ScanTestSuite {
 		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
 			TestCase testcase = cl.getAnnotation(TestCase.class);
 			TestPlan testplan = cl.getAnnotation(TestPlan.class);
+			KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
 
 			// @formatter:off
 			//			System.out.println("@Testcase = " + cl.getName()
@@ -93,7 +93,7 @@ public class ScanTestSuite {
 
 			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label());
 
-			// Test Plan is optional so it can be null
+			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {
 				testobj.setTestPlanDescription(testplan.decription());
 				testobj.setTestPlanPreparedBy(testplan.preparedBy());
@@ -110,13 +110,19 @@ public class ScanTestSuite {
 				}
 			}
 
+			// KTF is optional attribute so it can be null
+			if (null != ktf) {
+				testobj.setKTF(ktf.ktf());
+				testobj.setBugTrackingNumber(ktf.bugref());
+			}
+
 			testObjWrapperList_All.add(testobj);
 			if (!testcase.skip()) {
 				testObjWrapperList_WithoutSkipped.add(testobj);
 			}
 		}
 
-		// Remove duplicates from the list
+		// Remove duplicates from the test Label list for later use
 		testLabels = testLabels_withDuplicates.stream().distinct().collect(Collectors.toList());
 
 		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTest.class)) {
@@ -180,13 +186,14 @@ public class ScanTestSuite {
 	 * Generates test plan using annotation provided in the test case classes
 	 * 
 	 * @param context
-	 * @return
+	 *            Test Context
+	 * @return String Test Plan
 	 */
 	public String getTestPlan(TestContext context) {
 		StringBuilder sb = new StringBuilder();
 
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
-			sb.append("\nTestCaseName : " + testObject.getCls().getName());
+			sb.append("\nTestCaseName : " + testObject.getTestClassObject().getName());
 			sb.append("\nSkipTest : " + Boolean.toString(testObject.isSkipTest()));
 			sb.append("\nTestSequence : " + testObject.getTestsequence());
 			sb.append("\nTestLabel : " + testObject.getTestCaseLabel());
@@ -217,7 +224,7 @@ public class ScanTestSuite {
 	 *            Enables sorting of the test cases
 	 * @param removeSkippedTests
 	 *            Enables removal of test cases which are marked 'Skip'
-	 * @return
+	 * @return List of {@code TestObjectWrapper}
 	 */
 	public List<TestObjectWrapper> getTestObjWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
 		// Convert list to array and then do bubble sort based on sequence
@@ -247,25 +254,33 @@ public class ScanTestSuite {
 	 *            Enables sorting of the test cases
 	 * @param removeSkippedTests
 	 *            Enables removal of test cases which are marked 'Skip'
-	 * @return
+	 * @return List of {@code TestExecutable}
+	 * @throws IllegalAccessException
+	 *             if the class or its nullary constructor is not accessible.
+	 * @throws InstantiationException
+	 *             if this Class represents an abstract class, an interface, an
+	 *             array class, a primitive type, or void; or if the class has
+	 *             no nullary constructor; or if the instantiation fails for
+	 *             some other reason.
 	 */
-	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws Exception {
+	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws InstantiationException, IllegalAccessException {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
 
 		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(sortBySeqNum, removeSkippedTests);
 		for (TestObjectWrapper t : testObjWrapperList) {
 			// create new Instance of test object so user can execute the test
-			testList.add((TestExecutable) t.getCls().newInstance());
+			testList.add((TestExecutable) t.getTestClassObject().newInstance());
 		}
 		return testList;
 	}
 
 	/**
 	 * Returns scanned test cases HashMap so user can search test case by
-	 * TestCase Name
+	 * TestCase FQCN
 	 * 
 	 * @param removeSkippedTests
-	 * @return
+	 *            removes test cases marked with skipped
+	 * @return HashMap of all test objects
 	 */
 	public Map<String, TestObjectWrapper> getTestObjWrapperMap(boolean removeSkippedTests) {
 		Map<String, TestObjectWrapper> testObjWrapperMap = new HashMap<>();
@@ -273,7 +288,7 @@ public class ScanTestSuite {
 		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(false, removeSkippedTests);
 		for (TestObjectWrapper t : testObjWrapperList) {
 			// create new Instance of test object so user can execute the test
-			testObjWrapperMap.put(t.getCls().getName(), t);
+			testObjWrapperMap.put(t.getTestClassObject().getName(), t);
 		}
 		return testObjWrapperMap;
 	}
@@ -285,4 +300,5 @@ public class ScanTestSuite {
 	public void setTestLabels(List<String> testLabels) {
 		this.testLabels = testLabels;
 	}
+
 }
