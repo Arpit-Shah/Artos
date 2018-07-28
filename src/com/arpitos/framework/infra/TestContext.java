@@ -18,8 +18,6 @@ package com.arpitos.framework.infra;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.core.Logger;
-
 import com.arpitos.framework.Enums.TestStatus;
 import com.arpitos.framework.FrameworkConfig;
 import com.arpitos.framework.SystemProperties;
@@ -28,9 +26,6 @@ import com.arpitos.framework.SystemProperties;
  * This is TestContext which is wrapper around all objects/tools/loggers user
  * may need during test case execution. This class is also responsible for
  * Summarising test results.
- * 
- * @author ArpitS
- *
  */
 public class TestContext {
 
@@ -47,9 +42,9 @@ public class TestContext {
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
 
-	// Test suit start time
+	// Test suite start time
 	private long testSuiteStartTime;
-	// Test suit finish time
+	// Test suite finish time
 	private long testSuiteFinishTime;
 
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
@@ -63,13 +58,13 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Test status in memory. Status is not finalized until
+	 * Sets Test status in memory. Status is not finalised until
 	 * generateTestSummary() function is called. This function stamps "FAIL
 	 * HERE" warning as soon as status is set to FAIL so user can pin point
 	 * location of the failure
 	 * 
 	 * @param testStatus
-	 *            = Test Status
+	 *            Test Status
 	 */
 	public void setTestStatus(TestStatus testStatus) {
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
@@ -90,20 +85,20 @@ public class TestContext {
 	 * Concludes final test result and generates summary report. This also
 	 * includes bugTicketNumber if provided
 	 * 
-	 * @param strTestName
-	 *            Test name (full package path)
+	 * @param strTestFQCN
+	 *            Test fully qualified class name (Example : com.test.unit.Abc)
 	 * @param testStartTime
-	 *            Test start Time
+	 *            Test start Time in milliseconds
 	 * @param testFinishTime
-	 *            Test finish time
+	 *            Test finish time in milliseconds
 	 */
-	public void generateTestSummary(String strTestName, long testStartTime, long testFinishTime) {
+	public void generateTestSummary(String strTestFQCN, long testStartTime, long testFinishTime) {
 		// Test is marked as known to fail and for some reason it pass then
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
 			if (getCurrentTestStatus() == TestStatus.PASS) {
 				//@formatter:off
-				getLogger().warn("**********************************"
+				getLogger().warn("\n**********************************"
 								+"\n******** KTF TEST PASSED *********"
 								+"\n**********************************");
 				//@formatter:on
@@ -129,10 +124,10 @@ public class TestContext {
 		// Finalise and add test result in log file
 		getLogger().info("\nTest Result : " + getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
-		getLogWrapper().appendSummaryReport(getCurrentTestStatus(), strTestName, getStrBugTrackingReference(), getCurrentPassCount(),
+		getLogWrapper().appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(),
 				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 
-		// reset statuses for next test
+		// reset status for next test
 		resetTestStatus();
 		setKnownToFail(false, "");
 	}
@@ -163,9 +158,9 @@ public class TestContext {
 	/**
 	 * Returns general logger object
 	 * 
-	 * @return
+	 * @return {@code LogWrapper} object
 	 * 
-	 * @see Logger
+	 * @see LogWrapper
 	 */
 	public LogWrapper getLogger() {
 		return getLogWrapper();
@@ -174,7 +169,7 @@ public class TestContext {
 	/**
 	 * Returns current test status
 	 * 
-	 * @return
+	 * @return Current test status
 	 */
 	public TestStatus getCurrentTestStatus() {
 		return currentTestStatus;
@@ -217,7 +212,7 @@ public class TestContext {
 	/**
 	 * Returns Test suite run duration time
 	 * 
-	 * @return
+	 * @return Test duration in milliseconds
 	 */
 	public long getTestSuiteTimeDuration() {
 		return getTestSuiteFinishTime() - getTestSuiteStartTime();
@@ -241,7 +236,7 @@ public class TestContext {
 	 * 
 	 * @param key
 	 *            = String key to retrieve an object
-	 * @return
+	 * @return Object associated with given key
 	 */
 	public Object getGlobalObject(String key) {
 		return globalObjectsHashMap.get(key);
@@ -250,7 +245,7 @@ public class TestContext {
 	/**
 	 * Returns total pass test count at the time of request
 	 * 
-	 * @return
+	 * @return Test pass count
 	 */
 	public long getCurrentPassCount() {
 		return currentPassCount;
@@ -263,7 +258,7 @@ public class TestContext {
 	/**
 	 * Returns total fail test count at the time of request
 	 * 
-	 * @return
+	 * @return Failed test count
 	 */
 	public long getCurrentFailCount() {
 		return currentFailCount;
@@ -276,7 +271,7 @@ public class TestContext {
 	/**
 	 * Returns total skip test count at the time of request
 	 * 
-	 * @return
+	 * @return Skipped test count
 	 */
 	public long getCurrentSkipCount() {
 		return currentSkipCount;
@@ -289,7 +284,7 @@ public class TestContext {
 	/**
 	 * Returns total known To fail test count at the time of request
 	 * 
-	 * @return
+	 * @return Known to fail test count
 	 */
 	public long getCurrentKTFCount() {
 		return currentKTFCount;
@@ -302,7 +297,7 @@ public class TestContext {
 	/**
 	 * Returns total number of test count
 	 * 
-	 * @return
+	 * @return total test count
 	 */
 	public long getTotalTestCount() {
 		return totalTestCount;
@@ -334,7 +329,7 @@ public class TestContext {
 	/**
 	 * Returns Test suite start time
 	 * 
-	 * @return
+	 * @return test suite start time in milliseconds
 	 */
 	public long getTestSuiteStartTime() {
 		return testSuiteStartTime;
@@ -347,7 +342,7 @@ public class TestContext {
 	/**
 	 * Returns Test suite finish time
 	 * 
-	 * @return
+	 * @return test suite finish time in milliseconds
 	 */
 	public long getTestSuiteFinishTime() {
 		return testSuiteFinishTime;
@@ -360,7 +355,7 @@ public class TestContext {
 	/**
 	 * Returns FrameworkConfig object
 	 * 
-	 * @return
+	 * @return {@code FrameworkConfig} object
 	 * 
 	 * @see FrameworkConfig
 	 */
@@ -373,9 +368,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Returns {@code SystemProperties} object
 	 * 
-	 * @return
+	 * @return {@code SystemProperties} object
 	 * 
 	 * @see SystemProperties
 	 */
