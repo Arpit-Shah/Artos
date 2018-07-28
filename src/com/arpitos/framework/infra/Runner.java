@@ -106,11 +106,7 @@ public class Runner {
 
 		// Register default listener
 		TestEventLoggerListener testListener = new TestEventLoggerListener(context);
-		registerListner(testListener);
-	}
-
-	public void registerListner(TestExecutionListner listener) {
-		getListenerList().add(listener);
+		registerListener(testListener);
 	}
 
 	// ==================================================================================
@@ -319,8 +315,21 @@ public class Runner {
 	}
 
 	// ==================================================================================
-	// Notify Event Listeners
+	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
+
+	public void registerListener(TestExecutionListner listener) {
+		getListenerList().add(listener);
+	}
+
+	public void deRegisterListener(TestExecutionListner listener) {
+		getListenerList().remove(listener);
+	}
+
+	public void deRegisterAllListener() {
+		getListenerList().clear();
+	}
+
 	void notifyTestSuiteExecutionStarted(String testSuiteName) {
 		for (TestExecutionListner listener : getListenerList()) {
 			listener.testSuiteExecutionStarted(testSuiteName);
