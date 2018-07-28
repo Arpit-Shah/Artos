@@ -28,8 +28,10 @@ import com.arpitos.framework.FWStatic_Store;
 import com.arpitos.framework.GUITestSelector;
 import com.arpitos.framework.ScanTestSuite;
 import com.arpitos.framework.TestObjectWrapper;
+import com.arpitos.framework.listener.TestEventLoggerListener;
 import com.arpitos.interfaces.PrePostRunnable;
 import com.arpitos.interfaces.TestExecutable;
+import com.arpitos.interfaces.TestExecutionListner;
 import com.arpitos.interfaces.TestRunnable;
 import com.arpitos.utils.Convert;
 import com.arpitos.utils.UtilsFramework;
@@ -43,6 +45,7 @@ public class Runner {
 
 	Class<? extends PrePostRunnable> cls;
 	TestContext context = FWStatic_Store.context;
+	List<TestExecutionListner> listenerList = new ArrayList<TestExecutionListner>();
 
 	// ==================================================================================
 	// Constructor (Starting point of framework)
@@ -100,6 +103,14 @@ public class Runner {
 
 		// Add logger to context
 		FWStatic_Store.context.setOrganisedLogger(logWrapper);
+
+		// Register default listener
+		TestEventLoggerListener testListener = new TestEventLoggerListener(context);
+		registerListner(testListener);
+	}
+
+	public void registerListner(TestExecutionListner listener) {
+		getListenerList().add(listener);
 	}
 
 	// ==================================================================================
@@ -168,9 +179,6 @@ public class Runner {
 		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
 				+ " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
 
-		// Set Test Finish Time
-		context.setTestSuiteFinishTime(System.currentTimeMillis());
-
 		// Print Test suite Start and Finish time
 		String timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
 		context.getLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
@@ -188,12 +196,10 @@ public class Runner {
 
 	private void runSingleThread(List<TestObjectWrapper> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
-		LogWrapper logger = context.getLogger();
-
 		// ********************************************************************************************
-		// Test Start
+		// TestSuite Start
 		// ********************************************************************************************
-		logger.info("\n---------------- Start -------------------");
+		notifyTestSuiteExecutionStarted(cls.getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 
 		// Create an instance of Main class
@@ -202,9 +208,16 @@ public class Runner {
 		// Run prior to each test suit
 		prePostCycleInstance.beforeTestsuite(context);
 		for (int index = 0; index < loopCycle; index++) {
-			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
+			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
 			for (TestObjectWrapper t : testList) {
+				// Skip execution of the test if marked skip
+				if (t.isSkipTest()) {
+					notifyTestExecutionSkipped(t);
+					continue;
+				}
+
+				notifyTestExecutionStarted(t);
 				// Run Pre Method prior to any test Execution
 				prePostCycleInstance.beforeTest(context);
 
@@ -212,14 +225,18 @@ public class Runner {
 
 				// Run Post Method prior to any test Execution
 				prePostCycleInstance.afterTest(context);
+				notifyTestExecutionFinished(t);
 			}
 			// --------------------------------------------------------------------------------------------
 		}
 		// Run at the end of each test suit
 		prePostCycleInstance.afterTestsuite(context);
-		logger.info("\n---------------- Finished -------------------");
+
+		// Set Test Finish Time
+		context.setTestSuiteFinishTime(System.currentTimeMillis());
+		notifyTestSuiteExecutionFinished(cls.getName());
 		// ********************************************************************************************
-		// Test Finish
+		// TestSuite Finish
 		// ********************************************************************************************
 	}
 
@@ -300,6 +317,45 @@ public class Runner {
 	}
 
 	// ==================================================================================
+	// Event Listener update
+	// ==================================================================================
+	void notifyTestSuiteExecutionStarted(String testSuiteName) {
+		for (TestExecutionListner listener : getListenerList()) {
+			listener.testSuiteExecutionStarted(testSuiteName);
+		}
+	}
+
+	void notifyTestSuiteExecutionFinished(String testSuiteName) {
+		for (TestExecutionListner listener : getListenerList()) {
+			listener.testSuiteExecutionFinished(testSuiteName);
+		}
+	}
+
+	void notifyTestExecutionStarted(TestObjectWrapper t) {
+		for (TestExecutionListner listener : getListenerList()) {
+			listener.testExecutionStarted(t);
+		}
+	}
+
+	void notifyTestExecutionFinished(TestObjectWrapper t) {
+		for (TestExecutionListner listener : getListenerList()) {
+			listener.testExecutionFinished(t);
+		}
+	}
+
+	void notifyTestExecutionSkipped(TestObjectWrapper t) {
+		for (TestExecutionListner listener : getListenerList()) {
+			listener.testExecutionSkipped(t);
+		}
+	}
+
+	void notifyTestExecutionLoopCount(int count) {
+		for (TestExecutionListner listener : getListenerList()) {
+			listener.testExecutionLoopCount(count);
+		}
+	}
+
+	// ==================================================================================
 	// Facade for arranging test cases
 	// ==================================================================================
 	/**
@@ -333,6 +389,14 @@ public class Runner {
 		}
 
 		return listOfTransformedTestCases;
+	}
+
+	public List<TestExecutionListner> getListenerList() {
+		return listenerList;
+	}
+
+	public void setListenerList(List<TestExecutionListner> listenerList) {
+		this.listenerList = listenerList;
 	}
 }
 
