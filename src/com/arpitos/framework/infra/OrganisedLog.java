@@ -48,9 +48,6 @@ import com.arpitos.framework.Version;
 /**
  * This class is responsible for initialising all log streams which may require
  * during test suit execution
- * 
- * @author ArpitS
- *
  */
 class OrganisedLog {
 
@@ -69,24 +66,27 @@ class OrganisedLog {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param logDir
-	 *            Log destination directory
-	 * @param strTestName
-	 *            TestSuite name for sub directory structure
+	 * @param logDirPath
+	 *            Log base directory absolute or reference path
+	 * @param testCaseFQCN
+	 *            Test case fully qualified class name (Example :
+	 *            com.test.unit.Abc)
 	 * @param enableLogDecoration
-	 *            enables decoration around test (Time-stamp, source package,
+	 *            Enables/disable log decoration (Time-stamp, source package,
 	 *            thread number etc..)
 	 * @param enableTextLog
-	 *            enables log output in Text format
+	 *            Enables/disable text log
 	 * @param enableHTMLLog
-	 *            enables log output in HTML format
+	 *            Enable/disable HTML log
 	 */
-	public OrganisedLog(String logDir, String strTestName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+	public OrganisedLog(String logDirPath, String testCaseFQCN, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
-		setLogBaseDir(logDir + File.separator + strTestName);
-		LoggerContext loggerContext = dynamicallyConfigureLog4J(getLogBaseDir(), strTestName + "_" + System.currentTimeMillis(), enableLogDecoration,
+
+		// Log Base Dir = logDir + testCaseFQCN
+		setLogBaseDir(logDirPath + File.separator + testCaseFQCN);
+		LoggerContext loggerContext = dynamicallyConfigureLog4J(getLogBaseDir(), testCaseFQCN + "_" + System.currentTimeMillis(), enableLogDecoration,
 				enableTextLog, enableHTMLLog);
 		setGeneralLogger(loggerContext.getLogger("TestLog"));
 		setSummaryLogger(loggerContext.getLogger("Summary"));
@@ -98,33 +98,33 @@ class OrganisedLog {
 	 * Append test summary to summary report
 	 * 
 	 * @param status
-	 *            Test Status
-	 * @param strTestName
-	 *            TestName
+	 *            Test status
+	 * @param strTestFQCN
+	 *            Test fully qualified class name (Example : com.test.unit.Abc)
 	 * @param bugTrackingNumber
-	 *            JIRA-BugTracking Number
+	 *            BugTracking Number
 	 * @param passCount
-	 *            Passed Test Count
+	 *            Current passed test count
 	 * @param failCount
-	 *            Failed Test Count
+	 *            Current failed test count
 	 * @param skipCount
-	 *            Skipped Test Count
+	 *            Current skipped test count
 	 * @param ktfCount
-	 *            Known to Fail Test Count
-	 * @param totalTestTime
-	 *            Test time
+	 *            Current known to fail test count
+	 * @param testDuration
+	 *            Test duration
 	 */
-	public void appendSummaryReport(TestStatus status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
-			long ktfCount, long totalTestTime) {
+	public void appendSummaryReport(TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount, long failCount, long skipCount,
+			long ktfCount, long testDuration) {
 
-		long hours = TimeUnit.MILLISECONDS.toHours(totalTestTime);
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(totalTestTime) - TimeUnit.HOURS.toMinutes(hours);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(totalTestTime) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
-		long millis = totalTestTime - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
 		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
-		String testName = String.format("%-" + 100 + "s", strTestName).replace(" ", ".");
+		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".");
 		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
 		String PassCount = String.format("%-" + 4 + "s", passCount);
 		String FailCount = String.format("%-" + 4 + "s", failCount);
@@ -135,24 +135,21 @@ class OrganisedLog {
 				+ KTFCount + " " + testTime);
 	}
 
-	/**
-	 * Disables Logging
-	 */
+	/** Disable Logging */
 	public void disableGeneralLog() {
 		getGeneralLogger().setLevel(Level.OFF);
 	}
 
-	/**
-	 * Enable Logging
-	 */
+	/** Enable Logging */
 	public void enableGeneralLog() {
 		getGeneralLogger().setLevel(getLoglevelFromXML());
 	}
 
 	/**
-	 * Returns current general error log files (Includes txt and html files)
+	 * Get all error log files relevant to current context (Includes .txt and
+	 * .html files)
 	 * 
-	 * @return General error log file list
+	 * @return List of Error log files relevant to current context
 	 */
 	public List<File> getCurrentErrorLogFiles() {
 		List<File> textLog = new ArrayList<File>();
@@ -170,9 +167,10 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Returns current general log files (Includes txt and html files)
+	 * Get all log files relevant to current context (Includes .txt and .html
+	 * files)
 	 * 
-	 * @return General log file list
+	 * @return List of log files relevant to current context
 	 */
 	public List<File> getCurrentGeneralLogFiles() {
 		List<File> textLog = new ArrayList<File>();
@@ -190,9 +188,10 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Returns current summary log files (Includes txt and html files)
+	 * Get all summary log files relevant to current context (Includes .txt and
+	 * .html files)
 	 * 
-	 * @return Summary log file list
+	 * @return List of summary log files relevant to current context
 	 */
 	public List<File> getCurrentSummaryLogFiles() {
 		List<File> textLog = new ArrayList<File>();
@@ -258,67 +257,20 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Dynamically Generates and applies Log4J configuration XML as per test suit requirement
+	 * Dynamically Generates and applies Log4J configuration XML as per test
+	 * suit requirement
 	 * 
-	 * {@code
-		LoggerContext loggerContext = dynamicallyConfigureLog4J("./reporting/A123456/com.arpitos.test", test + "_" + System.currentTimeMillis(), true);
-	 * }
-	 * @formatter:off
-	 * <PRE>
-	 * {@code
-		 <?xml version="1.0" encoding="UTF-8"?>
-		  <Configuration status="WARN">
-		  	<Properties>
-		  		<Property name="log-path">./reporting/logs</Property>
-		  	</Properties>
-		  
-		  	<Appenders>
-		  		<Console name="console-log" target="SYSTEM_OUT">
-		  			<PatternLayout pattern="[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable" />
-		  		</Console>
-		  
-		  		<RollingFile name="all-log" fileName="${log-path}/arpitos-all.log" filePattern="${log-path}/arpitos-all-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
-		  			<PatternLayout>
-		  				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
-		  			</PatternLayout>
-		  			<Policies>
-		  				<SizeBasedTriggeringPolicy size="200MB" />
-		  			</Policies>
-		  		</RollingFile>
-		  
-		  		<RollingFile name="error-log" fileName="${log-path}/arpitos-error.log" filePattern="${log-path}/arpitos-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log">
-		  			<PatternLayout>
-		  				<pattern>[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable</pattern>
-		  			</PatternLayout>
-		  			<Policies>
-		  				<SizeBasedTriggeringPolicy size="200MB" />
-		  			</Policies>
-		  		</RollingFile>
-		  	</Appenders>
-		  
-		  	<Loggers>
-		  		<Logger name="TestLog" level="debug" additivity="false">
-		  			<appender-ref ref="console-log" level="all" />
-		  			<appender-ref ref="all-log" level="all" />
-		  			<appender-ref ref="error-log" level="error" />
-		  		</Logger>
-		  	 	<Logger name="Summary" level="debug" additivity="false">
-		  			<appender-ref ref="summary-log" level="all" />
-		  		</Logger>
-		  		<Root level="all" additivity="false">
-		  			<AppenderRef ref="console-log" />
-		  		</Root>
-		  	</Loggers>
-		  </Configuration>
-	 * }
-	 * </PRE>
-	 * @formatter:on
-	 * 
-	 * @param fileroot log file root directory
-	 * @param fileName log file name
-	 * @param enableLogDecoration enables decoration around test (Time-stamp, source package, thread number etc..)
-	 * @param enableTextLog enables log output in Text format
-	 * @param enableHTMLLog enables log output in HTML format
+	 * @param fileroot
+	 *            Log file root directory
+	 * @param fileName
+	 *            Log file name
+	 * @param enableLogDecoration
+	 *            Enable/disable log decoration (Time-stamp, source package,
+	 *            thread number etc..)
+	 * @param enableTextLog
+	 *            Enables/disable text log
+	 * @param enableHTMLLog
+	 *            Enable/disable HTML log
 	 * @return {@code LoggerContext}
 	 * 
 	 * @see LoggerContext
@@ -607,9 +559,10 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Returns Logger which writes log to Log file.
+	 * Get {@code Logger} object which is responsible for logging raw and error
+	 * logs
 	 * 
-	 * @return Logger
+	 * @return General Logger
 	 */
 	public org.apache.logging.log4j.core.Logger getGeneralLogger() {
 		return generalLogger;
@@ -620,10 +573,9 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Returns Logger which writes log to Summary file. User should avoid using
-	 * this logger directly
+	 * Get {@code Logger} object which is responsible for logging summary logs
 	 * 
-	 * @return Logger
+	 * @return Summary Logger
 	 */
 	public org.apache.logging.log4j.core.Logger getSummaryLogger() {
 		return summaryLogger;
@@ -633,20 +585,12 @@ class OrganisedLog {
 		this.summaryLogger = summaryLogger;
 	}
 
-	/**
-	 * Returns Log Files Base Directory
-	 * 
-	 * @return
-	 */
+	/** Returns Log Files Base Directory */
 	public String getLogBaseDir() {
 		return logBaseDir;
 	}
 
-	/**
-	 * Sets Log Files Base Directory
-	 * 
-	 * @param logBaseDir
-	 */
+	/** Sets Log Files Base Directory */
 	public void setLogBaseDir(String logBaseDir) {
 		this.logBaseDir = logBaseDir;
 	}

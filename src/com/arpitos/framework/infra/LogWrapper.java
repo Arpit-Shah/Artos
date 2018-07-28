@@ -8,14 +8,30 @@ import org.apache.logging.log4j.core.Logger;
 
 import com.arpitos.framework.Enums.TestStatus;
 
+/** Wrapper class which provides abstraction for logging mechanism */
 public class LogWrapper {
 	static final String FQCN = LogWrapper.class.getName();
 	OrganisedLog organisedLogger;
 	Logger generalLogger;
 	Logger summaryLogger;
 
-	public LogWrapper(String logDir, String strTestName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
-		this.organisedLogger = new OrganisedLog(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
+	/**
+	 * Constructor
+	 * 
+	 * @param logDirPath
+	 *            Log base directory path
+	 * @param testFQCN
+	 *            Test case fully qualified class name (Example :
+	 *            com.test.unit.Abc)
+	 * @param enableLogDecoration
+	 *            Enable|disable log decoration
+	 * @param enableTextLog
+	 *            Enable|disable text log
+	 * @param enableHTMLLog
+	 *            Enable|disable HTML log
+	 */
+	public LogWrapper(String logDirPath, String testFQCN, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+		this.organisedLogger = new OrganisedLog(logDirPath, testFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
 		this.generalLogger = organisedLogger.getGeneralLogger();
 		this.summaryLogger = organisedLogger.getSummaryLogger();
 	}
@@ -24,82 +40,73 @@ public class LogWrapper {
 	 * Append test summary to summary report
 	 * 
 	 * @param status
-	 *            Test Status
-	 * @param strTestName
-	 *            TestName
+	 *            Test Status {@code TestStatus}
+	 * @param strTestFQCN
+	 *            Test fully qualified class name (Example : com.test.unit.Abc)
 	 * @param bugTrackingNumber
-	 *            JIRA-BugTracking Number
+	 *            BugTracking Number
 	 * @param passCount
-	 *            Passed Test Count
+	 *            Test current pass count
 	 * @param failCount
-	 *            Failed Test Count
+	 *            Test current fail count
 	 * @param skipCount
-	 *            Skipped Test Count
+	 *            Test current skip count
 	 * @param ktfCount
-	 *            Known to Fail Test Count
-	 * @param totalTestTime
-	 *            Test time
+	 *            Test current know to fail count
+	 * @param testDuration
+	 *            Test duration
 	 */
-	public void appendSummaryReport(TestStatus status, String strTestName, String bugTrackingNumber, long passCount, long failCount, long skipCount,
-			long ktfCount, long totalTestTime) {
-		organisedLogger.appendSummaryReport(status, strTestName, bugTrackingNumber, passCount, failCount, skipCount, ktfCount, totalTestTime);
+	public void appendSummaryReport(TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount, long failCount, long skipCount,
+			long ktfCount, long testDuration) {
+		organisedLogger.appendSummaryReport(status, strTestFQCN, bugTrackingNumber, passCount, failCount, skipCount, ktfCount, testDuration);
 	}
 
-	/**
-	 * Disables Logging
-	 */
+	/** Disable Logging */
 	public void disableGeneralLog() {
 		organisedLogger.disableGeneralLog();
 	}
 
-	/**
-	 * Enable Logging
-	 */
+	/** Enable Logging */
 	public void enableGeneralLog() {
 		organisedLogger.enableGeneralLog();
 	}
 
 	/**
-	 * Returns current general error log files (Includes txt and html files)
+	 * Get all error log files relevant to current context (Includes .txt and
+	 * .html files)
 	 * 
-	 * @return General error log file list
+	 * @return List of Error log files relevant to current context
 	 */
 	public List<File> getCurrentErrorLogFiles() {
 		return organisedLogger.getCurrentErrorLogFiles();
 	}
 
 	/**
-	 * Returns current general log files (Includes txt and html files)
+	 * Get all log files relevant to current context (Includes .txt and .html
+	 * files)
 	 * 
-	 * @return General log file list
+	 * @return List of log files relevant to current context
 	 */
 	public List<File> getCurrentGeneralLogFiles() {
 		return organisedLogger.getCurrentGeneralLogFiles();
 	}
 
 	/**
-	 * Returns current summary log files (Includes txt and html files)
+	 * Get all summary log files relevant to current context (Includes .txt and
+	 * .html files)
 	 * 
-	 * @return Summary log file list
+	 * @return List of summary log files relevant to current context
 	 */
 	public List<File> getCurrentSummaryLogFiles() {
 		return organisedLogger.getCurrentSummaryLogFiles();
 	}
 
-	/**
-	 * Print selected System Info to log file
-	 * 
-	 * @param generalLogger
-	 */
+	/** Print selected system information to log file */
 	public void printUsefulInfo() {
 		organisedLogger.printUsefulInfo();
 	}
 
-	/**
-	 * Returns Log Files Base Directory
-	 * 
-	 * @return
-	 */
+	/** Returns Log Files Base Directory */
 	public String getLogBaseDir() {
 		return organisedLogger.getLogBaseDir();
 	}
@@ -438,20 +445,23 @@ public class LogWrapper {
 	// Getter Setter
 	// ===================================================================
 
+	/**
+	 * Get {@code Logger} object which is responsible for logging raw and error
+	 * logs
+	 * 
+	 * @return General Logger
+	 */
 	public Logger getGeneralLogger() {
 		return generalLogger;
 	}
 
-	public void setGeneralLogger(Logger generalLogger) {
-		this.generalLogger = generalLogger;
-	}
-
+	/**
+	 * Get {@code Logger} object which is responsible for logging summary logs
+	 * 
+	 * @return Summary Logger
+	 */
 	public Logger getSummaryLogger() {
 		return summaryLogger;
-	}
-
-	public void setSummaryLogger(Logger summaryLogger) {
-		this.summaryLogger = summaryLogger;
 	}
 
 }
