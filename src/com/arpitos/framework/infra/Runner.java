@@ -38,14 +38,15 @@ import com.arpitos.utils.UtilsFramework;
  * This class is responsible for running test cases. It initialising logger and
  * context with provided information. It is also responsible for running test
  * cases in given sequence (including pre/post methods)
- * 
- * @author ArpitS
- *
  */
 public class Runner {
 
-	Class<?> cls;
+	Class<? extends PrePostRunnable> cls;
 	TestContext context = FWStatic_Store.context;
+
+	// ==================================================================================
+	// Constructor (Starting point of framework)
+	// ==================================================================================
 
 	/**
 	 * This method initialises context with information collected from
@@ -54,17 +55,20 @@ public class Runner {
 	 * @param cls
 	 *            Test class with main method
 	 */
-	public Runner(Class<?> cls) {
+	public Runner(Class<? extends PrePostRunnable> cls) {
 		this.cls = cls;
 
 		// Get Info from XML Configuration file
 		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
-		String logDir = FWStatic_Store.context.getFrameworkConfig().getLogRootDir() + subDirName;
+		String logDir = FWStatic_Store.context.getFrameworkConfig().getLogRootDir();
+		if (!subDirName.trim().equals("")) {
+			logDir = logDir + subDirName;
+		}
 		boolean enableLogDecoration = FWStatic_Store.context.getFrameworkConfig().isEnableLogDecoration();
 		boolean enableTextLog = FWStatic_Store.context.getFrameworkConfig().isEnableTextLog();
 		boolean enableHTMLLog = FWStatic_Store.context.getFrameworkConfig().isEnableHTMLLog();
 
-		initialise(logDir, subDirName, enableLogDecoration, enableTextLog, enableHTMLLog);
+		initialise(logDir, enableLogDecoration, enableTextLog, enableHTMLLog);
 	}
 
 	/**
@@ -72,33 +76,48 @@ public class Runner {
 	 * override information set in {@code FrameworkConfig}
 	 * 
 	 * @param cls
-	 *            Test class with main method
+	 *            Class with main method
+	 * @param logDir
+	 *            Log base directory
+	 * @param enableLogDecoration
+	 *            enable|disable log decoration
+	 * @param enableTextLog
+	 *            enable|disable text log
+	 * @param enableHTMLLog
+	 *            enable|disable html log
 	 */
-	public Runner(Class<?> cls, String logDir, String subDirName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+	public Runner(Class<? extends PrePostRunnable> cls, String logDir, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 		this.cls = cls;
-		initialise(logDir, subDirName, enableLogDecoration, enableTextLog, enableHTMLLog);
+		initialise(logDir, enableLogDecoration, enableTextLog, enableHTMLLog);
 	}
 
-	private void initialise(String logDir, String subDirName, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
-		String strTestName = cls.getPackage().getName();
+	private void initialise(String logDirPath, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+		// get Test case FQCN
+		String strTestFQCN = cls.getPackage().getName();
 
 		// Create Logger
-		LogWrapper logWrapper = new LogWrapper(logDir, strTestName, enableLogDecoration, enableTextLog, enableHTMLLog);
+		LogWrapper logWrapper = new LogWrapper(logDirPath, strTestFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
 
 		// Add logger to context
 		FWStatic_Store.context.setOrganisedLogger(logWrapper);
 	}
 
+	// ==================================================================================
+	// Runner Method
+	// ==================================================================================
+
 	/**
-	 * Run Method runs a test case
+	 * Runner for framework
 	 * 
 	 * @param args
-	 *            command line parameter
+	 *            Command line arguments
 	 * @param testList
-	 *            test object list which required to be run
+	 *            List of tests to run. All test must be {@code TestExecutable}
+	 *            type
 	 * @param loopCycle
-	 *            Number of time test list required to be executed
+	 *            Test loop execution count
 	 * @throws Exception
+	 *             Exception will be thrown if test execution failed
 	 */
 	public void run(String[] args, List<TestExecutable> testList, int loopCycle) throws Exception {
 		// Only process command line argument if provided
@@ -118,21 +137,6 @@ public class Runner {
 	}
 
 	/**
-	 * Returns All test case objects wrapped in TestWrapper
-	 * 
-	 * @param testList
-	 *            TestList collected using reflaction
-	 * @param cls
-	 *            Test Class
-	 * @throws Exception
-	 */
-	public void getTestWrapperList(List<TestExecutable> testList, Class<?> cls) throws Exception {
-		if (testList.isEmpty()) {
-			testList = (ArrayList<TestExecutable>) new ScanTestSuite(cls.getPackage().getName()).getTestList(true, true);
-		}
-	}
-
-	/**
 	 * This method executes test cases
 	 * 
 	 * @param testList
@@ -145,16 +149,9 @@ public class Runner {
 	 */
 	private void runTest(List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
 
+		// Transform TestList into TestObjectWrapper Object list
+		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(cls, testList);
 		// -------------------------------------------------------------------//
-		// Using reflection grep all test cases
-		{
-			String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
-			ScanTestSuite reflection = new ScanTestSuite(packageName);
-			// Get all test case information and store it for later use
-			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
-			context.setGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
-		}
-
 		LogWrapper logger = context.getLogger();
 
 		// TODO : Parallel running test case can not work with current
@@ -164,7 +161,7 @@ public class Runner {
 		if (enableParallelTestRunning) {
 			runParallelThread(testList, cls, loopCycle, context);
 		} else {
-			runSingleThread(testList, cls, loopCycle, context);
+			runSingleThread(transformedTestList, cls, loopCycle, context);
 		}
 
 		// Print Test results
@@ -189,7 +186,7 @@ public class Runner {
 		System.exit((int) context.getCurrentFailCount());
 	}
 
-	private void runSingleThread(List<TestExecutable> testList, Class<?> cls, int loopCycle, TestContext context)
+	private void runSingleThread(List<TestObjectWrapper> testList, Class<?> cls, int loopCycle, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
 		LogWrapper logger = context.getLogger();
 
@@ -207,7 +204,7 @@ public class Runner {
 		for (int index = 0; index < loopCycle; index++) {
 			logger.info("\n---------------- (Test Loop Count : " + (index + 1) + ") -------------------");
 			// --------------------------------------------------------------------------------------------
-			for (TestExecutable t : testList) {
+			for (TestObjectWrapper t : testList) {
 				// Run Pre Method prior to any test Execution
 				prePostCycleInstance.beforeTest(context);
 
@@ -226,25 +223,23 @@ public class Runner {
 		// ********************************************************************************************
 	}
 
-	private void runIndividualTest(TestExecutable t) {
+	private void runIndividualTest(TestObjectWrapper t) {
 		long testStartTime = System.currentTimeMillis();
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, TestObjectWrapper> testMap = (Map<String, TestObjectWrapper>) context
-					.getGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP);
-			TestObjectWrapper testObject = testMap.get(t.getClass().getName());
-
 			// @formatter:off
 			context.getLogger().info("\n*************************************************************************"
-									+ "\nTest Name	: " + t.getClass().getName()
-									+ "\nWritten BY	: " + testObject.getTestPlanPreparedBy()
-									+ "\nDate		: " + testObject.getTestPlanPreparationDate()
-									+ "\nShort Desc	: " + testObject.getTestPlanDescription()
+									+ "\nTest Name	: " + t.getTestClassObject().getName()
+									+ "\nWritten BY	: " + t.getTestPlanPreparedBy()
+									+ "\nDate		: " + t.getTestPlanPreparationDate()
+									+ "\nShort Desc	: " + t.getTestPlanDescription()
 									+ "\n-------------------------------------------------------------------------");
 			// @formatter:on
 
+			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
+
 			// --------------------------------------------------------------------------------------------
-			t.execute(context);
+			// get test objects new instance and cast it to TestExecutable type
+			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {
@@ -254,7 +249,7 @@ public class Runner {
 			context.setTestStatus(TestStatus.FAIL);
 			UtilsFramework.writePrintStackTrace(context, ex);
 		} finally {
-			context.generateTestSummary(t.getClass().getName(), testStartTime, System.currentTimeMillis());
+			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, System.currentTimeMillis());
 		}
 	}
 
@@ -302,6 +297,42 @@ public class Runner {
 		// ********************************************************************************************
 		// Test Finish
 		// ********************************************************************************************
+	}
+
+	// ==================================================================================
+	// Facade for arranging test cases
+	// ==================================================================================
+	/**
+	 * This method transforms given test list of{@code TestEecutable} type into
+	 * {@code TestObjectWrapper} type list. This method will only consider test
+	 * This method can not transform test cases outside current package, so
+	 * those test cases will be omitted from the list
+	 * 
+	 * @param cls
+	 *            class with main method
+	 * @param listOfTestCases
+	 *            list of test cases required to be transformed
+	 * @return Test list formatted into {@code TestObjectWrapper} type
+	 */
+	public List<TestObjectWrapper> transformToTestObjWrapper(Class<?> cls, List<TestExecutable> listOfTestCases) {
+		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
+		String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
+		ScanTestSuite reflection = new ScanTestSuite(packageName);
+		// Get all test case information and store it for later use
+		Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
+		FWStatic_Store.context.setGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
+
+		for (TestExecutable t : listOfTestCases) {
+			TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
+
+			// Any test cases not present in current package/child-package will
+			// be omitted.
+			if (null != testObjWrapper) {
+				listOfTransformedTestCases.add(testObjWrapper);
+			}
+		}
+
+		return listOfTransformedTestCases;
 	}
 }
 
