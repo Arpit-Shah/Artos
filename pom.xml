@@ -32,7 +32,7 @@
 			<name>Arpit Shah</name>
 			<email>arpit.shah1@gmail.com</email>
 			<organization>None</organization>
-			<organizationUrl>http://com.arpitos.com</organizationUrl>
+			<organizationUrl>http://www.arpitos.com</organizationUrl>
 		</developer>
 	</developers>
 
@@ -122,18 +122,20 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.scream3r/jssc -->
+		<dependency>
+			<groupId>org.scream3r</groupId>
+			<artifactId>jssc</artifactId>
+			<version>2.8.0</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Build Plugins -->
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 
-		<resources>
-			<resource>
-				<directory>${project.basedir}/src/com/arpitos/icons</directory>
-			</resource>
-		</resources>
-
+		<!-- <resources> <resource> <directory>${project.basedir}/src/com/arpitos/icons</directory> 
+			</resource> </resources> -->
 		<!-- Maven Compiler Plugins -->
 		<plugins>
 			<plugin>
@@ -205,6 +207,67 @@
 						<goals>
 							<goal>sign</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Maven Plugin to ensure all dependency are inbuilt in one jar -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+			</plugin>
+
+			<!-- This plugin will stop producing default jar which is without all 
+				dependency in one jar (because phase = none) , so when maven-assembly-plugin 
+				will produced jar with all inbuilt dependency, user will not get confused -->
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- This plugin will copy resources (images) from com.arpitos.icons location 
+				to build target directory at class processing phase, so it will be packages 
+				in jar at correct location. Because we are using non standard resource directory, 
+				this has to be done -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>process-classes</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/com/arpitos/icons</outputDirectory>   <!-- output directory -->
+							<resources>
+								<resource>
+									<directory>${basedir}/src/com/arpitos/icons</directory>         <!-- source directory -->
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
