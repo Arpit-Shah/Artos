@@ -136,7 +136,11 @@
 
 		<!-- <resources> <resource> <directory>${project.basedir}/src/com/arpitos/icons</directory> 
 			</resource> </resources> -->
+
 		<!-- Maven Compiler Plugins -->
+		<!-- parent pom overrides for compiler plugin default values and you can't 
+			fix it, you'll have to explicitely force the values in the compiler plugin 
+			configuration -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
