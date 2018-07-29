@@ -336,7 +336,7 @@ public class Convert {
 	 *            Byte array
 	 * @param bo
 	 *            Byte order
-	 * @return Integer value	
+	 * @return Integer value
 	 */
 	public int bytes2ToInt(byte[] bytes, ByteOrder bo) {
 		return bytesToShort(bytes, bo);

@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 // Allow to use only on types:
 @Target(ElementType.TYPE)
 public @interface TestCase {
-	
+
 	/** Weather to skip this test or not */
 	boolean skip() default false;
 

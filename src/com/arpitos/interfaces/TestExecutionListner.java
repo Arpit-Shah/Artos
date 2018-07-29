@@ -3,7 +3,7 @@ package com.arpitos.interfaces;
 import com.arpitos.framework.TestObjectWrapper;
 
 public interface TestExecutionListner {
-	
+
 	default void testSuiteExecutionStarted(String description) {
 	}
 
@@ -18,7 +18,7 @@ public interface TestExecutionListner {
 
 	default void testExecutionSkipped(TestObjectWrapper t) {
 	}
-	
+
 	default void testExecutionLoopCount(int count) {
 	}
 
