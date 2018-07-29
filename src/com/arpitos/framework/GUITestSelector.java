@@ -100,9 +100,18 @@ public class GUITestSelector {
 			// System.out.println(getClass().getResource("../icons/arpitos_icon64x64.png"));
 
 			try {
-				URL pix64 = getClass().getResource("../icons/arpitos_icon64x64.png");
-				URL pix32 = getClass().getResource("../icons/arpitos_icon32x32.png");
-				URL pix16 = getClass().getResource("../icons/arpitos_icon16x16.png");
+
+				// System.out.println(getClass().getResource("/com/arpitos/icons/arpitos_icon64x64.png").getPath());
+				URL pix64 = getClass().getResource("/com/arpitos/icons/arpitos_icon64x64.png");
+				URL pix32 = getClass().getResource("/com/arpitos/icons/arpitos_icon32x32.png");
+				URL pix16 = getClass().getResource("/com/arpitos/icons/arpitos_icon16x16.png");
+				// URL pix64 =
+				// getClass().getResource("../icons/arpitos_icon64x64.png");
+				// URL pix32 =
+				// getClass().getResource("../icons/arpitos_icon32x32.png");
+				// URL pix16 =
+				// getClass().getResource("../icons/arpitos_icon16x16.png");
+
 				BufferedImage img64x64 = ImageIO.read(pix64);
 				BufferedImage img32x32 = ImageIO.read(pix32);
 				BufferedImage img16x16 = ImageIO.read(pix16);
