@@ -15,6 +15,8 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.arpitos.interfaces;
 
+import java.util.concurrent.TimeUnit;
+
 import com.arpitos.utils.Heartbeat;
 
 /**
@@ -37,6 +39,8 @@ public interface Connectable {
 	public void sendMsg(byte[] data) throws Exception;
 
 	public byte[] getNextMsg() throws Exception;
+	
+	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws Exception;
 
 	public boolean hasNextMsg();
 

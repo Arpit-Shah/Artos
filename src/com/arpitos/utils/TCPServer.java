@@ -165,7 +165,7 @@ public class TCPServer implements Connectable {
 	 *             interrupted status of the current thread is cleared when this
 	 *             exception is thrown.
 	 */
-	public byte[] getNextMSG(long timeout, TimeUnit timeunit) throws InterruptedException {
+	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
 		long startTime = System.nanoTime();
 		long finishTime;
