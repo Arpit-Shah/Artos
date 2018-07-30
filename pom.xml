@@ -43,6 +43,10 @@
 		<url>https://github.com/Arpit-Shah/Arpitos_TestFramework/tree/master</url>
 	</scm>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<!-- Distribution Model -->
 	<distributionManagement>
 		<snapshotRepository>

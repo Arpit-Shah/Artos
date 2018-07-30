@@ -1,0 +1,11 @@
+<!-- This file need to go to C:\Users\user\.m2\settings.xml, provide username 
+	and password to deploy in Nexus repo -->
+<settings>
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username>username</username>
+			<password>password</password> <!-- Do not forget to escape special char like & with &amp; -->
+		</server>
+	</servers>
+</settings>
