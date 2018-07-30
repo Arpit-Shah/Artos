@@ -3,14 +3,14 @@
 
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
-	<url>https://github.com/Arpit-Shah/Arpitos_TestFramework</url>
-	<description>Test Repository for arpitos features</description>
+	<url>https://bitbucket.org/ShahArpit/arpitos_fork</url>
+	<description>Test framework for functional and unit testing</description>
 
 	<!-- Project GAV Info -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.arpitos</groupId>
 	<artifactId>arpitos-fw</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -37,11 +37,19 @@
 	</developers>
 
 	<!-- Source Repo Info -->
+	<!-- 
 	<scm>
 		<connection>scm:git:git://github.com/Arpit-Shah/Arpitos_TestFramework.git</connection>
 		<developerConnection>scm:git:ssh://github.com:Arpit-Shah/Arpitos_TestFramework.git</developerConnection>
 		<url>https://github.com/Arpit-Shah/Arpitos_TestFramework/tree/master</url>
 	</scm>
+	-->
+	<scm>
+		<connection>scm:git:git://bitbucket.org/ShahArpit/arpitos_fork.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.org/ShahArpit/arpitos_fork.git</developerConnection>
+		<url>https://bitbucket.org/ShahArpit/arpitos_fork/src/master/</url>
+	</scm>
+	 
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
