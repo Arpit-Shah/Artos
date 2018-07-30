@@ -3,6 +3,7 @@
 Reference1 : [Central Server Provider (Sonatype)](http://central.sonatype.org/pages/apache-maven.html)
 Reference2 : [Working with pgp Signature](http://central.sonatype.org/pages/working-with-pgp-signatures.html)
 Reference3 : [Maven](https://maven.apache.org/install.html)
+Reference4 : [Nexus Repository Manager](https://maven-us.nuxeo.org/nexus/#welcome)
 
 ## Pre-requisite
 
