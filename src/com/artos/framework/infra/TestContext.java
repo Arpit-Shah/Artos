@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,14 +13,14 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework.infra;
+package com.artos.framework.infra;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.FrameworkConfig;
-import com.arpitos.framework.SystemProperties;
+import com.artos.framework.FrameworkConfig;
+import com.artos.framework.SystemProperties;
+import com.artos.framework.Enums.TestStatus;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -122,7 +122,7 @@ public class TestContext {
 
 		long totalTestTime = testFinishTime - testStartTime;
 		// Finalise and add test result in log file
-		getLogger().info("\nTest Result : " + getCurrentTestStatus().name());
+		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
 		getLogWrapper().appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(),
 				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);

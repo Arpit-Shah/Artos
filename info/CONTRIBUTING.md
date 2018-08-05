@@ -1,6 +1,6 @@
 # Contributing
 
-## Arpitos Contributor License Agreement
+## Artos Contributor License Agreement
 
 - You will only Submit Contributions where You have authored 100% of the content.
 - You will only Submit Contributions to which You have the necessary rights. This means
@@ -10,7 +10,7 @@
 
 ### Project Licenses
 
-- `Arpitos` uses MIT licence.
+- `Artos` uses MIT licence.
 
 ## Commit Messages
 
@@ -38,7 +38,7 @@ Please add the following lines to your pull request description:
 ```markdown
 ---
 ---
-I hereby agree to the terms of the Arpitos Contributor License Agreement.
+I hereby agree to the terms of the Artos Contributor License Agreement.
 ```
 
 ## Coding Conventions
@@ -68,9 +68,9 @@ Whenever an acronym is included as part of a field name or parameter name:
 #### Code
 
 Formatter and import order settings for Eclipse are available in the repository under
-[/templates/Arpitos_Formatter_Preferance.xml](/templates/Arpitos_Formatter_Preferance.xml)
+[/templates/Artos_Formatter_Preferance.xml](/templates/Artos_Formatter_Preferance.xml)
 
-It is forbidden to use _wildcard imports_ (e.g., `import static com.arpitos.test.*;`)
+It is forbidden to use _wildcard imports_ (e.g., `import static com.artos.test.*;`)
 in Java code.
 
 #### Documentation

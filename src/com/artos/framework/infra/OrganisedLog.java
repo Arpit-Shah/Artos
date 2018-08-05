@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework.infra;
+package com.artos.framework.infra;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,10 +40,10 @@ import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
-import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.FWStatic_Store;
-import com.arpitos.framework.SystemProperties;
-import com.arpitos.framework.Version;
+import com.artos.framework.FWStatic_Store;
+import com.artos.framework.SystemProperties;
+import com.artos.framework.Version;
+import com.artos.framework.Enums.TestStatus;
 
 /**
  * This class is responsible for initialising all log streams which may require
@@ -62,7 +62,7 @@ class OrganisedLog {
 	 * <PRE>
 	 * {
 	 * 	&#64;code
-	 * 	OrganisedLog logger = new OrganisedLog("./reporting/A123456789", "com.arpitos.test", true);
+	 * 	OrganisedLog logger = new OrganisedLog("./reporting/A123456789", "com.artos.test", true);
 	 * }
 	 * </PRE>
 	 * 
@@ -541,7 +541,7 @@ class OrganisedLog {
 		// @formatter:off
 		
 		logger.debug("\nTest FrameWork Info");
-		logger.debug("* Arpitos version => " + Version.id());
+		logger.debug("* Artos version => " + Version.id());
 		logger.debug("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion()); 
 		logger.debug("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
 		logger.debug("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());

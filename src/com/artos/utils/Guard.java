@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,22 +13,24 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.utils;
+package com.artos.utils;
 
 import java.util.Arrays;
 
-import com.arpitos.exception.ValueNotAsExpected;
-import com.arpitos.exception.WrongFlow;
-import com.arpitos.framework.FWStatic_Store;
+import com.artos.exception.ValueNotAsExpected;
+import com.artos.exception.WrongFlow;
+import com.artos.framework.FWStatic_Store;
+import com.artos.framework.infra.TestContext;
 
 /**
  * 
  * 
  *
  */
-public class Guardian {
+public class Guard {
 
-	static Convert _con = new Convert();
+	static Transform _con = new Transform();
+	static TestContext context = FWStatic_Store.context;
 
 	static String strEqual_fail = " values are not equal";
 	static String strNotEqual_fail = " values are equal";
@@ -40,42 +42,42 @@ public class Guardian {
 	static String strFormatNotEqual_fail = " format are same";
 
 	static void print(String reference, String actual) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
 	}
 
 	static void print(byte reference, byte actual) {
-		FWStatic_Store.context.getLogger().info(
-				"Finding:" + "\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : " + _con.bytesToHexString(actual, true));
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", _con.bytesToHexString(reference, true),
+				_con.bytesToHexString(actual, true));
 	}
 
 	static void print(byte reference, byte actual, byte delta) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : "
-				+ _con.bytesToHexString(actual, true) + "\n   Delta : " + _con.bytesToHexString(delta, true));
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\\n   Delta : {}", _con.bytesToHexString(reference, true),
+				_con.bytesToHexString(actual, true), _con.bytesToHexString(delta, true));
 	}
 
 	static void print(byte[] reference, byte[] actual) {
-		FWStatic_Store.context.getLogger().info(
-				"Finding:" + "\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : " + _con.bytesToHexString(actual, true));
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", _con.bytesToHexString(reference, true),
+				_con.bytesToHexString(actual, true));
 	}
 
 	static void print(int reference, int actual) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
 	}
 
 	static void print(int reference, int actual, int delta) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\\n   Delta : {}", reference, actual, delta);
 	}
 
 	static void print(boolean reference, boolean actual) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		FWStatic_Store.context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
 	}
 
 	static void print(long reference, long actual) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual);
+		FWStatic_Store.context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
 	}
 
 	static void print(long reference, long actual, long delta) {
-		FWStatic_Store.context.getLogger().info("Finding:" + "\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta);
+		FWStatic_Store.context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\\n   Delta : {}", reference, actual, delta);
 	}
 
 	// *******************************************************************************************
@@ -301,9 +303,9 @@ public class Guardian {
 
 	/**
 	 * Validates that passed value follows reference format. Returns result in
-	 * boolean format. Wild card character is <b>$</b>, if value 01.05.0012
-	 * require format checking where . and 05 are static values then
-	 * {@code format} value can be $$.05.$$$$
+	 * boolean format. Wild card character is <b>$</b>, if value 01.05.0012 require
+	 * format checking where . and 05 are static values then {@code format} value
+	 * can be $$.05.$$$$
 	 * 
 	 * <PRE>
 	 * {@code
@@ -327,8 +329,8 @@ public class Guardian {
 	/**
 	 * Validates that passed value follows reference format. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message. Wild card
-	 * character is <b>$</b>, if value 01.05.0012 require format checking where
-	 * . and 05 are static values then {@code format} value can be $$.05.$$$$
+	 * character is <b>$</b>, if value 01.05.0012 require format checking where .
+	 * and 05 are static values then {@code format} value can be $$.05.$$$$
 	 * 
 	 * <PRE>
 	 * {@code
@@ -353,11 +355,10 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that passed value <b>does not</b> follow reference format. If
-	 * it does, an {@link ValueNotAsExpected} is thrown with the given message.
-	 * Wild card character is <b>$</b>, if value 01.05.0012 require format
-	 * checking where . and 05 are static values then {@code format} value can
-	 * be $$.05.$$$$
+	 * Validates that passed value <b>does not</b> follow reference format. If it
+	 * does, an {@link ValueNotAsExpected} is thrown with the given message. Wild
+	 * card character is <b>$</b>, if value 01.05.0012 require format checking where
+	 * . and 05 are static values then {@code format} value can be $$.05.$$$$
 	 * 
 	 * <PRE>
 	 * {@code
@@ -385,8 +386,8 @@ public class Guardian {
 	// Byte
 	// *******************************************************************************************
 	/**
-	 * Validates that two byte values are equal. Appropriate boolean value will
-	 * be returned based on comparison.
+	 * Validates that two byte values are equal. Appropriate boolean value will be
+	 * returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -408,9 +409,8 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that two byte values are equal with allowed {@code delta} on
-	 * either side. Appropriate boolean value will be returned based on
-	 * comparison.
+	 * Validates that two byte values are equal with allowed {@code delta} on either
+	 * side. Appropriate boolean value will be returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -475,9 +475,8 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that two byte values are equal with allowed {@code delta}. If
-	 * they are not, an {@link ValueNotAsExpected} is thrown with the given
-	 * message.
+	 * Validates that two byte values are equal with allowed {@code delta}. If they
+	 * are not, an {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -530,9 +529,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code actual} byte value is greater than
-	 * {@code reference} byte value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * Validates that {@code actual} byte value is greater than {@code reference}
+	 * byte value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -558,8 +557,8 @@ public class Guardian {
 
 	/**
 	 * Validates that {@code actual} byte value is greater than or equal to
-	 * {@code reference} byte value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * {@code reference} byte value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -584,9 +583,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code actual} byte value is less than {@code reference}
-	 * byte value. If they are not, an {@link ValueNotAsExpected} is thrown with
-	 * the given message.
+	 * Validates that {@code actual} byte value is less than {@code reference} byte
+	 * value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -612,8 +611,8 @@ public class Guardian {
 
 	/**
 	 * Validates that {@code actual} byte value is less than or equal to
-	 * {@code reference} byte value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * {@code reference} byte value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -641,8 +640,8 @@ public class Guardian {
 	// Byte Array
 	// *******************************************************************************************
 	/**
-	 * Validates that two byte arrays are equal. Appropriate boolean value will
-	 * be returned based on comparison.
+	 * Validates that two byte arrays are equal. Appropriate boolean value will be
+	 * returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -719,8 +718,8 @@ public class Guardian {
 	// Integer
 	// *******************************************************************************************
 	/**
-	 * Validates that two integer values are equal. Appropriate boolean value
-	 * will be returned based on comparison.
+	 * Validates that two integer values are equal. Appropriate boolean value will
+	 * be returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -743,8 +742,7 @@ public class Guardian {
 
 	/**
 	 * Validates that two integer values are equal with allowed {@code delta} on
-	 * either side. Appropriate boolean value will be returned based on
-	 * comparison.
+	 * either side. Appropriate boolean value will be returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -810,8 +808,8 @@ public class Guardian {
 
 	/**
 	 * Validates that two integer values are equal with allowed {@code delta} on
-	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown
-	 * with the given message.
+	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -864,9 +862,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code reference} integer value is greater than
-	 * {@code actual} integer value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * Validates that {@code reference} integer value is greater than {@code actual}
+	 * integer value. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -891,9 +889,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code reference} integer value is greater than or equal
-	 * to {@code actual} integer value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * Validates that {@code reference} integer value is greater than or equal to
+	 * {@code actual} integer value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -918,9 +916,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code reference} integer value is less than
-	 * {@code actual} integer value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * Validates that {@code reference} integer value is less than {@code actual}
+	 * integer value. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -946,8 +944,8 @@ public class Guardian {
 
 	/**
 	 * Validates that {@code reference} integer value is less than or equal to
-	 * {@code actual} integer value. If they are not, an
-	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * {@code actual} integer value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -975,8 +973,8 @@ public class Guardian {
 	// Long
 	// *******************************************************************************************
 	/**
-	 * Validates that two long values are equal. Appropriate boolean value will
-	 * be returned based on comparison.
+	 * Validates that two long values are equal. Appropriate boolean value will be
+	 * returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -998,9 +996,8 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that two long values are equal with allowed {@code delta} on
-	 * either side. Appropriate boolean value will be returned based on
-	 * comparison.
+	 * Validates that two long values are equal with allowed {@code delta} on either
+	 * side. Appropriate boolean value will be returned based on comparison.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1065,9 +1062,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that two long values are equal with allowed {@code delta} on
-	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown
-	 * with the given message.
+	 * Validates that two long values are equal with allowed {@code delta} on either
+	 * side. If they are not, an {@link ValueNotAsExpected} is thrown with the given
+	 * message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1120,9 +1117,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code reference} long value is greater than
-	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected}
-	 * is thrown with the given message.
+	 * Validates that {@code reference} long value is greater than {@code actual}
+	 * long value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1148,8 +1145,8 @@ public class Guardian {
 
 	/**
 	 * Validates that {@code reference} long value is greater than or equal to
-	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected}
-	 * is thrown with the given message.
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected} is
+	 * thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1174,9 +1171,9 @@ public class Guardian {
 	}
 
 	/**
-	 * Validates that {@code reference} long value is less than {@code actual}
-	 * long value. If they are not, an {@link ValueNotAsExpected} is thrown with
-	 * the given message.
+	 * Validates that {@code reference} long value is less than {@code actual} long
+	 * value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1202,8 +1199,8 @@ public class Guardian {
 
 	/**
 	 * Validates that {@code reference} long value is less than or equal to
-	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected}
-	 * is thrown with the given message.
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected} is
+	 * thrown with the given message.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1231,8 +1228,8 @@ public class Guardian {
 	// Exception
 	// *******************************************************************************************
 	/**
-	 * Validates that exception msg matches, if it does not then same exception
-	 * is thrown back.
+	 * Validates that exception msg matches, if it does not then same exception is
+	 * thrown back.
 	 * 
 	 * <PRE>
 	 * {@code
@@ -1245,8 +1242,8 @@ public class Guardian {
 	 * @param actual
 	 *            Actual string value
 	 * @throws Exception
-	 *             if exception message is not as expected then same exception
-	 *             is thrown again
+	 *             if exception message is not as expected then same exception is
+	 *             thrown again
 	 */
 	public static void guardEquals(Exception e, String actual) throws Exception {
 		print(e.getMessage(), actual);
@@ -1259,8 +1256,8 @@ public class Guardian {
 	// Flow
 	// *******************************************************************************************
 	/**
-	 * Guard against wrong flow. If code hits this code then {@link WrongFlow}
-	 * is thrown
+	 * Guard against wrong flow. If code hits this code then {@link WrongFlow} is
+	 * thrown
 	 * 
 	 * <PRE>
 	 * {@code

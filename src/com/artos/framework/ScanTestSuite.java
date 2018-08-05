@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework;
+package com.artos.framework;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,15 +28,15 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
-import com.arpitos.annotation.AfterTest;
-import com.arpitos.annotation.AfterTestsuite;
-import com.arpitos.annotation.BeforeTest;
-import com.arpitos.annotation.BeforeTestsuite;
-import com.arpitos.annotation.KnownToFail;
-import com.arpitos.annotation.TestCase;
-import com.arpitos.annotation.TestPlan;
-import com.arpitos.framework.infra.TestContext;
-import com.arpitos.interfaces.TestExecutable;
+import com.artos.annotation.AfterTest;
+import com.artos.annotation.AfterTestsuite;
+import com.artos.annotation.BeforeTest;
+import com.artos.annotation.BeforeTestsuite;
+import com.artos.annotation.KnownToFail;
+import com.artos.annotation.TestCase;
+import com.artos.annotation.TestPlan;
+import com.artos.framework.infra.TestContext;
+import com.artos.interfaces.TestExecutable;
 
 /**
  * This class provides all utilities for reflection

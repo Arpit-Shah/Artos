@@ -1,4 +1,4 @@
-package com.arpitos.framework.infra;
+package com.artos.framework.infra;
 
 import java.io.File;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
-import com.arpitos.framework.Enums.TestStatus;
+import com.artos.framework.Enums.TestStatus;
 
 /** Wrapper class which provides abstraction for logging mechanism */
 public class LogWrapper {
@@ -21,8 +21,7 @@ public class LogWrapper {
 	 * @param logDirPath
 	 *            Log base directory path
 	 * @param testFQCN
-	 *            Test case fully qualified class name (Example :
-	 *            com.test.unit.Abc)
+	 *            Test case fully qualified class name (Example : com.test.unit.Abc)
 	 * @param enableLogDecoration
 	 *            Enable|disable log decoration
 	 * @param enableTextLog
@@ -72,8 +71,8 @@ public class LogWrapper {
 	}
 
 	/**
-	 * Get all error log files relevant to current context (Includes .txt and
-	 * .html files)
+	 * Get all error log files relevant to current context (Includes .txt and .html
+	 * files)
 	 * 
 	 * @return List of Error log files relevant to current context
 	 */
@@ -82,8 +81,7 @@ public class LogWrapper {
 	}
 
 	/**
-	 * Get all log files relevant to current context (Includes .txt and .html
-	 * files)
+	 * Get all log files relevant to current context (Includes .txt and .html files)
 	 * 
 	 * @return List of log files relevant to current context
 	 */
@@ -106,7 +104,10 @@ public class LogWrapper {
 		organisedLogger.printUsefulInfo();
 	}
 
-	/** Returns Log Files Base Directory */
+	/**
+	 * Returns Log Files Base Directory
+	 * @return log base directory path
+	 */
 	public String getLogBaseDir() {
 		return organisedLogger.getLogBaseDir();
 	}
@@ -452,8 +453,7 @@ public class LogWrapper {
 	// ===================================================================
 
 	/**
-	 * Get {@code Logger} object which is responsible for logging raw and error
-	 * logs
+	 * Get {@code Logger} object which is responsible for logging raw and error logs
 	 * 
 	 * @return General Logger
 	 */

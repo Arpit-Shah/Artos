@@ -21,7 +21,7 @@ pip install -U sphinx
 > Where necessary provide an answer as shown below
 > > Separate source and build directories (y/n) [n]:`n`
 > > Name prefix for templates and static dir [\_]:_
-> > Project name: Arpitos
+> > Project name: Artos
 > > Author name(s): Arpit Shah
 > > Project release []: 01.00.0000
 > > Project language [en]:en

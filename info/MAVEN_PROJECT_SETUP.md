@@ -18,7 +18,7 @@ Reference4 : [Nexus Repository Manager](https://maven-us.nuxeo.org/nexus/#welcom
 * Create new JIRA ticket with new project selected.
 * Within JIRA ticket specify following
 	* If user owns a domain name then request repository created with domain name.
-	> Example : `com.arpitos`
+	> Example : `com.artos`
 	> Note : You may need to provide a proof of owning domain name
 	* If user does not own domain name then request to create repository for your Github project URL.
 	> Example : `com.github.projectname`

@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework.infra;
+package com.artos.framework.infra;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,18 +23,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.arpitos.framework.Enums.TestStatus;
-import com.arpitos.framework.FWStatic_Store;
-import com.arpitos.framework.GUITestSelector;
-import com.arpitos.framework.ScanTestSuite;
-import com.arpitos.framework.TestObjectWrapper;
-import com.arpitos.framework.listener.TestEventLoggerListener;
-import com.arpitos.interfaces.PrePostRunnable;
-import com.arpitos.interfaces.TestExecutable;
-import com.arpitos.interfaces.TestExecutionListner;
-import com.arpitos.interfaces.TestRunnable;
-import com.arpitos.utils.Convert;
-import com.arpitos.utils.UtilsFramework;
+import com.artos.framework.FWStatic_Store;
+import com.artos.framework.GUITestSelector;
+import com.artos.framework.ScanTestSuite;
+import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.Enums.TestStatus;
+import com.artos.framework.listener.TestEventLoggerListener;
+import com.artos.interfaces.PrePostRunnable;
+import com.artos.interfaces.TestExecutable;
+import com.artos.interfaces.TestExecutionListner;
+import com.artos.interfaces.TestRunnable;
+import com.artos.utils.Transform;
+import com.artos.utils.UtilsFramework;
 
 /**
  * This class is responsible for running test cases. It initialising logger and
@@ -176,12 +176,12 @@ public class Runner {
 				+ " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
 
 		// Print Test suite Start and Finish time
-		String timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		context.getLogger().getGeneralLogger().info("\nTest start time : " + timeStamp);
-		context.getLogger().getSummaryLogger().info("\nTest start time : " + timeStamp);
-		timeStamp = new Convert().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
-		context.getLogger().getGeneralLogger().info("Test finish time : " + timeStamp);
-		context.getLogger().getSummaryLogger().info("Test finish time : " + timeStamp);
+		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
+		context.getLogger().getGeneralLogger().info("\nTest start time : {}", timeStamp);
+		context.getLogger().getSummaryLogger().info("\nTest start time : {}", timeStamp);
+		timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
+		context.getLogger().getGeneralLogger().info("Test finish time : {}", timeStamp);
+		context.getLogger().getSummaryLogger().info("Test finish time : {}", timeStamp);
 
 		// Print Test suite total duration
 		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),

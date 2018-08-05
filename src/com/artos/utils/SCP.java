@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,12 +13,12 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.utils;
+package com.artos.utils;
 
 import java.io.File;
 import java.net.Socket;
 
-import com.arpitos.framework.infra.TestContext;
+import com.artos.framework.infra.TestContext;
 import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2SCP1Client;
 import com.mindbright.ssh2.SSH2SimpleClient;
@@ -129,10 +129,8 @@ public class SCP {
 	 * scp.disconnect();
 	 * </pre>
 	 * 
-	 * @return SSH2SCP1Client object
-	 * @see SSH2SCP1Client
 	 */
-	public SSH2SCP1Client connect() {
+	public void connect() {
 		SSH2SCP1Client scpClient = null;
 		try {
 			Socket serverSocket = new Socket(getServer(), getPort());
@@ -152,7 +150,6 @@ public class SCP {
 			jSchException.printStackTrace();
 		}
 		setScpClient(scpClient);
-		return getScpClient();
 	}
 
 	/**
@@ -183,9 +180,9 @@ public class SCP {
 			setDirection(direction);
 			setSrcFilePath(srcFilePath);
 			setDestFilePath(destFilePath);
-			context.getLogger().info("SCP in Progress. Please Wait ...");
-			context.getLogger().info("Source :" + getSrcFilePath());
-			context.getLogger().info("Destination :" + getDestFilePath());
+			context.getLogger().debug("SCP in Progress. Please Wait ...");
+			context.getLogger().debug("Source : {}", getSrcFilePath());
+			context.getLogger().debug("Destination : {}", getDestFilePath());
 			SSHSCP1 scp = getScpClient().scp1();
 
 			if (getDirection().equals(SCPTransferDirection.COPY_TO_REMOTE)) {
@@ -193,9 +190,9 @@ public class SCP {
 			} else if (getDirection().equals(SCPTransferDirection.COPY_TO_LOCAL)) {
 				scp.copyToLocal(getSrcFilePath(), getDestFilePath(), false);
 			}
-			context.getLogger().info("SCP Completed");
+			context.getLogger().debug("SCP Completed");
 		} catch (Exception e) {
-			context.getLogger().info("SCP Failed");
+			context.getLogger().debug("SCP Failed");
 			e.printStackTrace();
 		}
 	}
@@ -205,13 +202,13 @@ public class SCP {
 	 */
 	public void disconnect() {
 		getTransport().normalDisconnect("User disconnects");
-		context.getLogger().info("SCP disconnected");
+		context.getLogger().debug("SCP disconnected");
 	}
 
 	/**
-	 * Create a random number generator. This implementation uses the system
-	 * random device if available to generate good random numbers. Otherwise it
-	 * falls back to some low-entropy garbage.
+	 * Create a random number generator. This implementation uses the system random
+	 * device if available to generate good random numbers. Otherwise it falls back
+	 * to some low-entropy garbage.
 	 */
 	private static SecureRandomAndPad createSecureRandom() {
 		byte[] seed;
@@ -249,7 +246,7 @@ public class SCP {
 		this.destFilePath = destFilePath;
 	}
 
-	private SSH2SCP1Client getScpClient() {
+	public SSH2SCP1Client getScpClient() {
 		return scpClient;
 	}
 

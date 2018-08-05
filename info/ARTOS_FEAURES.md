@@ -1,8 +1,8 @@
-# Arpitos
-## What is Arpitos
-Arpitos is a test framework designed for functional testing. It can be used to perform unit testing if required.
+# Artos
+## What is Artos
+Artos is a test framework designed for functional and unit testing.
 
-## Features of Arpitos
+## Features of Artos
 ## Inbuilt logging framework
 * Two log layouts are supported
 	* Text layout (Default)
@@ -154,7 +154,7 @@ Example code for PrePostRunnable class which supports all above methods
 > 	}
 
 ### Inbuilt utilities for ease of use
-Arpitos has many inbuilt public utilities which can make test case writing easy. More Utilities will be added in future releases. Refer to API document for full information.
+Artos has many inbuilt public utilities which can make test case writing easy. More Utilities will be added in future releases. Refer to API document for full information.
 Some of the examples are shown below :
 * `Convert.java` : Provides data conversion methods which makes day to day transformation of objects easy.
 * `Guardian.java` : provides method which can guard user (Similar to asserts in JUnit).
@@ -168,10 +168,10 @@ Some of the examples are shown below :
 * etc..
 
 ### Inbuilt exception handling for test cases
-Arpitos handles Exception and Throwable during test case execution. In any Exception event, test case will be marked as failed and next test case executon will be attempted.
+Artos handles Exception and Throwable during test case execution. In any Exception event, test case will be marked as failed and next test case executon will be attempted.
 
 ### TimeTracking
-Arpitos track time per test case and for entire test suit execution.
+Artos track time per test case and for entire test suit execution.
 * Individual test case duration can be found in summary log file.
 * TestSuite duration can be found in summary log file and general log file.
 
@@ -180,7 +180,7 @@ Arpitos track time per test case and for entire test suit execution.
 > * TestSuite time duration is inclusive of time taken by testcase(s), BeforeTestCase() and AfterTestCase() methods.
 
 ### TestStatus
-* Arpitos support following test status.
+* Artos support following test status.
 | Status 		| Indicates 								|
 |---------------|-------------------------------------------|
 |PASS (default)	| Test case is successful without any error	|

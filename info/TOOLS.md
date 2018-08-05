@@ -7,3 +7,4 @@
 | KeyPair for signing		| Gpg						|[GnuPG](https://gnupg.org/download/)		|
 | Public GIT Repository		| BitBucket					|[BitBucket](https://bitbucket.org/)		|
 | GIT GUI					| SourceTree				|[GIT GUI](https://www.sourcetreeapp.com/)	|
+| Eclipse code analysis		| PMD						|[GIT GUI](https://www.sourcetreeapp.com/)	|

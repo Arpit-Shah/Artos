@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.annotation;
+package com.artos.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,18 +31,38 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface TestPlan {
 
-	/** Test Description */
+	/**
+	 * Test Description
+	 * 
+	 * @return test short description
+	 */
 	String decription() default "";
 
-	/** Name of the person who prepared the test */
+	/**
+	 * Name of the person who prepared the test
+	 * 
+	 * @return test engineer name
+	 */
 	String preparedBy() default "";
 
-	/** Date of the test preparation */
+	/**
+	 * Date of the test preparation
+	 * 
+	 * @return test case preparation date
+	 */
 	String preparationDate() default "";
 
-	/** Test reviewer name */
+	/**
+	 * Test reviewer name
+	 * 
+	 * @return test case reviewer name
+	 */
 	String reviewedBy() default "";
 
-	/** Test review date */
+	/**
+	 * Test review date
+	 * 
+	 * @return test case review date
+	 */
 	String reviewDate() default "";
 }

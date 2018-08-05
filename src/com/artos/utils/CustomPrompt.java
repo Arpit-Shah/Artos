@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.utils;
+package com.artos.utils;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +25,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
-import com.arpitos.framework.Enums.ExceptionValue;
+import com.artos.framework.Enums.ExceptionValue;
 
 /**
  * 
@@ -85,7 +86,7 @@ public class CustomPrompt implements ItemListener {
 		this.countdownTime = millis;
 	}
 
-	public void Start() throws Exception {
+	public void start() throws Exception {
 
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -199,14 +200,22 @@ public class CustomPrompt implements ItemListener {
 		jf.pack();
 		jf.setLocationByPlatform(true);
 
-		BufferedImage img64x64 = ImageIO.read(getClass().getResource("../icons/arpitos_icon64x64.png"));
-		BufferedImage img32x32 = ImageIO.read(getClass().getResource("../icons/arpitos_icon32x32.png"));
-		BufferedImage img16x16 = ImageIO.read(getClass().getResource("../icons/arpitos_icon16x16.png"));
-		List<BufferedImage> imgList = new ArrayList<>();
-		imgList.add(img64x64);
-		imgList.add(img32x32);
-		imgList.add(img16x16);
-		jf.setIconImages(imgList);
+		try {
+			URL pix64 = getClass().getResource("/com/artos/icons/artos_icon64x64.png");
+			URL pix32 = getClass().getResource("/com/artos/icons/artos_icon32x32.png");
+			URL pix16 = getClass().getResource("/com/artos/icons/artos_icon16x16.png");
+
+			BufferedImage img64x64 = ImageIO.read(pix64);
+			BufferedImage img32x32 = ImageIO.read(pix32);
+			BufferedImage img16x16 = ImageIO.read(pix16);
+			List<BufferedImage> imgList = new ArrayList<>();
+			imgList.add(img64x64);
+			imgList.add(img32x32);
+			imgList.add(img16x16);
+			jf.setIconImages(imgList);
+		} catch (Exception IllegalArgumentException) {
+			System.err.println("Icons can not be found");
+		}
 		jf.setVisible(true);
 
 		// Start Timer

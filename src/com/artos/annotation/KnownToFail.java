@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.annotation;
+package com.artos.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,9 +26,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface KnownToFail {
 
-	/** Weather test is known to fail */
+	/**
+	 * Weather test is known to fail
+	 * 
+	 * @return true = test case is known to fail|false = test case should pass
+	 */
 	boolean ktf() default false;
 
-	/** bug reference number */
+	/**
+	 * bug reference number
+	 * 
+	 * @return bugRefNumber
+	 */
 	String bugref() default "";
 }

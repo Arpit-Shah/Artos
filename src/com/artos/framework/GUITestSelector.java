@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework;
+package com.artos.framework;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -43,8 +43,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import com.arpitos.interfaces.TestExecutable;
-import com.arpitos.interfaces.TestRunnable;
+import com.artos.interfaces.TestExecutable;
+import com.artos.interfaces.TestRunnable;
 
 /**
  * 
@@ -97,20 +97,11 @@ public class GUITestSelector {
 
 			initMainFrame(packageName);
 			initMainViewComponents();
-			// System.out.println(getClass().getResource("../icons/arpitos_icon64x64.png"));
 
 			try {
-
-				// System.out.println(getClass().getResource("/com/arpitos/icons/arpitos_icon64x64.png").getPath());
-				URL pix64 = getClass().getResource("/com/arpitos/icons/arpitos_icon64x64.png");
-				URL pix32 = getClass().getResource("/com/arpitos/icons/arpitos_icon32x32.png");
-				URL pix16 = getClass().getResource("/com/arpitos/icons/arpitos_icon16x16.png");
-				// URL pix64 =
-				// getClass().getResource("../icons/arpitos_icon64x64.png");
-				// URL pix32 =
-				// getClass().getResource("../icons/arpitos_icon32x32.png");
-				// URL pix16 =
-				// getClass().getResource("../icons/arpitos_icon16x16.png");
+				URL pix64 = getClass().getResource("/com/artos/icons/artos_icon64x64.png");
+				URL pix32 = getClass().getResource("/com/artos/icons/artos_icon32x32.png");
+				URL pix16 = getClass().getResource("/com/artos/icons/artos_icon16x16.png");
 
 				BufferedImage img64x64 = ImageIO.read(pix64);
 				BufferedImage img32x32 = ImageIO.read(pix32);
@@ -121,7 +112,7 @@ public class GUITestSelector {
 				imgList.add(img16x16);
 				container.setIconImages(imgList);
 			} catch (Exception IllegalArgumentException) {
-				System.out.println("Can not find images");
+				System.err.println("Icons can not be found");
 			}
 			container.setVisible(true);
 		} else {
@@ -140,8 +131,7 @@ public class GUITestSelector {
 	 *            The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame(
-				"Test Selector"/* - packageName : " + packageName */);
+		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		container.setSize(new Dimension(480, 515));
@@ -235,8 +225,7 @@ public class GUITestSelector {
 	}
 
 	/**
-	 * Set column widths and text alignment (and other style attributes, if
-	 * needed)
+	 * Set column widths and text alignment (and other style attributes, if needed)
 	 * 
 	 * @param testTableView
 	 *            the table to style

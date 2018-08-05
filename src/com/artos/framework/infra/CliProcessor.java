@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework.infra;
+package com.artos.framework.infra;
 
 import java.io.PrintWriter;
 
@@ -25,8 +25,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.arpitos.framework.FWStatic_Store;
-import com.arpitos.framework.Version;
+import com.artos.framework.FWStatic_Store;
+import com.artos.framework.Version;
 
 /** Process Command Line arguments */
 public class CliProcessor {
@@ -49,8 +49,8 @@ public class CliProcessor {
 		// Create Option
 		Option subDir = Option.builder("s").required(false).longOpt("subdir").desc("use given name as log sub directory name Example : --subdir=test")
 				.hasArg().build();
-		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of arpitos test tool").build();
-		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.arpitos.com for more info")
+		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos test tool").build();
+		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.artos.com for more info")
 				.build();
 		Option contributors = Option.builder("c").required(false).longOpt("contributors").desc("Project Contributors name").build();
 
@@ -69,13 +69,13 @@ public class CliProcessor {
 			// validate that block-size has been set
 			if (line.hasOption("version")) {
 				PrintWriter pw = new PrintWriter(System.out);
-				System.out.println("Arpiots version : \"" + Version.id() + "\"");
+				System.out.println("Artots version : \"" + Version.id() + "\"");
 				pw.flush();
 			}
 			if (line.hasOption("help")) {
 				// automatically generate the help statement
 				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("arpitos", options);
+				formatter.printHelp("artos", options);
 			}
 			if (line.hasOption("contributors")) {
 				PrintWriter pw = new PrintWriter(System.out);

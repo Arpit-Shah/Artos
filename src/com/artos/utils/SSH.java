@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,14 +13,14 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.utils;
+package com.artos.utils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import com.arpitos.framework.infra.TestContext;
+import com.artos.framework.infra.TestContext;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -183,9 +183,9 @@ public class SSH {
 	 */
 	public void write(String value) throws Exception {
 		/*
-		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
-		 * considered as two enter in unix environment, then one extra line will
-		 * be returned which is not expected
+		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is considered as two
+		 * enter in unix environment, then one extra line will be returned which is not
+		 * expected
 		 */
 		out.print(value + "\n");
 		out.flush();
@@ -210,17 +210,17 @@ public class SSH {
 	 *            timeout value
 	 * @return String response
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown.
 	 * @throws IOException
 	 *             if an I/O error occurs.
 	 */
 	public String write(String value, String pattern, long longTimeoutMilliseconds) throws IOException, InterruptedException {
 		/*
-		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is
-		 * considered as two enter in unix environment, then one extra line will
-		 * be returned which is not expected
+		 * Do not use out.println(LOG_LEVEL.INFO, value) because it is considered as two
+		 * enter in unix environment, then one extra line will be returned which is not
+		 * expected
 		 */
 		out.print(value + "\n");
 		out.flush();
@@ -241,12 +241,11 @@ public class SSH {
 	 * 
 	 * @param pattern
 	 *            pattern to look for in received msg
-	 * @return returns string data read from console up until pattern match is
-	 *         found
+	 * @return returns string data read from console up until pattern match is found
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown.
 	 * @throws IOException
 	 *             if an I/O error occurs.
 	 */
@@ -271,14 +270,13 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().info("exit-status: " + getChannel().getExitStatus());
+					context.getLogger().debug("exit-status: {}", getChannel().getExitStatus());
 					break;
 				}
 			}
 		}
-		context.getLogger().info("*************************************************");
-		context.getLogger().info("Pattern match could not be found");
-		context.getLogger().info("*************************************************");
+		context.getLogger().debug("*************************************************" + "\nPattern match could not be found"
+				+ "\n*************************************************");
 		return sb.toString();
 	}
 
@@ -301,9 +299,9 @@ public class SSH {
 	 * @return returns string data which are read from console within provided
 	 *         timeout
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown
 	 * @throws IOException
 	 *             if an I/O error occurs.
 	 */
@@ -326,6 +324,12 @@ public class SSH {
 						// add end
 						sb.append("\n---------------------------\n");
 						return sb.toString();
+					} else {
+						if ((System.currentTimeMillis() - starttime) >= longTimeoutMilliseconds) {
+							context.getLogger().debug(
+									"*************************************************\nTimed out before Pattern match could be found\n*************************************************");
+							break;
+						}
 					}
 				}
 			} else {
@@ -335,15 +339,11 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().info("exit-status: " + channel.getExitStatus());
+					context.getLogger().debug("exit-status: {}", channel.getExitStatus());
 					break;
 				}
 			}
 		}
-		context.getLogger().info("*************************************************");
-		// context.getLogger().info("Timed out before Pattern match could be
-		// found");
-		context.getLogger().info("*************************************************");
 		return sb.toString();
 	}
 
@@ -386,7 +386,7 @@ public class SSH {
 				if (in.available() > 0) {
 					continue;
 				} else {
-					context.getLogger().info("exit-status: " + channel.getExitStatus());
+					context.getLogger().debug("exit-status: {}", channel.getExitStatus());
 					break;
 				}
 			}

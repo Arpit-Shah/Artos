@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,12 +13,16 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework.infra;
+package com.artos.framework.infra;
 
-import com.arpitos.framework.Version;
+import com.artos.framework.Version;
 
 /** Prints Framework Banner */
 class Banner {
+	
+	public static void main(String[] args) {
+		System.out.println(getBanner());
+	}
 
 	/**
 	 * Returns Banner in String format
@@ -29,13 +33,13 @@ class Banner {
 	String banner = "\n"
 				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 				+ "\n      ___                                                "
-				+ "\n     / _ \\           _                     __ _ _        "
-				+ "\n    | |_| |__ _ _ __(_)  _    __ _  ____   \\ \\ \\ \\       "
-				+ "\n    |  _  |  __| '_ | |_| |_ / __ \\/ ____|  \\ \\ \\ \\      "
-				+ "\n    | | | | |  | |_)| |_| |_| (__) )___  \\   ) ) ) )     "
-				+ "\n    |_| |_|_|  | .__|_| | |_ \\__ _/| ___ /  / / / /      "
-				+ "\n    ===========|_|======\\__/============== (_(_(_(       "
-				+ "\n    == Arpitos ==    (RELEASE v"+Version.id()+")                 "
+				+ "\n     / _ \\                          __ _ _        "
+				+ "\n    | |_| |__ _   _    __ _   ____  \\ \\ \\ \\       "
+				+ "\n    |  _  |  __|_| |_ / __ \\/ ____|  \\ \\ \\ \\      "
+				+ "\n    | | | | |  |_| |_| (__) )___  \\   ) ) ) )     "
+				+ "\n    |_| |_|_|    | |_ \\__ _/| ___ /  / / / /      "
+				+ "\n    =============\\__/============== (_(_(_(       "
+				+ "\n    == Artos ==  (RELEASE v"+Version.id()+")                 "
 				+ "\n                                                         "
 				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 				+ "\n";
@@ -44,6 +48,24 @@ class Banner {
 	}
 
 }
+
+// @formatter:off
+//String banner = "\n"
+//			+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+//			+ "\n      ___                                                "
+//			+ "\n     / _ \\           _                     __ _ _        "
+//			+ "\n    | |_| |__ _ _ __(_)  _    __ _  ____   \\ \\ \\ \\       "
+//			+ "\n    |  _  |  __| '_ | |_| |_ / __ \\/ ____|  \\ \\ \\ \\      "
+//			+ "\n    | | | | |  | |_)| |_| |_| (__) )___  \\   ) ) ) )     "
+//			+ "\n    |_| |_|_|  | .__|_| | |_ \\__ _/| ___ /  / / / /      "
+//			+ "\n    ===========|_|======\\__/============== (_(_(_(       "
+//			+ "\n    == Arpitos ==    (RELEASE v"+Version.id()+")                 "
+//			+ "\n                                                         "
+//			+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+//			+ "\n";
+//	return banner;
+//}
+//@formatter:on
 
 //@formatter:off
 //   ___    

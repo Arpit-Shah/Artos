@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.framework;
+package com.artos.framework;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,7 +50,7 @@ public class FrameworkConfig {
 	private String Organisation_Country = "NewZealand";
 	private String Organisation_Contact_Number = "+64 1234567";
 	private String Organisation_Email = "test@gmail.com";
-	private String Organisation_Website = "www.arpitos.com";
+	private String Organisation_Website = "www." + FWStatic_Store.TOOL_NAME.toLowerCase() + ".com";
 
 	// Email Settings Info
 	private String smtpServer = "smtp.gmail.com";
@@ -62,8 +62,8 @@ public class FrameworkConfig {
 	private String password = "password";
 	private String receiversName = "Test Receiver";
 	private String receiversEmail = "test@gmail.com";
-	private String emailSubject = "ArpitOS Email Client";
-	private String messageText = "Test email from Arpitos";
+	private String emailSubject = FWStatic_Store.TOOL_NAME + " Email Client";
+	private String messageText = "Test email from " + FWStatic_Store.TOOL_NAME;
 
 	// Logger
 	private String logLevel = "debug";
