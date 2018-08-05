@@ -1,9 +1,9 @@
-package com.arpitos.framework.listener;
+package com.artos.framework.listener;
 
-import com.arpitos.framework.TestObjectWrapper;
-import com.arpitos.framework.infra.LogWrapper;
-import com.arpitos.framework.infra.TestContext;
-import com.arpitos.interfaces.TestExecutionListner;
+import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.infra.LogWrapper;
+import com.artos.framework.infra.TestContext;
+import com.artos.interfaces.TestExecutionListner;
 
 public class TestEventLoggerListener implements TestExecutionListner {
 
@@ -17,24 +17,28 @@ public class TestEventLoggerListener implements TestExecutionListner {
 
 	@Override
 	public void testSuiteExecutionStarted(String description) {
-		logger.info("\n---------------- Suite Start -------------------");
+		logger.debug("\n---------------- Suite Start -------------------");
 	}
 
 	@Override
 	public void testSuiteExecutionFinished(String description) {
-		logger.info("\n---------------- Suite Finished -------------------");
+		logger.debug("\n---------------- Suite Finished -------------------");
 	}
 
 	@Override
 	public void testExecutionStarted(TestObjectWrapper t) {
-		// logger.info("\n---------------- Test Start -------------------");
 		// @formatter:off
 		context.getLogger().info("*************************************************************************"
-								+ "\nTest Name	: " + t.getTestClassObject().getName()
-								+ "\nWritten BY	: " + t.getTestPlanPreparedBy()
-								+ "\nDate		: " + t.getTestPlanPreparationDate()
-								+ "\nShort Desc	: " + t.getTestPlanDescription()
-								+ "\n*************************************************************************");
+								+ "\nTest Name	: {}" 
+								+ "\nWritten BY	: {}"
+								+ "\nDate		: {}"
+								+ "\nShort Desc	: {}"
+								+ "\n*************************************************************************"
+								, t.getTestClassObject().getName()
+								, t.getTestPlanPreparedBy()
+								, t.getTestPlanPreparationDate()
+								, t.getTestPlanDescription()
+								);
 		// @formatter:on
 	}
 
@@ -45,10 +49,10 @@ public class TestEventLoggerListener implements TestExecutionListner {
 
 	@Override
 	public void testExecutionSkipped(TestObjectWrapper t) {
-		logger.info("\n---------------- Skipped Test : " + t.getTestClassObject().getName() + " -------------------");
+		logger.debug("\n---------------- Skipped Test : {} -------------------", t.getTestClassObject().getName());
 	}
 
 	public void testExecutionLoopCount(int count) {
-		logger.info("\n---------------- (Test Loop Count : " + (count + 1) + ") -------------------");
+		logger.debug("\n---------------- (Test Loop Count : {}) -------------------", (count + 1));
 	}
 }
