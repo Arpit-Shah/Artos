@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,13 +13,13 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.utils;
+package com.artos.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.arpitos.framework.Enums.ExceptionValue;
+import com.artos.framework.Enums.ExceptionValue;
 
 /**
  * 
@@ -29,7 +29,7 @@ import com.arpitos.framework.Enums.ExceptionValue;
 public class TypeTest {
 
 	public static void main(String[] args) throws Exception {
-		Convert _con = new Convert();
+		Transform _con = new Transform();
 
 		List<Integer> intTestList = new TypeTest().getIntegerTestList();
 		System.out.println("******* Integer ***********");
@@ -63,7 +63,7 @@ public class TypeTest {
 	}
 
 	public List<Integer> getIntegerTestList() {
-		Convert _con = new Convert();
+		Transform _con = new Transform();
 		List<Integer> intTestList = new ArrayList<>();
 
 		// Max value
@@ -81,7 +81,7 @@ public class TypeTest {
 	}
 
 	public List<Long> getLongTestList() {
-		Convert _con = new Convert();
+		Transform _con = new Transform();
 		List<Long> longTestList = new ArrayList<>();
 
 		// Max value
@@ -106,7 +106,7 @@ public class TypeTest {
 			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
 		}
 
-		Convert _con = new Convert();
+		Transform _con = new Transform();
 		List<String> stringTestList = new ArrayList<>();
 
 		// All Uppercase Char
@@ -142,7 +142,7 @@ public class TypeTest {
 	}
 
 	public List<Byte> getByteTestList() {
-		Convert _con = new Convert();
+		Transform _con = new Transform();
 		List<Byte> byteTestList = new ArrayList<>();
 
 		// Min value
@@ -161,7 +161,7 @@ public class TypeTest {
 			throw new Exception(ExceptionValue.INVALID_INPUT.getValue());
 		}
 
-		Convert _con = new Convert();
+		Transform _con = new Transform();
 		List<byte[]> byteArrayTestList = new ArrayList<>();
 
 		// Empty byte Array

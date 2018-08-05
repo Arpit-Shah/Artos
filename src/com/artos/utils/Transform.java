@@ -1,4 +1,4 @@
-// Copyright <2018> <Arpitos>
+// Copyright <2018> <Artos>
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 // and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -13,7 +13,7 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.arpitos.utils;
+package com.artos.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -26,14 +26,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.arpitos.framework.Enums.ExceptionValue;
+import com.artos.framework.Enums.ExceptionValue;
 
 /**
  * 
  * 
  *
  */
-public class Convert {
+public class Transform {
 
 	static final String HEXES = "0123456789ABCDEF";
 	static final ByteOrder BYTE_ORDER_DEFAULT = ByteOrder.LITTLE_ENDIAN;
@@ -639,13 +639,6 @@ public class Convert {
 
 	public byte intToByte(int x) {
 		return (byte) x;
-	}
-
-	public byte[] intTo2Bytes(int x, ByteOrder bo) {
-		ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
-		buffer.order(bo);
-		buffer.putInt(x);
-		return buffer.array();
 	}
 
 	public String intToString(int x) {

@@ -1,6 +1,6 @@
-package com.arpitos.interfaces;
+package com.artos.interfaces;
 
-import com.arpitos.framework.TestObjectWrapper;
+import com.artos.framework.TestObjectWrapper;
 
 public interface TestExecutionListner {
 
