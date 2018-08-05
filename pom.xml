@@ -4,18 +4,18 @@
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://bitbucket.org/ShahArpit/arpitos_fork</url>
-	<description>Test framework for functional and unit testing</description>
+	<description>Automated Regression Test System</description>
 
 	<!-- Project GAV Info -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.arpitos</groupId>
-	<artifactId>arpitos-fw</artifactId>
-	<version>0.0.2</version>
+	<artifactId>artos</artifactId>
+	<version>0.0.1</version>
 
 	<!-- Organisation Info -->
 	<organization>
 		<url>www.arpitos.com</url>
-		<name>Arpitos</name>
+		<name>Artos</name>
 	</organization>
 
 	<!-- Licence Info -->
@@ -146,7 +146,7 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 
-		<!-- <resources> <resource> <directory>${project.basedir}/src/com/arpitos/icons</directory> 
+		<!-- <resources> <resource> <directory>${project.basedir}/src/com/artos/icons</directory> 
 			</resource> </resources> -->
 
 		<!-- Maven Compiler Plugins -->
@@ -260,7 +260,7 @@
 				</executions>
 			</plugin>
 
-			<!-- This plugin will copy resources (images) from com.arpitos.icons location 
+			<!-- This plugin will copy resources (images) from com.artos.icons location 
 				to build target directory at class processing phase, so it will be packages 
 				in jar at correct location. Because we are using non standard resource directory, 
 				this has to be done -->
@@ -276,10 +276,10 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/classes/com/arpitos/icons</outputDirectory>   <!-- output directory -->
+							<outputDirectory>${basedir}/target/classes/com/artos/icons</outputDirectory>   <!-- output directory -->
 							<resources>
 								<resource>
-									<directory>${basedir}/src/com/arpitos/icons</directory>         <!-- source directory -->
+									<directory>${basedir}/src/com/artos/icons</directory>         <!-- source directory -->
 									<filtering>true</filtering>
 								</resource>
 							</resources>
