@@ -14,6 +14,7 @@ public class LogWrapper {
 	OrganisedLog organisedLogger;
 	Logger generalLogger;
 	Logger summaryLogger;
+	Logger realTimeLogger;
 
 	/**
 	 * Constructor
@@ -33,6 +34,7 @@ public class LogWrapper {
 		this.organisedLogger = new OrganisedLog(logDirPath, testFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
 		this.generalLogger = organisedLogger.getGeneralLogger();
 		this.summaryLogger = organisedLogger.getSummaryLogger();
+		this.realTimeLogger = organisedLogger.getRealTimeLogger();
 	}
 
 	/**
@@ -70,46 +72,9 @@ public class LogWrapper {
 		organisedLogger.enableGeneralLog();
 	}
 
-	/**
-	 * Get all error log files relevant to current context (Includes .txt and .html
-	 * files)
-	 * 
-	 * @return List of Error log files relevant to current context
-	 */
-	public List<File> getCurrentErrorLogFiles() {
-		return organisedLogger.getCurrentErrorLogFiles();
-	}
-
-	/**
-	 * Get all log files relevant to current context (Includes .txt and .html files)
-	 * 
-	 * @return List of log files relevant to current context
-	 */
-	public List<File> getCurrentGeneralLogFiles() {
-		return organisedLogger.getCurrentGeneralLogFiles();
-	}
-
-	/**
-	 * Get all summary log files relevant to current context (Includes .txt and
-	 * .html files)
-	 * 
-	 * @return List of summary log files relevant to current context
-	 */
-	public List<File> getCurrentSummaryLogFiles() {
-		return organisedLogger.getCurrentSummaryLogFiles();
-	}
-
 	/** Print selected system information to log file */
 	public void printUsefulInfo() {
 		organisedLogger.printUsefulInfo();
-	}
-
-	/**
-	 * Returns Log Files Base Directory
-	 * @return log base directory path
-	 */
-	public String getLogBaseDir() {
-		return organisedLogger.getLogBaseDir();
 	}
 
 	// ===================================================================
@@ -168,6 +133,10 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0);
 	}
 
+	public void trace(String msg, Object... params) {
+		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, params);
+	}
+
 	// ===================================================================
 	// Debug
 	// ===================================================================
@@ -222,6 +191,10 @@ public class LogWrapper {
 
 	public void debug(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0);
+	}
+
+	public void debug(String msg, Object... params) {
+		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, params);
 	}
 
 	// ===================================================================
@@ -280,6 +253,10 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0);
 	}
 
+	public void info(String msg, Object... params) {
+		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, params);
+	}
+
 	// ===================================================================
 	// Error
 	// ===================================================================
@@ -334,6 +311,10 @@ public class LogWrapper {
 
 	public void error(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0);
+	}
+
+	public void error(String msg, Object... params) {
+		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, params);
 	}
 
 	// ===================================================================
@@ -392,6 +373,10 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0);
 	}
 
+	public void warn(String msg, Object... params) {
+		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, params);
+	}
+
 	// ===================================================================
 	// Fatal
 	// ===================================================================
@@ -448,9 +433,21 @@ public class LogWrapper {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0);
 	}
 
+	public void fatal(String msg, Object... params) {
+		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, params);
+	}
+
 	// ===================================================================
 	// Getter Setter
 	// ===================================================================
+	/**
+	 * Returns Log Files Base Directory
+	 * 
+	 * @return log base directory path
+	 */
+	public String getLogBaseDir() {
+		return organisedLogger.getLogBaseDir();
+	}
 
 	/**
 	 * Get {@code Logger} object which is responsible for logging raw and error logs
@@ -468,6 +465,54 @@ public class LogWrapper {
 	 */
 	public Logger getSummaryLogger() {
 		return summaryLogger;
+	}
+
+	/**
+	 * Get {@code Logger} object which is responsible for logging realtime logs
+	 * 
+	 * @return RealTime Logger
+	 */
+	public Logger getRealTimeLogger() {
+		return realTimeLogger;
+	}
+
+	/**
+	 * Get all error log files relevant to current context (Includes .txt and .html
+	 * files)
+	 * 
+	 * @return List of Error log files relevant to current context
+	 */
+	public List<File> getCurrentErrorLogFiles() {
+		return organisedLogger.getCurrentErrorLogFiles();
+	}
+
+	/**
+	 * Get all log files relevant to current context (Includes .txt and .html files)
+	 * 
+	 * @return List of log files relevant to current context
+	 */
+	public List<File> getCurrentGeneralLogFiles() {
+		return organisedLogger.getCurrentGeneralLogFiles();
+	}
+
+	/**
+	 * Get all summary log files relevant to current context (Includes .txt and
+	 * .html files)
+	 * 
+	 * @return List of summary log files relevant to current context
+	 */
+	public List<File> getCurrentSummaryLogFiles() {
+		return organisedLogger.getCurrentSummaryLogFiles();
+	}
+
+	/**
+	 * Get all realtime log files relevant to current context (Includes .txt and
+	 * .html files)
+	 * 
+	 * @return List of realtime log files relevant to current context
+	 */
+	public List<File> getCurrentRealTimeLogFiles() {
+		return organisedLogger.getCurrentRealTimeLogFiles();
 	}
 
 }

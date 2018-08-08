@@ -53,6 +53,7 @@ class OrganisedLog {
 
 	private org.apache.logging.log4j.core.Logger generalLogger;
 	private org.apache.logging.log4j.core.Logger summaryLogger;
+	private org.apache.logging.log4j.core.Logger realTimeLogger;
 
 	private String logBaseDir = "./reporting";
 
@@ -69,11 +70,10 @@ class OrganisedLog {
 	 * @param logDirPath
 	 *            Log base directory absolute or reference path
 	 * @param testCaseFQCN
-	 *            Test case fully qualified class name (Example :
-	 *            com.test.unit.Abc)
+	 *            Test case fully qualified class name (Example : com.test.unit.Abc)
 	 * @param enableLogDecoration
-	 *            Enables/disable log decoration (Time-stamp, source package,
-	 *            thread number etc..)
+	 *            Enables/disable log decoration (Time-stamp, source package, thread
+	 *            number etc..)
 	 * @param enableTextLog
 	 *            Enables/disable text log
 	 * @param enableHTMLLog
@@ -90,6 +90,7 @@ class OrganisedLog {
 				enableTextLog, enableHTMLLog);
 		setGeneralLogger(loggerContext.getLogger("TestLog"));
 		setSummaryLogger(loggerContext.getLogger("Summary"));
+		setRealTimeLogger(loggerContext.getLogger("RealTimeLog"));
 		printMendatoryInfo();
 		printUsefulInfo();
 	}
@@ -146,8 +147,8 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Get all error log files relevant to current context (Includes .txt and
-	 * .html files)
+	 * Get all error log files relevant to current context (Includes .txt and .html
+	 * files)
 	 * 
 	 * @return List of Error log files relevant to current context
 	 */
@@ -167,8 +168,7 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Get all log files relevant to current context (Includes .txt and .html
-	 * files)
+	 * Get all log files relevant to current context (Includes .txt and .html files)
 	 * 
 	 * @return List of log files relevant to current context
 	 */
@@ -207,10 +207,30 @@ class OrganisedLog {
 		}
 		return mergedList;
 	}
+	
+	/**
+	 * Get all realTime log files relevant to current context (Includes .txt and
+	 * .html files)
+	 * 
+	 * @return List of realtime log files relevant to current context
+	 */
+	public List<File> getCurrentRealTimeLogFiles() {
+		List<File> textLog = new ArrayList<File>();
+		List<File> htmlLog = new ArrayList<File>();
+		getFilesFromRealTimeLogAppenders("realtime-log-text", textLog);
+		getFilesFromRealTimeLogAppenders("realtime-log-html", htmlLog);
+		List<File> mergedList = new ArrayList<>();
+		if (null != textLog) {
+			mergedList.addAll(textLog);
+		}
+		if (null != htmlLog) {
+			mergedList.addAll(htmlLog);
+		}
+		return mergedList;
+	}
 
 	/**
-	 * Provides list of current general log files attached to provided appender
-	 * name
+	 * Provides list of current general log files attached to provided appender name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -235,8 +255,7 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Provides list of current summary log files attached to provided appender
-	 * name
+	 * Provides list of current summary log files attached to provided appender name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -255,18 +274,39 @@ class OrganisedLog {
 			}
 		}
 	}
+	
+	/**
+	 * Provides list of current realtime log files attached to provided appender name
+	 * 
+	 * @param appenderName
+	 *            Appender Name
+	 * @param textLog
+	 *            File List
+	 */
+	private void getFilesFromRealTimeLogAppenders(String appenderName, List<File> logFiles) {
+		Map<String, Appender> appenders = getRealTimeLogger().getAppenders();
+		Iterator<Entry<String, Appender>> it = appenders.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Appender> pair = (Map.Entry<String, Appender>) it.next();
+			if (pair.getValue() instanceof RollingFileAppender) {
+				if (appenderName.equals(pair.getValue().getName())) {
+					logFiles.add(new File(((RollingFileAppender) pair.getValue()).getFileName()));
+				}
+			}
+		}
+	}
 
 	/**
-	 * Dynamically Generates and applies Log4J configuration XML as per test
-	 * suit requirement
+	 * Dynamically Generates and applies Log4J configuration XML as per test suit
+	 * requirement
 	 * 
 	 * @param fileroot
 	 *            Log file root directory
 	 * @param fileName
 	 *            Log file name
 	 * @param enableLogDecoration
-	 *            Enable/disable log decoration (Time-stamp, source package,
-	 *            thread number etc..)
+	 *            Enable/disable log decoration (Time-stamp, source package, thread
+	 *            number etc..)
 	 * @param enableTextLog
 	 *            Enables/disable text log
 	 * @param enableHTMLLog
@@ -286,50 +326,62 @@ class OrganisedLog {
 		builder.setStatusLevel(Level.WARN);
 		builder.setConfigurationName("RollingBuilder");
 
-		// Log Layout with timestamp
+		// Log Layout for general logs
 		LayoutComponentBuilder logFileLayout = builder.newLayout("PatternLayout");
-		if (enableLogDecoration) {
-			/*
-			* @formatter:off
-			*
-			* [%-5level] = Log level upto 5 char max
-			* [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
-			* [%t] = Thread number
-			* [%F] = File where logs are coming from
-			* [%M] = Method which generated log
-			* [%c{-1}] = ClassName which issued logCommand 
-			* %msg = Actual msg to be logged 
-			* %n = new line
-			* %throwable = log exception
-			* 
-			* @formatter:on
-			*/
-			logFileLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
-		} else {
-			logFileLayout.addAttribute("pattern", "%msg%n%throwable");
+		// Log Layout for real time logs
+		LayoutComponentBuilder realTimeLogLayout = builder.newLayout("PatternLayout");
+		// Log Layout for summary file
+		LayoutComponentBuilder summaryFileLayout = builder.newLayout("PatternLayout");
+		/*
+		* @formatter:off
+		*
+		* [%-5level] = Log level upto 5 char max
+		* [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
+		* [%t] = Thread number
+		* [%F] = File where logs are coming from
+		* [%M] = Method which generated log
+		* [%c{-1}] = ClassName which issued logCommand 
+		* %msg = Actual msg to be logged 
+		* %n = new line
+		* %throwable = log exception
+		* 
+		* @formatter:on
+		*/
+		{
+			if (enableLogDecoration) {
+				logFileLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
+			} else {
+				logFileLayout.addAttribute("pattern", "%msg%n%throwable");
+			}
+
+			realTimeLogLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t] - %msg%n%throwable");
+			summaryFileLayout.addAttribute("pattern", "%msg%n%throwable");
 		}
 
-		// Log Layout without decoration
-		LayoutComponentBuilder summaryFileLayout = builder.newLayout("PatternLayout");
-		summaryFileLayout.addAttribute("pattern", "%msg%n%throwable");
-
-		// HTML Log Layout for logs
+		// HTML Log Layout for general logs
 		LayoutComponentBuilder htmlLogFileLayout = builder.newLayout("HTMLLayout");
 		htmlLogFileLayout.addAttribute("title", "Test Logs");
 		// expensive if enabled
 		htmlLogFileLayout.addAttribute("locationInfo", false);
 		htmlLogFileLayout.addAttribute("fontSize", "small");
 
-		// HTML Log Layout for summary
+		// HTML Log Layout for summary logs
 		LayoutComponentBuilder htmlSummaryFileLayout = builder.newLayout("HTMLLayout");
 		htmlSummaryFileLayout.addAttribute("title", "Test Summary");
 		// expensive if enabled
 		htmlSummaryFileLayout.addAttribute("locationInfo", false);
 		htmlLogFileLayout.addAttribute("fontSize", "small");
 
+		// HTML Log Layout for realtime logs
+		LayoutComponentBuilder htmlrealTimeLogLayout = builder.newLayout("HTMLLayout");
+		htmlrealTimeLogLayout.addAttribute("title", "Test Summary");
+		// expensive if enabled
+		htmlrealTimeLogLayout.addAttribute("locationInfo", false);
+		htmlrealTimeLogLayout.addAttribute("fontSize", "small");
+
 		// File size based rollver Trigger Policy
 		ComponentBuilder<?> triggeringPolicy = builder.newComponent("Policies");
-		triggeringPolicy.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "1MB"));
+		triggeringPolicy.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "10MB"));
 
 		// create a console appender
 		{
@@ -339,7 +391,7 @@ class OrganisedLog {
 			builder.add(appenderBuilder1);
 		}
 
-		// create a rolling file appender for logs
+		// create a rolling file appender for general logs
 		{
 			// Text
 			AppenderComponentBuilder appenderBuilder2 = builder.newAppender("all-log-text", "RollingFile");
@@ -408,57 +460,103 @@ class OrganisedLog {
 			}
 		}
 
+		// create a rolling file appender for real time logs
+		{
+			// Text
+			AppenderComponentBuilder appenderBuilder8 = builder.newAppender("realtime-log-text", "RollingFile");
+			appenderBuilder8.addAttribute("fileName", fileroot + fileName + "-realtime.log");
+			appenderBuilder8.addAttribute("filePattern", fileroot + fileName + "-realtime-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
+			appenderBuilder8.add(realTimeLogLayout);
+			appenderBuilder8.addComponent(triggeringPolicy);
+			if (enableTextLog) {
+				builder.add(appenderBuilder8);
+			}
+
+			// HTML
+			AppenderComponentBuilder appenderBuilder9 = builder.newAppender("realtime-log-html", "RollingFile");
+			appenderBuilder9.addAttribute("fileName", fileroot + fileName + "-realtime.html");
+			appenderBuilder9.addAttribute("filePattern", fileroot + fileName + "-realtime-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
+			appenderBuilder9.add(htmlrealTimeLogLayout);
+			appenderBuilder9.addComponent(triggeringPolicy);
+			if (enableHTMLLog) {
+				builder.add(appenderBuilder9);
+			}
+		}
+
 		{
 			// create the new logger
 			Level loglevel = getLoglevelFromXML();
-			LoggerComponentBuilder loggerBuilder1 = builder.newLogger("TestLog", loglevel);
-			loggerBuilder1.addAttribute("additivity", false);
-			AppenderRefComponentBuilder appendRef1 = builder.newAppenderRef("console-log");
-			appendRef1.addAttribute("level", Level.ALL);
-			AppenderRefComponentBuilder appendRef2 = builder.newAppenderRef("all-log-text");
-			appendRef2.addAttribute("level", Level.ALL);
-			AppenderRefComponentBuilder appendRef3 = builder.newAppenderRef("all-log-html");
-			appendRef3.addAttribute("level", Level.ALL);
-			AppenderRefComponentBuilder appendRef4 = builder.newAppenderRef("error-log-text");
-			appendRef4.addAttribute("level", Level.ERROR);
-			AppenderRefComponentBuilder appendRef5 = builder.newAppenderRef("error-log-html");
-			appendRef5.addAttribute("level", Level.ERROR);
+			LoggerComponentBuilder generalLoggerBuilder = builder.newLogger("TestLog", loglevel);
+			{
+				generalLoggerBuilder.addAttribute("additivity", false);
+				AppenderRefComponentBuilder appendRef1 = builder.newAppenderRef("console-log");
+				appendRef1.addAttribute("level", Level.ALL);
+				AppenderRefComponentBuilder appendRef2 = builder.newAppenderRef("all-log-text");
+				appendRef2.addAttribute("level", Level.ALL);
+				AppenderRefComponentBuilder appendRef3 = builder.newAppenderRef("all-log-html");
+				appendRef3.addAttribute("level", Level.ALL);
+				AppenderRefComponentBuilder appendRef4 = builder.newAppenderRef("error-log-text");
+				appendRef4.addAttribute("level", Level.ERROR);
+				AppenderRefComponentBuilder appendRef5 = builder.newAppenderRef("error-log-html");
+				appendRef5.addAttribute("level", Level.ERROR);
 
-			loggerBuilder1.add(appendRef1);
+				generalLoggerBuilder.add(appendRef1);
 
-			if (enableTextLog) {
-				loggerBuilder1.add(appendRef2);
-				loggerBuilder1.add(appendRef4);
-			}
-			if (enableHTMLLog) {
-				loggerBuilder1.add(appendRef3);
-				loggerBuilder1.add(appendRef5);
-			}
-
-			builder.add(loggerBuilder1);
-
-			// create the new logger
-			LoggerComponentBuilder loggerBuilder2 = builder.newLogger("Summary", Level.DEBUG);
-			loggerBuilder2.addAttribute("additivity", false);
-			AppenderRefComponentBuilder appendRef11 = builder.newAppenderRef("summary-log-text");
-			appendRef11.addAttribute("level", Level.ALL);
-			AppenderRefComponentBuilder appendRef12 = builder.newAppenderRef("summary-log-html");
-			appendRef12.addAttribute("level", Level.ALL);
-
-			if (enableTextLog) {
-				loggerBuilder2.add(appendRef11);
-			}
-			if (enableHTMLLog) {
-				loggerBuilder2.add(appendRef12);
+				if (enableTextLog) {
+					generalLoggerBuilder.add(appendRef2);
+					generalLoggerBuilder.add(appendRef4);
+				}
+				if (enableHTMLLog) {
+					generalLoggerBuilder.add(appendRef3);
+					generalLoggerBuilder.add(appendRef5);
+				}
 			}
 
-			builder.add(loggerBuilder2);
+			// create new logger for summary
+			LoggerComponentBuilder summaryLoggerBuilder = builder.newLogger("Summary", Level.ALL);
+			summaryLoggerBuilder.addAttribute("additivity", false);
+			{
+				AppenderRefComponentBuilder appendRef11 = builder.newAppenderRef("summary-log-text");
+				appendRef11.addAttribute("level", Level.ALL);
+				AppenderRefComponentBuilder appendRef12 = builder.newAppenderRef("summary-log-html");
+				appendRef12.addAttribute("level", Level.ALL);
 
+				if (enableTextLog) {
+					summaryLoggerBuilder.add(appendRef11);
+				}
+				if (enableHTMLLog) {
+					summaryLoggerBuilder.add(appendRef12);
+				}
+			}
+
+			// create new logger for real time logs
+			LoggerComponentBuilder realTimeLoggerBuilder = builder.newLogger("RealTimeLog", Level.ALL);
+			realTimeLoggerBuilder.addAttribute("additivity", false);
+			{
+				AppenderRefComponentBuilder appendRef21 = builder.newAppenderRef("realtime-log-text");
+				appendRef21.addAttribute("level", Level.ALL);
+				AppenderRefComponentBuilder appendRef22 = builder.newAppenderRef("realtime-log-html");
+				appendRef22.addAttribute("level", Level.ALL);
+
+				if (enableTextLog) {
+					realTimeLoggerBuilder.add(appendRef21);
+				}
+				if (enableHTMLLog) {
+					realTimeLoggerBuilder.add(appendRef22);
+				}
+			}
+
+			// create root logger
 			RootLoggerComponentBuilder rootlogggerBuilder = builder.newRootLogger(Level.ALL);
 			rootlogggerBuilder.addAttribute("additivity", false);
-			AppenderRefComponentBuilder appendRef0 = builder.newAppenderRef("console-log");
-			rootlogggerBuilder.add(appendRef0);
+			{
+				AppenderRefComponentBuilder appendRef0 = builder.newAppenderRef("console-log");
+				rootlogggerBuilder.add(appendRef0);
+			}
 
+			builder.add(generalLoggerBuilder);
+			builder.add(summaryLoggerBuilder);
+			builder.add(realTimeLoggerBuilder);
 			builder.add(rootlogggerBuilder);
 		}
 
@@ -472,8 +570,7 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Returns Log Level Enum value based on Framework configuration set in XML
-	 * file
+	 * Returns Log Level Enum value based on Framework configuration set in XML file
 	 * 
 	 * @see Level
 	 * 
@@ -520,11 +617,13 @@ class OrganisedLog {
 		if (FWStatic_Store.context.getFrameworkConfig().isEnableBanner()) {
 			getGeneralLogger().info(Banner.getBanner());
 			getSummaryLogger().info(Banner.getBanner());
+			getRealTimeLogger().info(Banner.getBanner());
 		}
 
 		if (FWStatic_Store.context.getFrameworkConfig().isEnableOrganisationInfo()) {
 			getGeneralLogger().info(organisationInfo);
 			getSummaryLogger().info(organisationInfo);
+			getRealTimeLogger().info(organisationInfo);
 		}
 	}
 
@@ -559,8 +658,7 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Get {@code Logger} object which is responsible for logging raw and error
-	 * logs
+	 * Get {@code Logger} object which is responsible for logging raw and error logs
 	 * 
 	 * @return General Logger
 	 */
@@ -593,6 +691,19 @@ class OrganisedLog {
 	/** Sets Log Files Base Directory */
 	public void setLogBaseDir(String logBaseDir) {
 		this.logBaseDir = logBaseDir;
+	}
+
+	/**
+	 * Get {@code Logger} object which is responsible for logging realtime logs
+	 * 
+	 * @return RealTime Logger
+	 */
+	public org.apache.logging.log4j.core.Logger getRealTimeLogger() {
+		return realTimeLogger;
+	}
+
+	public void setRealTimeLogger(org.apache.logging.log4j.core.Logger realTimeLogger) {
+		this.realTimeLogger = realTimeLogger;
 	}
 
 }
