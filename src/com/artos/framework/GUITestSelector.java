@@ -114,6 +114,7 @@ public class GUITestSelector {
 			} catch (Exception IllegalArgumentException) {
 				System.err.println("Icons can not be found");
 			}
+			container.setAlwaysOnTop(true);
 			container.setVisible(true);
 		} else {
 			try {
