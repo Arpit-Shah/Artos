@@ -24,9 +24,6 @@ import com.artos.utils.Heartbeat;
  * class can be used with common HeartBeat mechanism
  * 
  * @see Heartbeat
- * 
- * 
- *
  */
 public interface Connectable {
 
@@ -39,7 +36,7 @@ public interface Connectable {
 	public void sendMsg(byte[] data) throws Exception;
 
 	public byte[] getNextMsg() throws Exception;
-	
+
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws Exception;
 
 	public boolean hasNextMsg();

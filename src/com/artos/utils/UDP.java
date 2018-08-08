@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.artos.framework.listener.RealTimeConnectableListener;
 import com.artos.interfaces.Connectable;
 import com.artos.interfaces.ConnectableFilter;
 
@@ -48,6 +49,8 @@ public class UDP implements Connectable {
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	Thread serverThread;
 	List<ConnectableFilter> filterList = null;
+	RealTimeConnectableListener realTimeListener;
+	Transform _transform = new Transform();
 
 	/**
 	 * Allows user to use different send and receive ports
@@ -66,14 +69,15 @@ public class UDP implements Connectable {
 		this.remotePort = remotePort;
 		this.localSocketAddress = new InetSocketAddress(localAddress, localPort);
 		this.remoteSocketAddress = new InetSocketAddress(remoteAddress, remotePort);
+		this.realTimeListener = new RealTimeConnectableListener();
 		this.filterList = null;
 	}
 
 	/**
 	 * Allows user to use different send and receive ports. Every filter adds
 	 * overheads in processing received messages which may have impact on
-	 * performance. If filter logic takes too much time to make decision then
-	 * UDP message may be dropped.
+	 * performance. If filter logic takes too much time to make decision then UDP
+	 * message may be dropped.
 	 * 
 	 * @param localAddress
 	 *            Host IP
@@ -91,13 +95,14 @@ public class UDP implements Connectable {
 		this.remotePort = remotePort;
 		this.localSocketAddress = new InetSocketAddress(localAddress, localPort);
 		this.remoteSocketAddress = new InetSocketAddress(remoteAddress, remotePort);
+		this.realTimeListener = new RealTimeConnectableListener();
 		this.filterList = filterList;
 	}
 
 	/**
-	 * Creates a datagram socket, bound to the specified local socket address.
-	 * If, if the address is null, creates an unbound socket. With Infinite
-	 * socket timeout
+	 * Creates a datagram socket, bound to the specified local socket address. If,
+	 * if the address is null, creates an unbound socket. With Infinite socket
+	 * timeout
 	 * 
 	 */
 	public void connect() {
@@ -106,8 +111,8 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Creates a datagram socket, bound to the specified local socket address.
-	 * If, if the address is null, creates an unbound socket.
+	 * Creates a datagram socket, bound to the specified local socket address. If,
+	 * if the address is null, creates an unbound socket.
 	 * 
 	 * With timeout option set to a non-zero, a call to receive() for this
 	 * DatagramSocket will block for only this amount of time. If the timeout
@@ -166,8 +171,8 @@ public class UDP implements Connectable {
 
 	/**
 	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received
-	 * within timeout period
+	 * queue or timeout has occurred. null is returned if no message received within
+	 * timeout period
 	 * 
 	 * @param timeout
 	 *            msg timeout
@@ -175,9 +180,9 @@ public class UDP implements Connectable {
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -212,10 +217,10 @@ public class UDP implements Connectable {
 
 	/**
 	 * Constructs and sends datagram packet to the specified port number on the
-	 * specified host. The length argument must be less than or equal to
-	 * buf.length. The DatagramPacket includes information indicating the data
-	 * to be sent, its length, the IP address of the remote host, and the port
-	 * number on the remote host.
+	 * specified host. The length argument must be less than or equal to buf.length.
+	 * The DatagramPacket includes information indicating the data to be sent, its
+	 * length, the IP address of the remote host, and the port number on the remote
+	 * host.
 	 * 
 	 * @param stringMsg
 	 *            String data
@@ -229,10 +234,10 @@ public class UDP implements Connectable {
 
 	/**
 	 * Constructs and sends datagram packet to the specified port number on the
-	 * specified host. The length argument must be less than or equal to
-	 * buf.length. The DatagramPacket includes information indicating the data
-	 * to be sent, its length, the IP address of the remote host, and the port
-	 * number on the remote host.
+	 * specified host. The length argument must be less than or equal to buf.length.
+	 * The DatagramPacket includes information indicating the data to be sent, its
+	 * length, the IP address of the remote host, and the port number on the remote
+	 * host.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs.
@@ -241,6 +246,11 @@ public class UDP implements Connectable {
 	public void sendMsg(byte[] data) throws IOException {
 		DatagramPacket sendPacket = new DatagramPacket(data, data.length, remoteSocketAddress);
 		serverSocket.send(sendPacket);
+		notifySend(data);
+	}
+
+	private void notifySend(byte[] data) {
+		realTimeListener.send("Req: {}", _transform.bytesToHexString(data));
 	}
 
 	/**
@@ -256,7 +266,7 @@ public class UDP implements Connectable {
 			@Override
 			public void run() {
 				try {
-					clientProcessingPool.submit(new UDPClientTask(serverSocket, queue, filterList));
+					clientProcessingPool.submit(new UDPClientTask(serverSocket, queue, realTimeListener, filterList));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -331,15 +341,20 @@ class UDPClientTask implements Runnable {
 	String redDataText;
 	Queue<byte[]> queue;
 	volatile List<ConnectableFilter> filterList = null;
+	volatile RealTimeConnectableListener realTimeListener;
+	Transform _transform = new Transform();
 
-	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue) {
+	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener) {
 		this.connector = connector;
 		this.queue = queue;
+		this.realTimeListener = realTimeListener;
+		this.filterList = null;
 	}
 
-	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, List<ConnectableFilter> filterList) {
+	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener, List<ConnectableFilter> filterList) {
 		this.connector = connector;
 		this.queue = queue;
+		this.realTimeListener = realTimeListener;
 		this.filterList = filterList;
 	}
 
@@ -356,6 +371,7 @@ class UDPClientTask implements Runnable {
 				readData = Arrays.copyOfRange(receiveData, 0, receivePacket.getLength());
 
 				if (readData.length > 0) {
+					notifyReceive(readData);
 					applyFilter(readData);
 				}
 			}
@@ -377,5 +393,9 @@ class UDPClientTask implements Runnable {
 		} else {
 			queue.add(readData);
 		}
+	}
+
+	private void notifyReceive(byte[] data) {
+		realTimeListener.send("Res: {}", _transform.bytesToHexString(data));
 	}
 }

@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.artos.framework.listener.RealTimeConnectableListener;
 import com.artos.interfaces.Connectable;
 import com.artos.interfaces.ConnectableFilter;
 
@@ -45,6 +46,8 @@ public class TCPClient implements Connectable {
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	ServerTask serverTask = null;
 	List<ConnectableFilter> filterList = null;
+	RealTimeConnectableListener realTimeListener;
+	Transform _transform = new Transform();
 
 	/**
 	 * Constructor
@@ -57,6 +60,7 @@ public class TCPClient implements Connectable {
 	public TCPClient(String ip, int nPort) {
 		this.ip = ip;
 		this.nPort = nPort;
+		this.realTimeListener = new RealTimeConnectableListener();
 		this.filterList = null;
 	}
 
@@ -74,12 +78,13 @@ public class TCPClient implements Connectable {
 	public TCPClient(String ip, int nPort, List<ConnectableFilter> filterList) {
 		this.ip = ip;
 		this.nPort = nPort;
+		this.realTimeListener = new RealTimeConnectableListener();
 		this.filterList = null;
 	}
 
 	/**
-	 * Creates a stream socket and connects it to the specified port number on
-	 * the named host.
+	 * Creates a stream socket and connects it to the specified port number on the
+	 * named host.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when creating the socket.
@@ -110,9 +115,9 @@ public class TCPClient implements Connectable {
 	}
 
 	/**
-	 * Closes this socket. Once a socket has been closed, it is not available
-	 * for further networking use (i.e. can't be reconnected or rebound). A new
-	 * socket needs to be created.
+	 * Closes this socket. Once a socket has been closed, it is not available for
+	 * further networking use (i.e. can't be reconnected or rebound). A new socket
+	 * needs to be created.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when closing this socket.
@@ -135,8 +140,8 @@ public class TCPClient implements Connectable {
 
 	/**
 	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received
-	 * within timeout period
+	 * queue or timeout has occurred. null is returned if no message received within
+	 * timeout period
 	 * 
 	 * @param timeout
 	 *            msg timeout
@@ -144,9 +149,9 @@ public class TCPClient implements Connectable {
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -185,8 +190,8 @@ public class TCPClient implements Connectable {
 	 * @param data
 	 *            data to be sent in String format
 	 * @throws IOException
-	 *             if an I/O error occurs when creating the output stream or if
-	 *             the socket is not connected.
+	 *             if an I/O error occurs when creating the output stream or if the
+	 *             socket is not connected.
 	 */
 	public void sendMsg(String data) throws IOException {
 		sendMsg(data.getBytes());
@@ -196,13 +201,18 @@ public class TCPClient implements Connectable {
 	 * Send byte array to server
 	 * 
 	 * @throws IOException
-	 *             if an I/O error occurs when creating the output stream or if
-	 *             the socket is not connected.
+	 *             if an I/O error occurs when creating the output stream or if the
+	 *             socket is not connected.
 	 */
 	@Override
 	public void sendMsg(byte[] data) throws IOException {
 		outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		outToServer.write(data);
+		notifySend(data);
+	}
+
+	private void notifySend(byte[] data) {
+		realTimeListener.send("Req: {}", _transform.bytesToHexString(data));
 	}
 
 	/**
@@ -218,7 +228,7 @@ public class TCPClient implements Connectable {
 			@Override
 			public void run() {
 				try {
-					serverTask = new ServerTask(clientSocket, queue, filterList);
+					serverTask = new ServerTask(clientSocket, queue, realTimeListener, filterList);
 					clientProcessingPool.submit(serverTask);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -261,17 +271,21 @@ class ServerTask implements Runnable {
 	byte[] readData;
 	String redDataText;
 	Queue<byte[]> queue;
+	volatile RealTimeConnectableListener realTimeListener;
+	Transform _transform = new Transform();
 	volatile List<ConnectableFilter> filterList = null;
 
-	ServerTask(Socket connector, Queue<byte[]> queue) {
+	ServerTask(Socket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener) {
 		this.connector = connector;
 		this.queue = queue;
+		this.realTimeListener = realTimeListener;
 		this.filterList = null;
 	}
 
-	ServerTask(Socket connector, Queue<byte[]> queue, List<ConnectableFilter> filterList) {
+	ServerTask(Socket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener, List<ConnectableFilter> filterList) {
 		this.connector = connector;
 		this.queue = queue;
+		this.realTimeListener = realTimeListener;
 		this.filterList = filterList;
 	}
 
@@ -282,6 +296,7 @@ class ServerTask implements Runnable {
 				readData = new byte[read];
 				System.arraycopy(buffer, 0, readData, 0, read);
 				if (readData.length > 0) {
+					notifyReceive(readData);
 					applyFilter(readData);
 				}
 			}
@@ -307,5 +322,9 @@ class ServerTask implements Runnable {
 		} else {
 			queue.add(readData);
 		}
+	}
+
+	private void notifyReceive(byte[] data) {
+		realTimeListener.send("Res: {}", _transform.bytesToHexString(data));
 	}
 }
