@@ -51,7 +51,7 @@ public class Guard {
 	}
 
 	static void print(byte reference, byte actual, byte delta) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\\n   Delta : {}", _con.bytesToHexString(reference, true),
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\n   Delta : {}", _con.bytesToHexString(reference, true),
 				_con.bytesToHexString(actual, true), _con.bytesToHexString(delta, true));
 	}
 
@@ -65,7 +65,7 @@ public class Guard {
 	}
 
 	static void print(int reference, int actual, int delta) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\\n   Delta : {}", reference, actual, delta);
+		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\n   Delta : {}", reference, actual, delta);
 	}
 
 	static void print(boolean reference, boolean actual) {
@@ -77,7 +77,7 @@ public class Guard {
 	}
 
 	static void print(long reference, long actual, long delta) {
-		FWStatic_Store.context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\\n   Delta : {}", reference, actual, delta);
+		FWStatic_Store.context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\n   Delta : {}", reference, actual, delta);
 	}
 
 	// *******************************************************************************************
