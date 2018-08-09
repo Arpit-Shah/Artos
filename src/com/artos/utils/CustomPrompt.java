@@ -100,7 +100,7 @@ public class CustomPrompt implements ItemListener {
 			BufferedImage bimg = ImageIO.read(getImage());
 			int width = bimg.getWidth();
 			int height = bimg.getHeight();
-			if (width > 700 || height > 700) {
+			if (width > 1000 || height > 1000) {
 				throw new Exception(ExceptionValue.OVERSIZE_OBJECT.getValue() + " : " + getImage().getAbsolutePath());
 			}
 			iconlabel = new JLabel();
@@ -110,7 +110,7 @@ public class CustomPrompt implements ItemListener {
 		}
 
 		// Time Panel
-		Dimension timePanelDim = new Dimension(700, 70);
+		Dimension timePanelDim = new Dimension(1000, 70);
 		jltime = new JLabel("00:00:00", SwingConstants.CENTER);
 		jltime.setForeground(Color.WHITE);
 		jltime.setBackground(Color.BLACK);
@@ -137,7 +137,7 @@ public class CustomPrompt implements ItemListener {
 		jbtnNo.addActionListener(e);
 
 		// Info Panel
-		Dimension infoPanelLabelDim = new Dimension(700, 35);
+		Dimension infoPanelLabelDim = new Dimension(1000, 35);
 		Font font = new Font("Arial", Font.BOLD, 20);
 
 		JPanel infoPanel1 = new JPanel();
