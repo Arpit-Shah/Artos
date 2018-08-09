@@ -2,9 +2,12 @@ package com.artos.interfaces;
 
 public interface RealTimeLogListener {
 
-	default void send(String msg, Object... params) {
-	}
+	public void connected();
+	
+	public void disConnected();
 
-	default void receive(String msg, Object... params) {
-	}
+	public void send(byte[] data);
+
+	public void receive(byte[] data);
+
 }

@@ -47,17 +47,18 @@ public class CliProcessor {
 		CommandLineParser parser = new DefaultParser();
 
 		// Create Option
-		Option subDir = Option.builder("s").required(false).longOpt("subdir").desc("use given name as log sub directory name Example : --subdir=test")
-				.hasArg().build();
+		// Option subDir =
+		// Option.builder("s").required(false).longOpt("subdir").desc("use given
+		// name as log sub directory name Example : --subdir=test")
+		// .hasArg().build();
 		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos test tool").build();
-		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.artos.com for more info")
-				.build();
+		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.artos.com for more info").build();
 		Option contributors = Option.builder("c").required(false).longOpt("contributors").desc("Project Contributors name").build();
 
 		// Add Option
 		Options options = new Options();
 		options.addOption(help);
-		options.addOption(subDir);
+		// options.addOption(subDir);
 		options.addOption(version);
 		options.addOption(contributors);
 
@@ -84,11 +85,11 @@ public class CliProcessor {
 			}
 			// If command line argument is provided then change logging
 			// sub-directory name
-			if (line.hasOption("subdir")) {
-				PrintWriter pw = new PrintWriter(System.out);
-				FWStatic_Store.context.getFrameworkConfig().setLogSubDir(line.getOptionValue("subdir"));
-				pw.flush();
-			}
+			// if (line.hasOption("subdir")) {
+			// PrintWriter pw = new PrintWriter(System.out);
+			// FWStatic_Store.context.getFrameworkConfig().setLogSubDir(line.getOptionValue("subdir"));
+			// pw.flush();
+			// }
 		} catch (ParseException exp) {
 			// Do not do anything, just continue
 			System.out.println(exp.getMessage());

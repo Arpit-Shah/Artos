@@ -46,7 +46,7 @@ public class TCPServer implements Connectable {
 	DataOutputStream outToClient;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	List<ConnectableFilter> filterList = null;
-	RealTimeConnectableListener realTimeListener;
+	RealTimeConnectableListener realTimeListener = null;
 	Transform _transform = new Transform();
 
 	/**
@@ -58,7 +58,6 @@ public class TCPServer implements Connectable {
 	 */
 	public TCPServer(int nPort) {
 		this.nPort = nPort;
-		this.realTimeListener = new RealTimeConnectableListener();
 		this.filterList = null;
 	}
 
@@ -74,13 +73,12 @@ public class TCPServer implements Connectable {
 	 */
 	public TCPServer(int nPort, List<ConnectableFilter> filterList) {
 		this.nPort = nPort;
-		this.realTimeListener = new RealTimeConnectableListener();
 		this.filterList = filterList;
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks until
-	 * a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks
+	 * until a connection is made.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when opening the socket.
@@ -91,13 +89,13 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks until
-	 * a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks
+	 * until a connection is made.
 	 * 
 	 * Setting soTimeout to a non-zero timeout, a call to accept() for this
-	 * ServerSocket will block for only this amount of time. If the timeout expires,
-	 * a java.net.SocketTimeoutException is raised, though the ServerSocket is still
-	 * valid.
+	 * ServerSocket will block for only this amount of time. If the timeout
+	 * expires, a java.net.SocketTimeoutException is raised, though the
+	 * ServerSocket is still valid.
 	 * 
 	 * @param soTimeout
 	 *            the specified timeout in milliseconds.
@@ -116,6 +114,7 @@ public class TCPServer implements Connectable {
 
 		// Start Reading task in parallel thread
 		readFromSocket();
+		notifyConnected();
 	}
 
 	/**
@@ -123,17 +122,16 @@ public class TCPServer implements Connectable {
 	 * successfully connected and has not been closed
 	 */
 	public boolean isConnected() {
-		if (serverSocket.isConnected() && !serverSocket.isClosed()) {
+		if (serverSocket.isConnected() && serverSocket.isBound() && !serverSocket.isClosed()) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
-	 * Closes this socket. Once a socket has been closed, it is not available for
-	 * further networking use (i.e. can't be reconnected or rebound). A new socket
-	 * needs to be created.
+	 * Closes this socket. Once a socket has been closed, it is not available
+	 * for further networking use (i.e. can't be reconnected or rebound). A new
+	 * socket needs to be created.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when closing this socket.
@@ -141,6 +139,7 @@ public class TCPServer implements Connectable {
 	public void disconnect() throws IOException {
 		serverSocket.close();
 		tcpSocket.close();
+		notifyDisconnected();
 		System.out.println("Connection Closed");
 	}
 
@@ -157,8 +156,8 @@ public class TCPServer implements Connectable {
 
 	/**
 	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received within
-	 * timeout period
+	 * queue or timeout has occurred. null is returned if no message received
+	 * within timeout period
 	 * 
 	 * @param timeout
 	 *            msg timeout
@@ -166,9 +165,9 @@ public class TCPServer implements Connectable {
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The interrupted
-	 *             status of the current thread is cleared when this exception is
-	 *             thrown.
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -226,10 +225,6 @@ public class TCPServer implements Connectable {
 		notifySend(data);
 	}
 
-	private void notifySend(byte[] data) {
-		realTimeListener.send("Req: {}", _transform.bytesToHexString(data));
-	}
-
 	/**
 	 * Clean receive queue
 	 */
@@ -249,9 +244,34 @@ public class TCPServer implements Connectable {
 				}
 			}
 		};
-		Thread serverThread = new Thread(serverTask);
+		Thread serverThread = new Thread(serverTask, "Artos_TCPServer_Receiver_Thread");
 		serverThread.start();
 	}
+
+	// =================================================================================================
+	// Listener Notify
+	// =================================================================================================
+	private void notifySend(byte[] data) {
+		if (null != realTimeListener) {
+			realTimeListener.send(data);
+		}
+	}
+
+	private void notifyConnected() {
+		if (null != realTimeListener) {
+			realTimeListener.connected();
+		}
+	}
+
+	private void notifyDisconnected() {
+		if (null != realTimeListener) {
+			realTimeListener.disConnected();
+		}
+	}
+
+	// =================================================================================================
+	// Getter Setter
+	// =================================================================================================
 
 	public ServerSocket getTcpSocket() {
 		return tcpSocket;
@@ -271,6 +291,14 @@ public class TCPServer implements Connectable {
 
 	public void setnPort(int nPort) {
 		this.nPort = nPort;
+	}
+
+	public RealTimeConnectableListener getRealTimeListener() {
+		return realTimeListener;
+	}
+
+	public void setRealTimeListener(RealTimeConnectableListener realTimeListener) {
+		this.realTimeListener = realTimeListener;
 	}
 
 }
@@ -344,6 +372,8 @@ class ClientTask implements Runnable {
 	}
 
 	private void notifyReceive(byte[] data) {
-		realTimeListener.send("Res: {}", _transform.bytesToHexString(data));
+		if (null != realTimeListener) {
+			realTimeListener.receive(data);
+		}
 	}
 }
