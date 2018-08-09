@@ -207,7 +207,7 @@ class OrganisedLog {
 		}
 		return mergedList;
 	}
-	
+
 	/**
 	 * Get all realTime log files relevant to current context (Includes .txt and
 	 * .html files)
@@ -274,9 +274,10 @@ class OrganisedLog {
 			}
 		}
 	}
-	
+
 	/**
-	 * Provides list of current realtime log files attached to provided appender name
+	 * Provides list of current realtime log files attached to provided appender
+	 * name
 	 * 
 	 * @param appenderName
 	 *            Appender Name
@@ -349,9 +350,11 @@ class OrganisedLog {
 		*/
 		{
 			if (enableLogDecoration) {
-				logFileLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
+				logFileLayout.addAttribute("pattern",
+						"%highlight{[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}");
 			} else {
-				logFileLayout.addAttribute("pattern", "%msg%n%throwable");
+				logFileLayout.addAttribute("pattern",
+						"%highlight{%msg%n%throwable}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}");
 			}
 
 			realTimeLogLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t] - %msg%n%throwable");
@@ -422,9 +425,9 @@ class OrganisedLog {
 			appenderBuilder4.addAttribute("filePattern", fileroot + fileName + "-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
 			appenderBuilder4.add(logFileLayout);
 			appenderBuilder4.addComponent(triggeringPolicy);
-			if (enableTextLog) {
-				builder.add(appenderBuilder4);
-			}
+			// if (enableTextLog) {
+			// builder.add(appenderBuilder4);
+			// }
 
 			// HTML
 			AppenderComponentBuilder appenderBuilder5 = builder.newAppender("error-log-html", "RollingFile");
@@ -432,9 +435,9 @@ class OrganisedLog {
 			appenderBuilder5.addAttribute("filePattern", fileroot + fileName + "-error-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
 			appenderBuilder5.add(htmlLogFileLayout);
 			appenderBuilder5.addComponent(triggeringPolicy);
-			if (enableHTMLLog) {
-				builder.add(appenderBuilder5);
-			}
+			// if (enableHTMLLog) {
+			// builder.add(appenderBuilder5);
+			// }
 		}
 
 		// create a rolling file appender for summary
