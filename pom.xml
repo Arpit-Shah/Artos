@@ -4,7 +4,8 @@
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://bitbucket.org/ShahArpit/arpitos_fork</url>
-	<description>Automated Regression Test System</description>
+	<description>Automated Regression and Unit Test System</description>
+	<inceptionYear>2018</inceptionYear>
 
 	<!-- Project GAV Info -->
 	<modelVersion>4.0.0</modelVersion>
