@@ -8,14 +8,14 @@ import com.artos.framework.infra.TestContext;
 import com.artos.interfaces.RealTimeLogListener;
 import com.artos.utils.Transform;
 
-public class RealTimeConnectableListener implements RealTimeLogListener {
+public class RealTimeLogEventListener implements RealTimeLogListener {
 
 	static final String FQCN = LogWrapper.class.getName();
 	Transform _tfm = new Transform();
 	TestContext context;
 	Logger logger;
 
-	public RealTimeConnectableListener(TestContext context) {
+	public RealTimeLogEventListener(TestContext context) {
 		this.context = context;
 		this.logger = context.getLogger().getRealTimeLogger();
 	}

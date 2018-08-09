@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.artos.framework.listener.RealTimeConnectableListener;
+import com.artos.framework.listener.RealTimeLogEventListener;
 import com.artos.interfaces.Connectable;
 import com.artos.interfaces.ConnectableFilter;
 
@@ -46,7 +46,7 @@ public class TCPServer implements Connectable {
 	DataOutputStream outToClient;
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	List<ConnectableFilter> filterList = null;
-	RealTimeConnectableListener realTimeListener = null;
+	RealTimeLogEventListener realTimeListener = null;
 	Transform _transform = new Transform();
 
 	/**
@@ -293,11 +293,11 @@ public class TCPServer implements Connectable {
 		this.nPort = nPort;
 	}
 
-	public RealTimeConnectableListener getRealTimeListener() {
+	public RealTimeLogEventListener getRealTimeListener() {
 		return realTimeListener;
 	}
 
-	public void setRealTimeListener(RealTimeConnectableListener realTimeListener) {
+	public void setRealTimeListener(RealTimeLogEventListener realTimeListener) {
 		this.realTimeListener = realTimeListener;
 	}
 
@@ -318,18 +318,18 @@ class ClientTask implements Runnable {
 	byte[] readData;
 	String redDataText;
 	Queue<byte[]> queue;
-	volatile RealTimeConnectableListener realTimeListener;
+	volatile RealTimeLogEventListener realTimeListener;
 	Transform _transform = new Transform();
 	volatile List<ConnectableFilter> filterList = null;
 
-	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener) {
+	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener) {
 		this.connector = connector;
 		this.queue = queue;
 		this.realTimeListener = realTimeListener;
 		this.filterList = null;
 	}
 
-	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener, List<ConnectableFilter> filterList) {
+	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener, List<ConnectableFilter> filterList) {
 		this.connector = connector;
 		this.queue = queue;
 		this.realTimeListener = realTimeListener;

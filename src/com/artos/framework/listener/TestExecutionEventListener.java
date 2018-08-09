@@ -3,14 +3,14 @@ package com.artos.framework.listener;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
-import com.artos.interfaces.TestExecutionListner;
+import com.artos.interfaces.TestExecutionListener;
 
-public class TestEventLoggerListener implements TestExecutionListner {
+public class TestExecutionEventListener implements TestExecutionListener {
 
 	TestContext context;
 	LogWrapper logger;
 
-	public TestEventLoggerListener(TestContext context) {
+	public TestExecutionEventListener(TestContext context) {
 		this.context = context;
 		this.logger = context.getLogger();
 	}

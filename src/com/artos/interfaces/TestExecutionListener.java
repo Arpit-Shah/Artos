@@ -2,7 +2,7 @@ package com.artos.interfaces;
 
 import com.artos.framework.TestObjectWrapper;
 
-public interface TestExecutionListner {
+public interface TestExecutionListener {
 
 	default void testSuiteExecutionStarted(String description) {
 	}

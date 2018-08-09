@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.artos.framework.listener.RealTimeConnectableListener;
+import com.artos.framework.listener.RealTimeLogEventListener;
 import com.artos.interfaces.Connectable;
 import com.artos.interfaces.ConnectableFilter;
 
@@ -49,7 +49,7 @@ public class UDP implements Connectable {
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	Thread serverThread;
 	List<ConnectableFilter> filterList = null;
-	RealTimeConnectableListener realTimeListener = null;
+	RealTimeLogEventListener realTimeListener = null;
 	Transform _transform = new Transform();
 
 	/**
@@ -354,11 +354,11 @@ public class UDP implements Connectable {
 		return remoteSocketAddress;
 	}
 
-	public RealTimeConnectableListener getRealTimeListener() {
+	public RealTimeLogEventListener getRealTimeListener() {
 		return realTimeListener;
 	}
 
-	public void setRealTimeListener(RealTimeConnectableListener realTimeListener) {
+	public void setRealTimeListener(RealTimeLogEventListener realTimeListener) {
 		this.realTimeListener = realTimeListener;
 	}
 }
@@ -371,17 +371,17 @@ class UDPClientTask implements Runnable {
 	String redDataText;
 	Queue<byte[]> queue;
 	volatile List<ConnectableFilter> filterList = null;
-	volatile RealTimeConnectableListener realTimeListener;
+	volatile RealTimeLogEventListener realTimeListener;
 	Transform _transform = new Transform();
 
-	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener) {
+	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener) {
 		this.connector = connector;
 		this.queue = queue;
 		this.realTimeListener = realTimeListener;
 		this.filterList = null;
 	}
 
-	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, RealTimeConnectableListener realTimeListener, List<ConnectableFilter> filterList) {
+	UDPClientTask(DatagramSocket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener, List<ConnectableFilter> filterList) {
 		this.connector = connector;
 		this.queue = queue;
 		this.realTimeListener = realTimeListener;

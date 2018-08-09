@@ -28,10 +28,10 @@ import com.artos.framework.GUITestSelector;
 import com.artos.framework.ScanTestSuite;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.Enums.TestStatus;
-import com.artos.framework.listener.TestEventLoggerListener;
+import com.artos.framework.listener.TestExecutionEventListener;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
-import com.artos.interfaces.TestExecutionListner;
+import com.artos.interfaces.TestExecutionListener;
 import com.artos.interfaces.TestRunnable;
 import com.artos.utils.Transform;
 import com.artos.utils.UtilsFramework;
@@ -45,7 +45,7 @@ public class Runner {
 
 	Class<? extends PrePostRunnable> cls;
 	TestContext context = FWStatic_Store.context;
-	List<TestExecutionListner> listenerList = new ArrayList<TestExecutionListner>();
+	List<TestExecutionListener> listenerList = new ArrayList<TestExecutionListener>();
 
 	// ==================================================================================
 	// Constructor (Starting point of framework)
@@ -105,7 +105,7 @@ public class Runner {
 		FWStatic_Store.context.setOrganisedLogger(logWrapper);
 
 		// Register default listener
-		TestEventLoggerListener testListener = new TestEventLoggerListener(context);
+		TestExecutionEventListener testListener = new TestExecutionEventListener(context);
 		registerListener(testListener);
 	}
 
@@ -318,11 +318,11 @@ public class Runner {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
-	public void registerListener(TestExecutionListner listener) {
+	public void registerListener(TestExecutionListener listener) {
 		getListenerList().add(listener);
 	}
 
-	public void deRegisterListener(TestExecutionListner listener) {
+	public void deRegisterListener(TestExecutionListener listener) {
 		getListenerList().remove(listener);
 	}
 
@@ -331,37 +331,37 @@ public class Runner {
 	}
 
 	void notifyTestSuiteExecutionStarted(String testSuiteName) {
-		for (TestExecutionListner listener : getListenerList()) {
+		for (TestExecutionListener listener : getListenerList()) {
 			listener.testSuiteExecutionStarted(testSuiteName);
 		}
 	}
 
 	void notifyTestSuiteExecutionFinished(String testSuiteName) {
-		for (TestExecutionListner listener : getListenerList()) {
+		for (TestExecutionListener listener : getListenerList()) {
 			listener.testSuiteExecutionFinished(testSuiteName);
 		}
 	}
 
 	void notifyTestExecutionStarted(TestObjectWrapper t) {
-		for (TestExecutionListner listener : getListenerList()) {
+		for (TestExecutionListener listener : getListenerList()) {
 			listener.testExecutionStarted(t);
 		}
 	}
 
 	void notifyTestExecutionFinished(TestObjectWrapper t) {
-		for (TestExecutionListner listener : getListenerList()) {
+		for (TestExecutionListener listener : getListenerList()) {
 			listener.testExecutionFinished(t);
 		}
 	}
 
 	void notifyTestExecutionSkipped(TestObjectWrapper t) {
-		for (TestExecutionListner listener : getListenerList()) {
+		for (TestExecutionListener listener : getListenerList()) {
 			listener.testExecutionSkipped(t);
 		}
 	}
 
 	void notifyTestExecutionLoopCount(int count) {
-		for (TestExecutionListner listener : getListenerList()) {
+		for (TestExecutionListener listener : getListenerList()) {
 			listener.testExecutionLoopCount(count);
 		}
 	}
@@ -402,11 +402,11 @@ public class Runner {
 		return listOfTransformedTestCases;
 	}
 
-	public List<TestExecutionListner> getListenerList() {
+	public List<TestExecutionListener> getListenerList() {
 		return listenerList;
 	}
 
-	public void setListenerList(List<TestExecutionListner> listenerList) {
+	public void setListenerList(List<TestExecutionListener> listenerList) {
 		this.listenerList = listenerList;
 	}
 }
