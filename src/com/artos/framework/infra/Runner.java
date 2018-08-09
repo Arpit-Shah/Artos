@@ -119,8 +119,7 @@ public class Runner {
 	 * @param args
 	 *            Command line arguments
 	 * @param testList
-	 *            List of tests to run. All test must be {@code TestExecutable}
-	 *            type
+	 *            List of tests to run. All test must be {@code TestExecutable} type
 	 * @param loopCycle
 	 *            Test loop execution count
 	 * @throws Exception
@@ -187,6 +186,16 @@ public class Runner {
 		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
 				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
+		if (context.getCurrentFailCount() > 0) {
+			System.err.println("********************************************************");
+			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
+			System.err.println("\n********************************************************");
+			for (int i = 0; i < context.getFailedTestList().size(); i++) {
+				System.err.println(String.format("%-4s%s", (i + 1), context.getFailedTestList().get(i)).replace(" ", "."));
+			}
+			System.err.println("********************************************************\n********************************************************");
+		}
+
 		System.exit((int) context.getCurrentFailCount());
 	}
 
@@ -237,8 +246,8 @@ public class Runner {
 	}
 
 	/**
-	 * This method executes the test case and handles all the exception and set
-	 * the test status correctly
+	 * This method executes the test case and handles all the exception and set the
+	 * test status correctly
 	 * 
 	 * @param t
 	 *            TestCase {@code TestObjectWrapper}
@@ -371,9 +380,9 @@ public class Runner {
 	// ==================================================================================
 	/**
 	 * This method transforms given test list of{@code TestEecutable} type into
-	 * {@code TestObjectWrapper} type list. This method will only consider test
-	 * This method can not transform test cases outside current package, so
-	 * those test cases will be omitted from the list
+	 * {@code TestObjectWrapper} type list. This method will only consider test This
+	 * method can not transform test cases outside current package, so those test
+	 * cases will be omitted from the list
 	 * 
 	 * @param cls
 	 *            class with main method

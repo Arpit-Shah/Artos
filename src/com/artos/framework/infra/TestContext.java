@@ -15,7 +15,9 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.artos.framework.FrameworkConfig;
@@ -41,6 +43,10 @@ public class TestContext {
 	private long currentFailCount = 0;
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
+	private List<String> passTestList = new ArrayList<>();
+	private List<String> failedTestList = new ArrayList<>();
+	private List<String> skippedTestList = new ArrayList<>();
+	private List<String> ktfTestList = new ArrayList<>();
 
 	// Test suite start time
 	private long testSuiteStartTime;
@@ -59,9 +65,9 @@ public class TestContext {
 
 	/**
 	 * Sets Test status in memory. Status is not finalised until
-	 * generateTestSummary() function is called. This function stamps "FAIL
-	 * HERE" warning as soon as status is set to FAIL so user can pin point
-	 * location of the failure
+	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
+	 * warning as soon as status is set to FAIL so user can pin point location of
+	 * the failure
 	 * 
 	 * @param testStatus
 	 *            Test Status
@@ -82,8 +88,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. This also
-	 * includes bugTicketNumber if provided
+	 * Concludes final test result and generates summary report. This also includes
+	 * bugTicketNumber if provided
 	 * 
 	 * @param strTestFQCN
 	 *            Test fully qualified class name (Example : com.test.unit.Abc)
@@ -112,12 +118,16 @@ public class TestContext {
 		// Store count details per status
 		if (getCurrentTestStatus() == TestStatus.PASS) {
 			setCurrentPassCount(getCurrentPassCount() + 1);
+			passTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.FAIL) {
 			setCurrentFailCount(getCurrentFailCount() + 1);
+			failedTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
 			setCurrentSkipCount(getCurrentSkipCount() + 1);
+			skippedTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.KTF) {
 			setCurrentKTFCount(getCurrentKTFCount() + 1);
+			ktfTestList.add(strTestFQCN);
 		}
 
 		long totalTestTime = testFinishTime - testStartTime;
@@ -126,7 +136,6 @@ public class TestContext {
 		// Finalise and add test summary to Summary report
 		getLogWrapper().appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(),
 				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
-
 		// reset status for next test
 		resetTestStatus();
 		setKnownToFail(false, "");
@@ -185,11 +194,10 @@ public class TestContext {
 
 	/**
 	 * This method should be exercised as initial line for every test case, this
-	 * allows user to set properties of test case as known to fail. If known to
-	 * fail test case passes then it will be marked as a fail. Which will help
-	 * user figure out if developer has fixed some feature without letting them
-	 * know and gives test engineer an opportunity to re-look at the test case
-	 * behaviour.
+	 * allows user to set properties of test case as known to fail. If known to fail
+	 * test case passes then it will be marked as a fail. Which will help user
+	 * figure out if developer has fixed some feature without letting them know and
+	 * gives test engineer an opportunity to re-look at the test case behaviour.
 	 * 
 	 * @param knownToFail
 	 *            true|false
@@ -219,8 +227,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Object which is available globally to all test cases. User must
-	 * maintain Key for the HashTable
+	 * Sets Object which is available globally to all test cases. User must maintain
+	 * Key for the HashTable
 	 * 
 	 * @param key
 	 *            = Key to recognize an Object
@@ -379,6 +387,22 @@ public class TestContext {
 
 	public void setSystemProperties(SystemProperties systemProperties) {
 		this.systemProperties = systemProperties;
+	}
+
+	public List<String> getPassTestList() {
+		return passTestList;
+	}
+
+	public List<String> getFailedTestList() {
+		return failedTestList;
+	}
+
+	public List<String> getSkippedTestList() {
+		return skippedTestList;
+	}
+
+	public List<String> getKtfTestList() {
+		return ktfTestList;
 	}
 
 }
