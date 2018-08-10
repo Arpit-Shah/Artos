@@ -81,8 +81,8 @@ public class TCPClient implements Connectable {
 	}
 
 	/**
-	 * Creates a stream socket and connects it to the specified port number on
-	 * the named host.
+	 * Creates a stream socket and connects it to the specified port number on the
+	 * named host.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when creating the socket.
@@ -113,9 +113,9 @@ public class TCPClient implements Connectable {
 	}
 
 	/**
-	 * Closes this socket. Once a socket has been closed, it is not available
-	 * for further networking use (i.e. can't be reconnected or rebound). A new
-	 * socket needs to be created.
+	 * Closes this socket. Once a socket has been closed, it is not available for
+	 * further networking use (i.e. can't be reconnected or rebound). A new socket
+	 * needs to be created.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when closing this socket.
@@ -139,8 +139,8 @@ public class TCPClient implements Connectable {
 
 	/**
 	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received
-	 * within timeout period
+	 * queue or timeout has occurred. null is returned if no message received within
+	 * timeout period
 	 * 
 	 * @param timeout
 	 *            msg timeout
@@ -148,9 +148,9 @@ public class TCPClient implements Connectable {
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -189,8 +189,8 @@ public class TCPClient implements Connectable {
 	 * @param data
 	 *            data to be sent in String format
 	 * @throws IOException
-	 *             if an I/O error occurs when creating the output stream or if
-	 *             the socket is not connected.
+	 *             if an I/O error occurs when creating the output stream or if the
+	 *             socket is not connected.
 	 */
 	public void sendMsg(String data) throws IOException {
 		sendMsg(data.getBytes());
@@ -200,8 +200,8 @@ public class TCPClient implements Connectable {
 	 * Send byte array to server
 	 * 
 	 * @throws IOException
-	 *             if an I/O error occurs when creating the output stream or if
-	 *             the socket is not connected.
+	 *             if an I/O error occurs when creating the output stream or if the
+	 *             socket is not connected.
 	 */
 	@Override
 	public void sendMsg(byte[] data) throws IOException {

@@ -85,8 +85,8 @@ public class Transform {
 	}
 
 	/**
-	 * concatenates byte array with subsequent single byte in order it was
-	 * provided in.
+	 * concatenates byte array with subsequent single byte in order it was provided
+	 * in.
 	 * 
 	 * @param byteArray
 	 *            = first byte array
@@ -110,8 +110,7 @@ public class Transform {
 	}
 
 	/**
-	 * concatenates byte with subsequent byte arrays in order it was provided
-	 * in.
+	 * concatenates byte with subsequent byte arrays in order it was provided in.
 	 * 
 	 * @param data
 	 *            = first byte

@@ -56,8 +56,7 @@ public class UtilsZip {
 	/**
 	 * 
 	 * @param source
-	 *            = List of source files or directories which requires to be
-	 *            zipped
+	 *            = List of source files or directories which requires to be zipped
 	 * @param destFile
 	 *            = destination file (Example : new File("./test/test.zip"))
 	 * @throws Exception

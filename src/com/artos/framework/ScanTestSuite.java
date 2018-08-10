@@ -259,9 +259,9 @@ public class ScanTestSuite {
 	 *             if the class or its nullary constructor is not accessible.
 	 * @throws InstantiationException
 	 *             if this Class represents an abstract class, an interface, an
-	 *             array class, a primitive type, or void; or if the class has
-	 *             no nullary constructor; or if the instantiation fails for
-	 *             some other reason.
+	 *             array class, a primitive type, or void; or if the class has no
+	 *             nullary constructor; or if the instantiation fails for some other
+	 *             reason.
 	 */
 	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws InstantiationException, IllegalAccessException {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
@@ -275,8 +275,8 @@ public class ScanTestSuite {
 	}
 
 	/**
-	 * Returns scanned test cases HashMap so user can search test case by
-	 * TestCase FQCN
+	 * Returns scanned test cases HashMap so user can search test case by TestCase
+	 * FQCN
 	 * 
 	 * @param removeSkippedTests
 	 *            removes test cases marked with skipped

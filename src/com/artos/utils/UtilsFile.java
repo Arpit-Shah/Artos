@@ -59,8 +59,7 @@ public class UtilsFile {
 
 	/**
 	 * Deletes all the content of the directory if present, If directory is not
-	 * present and user has chosen appropriate flag then creates empty
-	 * directory(s)
+	 * present and user has chosen appropriate flag then creates empty directory(s)
 	 * 
 	 * <PRE>
 	 * {@code

@@ -96,8 +96,8 @@ public class PropertiesFileReader {
 	}
 
 	/**
-	 * Gets value from .properties file with given key, If key is not found
-	 * default value is returned.
+	 * Gets value from .properties file with given key, If key is not found default
+	 * value is returned.
 	 * 
 	 * @param key
 	 *            property file key string

@@ -76,8 +76,8 @@ public class UtilsString {
 	}
 
 	/**
-	 * This function is used to compare string format $ sign is used to ignore
-	 * chars during format comparison
+	 * This function is used to compare string format $ sign is used to ignore chars
+	 * during format comparison
 	 * 
 	 * <PRE>
 	 * Example: Boolean bSuccess = CompareStringFormat("1.00.0001", "$.$$.$$$$");
@@ -121,8 +121,8 @@ public class UtilsString {
 	 *            String which contains version information
 	 * @param format
 	 *            String of Format
-	 * @return Substring which matches the format, Null is returned if no match
-	 *         is found
+	 * @return Substring which matches the format, Null is returned if no match is
+	 *         found
 	 */
 	public static String fetchVersion(String strSource, String format) {
 		if ((null == strSource) || (strSource.length() < format.length())) {

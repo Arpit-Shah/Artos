@@ -22,9 +22,9 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 
+import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FrameworkConfig;
 import com.artos.framework.SystemProperties;
-import com.artos.framework.Enums.TestStatus;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user

@@ -19,7 +19,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.artos.framework.TestObjectWrapper;
 import com.artos.interfaces.TestExecutable;
 
 public class TestScriptParser {

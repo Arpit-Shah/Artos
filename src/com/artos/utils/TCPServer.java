@@ -77,8 +77,8 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks
-	 * until a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks until
+	 * a connection is made.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when opening the socket.
@@ -89,13 +89,13 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks
-	 * until a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks until
+	 * a connection is made.
 	 * 
 	 * Setting soTimeout to a non-zero timeout, a call to accept() for this
-	 * ServerSocket will block for only this amount of time. If the timeout
-	 * expires, a java.net.SocketTimeoutException is raised, though the
-	 * ServerSocket is still valid.
+	 * ServerSocket will block for only this amount of time. If the timeout expires,
+	 * a java.net.SocketTimeoutException is raised, though the ServerSocket is still
+	 * valid.
 	 * 
 	 * @param soTimeout
 	 *            the specified timeout in milliseconds.
@@ -129,9 +129,9 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Closes this socket. Once a socket has been closed, it is not available
-	 * for further networking use (i.e. can't be reconnected or rebound). A new
-	 * socket needs to be created.
+	 * Closes this socket. Once a socket has been closed, it is not available for
+	 * further networking use (i.e. can't be reconnected or rebound). A new socket
+	 * needs to be created.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when closing this socket.
@@ -156,8 +156,8 @@ public class TCPServer implements Connectable {
 
 	/**
 	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received
-	 * within timeout period
+	 * queue or timeout has occurred. null is returned if no message received within
+	 * timeout period
 	 * 
 	 * @param timeout
 	 *            msg timeout
@@ -165,9 +165,9 @@ public class TCPServer implements Connectable {
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 *             if any thread has interrupted the current thread. The interrupted
+	 *             status of the current thread is cleared when this exception is
+	 *             thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
