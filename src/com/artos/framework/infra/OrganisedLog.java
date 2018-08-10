@@ -40,10 +40,9 @@ import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
-import com.artos.framework.FWStatic_Store;
+import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.SystemProperties;
 import com.artos.framework.Version;
-import com.artos.framework.Enums.TestStatus;
 
 /**
  * This class is responsible for initialising all log streams which may require
@@ -56,17 +55,13 @@ class OrganisedLog {
 	private org.apache.logging.log4j.core.Logger realTimeLogger;
 
 	private String logBaseDir = "./reporting";
+	TestContext context;
 
 	/**
 	 * Class Constructor
 	 * 
-	 * <PRE>
-	 * {
-	 * 	&#64;code
-	 * 	OrganisedLog logger = new OrganisedLog("./reporting/A123456789", "com.artos.test", true);
-	 * }
-	 * </PRE>
-	 * 
+	 * @param context
+	 *            TestContext
 	 * @param logDirPath
 	 *            Log base directory absolute or reference path
 	 * @param testCaseFQCN
@@ -79,12 +74,13 @@ class OrganisedLog {
 	 * @param enableHTMLLog
 	 *            Enable/disable HTML log
 	 */
-	public OrganisedLog(String logDirPath, String testCaseFQCN, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+	public OrganisedLog(TestContext context, String logDirPath, String testCaseFQCN, boolean enableLogDecoration, boolean enableTextLog,
+			boolean enableHTMLLog) {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
 
-		// Log Base Dir = logDir + testCaseFQCN
+		this.context = context;
 		setLogBaseDir(logDirPath + File.separator + testCaseFQCN);
 		LoggerContext loggerContext = dynamicallyConfigureLog4J(getLogBaseDir(), testCaseFQCN + "_" + System.currentTimeMillis(), enableLogDecoration,
 				enableTextLog, enableHTMLLog);
@@ -143,7 +139,7 @@ class OrganisedLog {
 
 	/** Enable Logging */
 	public void enableGeneralLog() {
-		getGeneralLogger().setLevel(getLoglevelFromXML());
+		getGeneralLogger().setLevel(context.getLoglevelFromXML());
 	}
 
 	/**
@@ -316,7 +312,7 @@ class OrganisedLog {
 	 * 
 	 * @see LoggerContext
 	 */
-	private static LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean enableLogDecoration, boolean enableTextLog,
+	private LoggerContext dynamicallyConfigureLog4J(String fileroot, String fileName, boolean enableLogDecoration, boolean enableTextLog,
 			boolean enableHTMLLog) {
 
 		if (!fileroot.endsWith("/") || !fileroot.endsWith("\\")) {
@@ -488,7 +484,7 @@ class OrganisedLog {
 
 		{
 			// create the new logger
-			Level loglevel = getLoglevelFromXML();
+			Level loglevel = context.getLoglevelFromXML();
 			LoggerComponentBuilder generalLoggerBuilder = builder.newLogger("TestLog", loglevel);
 			{
 				generalLoggerBuilder.addAttribute("additivity", false);
@@ -573,57 +569,28 @@ class OrganisedLog {
 	}
 
 	/**
-	 * Returns Log Level Enum value based on Framework configuration set in XML file
-	 * 
-	 * @see Level
-	 * 
-	 * @return
-	 */
-	private static Level getLoglevelFromXML() {
-		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("info")) {
-			return Level.INFO;
-		}
-		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("all")) {
-			return Level.ALL;
-		}
-		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("fatal")) {
-			return Level.FATAL;
-		}
-		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("trace")) {
-			return Level.TRACE;
-		}
-		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("warn")) {
-			return Level.WARN;
-		}
-		if (FWStatic_Store.context.getFrameworkConfig().getLogLevel().equals("debug")) {
-			return Level.DEBUG;
-		}
-		return Level.DEBUG;
-	}
-
-	/**
 	 * Prints Organisation details to each log files
 	 */
 	private void printMendatoryInfo() {
 		//@formatter:off
 		
 		String organisationInfo = "\n************************************ Header Start ******************************************"
-								 +"\nOrganisation_Name : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Name()
-								 +"\nOrganisation_Country : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Country()
-								 +"\nOrganisation_Address : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Address()
-								 +"\nOrganisation_Phone : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Contact_Number()
-								 +"\nOrganisation_Email : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Email()
-								 +"\nOrganisation_Website : " + FWStatic_Store.context.getFrameworkConfig().getOrganisation_Website()
+								 +"\nOrganisation_Name : " + context.getFrameworkConfig().getOrganisation_Name()
+								 +"\nOrganisation_Country : " + context.getFrameworkConfig().getOrganisation_Country()
+								 +"\nOrganisation_Address : " + context.getFrameworkConfig().getOrganisation_Address()
+								 +"\nOrganisation_Phone : " + context.getFrameworkConfig().getOrganisation_Contact_Number()
+								 +"\nOrganisation_Email : " + context.getFrameworkConfig().getOrganisation_Email()
+								 +"\nOrganisation_Website : " + context.getFrameworkConfig().getOrganisation_Website()
 								 +"\n************************************ Header End ********************************************";
 		//@formatter:on
 
-		if (FWStatic_Store.context.getFrameworkConfig().isEnableBanner()) {
+		if (context.getFrameworkConfig().isEnableBanner()) {
 			getGeneralLogger().info(Banner.getBanner());
 			getSummaryLogger().info(Banner.getBanner());
 			getRealTimeLogger().info(Banner.getBanner());
 		}
 
-		if (FWStatic_Store.context.getFrameworkConfig().isEnableOrganisationInfo()) {
+		if (context.getFrameworkConfig().isEnableOrganisationInfo()) {
 			getGeneralLogger().info(organisationInfo);
 			getSummaryLogger().info(organisationInfo);
 			getRealTimeLogger().info(organisationInfo);
@@ -637,7 +604,7 @@ class OrganisedLog {
 	 */
 	public void printUsefulInfo() {
 
-		SystemProperties sysProp = FWStatic_Store.context.getSystemProperties();
+		SystemProperties sysProp = context.getSystemProperties();
 		Logger logger = getGeneralLogger();
 
 		// @formatter:off

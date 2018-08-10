@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
+
 import com.artos.framework.FrameworkConfig;
 import com.artos.framework.SystemProperties;
 import com.artos.framework.Enums.TestStatus;
@@ -162,6 +164,37 @@ public class TestContext {
 		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		getLogger().debug("Method : " + methodName + "()");
 		return methodName;
+	}
+
+	/**
+	 * Returns Log Level Enum value based on Framework configuration set in XML file
+	 * 
+	 * @see Level
+	 * 
+	 * @return LogLevel
+	 * @see Level
+	 */
+	public Level getLoglevelFromXML() {
+		String logLevel = getFrameworkConfig().getLogLevel();
+		if (logLevel.equals("info")) {
+			return Level.INFO;
+		}
+		if (logLevel.equals("all")) {
+			return Level.ALL;
+		}
+		if (logLevel.equals("fatal")) {
+			return Level.FATAL;
+		}
+		if (logLevel.equals("trace")) {
+			return Level.TRACE;
+		}
+		if (logLevel.equals("warn")) {
+			return Level.WARN;
+		}
+		if (logLevel.equals("debug")) {
+			return Level.DEBUG;
+		}
+		return Level.DEBUG;
 	}
 
 	/**

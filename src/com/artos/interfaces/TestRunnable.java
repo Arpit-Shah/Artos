@@ -15,7 +15,9 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.interfaces;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.artos.framework.TestObjectWrapper;
 
 /**
  * 
@@ -36,5 +38,5 @@ public interface TestRunnable {
 	 * @throws Exception
 	 *             exceptions that happened within the tests
 	 */
-	public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, int loopCount) throws Exception;
+	public void executeTest(List<TestObjectWrapper> testList, Class<?> cls, int loopCount) throws Exception;
 }

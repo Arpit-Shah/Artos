@@ -43,7 +43,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import com.artos.interfaces.TestExecutable;
 import com.artos.interfaces.TestRunnable;
 
 /**
@@ -59,7 +58,7 @@ public class GUITestSelector {
 	private int loopCount;
 	private JTextField loopCountField;
 	private TestRunnable testRunner;
-	private ArrayList<TestExecutable> selectedTests;
+	private ArrayList<TestObjectWrapper> selectedTests;
 
 	/**
 	 * TestRunnerGui constructor
@@ -75,7 +74,7 @@ public class GUITestSelector {
 	 * @throws Exception
 	 *             if gui could not launch
 	 */
-	public GUITestSelector(ArrayList<TestExecutable> testList, Class<?> cls, int loopCount, TestRunnable testRunner) throws Exception {
+	public GUITestSelector(List<TestObjectWrapper> testList, Class<?> cls, int loopCount, TestRunnable testRunner) throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -84,14 +83,14 @@ public class GUITestSelector {
 		this.cls = cls;
 		this.loopCount = loopCount;
 		this.testRunner = testRunner;
-		selectedTests = new ArrayList<TestExecutable>();
+		selectedTests = new ArrayList<TestObjectWrapper>();
 
 		// If more than one test cases to select then only show GUI otherwise
 		// just run the suit
 		String packageName = "Default";
 		if (testList.size() > 1) {
 			// get the package name from testList
-			String fullPackageName = testList.get(0).getClass().getPackage().toString();
+			String fullPackageName = testList.get(0).getTestClassObject().getPackage().toString();
 			int last = fullPackageName.lastIndexOf(".") + 1;
 			packageName = fullPackageName.substring(last);
 
@@ -278,11 +277,11 @@ public class GUITestSelector {
 
 @SuppressWarnings("serial")
 class TestRunnerDataModel extends AbstractTableModel {
-	private ArrayList<TestExecutable> testList;
+	private List<TestObjectWrapper> testList;
 	private String[] columnNames = { "#", "Test Name" };
 	private String[][] displayData;
 
-	public TestRunnerDataModel(ArrayList<TestExecutable> testList) {
+	public TestRunnerDataModel(List<TestObjectWrapper> testList) {
 		this.testList = testList;
 		populateDisplayData();
 	}
@@ -295,7 +294,7 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 		for (int index = 0; index < testList.size(); ++index) {
 			// get only the actual test name
-			String fullTestName = testList.get(index).getClass().getName();
+			String fullTestName = testList.get(index).getTestClassObject().getName();
 			int last = fullTestName.lastIndexOf(".") + 1;
 			String testName = fullTestName.substring(last);
 
@@ -327,11 +326,11 @@ class TestRunnerDataModel extends AbstractTableModel {
 		return displayData[rowIndex][columnIndex];
 	}
 
-	public ArrayList<TestExecutable> getTestList() {
+	public List<TestObjectWrapper> getTestList() {
 		return testList;
 	}
 
-	public TestExecutable getTestAt(int rowIndex) {
+	public TestObjectWrapper getTestAt(int rowIndex) {
 		return testList.get(rowIndex);
 	}
 }

@@ -19,6 +19,8 @@ public class LogWrapper {
 	/**
 	 * Constructor
 	 * 
+	 * @param context
+	 *            TestContext
 	 * @param logDirPath
 	 *            Log base directory path
 	 * @param testFQCN
@@ -30,8 +32,9 @@ public class LogWrapper {
 	 * @param enableHTMLLog
 	 *            Enable|disable HTML log
 	 */
-	public LogWrapper(String logDirPath, String testFQCN, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
-		this.organisedLogger = new OrganisedLog(logDirPath, testFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
+	public LogWrapper(TestContext context, String logDirPath, String testFQCN, boolean enableLogDecoration, boolean enableTextLog,
+			boolean enableHTMLLog) {
+		this.organisedLogger = new OrganisedLog(context, logDirPath, testFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
 		this.generalLogger = organisedLogger.getGeneralLogger();
 		this.summaryLogger = organisedLogger.getSummaryLogger();
 		this.realTimeLogger = organisedLogger.getRealTimeLogger();
