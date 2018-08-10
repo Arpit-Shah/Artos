@@ -15,6 +15,7 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.artos.framework.FWStatic_Store;
+import com.artos.framework.Enums.TestStatus;
+import com.artos.framework.FWStaticStore;
 import com.artos.framework.GUITestSelector;
 import com.artos.framework.ScanTestSuite;
 import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.Enums.TestStatus;
+import com.artos.framework.TestScriptParser;
 import com.artos.framework.listener.TestExecutionEventListener;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
@@ -44,7 +46,7 @@ import com.artos.utils.UtilsFramework;
 public class Runner {
 
 	Class<? extends PrePostRunnable> cls;
-	TestContext context = FWStatic_Store.context;
+	TestContext context;
 	List<TestExecutionListener> listenerList = new ArrayList<TestExecutionListener>();
 
 	// ==================================================================================
@@ -60,18 +62,19 @@ public class Runner {
 	 */
 	public Runner(Class<? extends PrePostRunnable> cls) {
 		this.cls = cls;
+		this.context = new TestContext();
 
 		// Get Info from XML Configuration file
-		String subDirName = FWStatic_Store.context.getFrameworkConfig().getLogSubDir();
-		String logDir = FWStatic_Store.context.getFrameworkConfig().getLogRootDir();
+		String subDirName = context.getFrameworkConfig().getLogSubDir();
+		String logDir = context.getFrameworkConfig().getLogRootDir();
 		if (!subDirName.trim().equals("")) {
 			logDir = logDir + subDirName;
 		}
-		boolean enableLogDecoration = FWStatic_Store.context.getFrameworkConfig().isEnableLogDecoration();
-		boolean enableTextLog = FWStatic_Store.context.getFrameworkConfig().isEnableTextLog();
-		boolean enableHTMLLog = FWStatic_Store.context.getFrameworkConfig().isEnableHTMLLog();
+		boolean enableLogDecoration = context.getFrameworkConfig().isEnableLogDecoration();
+		boolean enableTextLog = context.getFrameworkConfig().isEnableTextLog();
+		boolean enableHTMLLog = context.getFrameworkConfig().isEnableHTMLLog();
 
-		initialise(logDir, enableLogDecoration, enableTextLog, enableHTMLLog);
+		initialise(context, logDir, enableLogDecoration, enableTextLog, enableHTMLLog);
 	}
 
 	/**
@@ -91,18 +94,19 @@ public class Runner {
 	 */
 	public Runner(Class<? extends PrePostRunnable> cls, String logDir, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 		this.cls = cls;
-		initialise(logDir, enableLogDecoration, enableTextLog, enableHTMLLog);
+		this.context = new TestContext();
+		initialise(context, logDir, enableLogDecoration, enableTextLog, enableHTMLLog);
 	}
 
-	private void initialise(String logDirPath, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
+	private void initialise(TestContext context, String logDirPath, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog) {
 		// get Test case FQCN
 		String strTestFQCN = cls.getPackage().getName();
 
 		// Create Logger
-		LogWrapper logWrapper = new LogWrapper(logDirPath, strTestFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
+		LogWrapper logWrapper = new LogWrapper(context, logDirPath, strTestFQCN, enableLogDecoration, enableTextLog, enableHTMLLog);
 
 		// Add logger to context
-		FWStatic_Store.context.setOrganisedLogger(logWrapper);
+		context.setOrganisedLogger(logWrapper);
 
 		// Register default listener
 		TestExecutionEventListener testListener = new TestExecutionEventListener(context);
@@ -127,25 +131,31 @@ public class Runner {
 	 */
 	public void run(String[] args, List<TestExecutable> testList, int loopCycle) throws Exception {
 		// Only process command line argument if provided
-		CliProcessor.proessCommandLine(args);
+		CliProcessor.proessCommandLine(context, args);
 
-		if (FWStatic_Store.context.getFrameworkConfig().isEnableGUITestSelector()) {
+		// Transform TestList into TestObjectWrapper Object list
+		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(cls, testList);
+		if (context.getFrameworkConfig().isGenerateTestScript()) {
+			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
+		}
+
+		if (context.getFrameworkConfig().isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
-				public void executeTest(ArrayList<TestExecutable> testList, Class<?> cls, int loopCount) throws Exception {
-					runTest(testList, cls, loopCount);
+				public void executeTest(List<TestObjectWrapper> transformedTestList, Class<?> cls, int loopCount) throws Exception {
+					runTest(transformedTestList, cls, loopCount);
 				}
 			};
-			new GUITestSelector((ArrayList<TestExecutable>) testList, cls, loopCycle, runObj);
+			new GUITestSelector((List<TestObjectWrapper>) transformedTestList, cls, loopCycle, runObj);
 		} else {
-			runTest(testList, cls, loopCycle);
+			runTest(transformedTestList, cls, loopCycle);
 		}
 	}
 
 	/**
 	 * This method executes test cases
 	 * 
-	 * @param testList
+	 * @param transformedTestList
 	 *            test object list
 	 * @param cls
 	 *            class object which is executing test
@@ -153,11 +163,8 @@ public class Runner {
 	 *            test loop cycle
 	 * @throws Exception
 	 */
-	private void runTest(List<TestExecutable> testList, Class<?> cls, int loopCycle) throws Exception {
+	private void runTest(List<TestObjectWrapper> transformedTestList, Class<?> cls, int loopCycle) throws Exception {
 
-		// Transform TestList into TestObjectWrapper Object list
-		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(cls, testList);
-		// -------------------------------------------------------------------//
 		LogWrapper logger = context.getLogger();
 
 		// TODO : Parallel running test case can not work with current
@@ -296,11 +303,11 @@ public class Runner {
 			List<Future<Runnable>> futures = new ArrayList<>();
 
 			for (TestObjectWrapper t : testList) {
-				// Skip execution of the test if marked skip
-				if (t.isSkipTest()) {
-					notifyTestExecutionSkipped(t);
-					continue;
-				}
+				// If user dictate test list then do not skip even if marked skip
+				// if (t.isSkipTest()) {
+				// notifyTestExecutionSkipped(t);
+				// continue;
+				// }
 
 				Future<?> f = service.submit(new runTestInParallel(context, t, prePostCycleInstance));
 				futures.add((Future<Runnable>) f);
@@ -391,21 +398,59 @@ public class Runner {
 	 * @return Test list formatted into {@code TestObjectWrapper} type
 	 */
 	public List<TestObjectWrapper> transformToTestObjWrapper(Class<?> cls, List<TestExecutable> listOfTestCases) {
+
+		Object testScriptObject;
 		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
 		String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
 		ScanTestSuite reflection = new ScanTestSuite(packageName);
-		// Get all test case information and store it for later use
-		Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
-		FWStatic_Store.context.setGlobalObject(FWStatic_Store.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 
-		for (TestExecutable t : listOfTestCases) {
-			TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
+		/*
+		 * @formatter:off
+		 * 1. If XML testScript is provided then use it
+		 * 2. If user has provided testList using main() method then use it
+		 * 3. If all of the above is not provided then use reflection to find test cases
+		 * @formatter:on
+		 */
 
-			// Any test cases not present in current package/child-package will
-			// be omitted.
-			if (null != testObjWrapper) {
-				listOfTransformedTestCases.add(testObjWrapper);
+		if (null != (testScriptObject = context.getGlobalObject(FWStaticStore.GLOBAL_TEST_SCRIPT_PATH))) {
+
+			File testScriptFile = (File) testScriptObject;
+			List<String> testNameList = new TestScriptParser().readTestScript(testScriptFile);
+
+			// If user provides test list then find list object from Hashmap
+			// Get all test case information and store it for later use
+			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
+			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
+
+			for (String t : testNameList) {
+				TestObjectWrapper testObjWrapper = testCaseMap.get(t);
+
+				if (null == testObjWrapper) {
+					System.err.println("WARNING (not found): " + t);
+				} else {
+					listOfTransformedTestCases.add(testObjWrapper);
+				}
 			}
+
+		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
+
+			// If user provides test list then find list object from Hashmap
+			// Get all test case information and store it for later use
+			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
+			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
+
+			for (TestExecutable t : listOfTestCases) {
+				TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
+
+				if (null == testObjWrapper) {
+					System.err.println(t.getClass().getName() + " not present in given test suite");
+				} else {
+					listOfTransformedTestCases.add(testObjWrapper);
+				}
+			}
+
+		} else {
+			listOfTransformedTestCases = reflection.getTestObjWrapperList(true, true);
 		}
 
 		return listOfTransformedTestCases;
