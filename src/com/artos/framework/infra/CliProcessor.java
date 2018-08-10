@@ -15,6 +15,7 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
+import java.io.File;
 import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
@@ -25,7 +26,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.artos.framework.FWStatic_Store;
+import com.artos.framework.FWStaticStore;
 import com.artos.framework.Version;
 
 /** Process Command Line arguments */
@@ -34,10 +35,12 @@ public class CliProcessor {
 	/**
 	 * Processes command line arguments
 	 * 
+	 * @param context
+	 *            TestContext
 	 * @param args
 	 *            Command line arguments
 	 */
-	public static void proessCommandLine(String[] args) {
+	public static void proessCommandLine(TestContext context, String[] args) {
 
 		if (args.length <= 0) {
 			return;
@@ -47,19 +50,17 @@ public class CliProcessor {
 		CommandLineParser parser = new DefaultParser();
 
 		// Create Option
-		// Option subDir =
-		// Option.builder("s").required(false).longOpt("subdir").desc("use given
-		// name as log sub directory name Example : --subdir=test")
-		// .hasArg().build();
+		Option testScript = Option.builder("t").required(false).longOpt("testscript")
+				.desc("use test script to drive test : --testscript=./scripts/sampletest.xml").hasArg().build();
 		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos test tool").build();
 		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.artos.com for more info").build();
 		Option contributors = Option.builder("c").required(false).longOpt("contributors").desc("Project Contributors name").build();
 
 		// Add Option
 		Options options = new Options();
-		options.addOption(help);
-		// options.addOption(subDir);
+		options.addOption(testScript);
 		options.addOption(version);
+		options.addOption(help);
 		options.addOption(contributors);
 
 		// Process Options
@@ -70,7 +71,7 @@ public class CliProcessor {
 			// validate that block-size has been set
 			if (line.hasOption("version")) {
 				PrintWriter pw = new PrintWriter(System.out);
-				System.out.println("Artots version : \"" + Version.id() + "\"");
+				System.out.println("Artos version : \"" + Version.id() + "\"");
 				pw.flush();
 			}
 			if (line.hasOption("help")) {
@@ -83,13 +84,20 @@ public class CliProcessor {
 				System.out.println("Project Contributors : " + "Arpit_Shah, Shobhit_Bhatnagar, Swapna_Soni");
 				pw.flush();
 			}
-			// If command line argument is provided then change logging
-			// sub-directory name
-			// if (line.hasOption("subdir")) {
-			// PrintWriter pw = new PrintWriter(System.out);
-			// FWStatic_Store.context.getFrameworkConfig().setLogSubDir(line.getOptionValue("subdir"));
-			// pw.flush();
-			// }
+			// Store test script path if provided
+			if (line.hasOption("testscript")) {
+				PrintWriter pw = new PrintWriter(System.out);
+				File testscriptFile = new File(line.getOptionValue("testscript"));
+				if (testscriptFile.exists() && testscriptFile.isFile()) {
+					context.setGlobalObject(FWStaticStore.GLOBAL_TEST_SCRIPT_PATH, testscriptFile);
+					System.out.println("TestScript provided : " + testscriptFile.getAbsolutePath());
+				} else {
+					System.err.println("TestScript not found : " + testscriptFile.getAbsolutePath());
+					pw.flush();
+					System.exit(1);
+				}
+
+			}
 		} catch (ParseException exp) {
 			// Do not do anything, just continue
 			System.out.println(exp.getMessage());
