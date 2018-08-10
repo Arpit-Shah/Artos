@@ -20,9 +20,6 @@ import com.artos.framework.infra.TestContext;
 /**
  * Implemented by each test cases. Provides minimum decoration require for each
  * test cases
- * 
- * 
- *
  */
 public interface TestExecutable {
 

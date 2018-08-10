@@ -23,9 +23,6 @@ import com.artos.framework.infra.TestContext;
 
 /**
  * Used for classes which implements Pre Post methods for test cases
- * 
- * 
- *
  */
 public interface PrePostRunnable {
 

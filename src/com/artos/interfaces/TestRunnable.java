@@ -20,9 +20,7 @@ import java.util.List;
 import com.artos.framework.TestObjectWrapper;
 
 /**
- * 
- * 
- *
+ * Used for GUITest Selector
  */
 public interface TestRunnable {
 

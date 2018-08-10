@@ -19,8 +19,6 @@ package com.artos.interfaces;
  * Used for creating filter for any class which implements {@code Connectable}
  * 
  * @see Connectable
- * 
- * 
  */
 public interface ConnectableFilter {
 
