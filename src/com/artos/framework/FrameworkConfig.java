@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
  */
 public class FrameworkConfig {
 
-	final File fXmlFile = new File("./conf/Framework_Config.xml");
+	final File fXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "Framework_Config.xml");
 
 	// Organisation Info
 	private String Organisation_Name = "Organisation_Name";
@@ -50,7 +50,7 @@ public class FrameworkConfig {
 	private String Organisation_Country = "NewZealand";
 	private String Organisation_Contact_Number = "+64 1234567";
 	private String Organisation_Email = "test@gmail.com";
-	private String Organisation_Website = "www." + FWStatic_Store.TOOL_NAME.toLowerCase() + ".com";
+	private String Organisation_Website = "www." + FWStaticStore.TOOL_NAME.toLowerCase() + ".com";
 
 	// Email Settings Info
 	private String smtpServer = "smtp.gmail.com";
@@ -62,8 +62,8 @@ public class FrameworkConfig {
 	private String password = "password";
 	private String receiversName = "Test Receiver";
 	private String receiversEmail = "test@gmail.com";
-	private String emailSubject = FWStatic_Store.TOOL_NAME + " Email Client";
-	private String messageText = "Test email from " + FWStatic_Store.TOOL_NAME;
+	private String emailSubject = FWStaticStore.TOOL_NAME + " Email Client";
+	private String messageText = "Test email from " + FWStaticStore.TOOL_NAME;
 
 	// Logger
 	private String logLevel = "debug";
@@ -74,9 +74,10 @@ public class FrameworkConfig {
 	private boolean enableHTMLLog = false;
 
 	// Features
-	private boolean enableGUITestSelector = true;
+	private boolean enableGUITestSelector = false;
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
+	private boolean generateTestScript = false;
 
 	/**
 	 * Constructor
@@ -397,6 +398,15 @@ public class FrameworkConfig {
 			attr.setValue("enableOrganisationInfo");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateTestScript())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("generateTestScript");
+			property.setAttributeNode(attr);
+		}
 
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -499,6 +509,9 @@ public class FrameworkConfig {
 					}
 					if ("enableOrganisationInfo".equals(eElement.getAttribute("name"))) {
 						setEnableOrganisationInfo(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("generateTestScript".equals(eElement.getAttribute("name"))) {
+						setGenerateTestScript(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -806,5 +819,13 @@ public class FrameworkConfig {
 
 	public void setEnableOrganisationInfo(boolean enableOrganisationInfo) {
 		this.enableOrganisationInfo = enableOrganisationInfo;
+	}
+
+	public boolean isGenerateTestScript() {
+		return generateTestScript;
+	}
+
+	public void setGenerateTestScript(boolean generateTestScript) {
+		this.generateTestScript = generateTestScript;
 	}
 }

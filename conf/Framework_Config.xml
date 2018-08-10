@@ -34,5 +34,6 @@
     <property name="enableGUITestSelector">true</property>
     <property name="enableBanner">true</property>
     <property name="enableOrganisationInfo">true</property>
+    <property name="generateTestScript">true</property>
   </features>
 </configuration>
