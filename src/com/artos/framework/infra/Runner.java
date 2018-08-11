@@ -136,7 +136,7 @@ public class Runner {
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(cls, testList);
 		if (context.getFrameworkConfig().isGenerateTestScript()) {
-			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
+			new TestScriptParser().createExecScriptFromObjWrapper(cls, transformedTestList);
 		}
 
 		if (context.getFrameworkConfig().isEnableGUITestSelector()) {

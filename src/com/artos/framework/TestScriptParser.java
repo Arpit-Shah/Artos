@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
 
 public class TestScriptParser {
@@ -70,7 +71,6 @@ public class TestScriptParser {
 	 */
 	private List<String> readTestCases(Document doc) {
 
-		String suite = "";
 		List<String> testList = new ArrayList<>();
 		// System.out.println("Root element :" +
 		// doc.getDocumentElement().getNodeName());
@@ -81,7 +81,7 @@ public class TestScriptParser {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
 				if ("suite".equals(eElement.getNodeName())) {
-					suite = eElement.getAttribute("name");
+					String suite = eElement.getAttribute("name");
 				}
 			}
 
@@ -97,7 +97,7 @@ public class TestScriptParser {
 					// ":" +
 					// eElement.getTextContent());
 					if ("test".equals(eElement.getNodeName())) {
-						testList.add(suite + "." + eElement.getAttribute("name"));
+						testList.add(eElement.getAttribute("name"));
 					}
 				}
 			}
@@ -155,12 +155,12 @@ public class TestScriptParser {
 
 	}
 
-	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList) throws Exception {
+	public void createExecScriptFromObjWrapper(Class<? extends PrePostRunnable> cls, List<TestObjectWrapper> testList) throws Exception {
 		if (null == testList || testList.isEmpty()) {
 			return;
 		}
 
-		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + testList.get(0).getTestClassObject().getPackage().getName() + ".xml");
+		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + cls.getPackage().getName() + ".xml");
 		if (!scriptFile.getParentFile().exists()) {
 			scriptFile.getParentFile().mkdirs();
 		}
@@ -178,7 +178,7 @@ public class TestScriptParser {
 		rootElement.appendChild(orgnization_info);
 
 		Attr attr = doc.createAttribute("name");
-		attr.setValue(testList.get(0).getTestClassObject().getPackage().getName());
+		attr.setValue(cls.getPackage().getName());
 		orgnization_info.setAttributeNode(attr);
 
 		for (int i = 0; i < testList.size(); i++) {
@@ -188,7 +188,7 @@ public class TestScriptParser {
 			orgnization_info.appendChild(property);
 
 			Attr attr1 = doc.createAttribute("name");
-			attr1.setValue(testList.get(i).getTestClassObject().getSimpleName());
+			attr1.setValue(testList.get(i).getTestClassObject().getCanonicalName());
 			property.setAttributeNode(attr1);
 		}
 
