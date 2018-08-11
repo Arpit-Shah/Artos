@@ -134,7 +134,7 @@ public class GUITestSelector {
 		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		container.setSize(new Dimension(480, 515));
+		container.setSize(new Dimension(500, 550));
 		container.setResizable(false);
 		container.setLocation(new Point(100, 50));
 	}
@@ -233,7 +233,7 @@ public class GUITestSelector {
 	private void setTableStyle(JTable testTableView) {
 		// set column widths, we know we only have 2 columns for now
 		TableColumn col = testTableView.getColumnModel().getColumn(0);
-		col.setPreferredWidth(35);
+		col.setPreferredWidth(55);
 		// set column0 text to center align
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(JLabel.CENTER);
