@@ -77,6 +77,7 @@ public class FrameworkConfig {
 	private boolean enableGUITestSelector = false;
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
+	private boolean stopOnFail = false;
 	private boolean generateTestScript = false;
 
 	/**
@@ -407,6 +408,15 @@ public class FrameworkConfig {
 			attr.setValue("generateTestScript");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isStopOnFail())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("stopOnFail");
+			property.setAttributeNode(attr);
+		}
 
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -512,6 +522,9 @@ public class FrameworkConfig {
 					}
 					if ("generateTestScript".equals(eElement.getAttribute("name"))) {
 						setGenerateTestScript(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("stopOnFail".equals(eElement.getAttribute("name"))) {
+						setStopOnFail(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -827,5 +840,13 @@ public class FrameworkConfig {
 
 	public void setGenerateTestScript(boolean generateTestScript) {
 		this.generateTestScript = generateTestScript;
+	}
+
+	public boolean isStopOnFail() {
+		return stopOnFail;
+	}
+
+	public void setStopOnFail(boolean stopOnFail) {
+		this.stopOnFail = stopOnFail;
 	}
 }

@@ -223,7 +223,15 @@ public class Runner {
 			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
 			for (TestObjectWrapper t : testList) {
-				// Skip execution of the test if marked skip
+
+				// If stop on fail is selected then stop test execution
+				if (context.getFrameworkConfig().isStopOnFail()) {
+					if (context.getCurrentFailCount() > 0) {
+						break;
+					}
+				}
+
+				// Skip tests should not reach here but if reached then skip
 				if (t.isSkipTest()) {
 					notifyTestExecutionSkipped(t);
 					continue;
