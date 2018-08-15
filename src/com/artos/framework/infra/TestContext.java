@@ -217,8 +217,6 @@ public class TestContext {
 
 	/**
 	 * Print selected System Info to log file
-	 * 
-	 * @param generalLogger
 	 */
 	public void printUsefulInfo() {
 
