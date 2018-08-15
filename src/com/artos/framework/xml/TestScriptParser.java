@@ -13,12 +13,15 @@
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-package com.artos.framework;
+package com.artos.framework.xml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,6 +37,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.artos.framework.FWStaticStore;
+import com.artos.framework.TestObjectWrapper;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
 
@@ -46,7 +51,7 @@ public class TestScriptParser {
 	 *            testScript formatted with XML
 	 * @return list of test cases name
 	 */
-	public List<String> readTestScript(File testScriptFile) {
+	public List<TestSuite> readTestScript(File testScriptFile) {
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -54,7 +59,7 @@ public class TestScriptParser {
 
 			doc.getDocumentElement().normalize();
 
-			return readTestCases(doc);
+			return readTestScript(doc);
 		} catch (FileNotFoundException fe) {
 			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values");
 		} catch (Exception e) {
@@ -69,41 +74,79 @@ public class TestScriptParser {
 	 * @param doc
 	 *            Document object of XML file
 	 */
-	private List<String> readTestCases(Document doc) {
+	private List<TestSuite> readTestScript(Document doc) {
 
-		List<String> testList = new ArrayList<>();
+		List<TestSuite> testSuiteList = new ArrayList<>();
+
 		// System.out.println("Root element :" +
 		// doc.getDocumentElement().getNodeName());
-		NodeList nList = doc.getElementsByTagName("suite");
+		NodeList suiteNodeList = doc.getElementsByTagName("suite");
 
-		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Node nNode = nList.item(temp);
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-				if ("suite".equals(eElement.getNodeName())) {
-					String suite = eElement.getAttribute("name");
-				}
-			}
+		for (int temp = 0; temp < suiteNodeList.getLength(); temp++) {
+			TestSuite _suite = new TestSuite();
 
-			NodeList nChildList = nNode.getChildNodes();
-			for (int i = 0; i < nChildList.getLength(); i++) {
-				Node nChildNode = nChildList.item(i);
-				if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element eElement = (Element) nChildNode;
-					// System.out.println(eElement.getNodeName());
-					// System.out.println(eElement.getAttribute("name"));
-					// System.out.println(eElement.getAttribute("name")
-					// +
-					// ":" +
-					// eElement.getTextContent());
-					if ("test".equals(eElement.getNodeName())) {
-						testList.add(eElement.getAttribute("name"));
-					}
-				}
+			Node suiteNode = suiteNodeList.item(temp);
+			parseSuite(_suite, suiteNode);
+
+			// Only add test suite in the list if atleast one test case is
+			// specified
+			if (!_suite.getTestFQCNList().isEmpty()) {
+				testSuiteList.add(_suite);
 			}
 		}
 
-		return testList;
+		return testSuiteList;
+	}
+
+	private void parseSuite(TestSuite _suite, Node suiteNode) {
+		if (suiteNode.getNodeType() == Node.ELEMENT_NODE) {
+			Element eElement = (Element) suiteNode;
+			if ("suite".equals(eElement.getNodeName())) {
+				_suite.setSuiteName(eElement.getAttribute("name"));
+			}
+
+			NodeList testsNodeList = eElement.getElementsByTagName("tests");
+			for (int temp = 0; temp < testsNodeList.getLength(); temp++) {
+				Node testsNode = testsNodeList.item(temp);
+				parseTests(_suite, testsNode);
+			}
+
+			NodeList paramsNodeList = eElement.getElementsByTagName("parameters");
+			for (int temp = 0; temp < paramsNodeList.getLength(); temp++) {
+				Node parameterNode = paramsNodeList.item(temp);
+				parseParameters(_suite, parameterNode);
+			}
+		}
+	}
+
+	private void parseParameters(TestSuite _suite, Node parameterNode) {
+		Map<String, String> parametersMap = new HashMap<String, String>();
+		NodeList nChildList = parameterNode.getChildNodes();
+		for (int i = 0; i < nChildList.getLength(); i++) {
+			Node nChildNode = nChildList.item(i);
+			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nChildNode;
+				if ("parameter".equals(eElement.getNodeName())) {
+					parametersMap.put(eElement.getAttribute("name"), eElement.getTextContent());
+				}
+			}
+		}
+		_suite.setTestSuiteParameters(parametersMap);
+	}
+
+	private void parseTests(TestSuite _suite, Node testsNode) {
+		List<String> testFQCNList = new ArrayList<>();
+		NodeList nChildList = testsNode.getChildNodes();
+		for (int i = 0; i < nChildList.getLength(); i++) {
+			Node nChildNode = nChildList.item(i);
+			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nChildNode;
+				if ("test".equals(eElement.getNodeName())) {
+					testFQCNList.add(eElement.getAttribute("name"));
+				}
+			}
+		}
+		_suite.setTestFQCNList(testFQCNList);
 	}
 
 	public void createTestScriptFromTestExecutable(List<TestExecutable> testList) throws Exception {
@@ -204,19 +247,20 @@ public class TestScriptParser {
 	}
 
 	public static void main(String[] args) {
-		// RunXMLConfig xml = new
-		// RunXMLConfig("C:\\Arpit\\Java_Workspace\\BladeRunner_Platform_QA_A\\conf\\Artos_Run.xml");
-		// List<String> testList = xml.readTestScript();
-		// for (String t : testList) {
-		// System.out.println(t);
-		// }
-
-		// RunXMLConfig xml = new
-		// RunXMLConfig("C:\\Arpit\\Java_Workspace\\BladeRunner_Platform_QA_A\\conf\\Artos_Run_1.xml");
-		// List<String> testList = new ArrayList<>();
-		// xml.writeDefaultConfig(testList);
-		// for (String t : testList) {
-		// System.out.println(t);
-		// }
+		TestScriptParser xml = new TestScriptParser();
+		List<TestSuite> testSuiteList = xml
+				.readTestScript(new File("C:\\Arpit\\Arpit_Programming\\arpitos_test_fork\\script\\unit_test.Guardian.xml"));
+		for (TestSuite suite : testSuiteList) {
+			System.out.println(suite.getSuiteName());
+			System.out.println(suite.getThreadName());
+			List<String> testlist = suite.getTestFQCNList();
+			for (String s : testlist) {
+				System.out.println(s);
+			}
+			Map<String, String> parameterMap = suite.getTestSuiteParameters();
+			for (Entry<String, String> entry : parameterMap.entrySet()) {
+				System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
+			}
+		}
 	}
 }

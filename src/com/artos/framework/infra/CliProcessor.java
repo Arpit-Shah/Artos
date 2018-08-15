@@ -35,12 +35,10 @@ public class CliProcessor {
 	/**
 	 * Processes command line arguments
 	 * 
-	 * @param context
-	 *            TestContext
 	 * @param args
 	 *            Command line arguments
 	 */
-	public static void proessCommandLine(TestContext context, String[] args) {
+	public static void proessCommandLine(String[] args) {
 
 		if (args.length <= 0) {
 			return;
@@ -50,7 +48,7 @@ public class CliProcessor {
 		CommandLineParser parser = new DefaultParser();
 
 		// Create Option
-		Option testScript = Option.builder("t").required(false).longOpt("testscript")
+		Option testScript = Option.builder("ts").required(false).longOpt("testscript")
 				.desc("use test script to drive test : --testscript=./scripts/sampletest.xml").hasArg().build();
 		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos test tool").build();
 		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.artos.com for more info").build();
@@ -89,7 +87,7 @@ public class CliProcessor {
 				PrintWriter pw = new PrintWriter(System.out);
 				File testscriptFile = new File(line.getOptionValue("testscript"));
 				if (testscriptFile.exists() && testscriptFile.isFile()) {
-					context.setGlobalObject(FWStaticStore.GLOBAL_TEST_SCRIPT_PATH, testscriptFile);
+					FWStaticStore.testScriptFile = testscriptFile;
 					System.out.println("TestScript provided : " + testscriptFile.getAbsolutePath());
 				} else {
 					System.err.println("TestScript not found : " + testscriptFile.getAbsolutePath());

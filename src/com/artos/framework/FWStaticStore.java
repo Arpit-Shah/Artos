@@ -15,6 +15,8 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework;
 
+import java.io.File;
+
 /**
  * This class provides container which holds all static element of test
  * framework
@@ -23,10 +25,14 @@ public class FWStaticStore {
 
 	public static final String TOOL_NAME = "Artos";
 
+	public static FrameworkConfig frameworkConfig = new FrameworkConfig(true);
+	public static SystemProperties systemProperties = new SystemProperties();
+	public static File testScriptFile = null;
+
 	public static final String TESTSCRIPT_BASE_DIR = "./script/";
 	public static final String CONFIG_BASE_DIR = "./conf/";
 
-	public static final String GLOBAL_TEST_SCRIPT_PATH = "TEST_SCRIPT_PATH";
+	public static final String GLOBAL_TEST_SUITE = "TEST_SUITE";
 	public static final String GLOBAL_ANNOTATED_TEST_MAP = "ANNOTATED_TEST_MAP";
 
 }

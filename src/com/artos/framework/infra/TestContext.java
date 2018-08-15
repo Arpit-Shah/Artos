@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
 
 import com.artos.framework.Enums.TestStatus;
-import com.artos.framework.FrameworkConfig;
+import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
+import com.artos.framework.Version;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -34,8 +36,6 @@ import com.artos.framework.SystemProperties;
 public class TestContext {
 
 	private LogWrapper logWrapper;
-	private FrameworkConfig frameworkConfig;
-	private SystemProperties systemProperties;
 	private TestStatus currentTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
 
@@ -58,18 +58,10 @@ public class TestContext {
 	Map<String, Object> globalObjectsHashMap = new HashMap<String, Object>();
 
 	/**
-	 * Constructor
-	 */
-	public TestContext() {
-		this.frameworkConfig = new FrameworkConfig(true);
-		this.systemProperties = new SystemProperties();
-	}
-
-	/**
 	 * Sets Test status in memory. Status is not finalised until
-	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
-	 * warning as soon as status is set to FAIL so user can pin point location of
-	 * the failure
+	 * generateTestSummary() function is called. This function stamps "FAIL
+	 * HERE" warning as soon as status is set to FAIL so user can pin point
+	 * location of the failure
 	 * 
 	 * @param testStatus
 	 *            Test Status
@@ -90,8 +82,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. This also includes
-	 * bugTicketNumber if provided
+	 * Concludes final test result and generates summary report. This also
+	 * includes bugTicketNumber if provided
 	 * 
 	 * @param strTestFQCN
 	 *            Test fully qualified class name (Example : com.test.unit.Abc)
@@ -136,11 +128,121 @@ public class TestContext {
 		// Finalise and add test result in log file
 		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name());
 		// Finalise and add test summary to Summary report
-		getLogWrapper().appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(),
-				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
+		appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
+				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 		// reset status for next test
 		resetTestStatus();
 		setKnownToFail(false, "");
+	}
+
+	/** Disable Logging */
+	public void disableGeneralLog() {
+		getLogger().getGeneralLogger().setLevel(Level.OFF);
+	}
+
+	/** Enable Logging */
+	public void enableGeneralLog() {
+		getLogger().getGeneralLogger().setLevel(FWStaticStore.frameworkConfig.getLoglevelFromXML());
+	}
+
+	/**
+	 * Prints Organisation details to each log files
+	 */
+	private void printMendatoryInfo() {
+		//@formatter:off
+		
+		String organisationInfo = "\n************************************ Header Start ******************************************"
+								 +"\nOrganisation_Name : " + FWStaticStore.frameworkConfig.getOrganisation_Name()
+								 +"\nOrganisation_Country : " + FWStaticStore.frameworkConfig.getOrganisation_Country()
+								 +"\nOrganisation_Address : " + FWStaticStore.frameworkConfig.getOrganisation_Address()
+								 +"\nOrganisation_Phone : " + FWStaticStore.frameworkConfig.getOrganisation_Contact_Number()
+								 +"\nOrganisation_Email : " + FWStaticStore.frameworkConfig.getOrganisation_Email()
+								 +"\nOrganisation_Website : " + FWStaticStore.frameworkConfig.getOrganisation_Website()
+								 +"\n************************************ Header End ********************************************";
+		//@formatter:on
+
+		if (FWStaticStore.frameworkConfig.isEnableBanner()) {
+			getLogger().getGeneralLogger().info(Banner.getBanner());
+			getLogger().getSummaryLogger().info(Banner.getBanner());
+			getLogger().getRealTimeLogger().info(Banner.getBanner());
+		}
+
+		if (FWStaticStore.frameworkConfig.isEnableOrganisationInfo()) {
+			getLogger().getGeneralLogger().info(organisationInfo);
+			getLogger().getSummaryLogger().info(organisationInfo);
+			getLogger().getRealTimeLogger().info(organisationInfo);
+		}
+	}
+
+	/**
+	 * Append test summary to summary report
+	 * 
+	 * @param status
+	 *            Test status
+	 * @param strTestFQCN
+	 *            Test fully qualified class name (Example : com.test.unit.Abc)
+	 * @param bugTrackingNumber
+	 *            BugTracking Number
+	 * @param passCount
+	 *            Current passed test count
+	 * @param failCount
+	 *            Current failed test count
+	 * @param skipCount
+	 *            Current skipped test count
+	 * @param ktfCount
+	 *            Current known to fail test count
+	 * @param testDuration
+	 *            Test duration
+	 */
+	public void appendSummaryReport(TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount, long failCount, long skipCount,
+			long ktfCount, long testDuration) {
+
+		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+
+		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".");
+		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String PassCount = String.format("%-" + 4 + "s", passCount);
+		String FailCount = String.format("%-" + 4 + "s", failCount);
+		String SkipCount = String.format("%-" + 4 + "s", skipCount);
+		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
+
+		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount
+				+ " K:" + KTFCount + " " + testTime);
+	}
+
+	/**
+	 * Print selected System Info to log file
+	 * 
+	 * @param generalLogger
+	 */
+	public void printUsefulInfo() {
+
+		SystemProperties sysProp = FWStaticStore.systemProperties;
+		LogWrapper logger = getLogger();
+
+		// @formatter:off
+		
+		logger.debug("\nTest FrameWork Info");
+		logger.debug("* Artos version => " + Version.id());
+		logger.debug("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion()); 
+		logger.debug("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
+		logger.debug("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
+		logger.debug("* Java class path => " + sysProp.getJavaClassPath());
+		logger.debug("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
+		logger.debug("* Operating system name => " + sysProp.getOperatingSystemName());
+		logger.debug("* Operating system architecture => " + sysProp.getOperatingSystemArchitecture());
+		logger.debug("* Operating system version => " + sysProp.getOperatingSystemVersion());
+		logger.debug("* File separator (\"/\" on UNIX) => " + sysProp.getFileSeparator());
+		logger.debug("* Path separator (\":\" on UNIX) => " + sysProp.getPathSeparator());
+		logger.debug("* User's account name => " + sysProp.getUserAccountName());
+		logger.debug("* User's home directory => " + sysProp.getUserHomeDir());
+		
+		// @formatter:on
 	}
 
 	private void resetTestStatus() {
@@ -164,37 +266,6 @@ public class TestContext {
 		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		getLogger().debug("Method : " + methodName + "()");
 		return methodName;
-	}
-
-	/**
-	 * Returns Log Level Enum value based on Framework configuration set in XML file
-	 * 
-	 * @see Level
-	 * 
-	 * @return LogLevel
-	 * @see Level
-	 */
-	public Level getLoglevelFromXML() {
-		String logLevel = getFrameworkConfig().getLogLevel();
-		if (logLevel.equals("info")) {
-			return Level.INFO;
-		}
-		if (logLevel.equals("all")) {
-			return Level.ALL;
-		}
-		if (logLevel.equals("fatal")) {
-			return Level.FATAL;
-		}
-		if (logLevel.equals("trace")) {
-			return Level.TRACE;
-		}
-		if (logLevel.equals("warn")) {
-			return Level.WARN;
-		}
-		if (logLevel.equals("debug")) {
-			return Level.DEBUG;
-		}
-		return Level.DEBUG;
 	}
 
 	/**
@@ -227,10 +298,11 @@ public class TestContext {
 
 	/**
 	 * This method should be exercised as initial line for every test case, this
-	 * allows user to set properties of test case as known to fail. If known to fail
-	 * test case passes then it will be marked as a fail. Which will help user
-	 * figure out if developer has fixed some feature without letting them know and
-	 * gives test engineer an opportunity to re-look at the test case behaviour.
+	 * allows user to set properties of test case as known to fail. If known to
+	 * fail test case passes then it will be marked as a fail. Which will help
+	 * user figure out if developer has fixed some feature without letting them
+	 * know and gives test engineer an opportunity to re-look at the test case
+	 * behaviour.
 	 * 
 	 * @param knownToFail
 	 *            true|false
@@ -260,8 +332,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Object which is available globally to all test cases. User must maintain
-	 * Key for the HashTable
+	 * Sets Object which is available globally to all test cases. User must
+	 * maintain Key for the HashTable
 	 * 
 	 * @param key
 	 *            = Key to recognize an Object
@@ -365,6 +437,8 @@ public class TestContext {
 	 */
 	public void setOrganisedLogger(LogWrapper logWrapper) {
 		this.logWrapper = logWrapper;
+		printMendatoryInfo();
+		printUsefulInfo();
 	}
 
 	/**
@@ -391,35 +465,6 @@ public class TestContext {
 
 	public void setTestSuiteFinishTime(long testSuiteFinishTime) {
 		this.testSuiteFinishTime = testSuiteFinishTime;
-	}
-
-	/**
-	 * Returns FrameworkConfig object
-	 * 
-	 * @return {@code FrameworkConfig} object
-	 * 
-	 * @see FrameworkConfig
-	 */
-	public FrameworkConfig getFrameworkConfig() {
-		return frameworkConfig;
-	}
-
-	public void setFrameworkConfig(FrameworkConfig frameworkConfig) {
-		this.frameworkConfig = frameworkConfig;
-	}
-
-	/**
-	 * 
-	 * @return {@code SystemProperties} object
-	 * 
-	 * @see SystemProperties
-	 */
-	public SystemProperties getSystemProperties() {
-		return systemProperties;
-	}
-
-	public void setSystemProperties(SystemProperties systemProperties) {
-		this.systemProperties = systemProperties;
 	}
 
 	public List<String> getPassTestList() {

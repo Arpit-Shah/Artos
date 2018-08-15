@@ -26,6 +26,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.logging.log4j.Level;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -459,17 +460,19 @@ public class FrameworkConfig {
 						setLogLevel(eElement.getTextContent());
 					}
 					if ("logRootDir".equals(eElement.getAttribute("name"))) {
-						if (eElement.getTextContent().endsWith("/") || eElement.getTextContent().endsWith("\\")) {
-							setLogRootDir(eElement.getTextContent());
+						String rootDir = eElement.getTextContent();
+						if (rootDir.endsWith("/") || rootDir.endsWith("\\")) {
+							setLogRootDir(rootDir);
 						} else {
-							setLogRootDir(eElement.getTextContent() + File.separator);
+							setLogRootDir(rootDir + File.separator);
 						}
 					}
 					if ("logSubDir".equals(eElement.getAttribute("name"))) {
-						if (eElement.getTextContent().endsWith("/") || eElement.getTextContent().endsWith("\\")) {
-							setLogSubDir(eElement.getTextContent());
+						String subDir = eElement.getTextContent();
+						if (subDir.endsWith("/") || subDir.endsWith("\\")) {
+							setLogSubDir(subDir);
 						} else {
-							setLogSubDir(eElement.getTextContent() + File.separator);
+							setLogSubDir(subDir + File.separator);
 						}
 					}
 					if ("enableLogDecoration".equals(eElement.getAttribute("name"))) {
@@ -624,6 +627,38 @@ public class FrameworkConfig {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns Log Level Enum value based on Framework configuration set in XML
+	 * file
+	 * 
+	 * @see Level
+	 * 
+	 * @return LogLevel
+	 * @see Level
+	 */
+	public Level getLoglevelFromXML() {
+		String logLevel = getLogLevel();
+		if (logLevel.equals("info")) {
+			return Level.INFO;
+		}
+		if (logLevel.equals("all")) {
+			return Level.ALL;
+		}
+		if (logLevel.equals("fatal")) {
+			return Level.FATAL;
+		}
+		if (logLevel.equals("trace")) {
+			return Level.TRACE;
+		}
+		if (logLevel.equals("warn")) {
+			return Level.WARN;
+		}
+		if (logLevel.equals("debug")) {
+			return Level.DEBUG;
+		}
+		return Level.DEBUG;
 	}
 
 	public String getOrganisation_Name() {
