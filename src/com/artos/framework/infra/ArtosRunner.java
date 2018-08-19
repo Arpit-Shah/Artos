@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -49,6 +50,7 @@ public class ArtosRunner {
 	Class<? extends PrePostRunnable> cls;
 	TestContext context;
 	List<TestExecutionListener> listenerList = new ArrayList<TestExecutionListener>();
+	CountDownLatch latch;
 
 	// ==================================================================================
 	// Constructor (Starting point of framework)
@@ -62,12 +64,16 @@ public class ArtosRunner {
 	 *            Test class with main method
 	 * @param context
 	 *            TestContext object
+	 * @param latch
+	 *            CoundownLatch for thread which indicate executor about end
+	 *            execution of the thread
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 */
-	public ArtosRunner(Class<? extends PrePostRunnable> cls, TestContext context) {
+	public ArtosRunner(Class<? extends PrePostRunnable> cls, TestContext context, CountDownLatch latch) {
 		this.cls = cls;
 		this.context = context;
+		this.latch = latch;
 
 		// Register default listener
 		TestExecutionEventListener testListener = new TestExecutionEventListener(context);
@@ -93,7 +99,7 @@ public class ArtosRunner {
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(cls, testList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
-			new TestScriptParser().createExecScriptFromObjWrapper(cls, transformedTestList);
+			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
 
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelector()) {
@@ -160,6 +166,8 @@ public class ArtosRunner {
 			System.err.println("********************************************************\n********************************************************");
 		}
 
+		// to release a thread lock
+		latch.countDown();
 	}
 
 	private void runSingleThread(List<TestObjectWrapper> testList, Class<?> cls, int loopCycle, TestContext context)
@@ -170,44 +178,52 @@ public class ArtosRunner {
 		notifyTestSuiteExecutionStarted(cls.getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 
-		// Create an instance of Main class
-		PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
+		try {
 
-		// Run prior to each test suit
-		prePostCycleInstance.beforeTestsuite(context);
-		for (int index = 0; index < loopCycle; index++) {
-			notifyTestExecutionLoopCount(index);
-			// --------------------------------------------------------------------------------------------
-			for (TestObjectWrapper t : testList) {
+			// Create an instance of Main class
+			PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
 
-				// If stop on fail is selected then stop test execution
-				if (FWStaticStore.frameworkConfig.isStopOnFail()) {
-					if (context.getCurrentFailCount() > 0) {
-						break;
+			// Run prior to each test suit
+			prePostCycleInstance.beforeTestsuite(context);
+			for (int index = 0; index < loopCycle; index++) {
+				notifyTestExecutionLoopCount(index);
+				// --------------------------------------------------------------------------------------------
+				for (TestObjectWrapper t : testList) {
+
+					// If stop on fail is selected then stop test execution
+					if (FWStaticStore.frameworkConfig.isStopOnFail()) {
+						if (context.getCurrentFailCount() > 0) {
+							break;
+						}
 					}
+
+					// Skip tests should not reach here but if reached then skip
+					if (t.isSkipTest()) {
+						notifyTestExecutionSkipped(t);
+						continue;
+					}
+
+					notifyTestExecutionStarted(t);
+					// Run Pre Method prior to any test Execution
+					prePostCycleInstance.beforeTest(context);
+
+					runIndividualTest(t);
+
+					// Run Post Method prior to any test Execution
+					prePostCycleInstance.afterTest(context);
+					notifyTestExecutionFinished(t);
 				}
-
-				// Skip tests should not reach here but if reached then skip
-				if (t.isSkipTest()) {
-					notifyTestExecutionSkipped(t);
-					continue;
-				}
-
-				notifyTestExecutionStarted(t);
-				// Run Pre Method prior to any test Execution
-				prePostCycleInstance.beforeTest(context);
-
-				runIndividualTest(t);
-
-				// Run Post Method prior to any test Execution
-				prePostCycleInstance.afterTest(context);
-				notifyTestExecutionFinished(t);
+				// --------------------------------------------------------------------------------------------
 			}
-			// --------------------------------------------------------------------------------------------
-		}
-		// Run at the end of each test suit
-		prePostCycleInstance.afterTestsuite(context);
+			// Run at the end of each test suit
+			prePostCycleInstance.afterTestsuite(context);
 
+		} catch (Throwable e) {
+			// Handle if any exception in pre-post runnable
+			e.printStackTrace();
+			context.getLogger().error(e);
+		}
+		
 		// Set Test Finish Time
 		context.setTestSuiteFinishTime(System.currentTimeMillis());
 		notifyTestSuiteExecutionFinished(cls.getName());
@@ -387,8 +403,10 @@ public class ArtosRunner {
 
 			// populate all global parameters to context
 			Map<String, String> parameterMap = suite.getTestSuiteParameters();
-			for (Entry<String, String> entry : parameterMap.entrySet()) {
-				context.setGlobalObject(entry.getKey(), entry.getValue());
+			if (null != parameterMap && !parameterMap.isEmpty()) {
+				for (Entry<String, String> entry : parameterMap.entrySet()) {
+					context.setGlobalObject(entry.getKey(), entry.getValue());
+				}
 			}
 
 			// Get list of all test name
