@@ -223,7 +223,7 @@ public class ArtosRunner {
 			e.printStackTrace();
 			context.getLogger().error(e);
 		}
-		
+
 		// Set Test Finish Time
 		context.setTestSuiteFinishTime(System.currentTimeMillis());
 		notifyTestSuiteExecutionFinished(cls.getName());
@@ -419,7 +419,12 @@ public class ArtosRunner {
 				if (null == testObjWrapper) {
 					System.err.println("WARNING (not found): " + t);
 				} else {
-					listOfTransformedTestCases.add(testObjWrapper);
+					if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
+						listOfTransformedTestCases.add(testObjWrapper);
+					} else {
+						// System.err.println("WARNING (does not belong to
+						// group): " + t);
+					}
 				}
 			}
 
@@ -445,6 +450,15 @@ public class ArtosRunner {
 		}
 
 		return listOfTransformedTestCases;
+	}
+
+	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
+		for (String group : refGroupList) {
+			if (testGroupList.contains(group)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public List<TestExecutionListener> getListenerList() {

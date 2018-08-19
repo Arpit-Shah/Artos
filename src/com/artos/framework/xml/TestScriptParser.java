@@ -100,19 +100,41 @@ public class TestScriptParser {
 		if (suiteNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element eElement = (Element) suiteNode;
 			if ("suite".equals(eElement.getNodeName())) {
-				_suite.setSuiteName(eElement.getAttribute("name"));
+				_suite.setSuiteName(eElement.getAttribute("name").trim());
 			}
 
 			NodeList testsNodeList = eElement.getElementsByTagName("tests");
-			for (int temp = 0; temp < testsNodeList.getLength(); temp++) {
-				Node testsNode = testsNodeList.item(temp);
-				parseTests(_suite, testsNode);
+			if (testsNodeList.getLength() > 0) {
+				for (int temp = 0; temp < testsNodeList.getLength(); temp++) {
+					Node testsNode = testsNodeList.item(temp);
+					parseTests(_suite, testsNode);
+				}
+			} else {
+				// create empty list so null pointer exception can be avoided
+				_suite.setTestFQCNList(new ArrayList<>());
 			}
 
 			NodeList paramsNodeList = eElement.getElementsByTagName("parameters");
-			for (int temp = 0; temp < paramsNodeList.getLength(); temp++) {
-				Node parameterNode = paramsNodeList.item(temp);
-				parseParameters(_suite, parameterNode);
+			if (paramsNodeList.getLength() > 0) {
+				for (int temp = 0; temp < paramsNodeList.getLength(); temp++) {
+					Node parameterNode = paramsNodeList.item(temp);
+					parseParameters(_suite, parameterNode);
+				}
+			} else {
+				// create empty map so null pointer exception can be avoided
+				_suite.setTestSuiteParameters(new HashMap<>());
+			}
+
+			NodeList groupsNodeList = eElement.getElementsByTagName("groups");
+			if (groupsNodeList.getLength() > 0) {
+				for (int temp = 0; temp < groupsNodeList.getLength(); temp++) {
+					Node groupsNode = groupsNodeList.item(temp);
+					parseGroups(_suite, groupsNode);
+				}
+			} else {
+				// create list with "*" so all test can be run
+				_suite.setGroupList(new ArrayList<>());
+				_suite.getGroupList().add("*");
 			}
 		}
 	}
@@ -145,6 +167,27 @@ public class TestScriptParser {
 			}
 		}
 		_suite.setTestFQCNList(testFQCNList);
+	}
+
+	private void parseGroups(TestSuite _suite, Node groupsNode) {
+		List<String> groupList = new ArrayList<>();
+		NodeList nChildList = groupsNode.getChildNodes();
+		for (int i = 0; i < nChildList.getLength(); i++) {
+			Node nChildNode = nChildList.item(i);
+			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nChildNode;
+				if ("group".equals(eElement.getNodeName())) {
+					groupList.add(eElement.getAttribute("name").trim().toUpperCase());
+				}
+			}
+		}
+
+		// If group list is empty then atleast add * which will run all test
+		// cases
+		if (groupList.isEmpty()) {
+			groupList.add("*");
+		}
+		_suite.setGroupList(groupList);
 	}
 
 	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList) throws Exception {
@@ -180,6 +223,7 @@ public class TestScriptParser {
 
 		createTestList(testList, doc, suite);
 		createSuiteParameters(doc, suite);
+		createSuiteGroups(doc, suite);
 
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -197,10 +241,6 @@ public class TestScriptParser {
 		// Organisation Info elements
 		Element tests = doc.createElement("tests");
 		suite.appendChild(tests);
-
-		Attr attr2 = doc.createAttribute("group");
-		attr2.setValue("*");
-		suite.setAttributeNode(attr2);
 
 		for (int i = 0; i < testList.size(); i++) {
 			// add test cases
@@ -229,6 +269,21 @@ public class TestScriptParser {
 			attr1.setValue("PARAMETER_" + i);
 			property.setAttributeNode(attr1);
 		}
+	}
+
+	private void createSuiteGroups(Document doc, Element suite) {
+		// Organisation Info elements
+		Element groups = doc.createElement("groups");
+		suite.appendChild(groups);
+
+		// add test cases
+		Element property = doc.createElement("group");
+		property.appendChild(doc.createTextNode(""));
+		groups.appendChild(property);
+
+		Attr attr1 = doc.createAttribute("name");
+		attr1.setValue("*");
+		property.setAttributeNode(attr1);
 	}
 
 	public static void main(String[] args) {

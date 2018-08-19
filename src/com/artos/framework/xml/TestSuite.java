@@ -6,6 +6,7 @@ import java.util.Map;
 public class TestSuite {
 
 	String suiteName;
+	List<String> groupList;
 	List<String> testFQCNList;
 	Map<String, String> testSuiteParameters;
 	String threadName;
@@ -43,6 +44,14 @@ public class TestSuite {
 
 	public void setSuiteName(String suiteName) {
 		this.suiteName = suiteName;
+	}
+
+	public List<String> getGroupList() {
+		return groupList;
+	}
+
+	public void setGroupList(List<String> groupList) {
+		this.groupList = groupList;
 	}
 
 }
