@@ -15,6 +15,9 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class wraps test object with other necessary information which is
  * helpful during test execution
@@ -28,7 +31,8 @@ public class TestObjectWrapper {
 	Class<?> testClassObject = null;
 	boolean skipTest = false;
 	int testsequence = 0;
-	String testCaseLabel = "";
+	List<String> labelList = new ArrayList<>();
+	List<String> groupList = new ArrayList<>();
 
 	// TestPlan
 	String testPlanDescription = "Warning : TestPlan Attribute is not set";
@@ -53,14 +57,13 @@ public class TestObjectWrapper {
 	 * @param testCaseLabel
 	 *            test label as specified in annotation
 	 */
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String testCaseLabel) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence) {
 		super();
 
 		this.testClassObject = cls;
 
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
-		this.testCaseLabel = testCaseLabel;
 	}
 
 	public String getTestPlanDescription() {
@@ -127,14 +130,6 @@ public class TestObjectWrapper {
 		this.testsequence = testsequence;
 	}
 
-	public String getTestCaseLabel() {
-		return testCaseLabel;
-	}
-
-	public void setTestCaseLabel(String testCaseLabel) {
-		this.testCaseLabel = testCaseLabel;
-	}
-
 	public boolean isKTF() {
 		return KTF;
 	}
@@ -149,6 +144,22 @@ public class TestObjectWrapper {
 
 	public void setBugTrackingNumber(String bugTrackingNumber) {
 		this.bugTrackingNumber = bugTrackingNumber;
+	}
+
+	public List<String> getGroupList() {
+		return groupList;
+	}
+
+	public void setGroupList(List<String> groupList) {
+		this.groupList = groupList;
+	}
+
+	public List<String> getLabelList() {
+		return labelList;
+	}
+
+	public void setLabelList(List<String> labelList) {
+		this.labelList = labelList;
 	}
 
 }
