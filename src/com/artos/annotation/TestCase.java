@@ -46,9 +46,9 @@ public @interface TestCase {
 	int sequence() default 1;
 
 	/**
-	 * Specific Label this test case belong to
+	 * Labels for each test cases
 	 * 
 	 * @return test case label
 	 */
-	String label() default "all";
+	String[] label() default "all";
 }
