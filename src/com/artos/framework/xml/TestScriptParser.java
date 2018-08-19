@@ -39,8 +39,6 @@ import org.w3c.dom.NodeList;
 
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestObjectWrapper;
-import com.artos.interfaces.PrePostRunnable;
-import com.artos.interfaces.TestExecutable;
 
 public class TestScriptParser {
 
@@ -90,7 +88,7 @@ public class TestScriptParser {
 
 			// Only add test suite in the list if atleast one test case is
 			// specified
-			if (!_suite.getTestFQCNList().isEmpty()) {
+			if (null != _suite.getTestFQCNList() && !_suite.getTestFQCNList().isEmpty()) {
 				testSuiteList.add(_suite);
 			}
 		}
@@ -142,19 +140,24 @@ public class TestScriptParser {
 			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nChildNode;
 				if ("test".equals(eElement.getNodeName())) {
-					testFQCNList.add(eElement.getAttribute("name"));
+					testFQCNList.add(eElement.getAttribute("name").trim());
 				}
 			}
 		}
 		_suite.setTestFQCNList(testFQCNList);
 	}
 
-	public void createTestScriptFromTestExecutable(List<TestExecutable> testList) throws Exception {
+	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList) throws Exception {
 		if (null == testList || testList.isEmpty()) {
 			return;
 		}
 
-		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + testList.get(0).getClass().getPackage().getName() + ".xml");
+		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + testList.get(0).getTestClassObject().getPackage().getName() + ".xml");
+
+		if (scriptFile.exists() && scriptFile.isFile()) {
+			return;
+		}
+
 		if (!scriptFile.getParentFile().exists()) {
 			scriptFile.getParentFile().mkdirs();
 		}
@@ -168,23 +171,15 @@ public class TestScriptParser {
 		doc.appendChild(rootElement);
 
 		// Organisation Info elements
-		Element orgnization_info = doc.createElement("suite");
-		rootElement.appendChild(orgnization_info);
+		Element suite = doc.createElement("suite");
+		rootElement.appendChild(suite);
 
 		Attr attr = doc.createAttribute("name");
-		attr.setValue(testList.get(0).getClass().getPackage().getName());
-		orgnization_info.setAttributeNode(attr);
+		attr.setValue(testList.get(0).getTestClassObject().getPackage().getName());
+		suite.setAttributeNode(attr);
 
-		for (int i = 0; i < testList.size(); i++) {
-			// add test cases
-			Element property = doc.createElement("test");
-			property.appendChild(doc.createTextNode(" "));
-			orgnization_info.appendChild(property);
-
-			Attr attr1 = doc.createAttribute("name");
-			attr1.setValue(testList.get(i).getClass().getSimpleName());
-			property.setAttributeNode(attr1);
-		}
+		createTestList(testList, doc, suite);
+		createSuiteParameters(doc, suite);
 
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -198,52 +193,42 @@ public class TestScriptParser {
 
 	}
 
-	public void createExecScriptFromObjWrapper(Class<? extends PrePostRunnable> cls, List<TestObjectWrapper> testList) throws Exception {
-		if (null == testList || testList.isEmpty()) {
-			return;
-		}
-
-		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + cls.getPackage().getName() + ".xml");
-		if (!scriptFile.getParentFile().exists()) {
-			scriptFile.getParentFile().mkdirs();
-		}
-
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-		// root elements
-		Document doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement("configuration");
-		doc.appendChild(rootElement);
-
+	private void createTestList(List<TestObjectWrapper> testList, Document doc, Element suite) {
 		// Organisation Info elements
-		Element orgnization_info = doc.createElement("suite");
-		rootElement.appendChild(orgnization_info);
+		Element tests = doc.createElement("tests");
+		suite.appendChild(tests);
 
-		Attr attr = doc.createAttribute("name");
-		attr.setValue(cls.getPackage().getName());
-		orgnization_info.setAttributeNode(attr);
+		Attr attr2 = doc.createAttribute("group");
+		attr2.setValue("*");
+		suite.setAttributeNode(attr2);
 
 		for (int i = 0; i < testList.size(); i++) {
 			// add test cases
 			Element property = doc.createElement("test");
-			property.appendChild(doc.createTextNode(" "));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(""));
+			tests.appendChild(property);
 
 			Attr attr1 = doc.createAttribute("name");
 			attr1.setValue(testList.get(i).getTestClassObject().getCanonicalName());
 			property.setAttributeNode(attr1);
 		}
+	}
 
-		// write the content into xml file
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(scriptFile);
+	private void createSuiteParameters(Document doc, Element suite) {
+		// Organisation Info elements
+		Element parameters = doc.createElement("parameters");
+		suite.appendChild(parameters);
 
-		transformer.transform(source, result);
+		for (int i = 0; i < 3; i++) {
+			// add test cases
+			Element property = doc.createElement("parameter");
+			property.appendChild(doc.createTextNode("parameterValue_" + i));
+			parameters.appendChild(property);
+
+			Attr attr1 = doc.createAttribute("name");
+			attr1.setValue("PARAMETER_" + i);
+			property.setAttributeNode(attr1);
+		}
 	}
 
 	public static void main(String[] args) {
