@@ -88,9 +88,9 @@ public class CliProcessor {
 				File testscriptFile = new File(line.getOptionValue("testscript"));
 				if (testscriptFile.exists() && testscriptFile.isFile()) {
 					FWStaticStore.testScriptFile = testscriptFile;
-					System.out.println("TestScript provided : " + testscriptFile.getAbsolutePath());
+					System.err.println("TestScript found : " + testscriptFile.getAbsolutePath());
 				} else {
-					System.err.println("TestScript not found : " + testscriptFile.getAbsolutePath());
+					System.err.println("TestScript missing : " + testscriptFile.getAbsolutePath());
 					pw.flush();
 					System.exit(1);
 				}
