@@ -17,6 +17,7 @@ package com.artos.framework.infra;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +35,7 @@ public class Runner {
 
 	Class<? extends PrePostRunnable> cls;
 	List<TestSuite> testSuiteList = null;
+	List<TestContext> testContextList = new ArrayList<>();
 	LoggerContext loggerContext;
 
 	/**
@@ -91,11 +93,13 @@ public class Runner {
 		{
 			ExecutorService service = Executors.newFixedThreadPool(threadCount + 20);
 			List<Future<Runnable>> futures = new ArrayList<>();
-
+			CountDownLatch latch = new CountDownLatch(threadCount);
+			
 			for (int i = 0; i < threadCount; i++) {
 
 				// Create new context for each thread
 				TestContext context = new TestContext();
+				testContextList.add(context);
 
 				// Get logger for particular thread and set to context object
 				LogWrapper logWrapper = new LogWrapper(loggerContext, i);
@@ -107,7 +111,7 @@ public class Runner {
 				}
 
 				// Launch a thread with runnable
-				Future<?> f = service.submit(new SuiteTask(cls, testList, loopCycle, context));
+				Future<?> f = service.submit(new SuiteTask(cls, testList, loopCycle, context, latch));
 				futures.add((Future<Runnable>) f);
 
 			}
@@ -119,6 +123,9 @@ public class Runner {
 
 			// shut down the executor service so that this thread can exit
 			service.shutdownNow();
+
+			latch.await();
+			System.exit(0);
 		}
 	}
 }
@@ -133,18 +140,20 @@ class SuiteTask implements Runnable {
 	List<TestExecutable> testList;
 	int loopCycle;
 	TestContext context;
+	CountDownLatch latch;
 
-	public SuiteTask(Class<? extends PrePostRunnable> cls, List<TestExecutable> testList, int loopCycle, TestContext context) {
+	public SuiteTask(Class<? extends PrePostRunnable> cls, List<TestExecutable> testList, int loopCycle, TestContext context, CountDownLatch latch) {
 		this.cls = cls;
 		this.testList = testList;
 		this.loopCycle = loopCycle;
 		this.context = context;
+		this.latch = latch;
 	}
 
 	@Override
 	public void run() {
 		try {
-			ArtosRunner artos = new ArtosRunner(cls, context);
+			ArtosRunner artos = new ArtosRunner(cls, context, latch);
 			artos.run(testList, loopCycle);
 		} catch (Exception e) {
 			e.printStackTrace();
