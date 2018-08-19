@@ -15,7 +15,6 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,10 +27,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
-import com.artos.annotation.AfterTest;
-import com.artos.annotation.AfterTestsuite;
-import com.artos.annotation.BeforeTest;
-import com.artos.annotation.BeforeTestsuite;
+import com.artos.annotation.Group;
 import com.artos.annotation.KnownToFail;
 import com.artos.annotation.TestCase;
 import com.artos.annotation.TestPlan;
@@ -46,7 +42,6 @@ import com.artos.interfaces.TestExecutable;
  */
 public class ScanTestSuite {
 	Reflections reflection;
-	List<String> testLabels = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
 
@@ -68,12 +63,12 @@ public class ScanTestSuite {
 	 */
 	private void scan(String packageName) {
 
-		List<String> testLabels_withDuplicates = new ArrayList<>();
 		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 
 		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
 			TestCase testcase = cl.getAnnotation(TestCase.class);
 			TestPlan testplan = cl.getAnnotation(TestPlan.class);
+			Group group = cl.getAnnotation(Group.class);
 			KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
 
 			// @formatter:off
@@ -91,7 +86,7 @@ public class ScanTestSuite {
 			//			);
 			// @formatter:on
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.label());
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence());
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {
@@ -102,12 +97,52 @@ public class ScanTestSuite {
 				testobj.setTestReviewDate(testplan.reviewDate());
 			}
 
-			// collect all labels
-			String[] labelArray = testcase.label().toLowerCase().trim().split(":");
-			for (String s : labelArray) {
-				if (null != s && !"".equals(s)) {
-					testLabels_withDuplicates.add(s.trim());
+			/*
+			 * Store group list for each test cases.
+			 * 
+			 * @formatter:off
+			 * Label must follow following rules
+			 * <PRE>
+			 * - Name is case in-sensitive (but it will stored in upper case)
+			 * - Name can not have leading or trailing spaces, it will be removed
+			 * - Name can not have \r or \n or \t char, it will be removed
+			 * - Name can not have \ char, it will be removed
+			 * </PRE>
+			 * @formatter:on
+			 */
+			{
+				if (null != group) {
+					List<String> groupList = Arrays.asList(group.group());
+					testobj.setGroupList(groupList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
+							.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
+				} else {
+					testobj.setGroupList(new ArrayList<String>());
 				}
+
+				// each group must have * by default (which represents all
+				if (!testobj.getGroupList().contains("*")) {
+					testobj.getGroupList().add("*");
+				}
+				// System.out.println(testobj.getGroupList());
+			}
+
+			/*
+			 * Store label list for each test cases.
+			 * 
+			 * @formatter:off
+			 * Label must follow following rules
+			 * <PRE>
+			 * - Name is case in-sensitive (but it will stored in upper case)
+			 * - Name can not have leading or trailing spaces, it will be removed
+			 * - Name can not have \r or \n or \t char, it will be removed
+			 * - Name can not have \ char, it will be removed
+			 * </PRE>
+			 * @formatter:on
+			 */
+			{
+				List<String> labelList = Arrays.asList(testcase.label());
+				testobj.setLabelList(labelList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "")
+						.replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
 			}
 
 			// KTF is optional attribute so it can be null
@@ -122,26 +157,23 @@ public class ScanTestSuite {
 			}
 		}
 
-		// Remove duplicates from the test Label list for later use
-		testLabels = testLabels_withDuplicates.stream().distinct().collect(Collectors.toList());
-
-		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTest.class)) {
-			// System.out.println("@BeforeTest = " + method.getName() + " : " +
-			// method.getDeclaringClass().getName());
-		}
-		for (Method method : reflection.getMethodsAnnotatedWith(BeforeTestsuite.class)) {
-			// System.out.println("@BeforeTestsuite = " + method.getName() + " :
-			// " + method.getDeclaringClass().getName());
-		}
-		for (Method method : reflection.getMethodsAnnotatedWith(AfterTest.class)) {
-			// System.out.println("@AfterTest = " + method.getName() + " : " +
-			// method.getDeclaringClass().getName());
-		}
-		for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuite.class)) {
-			// System.out.println("@AfterTestsuite = " + method.getName() + " :
-			// "
-			// + method.getDeclaringClass().getName());
-		}
+		// For debugging purpose
+		// @formatter:off
+//		{
+//			for (Method method : reflection.getMethodsAnnotatedWith(BeforeTest.class)) {
+//				System.out.println("@BeforeTest = " + method.getName() + " : " + method.getDeclaringClass().getName());
+//			}
+//			for (Method method : reflection.getMethodsAnnotatedWith(BeforeTestsuite.class)) {
+//				System.out.println("@BeforeTestsuite = " + method.getName() + " : " + method.getDeclaringClass().getName());
+//			}
+//			for (Method method : reflection.getMethodsAnnotatedWith(AfterTest.class)) {
+//				System.out.println("@AfterTest = " + method.getName() + " : " + method.getDeclaringClass().getName());
+//			}
+//			for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuite.class)) {
+//				System.out.println("@AfterTestsuite = " + method.getName() + " : " + method.getDeclaringClass().getName());
+//			}
+//		}
+		// @formatter:on
 	}
 
 	/**
@@ -196,22 +228,12 @@ public class ScanTestSuite {
 			sb.append("\nTestCaseName : " + testObject.getTestClassObject().getName());
 			sb.append("\nSkipTest : " + Boolean.toString(testObject.isSkipTest()));
 			sb.append("\nTestSequence : " + testObject.getTestsequence());
-			sb.append("\nTestLabel : " + testObject.getTestCaseLabel());
+			sb.append("\nTestLabel : " + testObject.getLabelList());
 			sb.append("\nDescription : " + testObject.getTestPlanDescription());
 			sb.append("\nPreparedBy : " + testObject.getTestPlanPreparedBy());
 			sb.append("\nPreparationDate : " + testObject.getTestPlanPreparationDate());
 			sb.append("\nReviewedBy : " + testObject.getTestreviewedBy());
 			sb.append("\nReviewedDate : " + testObject.getTestReviewDate());
-		}
-
-		return sb.toString();
-	}
-
-	public String getTestLabelsToPrint(TestContext context) {
-		StringBuilder sb = new StringBuilder();
-
-		for (String label : testLabels) {
-			sb.append("\n" + label);
 		}
 
 		return sb.toString();
@@ -259,9 +281,9 @@ public class ScanTestSuite {
 	 *             if the class or its nullary constructor is not accessible.
 	 * @throws InstantiationException
 	 *             if this Class represents an abstract class, an interface, an
-	 *             array class, a primitive type, or void; or if the class has no
-	 *             nullary constructor; or if the instantiation fails for some other
-	 *             reason.
+	 *             array class, a primitive type, or void; or if the class has
+	 *             no nullary constructor; or if the instantiation fails for
+	 *             some other reason.
 	 */
 	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws InstantiationException, IllegalAccessException {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
@@ -275,8 +297,8 @@ public class ScanTestSuite {
 	}
 
 	/**
-	 * Returns scanned test cases HashMap so user can search test case by TestCase
-	 * FQCN
+	 * Returns scanned test cases HashMap so user can search test case by
+	 * TestCase FQCN
 	 * 
 	 * @param removeSkippedTests
 	 *            removes test cases marked with skipped
@@ -291,14 +313,6 @@ public class ScanTestSuite {
 			testObjWrapperMap.put(t.getTestClassObject().getName(), t);
 		}
 		return testObjWrapperMap;
-	}
-
-	public List<String> getTestLabels() {
-		return testLabels;
-	}
-
-	public void setTestLabels(List<String> testLabels) {
-		this.testLabels = testLabels;
 	}
 
 }
