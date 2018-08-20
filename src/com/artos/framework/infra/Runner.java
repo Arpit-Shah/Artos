@@ -43,7 +43,7 @@ public class Runner {
 	 *            Test class with main method
 	 * @see TestContext
 	 */
-	public Runner(Class<? extends PrePostRunnable> cls) throws Exception {
+	public Runner(Class<? extends PrePostRunnable> cls) {
 		this.cls = cls;
 	}
 

@@ -54,8 +54,6 @@ public class TestObjectWrapper {
 	 *            skip property as specified in annotation
 	 * @param testsequence
 	 *            test sequence as specified in annotation
-	 * @param testCaseLabel
-	 *            test label as specified in annotation
 	 */
 	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence) {
 		super();
