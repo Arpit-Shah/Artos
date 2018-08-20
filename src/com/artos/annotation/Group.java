@@ -36,6 +36,6 @@ public @interface Group {
 	 * 
 	 * @return array of group name which test case belongs to
 	 */
-	String[] group() default "*";
+	String[] group() default {"*"};
 
 }

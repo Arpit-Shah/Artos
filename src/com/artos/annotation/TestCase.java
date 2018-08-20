@@ -50,5 +50,5 @@ public @interface TestCase {
 	 * 
 	 * @return test case label
 	 */
-	String[] label() default "all";
+	String[] label() default {"all"};
 }
