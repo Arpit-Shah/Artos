@@ -16,6 +16,7 @@
 package com.artos.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
 
 import com.artos.framework.infra.TestContext;
@@ -174,27 +175,56 @@ public class SCP {
 	 *            source file path
 	 * @param destFilePath
 	 *            destination file path
+	 * @throws IOException
+	 *             when IO exception occurs
 	 */
-	public void fileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath) {
-		try {
-			setDirection(direction);
-			setSrcFilePath(srcFilePath);
-			setDestFilePath(destFilePath);
-			context.getLogger().debug("SCP in Progress. Please Wait ...");
-			context.getLogger().debug("Source : {}", getSrcFilePath());
-			context.getLogger().debug("Destination : {}", getDestFilePath());
-			SSHSCP1 scp = getScpClient().scp1();
+	public void fileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath) throws IOException {
+		fileTransfer(direction, srcFilePath, destFilePath, false);
+	}
 
-			if (getDirection().equals(SCPTransferDirection.COPY_TO_REMOTE)) {
-				scp.copyToRemote(getSrcFilePath(), getDestFilePath(), false);
-			} else if (getDirection().equals(SCPTransferDirection.COPY_TO_LOCAL)) {
-				scp.copyToLocal(getSrcFilePath(), getDestFilePath(), false);
-			}
-			context.getLogger().debug("SCP Completed");
-		} catch (Exception e) {
-			context.getLogger().debug("SCP Failed");
-			e.printStackTrace();
+	/**
+	 * File Transfer to remote location or from remote location to local.
+	 * 
+	 * <PRE>
+	 * Example 1:
+	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22);
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_REMOTE, "/files/temp.txt", "/etc/temp/file");
+	 * scp.disconnect();
+	 * Example 2:
+	 * SCP scp = new SCP(context, "192.168.1.100", "root", "", 22);
+	 * scp.connect();
+	 * scp.fileTransfer(SCPTransferDirection.COPY_TO_LOCAL, "/etc/temp/file/temp.txt", "./files");
+	 * scp.disconnect();
+	 * </PRE>
+	 * 
+	 * @param direction
+	 *            scp direction
+	 * @param srcFilePath
+	 *            source file path
+	 * @param recursiveFileTransfer
+	 *            recursively transfer file
+	 * @param destFilePath
+	 *            destination file path
+	 * @throws IOException
+	 *             when IO exception occurs
+	 */
+	public void fileTransfer(SCPTransferDirection direction, String srcFilePath, String destFilePath, boolean recursiveFileTransfer)
+			throws IOException {
+		setDirection(direction);
+		setSrcFilePath(srcFilePath);
+		setDestFilePath(destFilePath);
+		context.getLogger().debug("SCP in Progress. Please Wait ...");
+		context.getLogger().debug("Source : {}", getSrcFilePath());
+		context.getLogger().debug("Destination : {}", getDestFilePath());
+		SSHSCP1 scp = getScpClient().scp1();
+
+		if (getDirection().equals(SCPTransferDirection.COPY_TO_REMOTE)) {
+			scp.copyToRemote(getSrcFilePath(), getDestFilePath(), recursiveFileTransfer);
+		} else if (getDirection().equals(SCPTransferDirection.COPY_TO_LOCAL)) {
+			scp.copyToLocal(getDestFilePath(), getSrcFilePath(), recursiveFileTransfer);
 		}
+		context.getLogger().debug("SCP Completed");
 	}
 
 	/**
