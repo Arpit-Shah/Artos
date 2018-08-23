@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Level;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
-import com.artos.framework.Version;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -226,7 +225,8 @@ public class TestContext {
 		// @formatter:off
 		
 		logger.debug("\nTest FrameWork Info");
-		logger.debug("* Artos version => " + Version.id());
+		logger.debug("* Artos version => " + FWStaticStore.ARTOS_BUILD_VERSION);
+		logger.debug("* Artos build date => " + FWStaticStore.ARTOS_BUILD_DATE);
 		logger.debug("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion()); 
 		logger.debug("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
 		logger.debug("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());

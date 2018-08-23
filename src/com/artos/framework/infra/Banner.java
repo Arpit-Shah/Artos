@@ -15,7 +15,7 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
-import com.artos.framework.Version;
+import com.artos.framework.FWStaticStore;
 
 /** Prints Framework Banner */
 class Banner {
@@ -39,7 +39,7 @@ class Banner {
 				+ "\n    | | | | |  |_| |_| (__) )___  \\   ) ) ) )     "
 				+ "\n    |_| |_|_|    | |_ \\__ _/| ___ /  / / / /      "
 				+ "\n    =============\\__/============== (_(_(_(       "
-				+ "\n    == Artos ==  (RELEASE v"+Version.id()+")                 "
+				+ "\n    == Artos ==  (RELEASE v"+ FWStaticStore.ARTOS_BUILD_VERSION +")                 "
 				+ "\n                                                         "
 				+ "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 				+ "\n";

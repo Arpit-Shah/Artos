@@ -15,13 +15,37 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.F
 package com.artos.framework;
 
+import java.util.Properties;
+
 /**
  * This class defines the current version of framework
  *
  */
 public class Version {
 
-	public static String id() {
-		return "01.00.0001";
+	static String version = "0.0.0";
+	static String buidDate = "0.0.0";
+	
+	public Version() {
+		readPropertiesFile();
+	}
+
+	public String getBuildVersion() {
+		return version;
+	}
+
+	public String getBuildDate() {
+		return buidDate;
+	}
+
+	public void readPropertiesFile() {
+		try {
+			Properties prop = new Properties();
+			prop.load(getClass().getResourceAsStream("/version.properties"));
+			version = prop.getProperty("version");
+			buidDate = prop.getProperty("build.date");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

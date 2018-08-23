@@ -38,22 +38,17 @@
 	</developers>
 
 	<!-- Source Repo Info -->
-	<!-- 
-	<scm>
-		<connection>scm:git:git://github.com/Arpit-Shah/Arpitos_TestFramework.git</connection>
-		<developerConnection>scm:git:ssh://github.com:Arpit-Shah/Arpitos_TestFramework.git</developerConnection>
-		<url>https://github.com/Arpit-Shah/Arpitos_TestFramework/tree/master</url>
-	</scm>
-	-->
 	<scm>
 		<connection>scm:git:git://bitbucket.org/ShahArpit/arpitos_fork.git</connection>
 		<developerConnection>scm:git:ssh://git@bitbucket.org/ShahArpit/arpitos_fork.git</developerConnection>
 		<url>https://bitbucket.org/ShahArpit/arpitos_fork/src/master/</url>
 	</scm>
-	 
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Enable time stamp so version file can be replaced with time stamp -->
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>dd-MM-yyyy HH:mm</maven.build.timestamp.format>
 	</properties>
 
 	<!-- Distribution Model -->
@@ -147,8 +142,17 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 
-		<!-- <resources> <resource> <directory>${project.basedir}/src/com/artos/icons</directory> 
-			</resource> </resources> -->
+		<!-- Following will update version.properites file with build number and 
+			timestamp , user can find updated file in /target/classes/version.properties location -->
+		<resources>
+			<resource>
+				<directory>${project.basedir}/src/com/artos/version</directory> <!-- Source directory -->
+				<filtering>true</filtering>
+				<includes>
+					<include>**/version.properties</include> <!-- Target file -->
+				</includes>
+			</resource>
+		</resources>
 
 		<!-- Maven Compiler Plugins -->
 		<!-- parent pom overrides for compiler plugin default values and you can't 
