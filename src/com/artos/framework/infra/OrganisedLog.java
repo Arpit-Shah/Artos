@@ -37,18 +37,19 @@ import com.artos.framework.xml.TestSuite;
 
 /**
  * This class is responsible for initialising all log streams which may require
- * during test suit execution
+ * during test suite execution
  */
 class OrganisedLog {
 
 	private LoggerContext loggerContext;
-	private String logBaseDir = "./reporting";
+	private String logBaseDir;
 	public static String GENERAL_LOGGER_NAME_STX = "General_";
 	public static String SUMMARY_LOGGER_NAME_STX = "Summary_";
 	public static String REALTIME_LOGGER_NAME_STX = "RealTime_";
 
 	/**
-	 * Class Constructor
+	 * Constructor responsible for creating log base directory and Log4J
+	 * loggerContext using Framework configuration and TestSuite information
 	 * 
 	 * @param logDirPath
 	 *            Log base directory absolute or reference path
@@ -70,17 +71,22 @@ class OrganisedLog {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
+		
+		if(null == logDirPath){
+			logDirPath = FWStaticStore.LOG_BASE_DIR;
+		}
 
 		if (!logDirPath.endsWith("/") && !logDirPath.endsWith("\\")) {
 			logDirPath = logDirPath + File.separator;
 		}
+		
 		setLogBaseDir(logDirPath + testCaseFQCN + File.separator);
 		setLoggerContext(dynamicallyConfigureLog4J(getLogBaseDir(), testCaseFQCN, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList));
 	}
 
 	/**
 	 * Dynamically Generates and applies Log4J configuration XML as per test
-	 * suit requirement
+	 * suite requirement
 	 * 
 	 * @param baseDir
 	 *            Log file root directory
@@ -127,6 +133,7 @@ class OrganisedLog {
 		/*
 		* @formatter:off
 		*
+		* %highlight{} Highlights log levels in different colour
 		* [%-5level] = Log level upto 5 char max
 		* [%d{yyyy-MM-dd_HH:mm:ss.SSS}] = Date and time 
 		* [%t] = Thread number
@@ -141,11 +148,9 @@ class OrganisedLog {
 		*/
 		{
 			if (enableLogDecoration) {
-				logFileLayout.addAttribute("pattern",
-						"%highlight{[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}");
+				logFileLayout.addAttribute("pattern", "%highlight{[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable}");
 			} else {
-				logFileLayout.addAttribute("pattern",
-						"%highlight{%msg%n%throwable}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}");
+				logFileLayout.addAttribute("pattern", "%highlight{%msg%n%throwable}");
 			}
 
 			realTimeLogLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t] - %msg%n%throwable");
