@@ -57,8 +57,9 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Constructor responsible for storing context and main class object. also
-	 * registers TestExecutionEventListener so test decoration can be printed.
+	 * Constructor responsible for storing TestContext and class which contains
+	 * main() method. Upon initialisation TestExecutionEventListener is
+	 * registered so test decoration can be printed.
 	 * 
 	 * @param cls
 	 *            Test class with main method
@@ -382,7 +383,12 @@ public class ArtosRunner {
 
 		Object testSuiteObject;
 		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
-		String packageName = cls.getName().substring(0, cls.getName().lastIndexOf("."));
+
+		// If main() method executes from root then package name will be none
+		String packageName = "";
+		if (null != cls.getPackage()) {
+			packageName = cls.getPackage().getName();
+		}
 		ScanTestSuite reflection = new ScanTestSuite(packageName);
 
 		/*
