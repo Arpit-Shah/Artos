@@ -27,10 +27,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.Version;
 
 /** Process Command Line arguments */
 public class CliProcessor {
+
+	public static File testScriptFile = null;
 
 	/**
 	 * Processes command line arguments
@@ -69,7 +70,7 @@ public class CliProcessor {
 			// validate that block-size has been set
 			if (line.hasOption("version")) {
 				PrintWriter pw = new PrintWriter(System.out);
-				System.out.println("Artos version : \"" + Version.id() + "\"");
+				System.out.println("Artos version : \"" + FWStaticStore.ARTOS_BUILD_VERSION + "\"");
 				pw.flush();
 			}
 			if (line.hasOption("help")) {
@@ -85,12 +86,13 @@ public class CliProcessor {
 			// Store test script path if provided
 			if (line.hasOption("testscript")) {
 				PrintWriter pw = new PrintWriter(System.out);
-				File testscriptFile = new File(line.getOptionValue("testscript"));
-				if (testscriptFile.exists() && testscriptFile.isFile()) {
-					FWStaticStore.testScriptFile = testscriptFile;
-					System.err.println("TestScript found : " + testscriptFile.getAbsolutePath());
+				File tscriptFile = new File(line.getOptionValue("testscript"));
+				if (tscriptFile.exists() && tscriptFile.isFile()) {
+					testScriptFile = tscriptFile;
+					System.err.println("TestScript found : " + tscriptFile.getAbsolutePath());
+					pw.flush();
 				} else {
-					System.err.println("TestScript missing : " + testscriptFile.getAbsolutePath());
+					System.err.println("TestScript missing : " + tscriptFile.getAbsolutePath());
 					pw.flush();
 					System.exit(1);
 				}

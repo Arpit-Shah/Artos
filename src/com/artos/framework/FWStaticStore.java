@@ -25,13 +25,18 @@ public class FWStaticStore {
 
 	public static final String TOOL_NAME = "Artos";
 
+	// default paths
+	public static final String TESTSCRIPT_BASE_DIR = "." + File.separator + "script" + File.separator;
+	public static final String CONFIG_BASE_DIR = "." + File.separator + "conf" + File.separator;
+	public static final String LOG_BASE_DIR = "." + File.separator + "reporting" + File.separator;
+
+	// Must be kept after default paths initialised
 	public static FrameworkConfig frameworkConfig = new FrameworkConfig(true);
 	public static SystemProperties systemProperties = new SystemProperties();
-	public static File testScriptFile = null;
+	public static final String ARTOS_BUILD_VERSION = new Version().getBuildVersion();
+	public static final String ARTOS_BUILD_DATE = new Version().getBuildDate();
 
-	public static final String TESTSCRIPT_BASE_DIR = "./script/";
-	public static final String CONFIG_BASE_DIR = "./conf/";
-
+	// Global Hashmap key name
 	public static final String GLOBAL_TEST_SUITE = "TEST_SUITE";
 	public static final String GLOBAL_ANNOTATED_TEST_MAP = "ANNOTATED_TEST_MAP";
 

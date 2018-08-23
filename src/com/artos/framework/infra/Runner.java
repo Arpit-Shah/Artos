@@ -40,7 +40,7 @@ public class Runner {
 
 	/**
 	 * @param cls
-	 *            Test class with main method
+	 *            Class which contains main() method
 	 * @see TestContext
 	 */
 	public Runner(Class<? extends PrePostRunnable> cls) {
@@ -48,6 +48,36 @@ public class Runner {
 	}
 
 	/**
+	 * Responsible for executing test cases.
+	 * 
+	 * <PRE>
+	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
+	 * - Test script is not provided then test list will be prepared using reflection.
+	 * </PRE>
+	 * 
+	 * @param args
+	 *            command line arguments
+	 * @param loopCycle
+	 *            test loop cycle
+	 * @throws ExecutionException
+	 *             if the computation threw an exception
+	 * @throws InterruptedException
+	 *             if the current thread was interrupted while waiting
+	 */
+	public void run(String[] args, int loopCycle) throws InterruptedException, ExecutionException {
+
+		// pass empty array list so reflection will be used
+		run(args, new ArrayList<>(), loopCycle);
+	}
+
+	/**
+	 * Responsible for executing test cases.
+	 * 
+	 * <PRE>
+	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
+	 * - In absence of test script, ArrayList() provided by user will be used to generate test list. 
+	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
+	 * </PRE>
 	 * 
 	 * @param args
 	 *            command line arguments
@@ -62,16 +92,17 @@ public class Runner {
 	 */
 	@SuppressWarnings("unchecked")
 	public void run(String[] args, List<TestExecutable> testList, int loopCycle) throws InterruptedException, ExecutionException {
-		// Only process command line argument if provided
+		
+		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
 
 		// Default thread count should be 1
 		int threadCount = 1;
 
 		// If test script is provided via command line then parse test script
-		if (null != FWStaticStore.testScriptFile) {
+		if (null != CliProcessor.testScriptFile) {
 			TestScriptParser xml = new TestScriptParser();
-			testSuiteList = xml.readTestScript(FWStaticStore.testScriptFile);
+			testSuiteList = xml.readTestScript(CliProcessor.testScriptFile);
 
 			// Thread count should be same as number of test suite
 			threadCount = testSuiteList.size();
@@ -79,12 +110,23 @@ public class Runner {
 
 		// Create loggerContext with all possible thread appenders
 		{
+			/**
+			 * Package name can not be used for log sub-directory name in case
+			 * where test cases are launched from project root directory, thus
+			 * log will come out in logging base directory.
+			 */
+			String logSubDir = "";
+			if (null != cls.getPackage()) {
+				logSubDir = cls.getPackage().getName();
+			}
+
+			// Get Framework configuration set by user
 			String logDirPath = FWStaticStore.frameworkConfig.getLogRootDir();
-			String logSubDir = cls.getPackage().getName();
 			boolean enableLogDecoration = FWStaticStore.frameworkConfig.isEnableLogDecoration();
 			boolean enableTextLog = FWStaticStore.frameworkConfig.isEnableTextLog();
 			boolean enableHTMLLog = FWStaticStore.frameworkConfig.isEnableHTMLLog();
 
+			// Create loggerContext
 			OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList);
 			loggerContext = organisedLog.getLoggerContext();
 		}
@@ -94,7 +136,8 @@ public class Runner {
 			ExecutorService service = Executors.newFixedThreadPool(threadCount + 20);
 			List<Future<Runnable>> futures = new ArrayList<>();
 			CountDownLatch latch = new CountDownLatch(threadCount);
-			
+
+			// create thread per test suite
 			for (int i = 0; i < threadCount; i++) {
 
 				// Create new context for each thread
@@ -124,15 +167,17 @@ public class Runner {
 			// shut down the executor service so that this thread can exit
 			service.shutdownNow();
 
+			// Block until all threads complete execution
 			latch.await();
+
+			// Terminate JVM
 			System.exit(0);
 		}
 	}
 }
 
 /**
- * Runnable class for executor service. Launches seperate runner for each thread
- * 
+ * Runnable class which will be used in each thread created for test suite
  */
 class SuiteTask implements Runnable {
 
@@ -142,6 +187,20 @@ class SuiteTask implements Runnable {
 	TestContext context;
 	CountDownLatch latch;
 
+	/**
+	 * Constructor for Runnable
+	 * 
+	 * @param cls
+	 *            class containing main() method
+	 * @param testList
+	 *            list of TestExecutable (provided by user)
+	 * @param loopCycle
+	 *            number of loop cycle
+	 * @param context
+	 *            test context
+	 * @param latch
+	 *            CountDownLatch to provide latch mechanism for each thread
+	 */
 	public SuiteTask(Class<? extends PrePostRunnable> cls, List<TestExecutable> testList, int loopCycle, TestContext context, CountDownLatch latch) {
 		this.cls = cls;
 		this.testList = testList;
@@ -153,11 +212,12 @@ class SuiteTask implements Runnable {
 	@Override
 	public void run() {
 		try {
+			// Create ArtosRunner per thread
 			ArtosRunner artos = new ArtosRunner(cls, context, latch);
 			artos.run(testList, loopCycle);
 		} catch (Exception e) {
 			e.printStackTrace();
+			context.getLogger().error(e);
 		}
 	}
-
 }
