@@ -38,14 +38,18 @@ public class LogWrapper {
 	Logger realTimeLogger;
 
 	/**
-	 * Constructor for LogWrapper. This class accepts LoggerContext from Log4j
-	 * and pull GeneralLogger, SummaryLogger and RealTimeLogger for given thread
-	 * value
+	 * Constructor responsible for providing logWrapperObject per test suite
+	 * thread, To ensure each thread logs in separate log file, each
+	 * loggerContext object will fetch appropriate logger out of LoggerContext
+	 * (which is global)
 	 * 
 	 * @param loggerContext
 	 *            LoggerContext from log4j
 	 * @param threadNumber
-	 *            Thread sequence number for assigning logger
+	 *            Thread number is used to uniquely identify loggers per thread,
+	 *            user must ensure that each LogWrapper object is initialised
+	 *            using unique threadNumber. If same threadNumber is used then
+	 *            logs for different treads will be logged into same log file.
 	 */
 	public LogWrapper(LoggerContext loggerContext, int threadNumber) {
 		this.loggerContext = loggerContext;
@@ -58,58 +62,256 @@ public class LogWrapper {
 	// Trace
 	// ===================================================================
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 */
 	public void trace(String msg) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param message
+	 *            The message
+	 */
 	public void trace(final Object message) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, message, null);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 * @param t
+	 *            the exception to log, including its stack trace.
+	 */
 	public void trace(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, t);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 * @param p9
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3, p4, p5, p6, p7);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3, p4, p5, p6);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3, p4, p5);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3, Object p4) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3, p4);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2, Object p3) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1, Object p2) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1, p2);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0, Object p1) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0, p1);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, p0);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param params
+	 *            the message parameters
+	 */
 	public void trace(String msg, Object... params) {
 		generalLogger.logIfEnabled(FQCN, Level.TRACE, null, msg, params);
 	}
@@ -118,58 +320,256 @@ public class LogWrapper {
 	// Debug
 	// ===================================================================
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 */
 	public void debug(String msg) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param message
+	 *            The message
+	 */
 	public void debug(final Object message) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, message, null);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 * @param t
+	 *            the exception to log, including its stack trace.
+	 */
 	public void debug(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, t);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 * @param p9
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3, p4, p5, p6, p7);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3, p4, p5, p6);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3, p4, p5);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3, Object p4) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3, p4);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2, Object p3) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1, Object p2) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1, p2);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0, Object p1) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0, p1);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, p0);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param params
+	 *            the message parameters
+	 */
 	public void debug(String msg, Object... params) {
 		generalLogger.logIfEnabled(FQCN, Level.DEBUG, null, msg, params);
 	}
@@ -178,58 +578,256 @@ public class LogWrapper {
 	// Info
 	// ===================================================================
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 */
 	public void info(String msg) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param message
+	 *            The message
+	 */
 	public void info(final Object message) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, message, null);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 * @param t
+	 *            the exception to log, including its stack trace.
+	 */
 	public void info(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, t);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 * @param p9
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3, p4, p5, p6, p7);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3, p4, p5, p6);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3, p4, p5);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3, Object p4) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3, p4);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2, Object p3) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1, Object p2) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1, p2);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0, Object p1) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0, p1);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 */
 	public void info(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, p0);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param params
+	 *            the message parameters
+	 */
 	public void info(String msg, Object... params) {
 		generalLogger.logIfEnabled(FQCN, Level.INFO, null, msg, params);
 	}
@@ -238,58 +836,256 @@ public class LogWrapper {
 	// Error
 	// ===================================================================
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 */
 	public void error(String msg) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param message
+	 *            The message
+	 */
 	public void error(final Object message) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, message, null);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 * @param t
+	 *            the exception to log, including its stack trace.
+	 */
 	public void error(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, t);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 * @param p9
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3, p4, p5, p6, p7);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3, p4, p5, p6);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3, p4, p5);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3, Object p4) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3, p4);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2, Object p3) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1, Object p2) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1, p2);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0, Object p1) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0, p1);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 */
 	public void error(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, p0);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param params
+	 *            the message parameters
+	 */
 	public void error(String msg, Object... params) {
 		generalLogger.logIfEnabled(FQCN, Level.ERROR, null, msg, params);
 	}
@@ -298,58 +1094,256 @@ public class LogWrapper {
 	// Warning
 	// ===================================================================
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 */
 	public void warn(String msg) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param message
+	 *            The message
+	 */
 	public void warn(final Object message) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, message, null);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 * @param t
+	 *            the exception to log, including its stack trace.
+	 */
 	public void warn(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, t);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 * @param p9
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3, p4, p5, p6, p7);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3, p4, p5, p6);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3, p4, p5);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3, Object p4) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3, p4);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2, Object p3) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1, Object p2) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1, p2);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0, Object p1) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0, p1);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, p0);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param params
+	 *            the message parameters
+	 */
 	public void warn(String msg, Object... params) {
 		generalLogger.logIfEnabled(FQCN, Level.WARN, null, msg, params);
 	}
@@ -358,58 +1352,256 @@ public class LogWrapper {
 	// Fatal
 	// ===================================================================
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 */
 	public void fatal(String msg) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param message
+	 *            The message
+	 */
 	public void fatal(final Object message) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, message, null);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message
+	 * @param t
+	 *            the exception to log, including its stack trace.
+	 */
 	public void fatal(Object msg, Throwable t) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, t);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 * @param p9
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 * @param p8
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 * @param p7
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3, p4, p5, p6, p7);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 * @param p6
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3, p4, p5, p6);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 * @param p5
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3, p4, p5);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 * @param p4
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3, Object p4) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3, p4);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 * @param p3
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2, Object p3) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 * @param p2
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1, Object p2) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1, p2);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 * @param p1
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0, Object p1) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0, p1);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param p0
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object p0) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, p0);
 	}
 
+	/**
+	 * Logs a message if the specified level is active.
+	 * 
+	 * @param msg
+	 *            The message format
+	 * @param params
+	 *            the message parameters
+	 */
 	public void fatal(String msg, Object... params) {
 		generalLogger.logIfEnabled(FQCN, Level.FATAL, null, msg, params);
 	}

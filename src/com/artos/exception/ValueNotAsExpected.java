@@ -15,19 +15,17 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.exception;
 
+import com.artos.utils.Guard;
+
 /**
  * 
- * Checked Exception used mainly for Guardian class. This Exception can be used
- * if Values are not as expected
+ * Checked Exception used for Guard class if compared values are not as expected
  * 
- * 
+ * @see Guard
  *
  */
 public class ValueNotAsExpected extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3143300873685133606L;
 
 	public ValueNotAsExpected(String message) {

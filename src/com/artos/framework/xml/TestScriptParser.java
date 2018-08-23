@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -286,21 +285,21 @@ public class TestScriptParser {
 		property.setAttributeNode(attr1);
 	}
 
-	public static void main(String[] args) {
-		TestScriptParser xml = new TestScriptParser();
-		List<TestSuite> testSuiteList = xml
-				.readTestScript(new File("C:\\Arpit\\Arpit_Programming\\arpitos_test_fork\\script\\unit_test.Guardian.xml"));
-		for (TestSuite suite : testSuiteList) {
-			System.out.println(suite.getSuiteName());
-			System.out.println(suite.getThreadName());
-			List<String> testlist = suite.getTestFQCNList();
-			for (String s : testlist) {
-				System.out.println(s);
-			}
-			Map<String, String> parameterMap = suite.getTestSuiteParameters();
-			for (Entry<String, String> entry : parameterMap.entrySet()) {
-				System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
-			}
-		}
-	}
+//	public static void main(String[] args) {
+//		TestScriptParser xml = new TestScriptParser();
+//		List<TestSuite> testSuiteList = xml
+//				.readTestScript(new File("C:\\Arpit\\Arpit_Programming\\arpitos_test_fork\\script\\unit_test.Guardian.xml"));
+//		for (TestSuite suite : testSuiteList) {
+//			System.out.println(suite.getSuiteName());
+//			System.out.println(suite.getThreadName());
+//			List<String> testlist = suite.getTestFQCNList();
+//			for (String s : testlist) {
+//				System.out.println(s);
+//			}
+//			Map<String, String> parameterMap = suite.getTestSuiteParameters();
+//			for (Entry<String, String> entry : parameterMap.entrySet()) {
+//				System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
+//			}
+//		}
+//	}
 }

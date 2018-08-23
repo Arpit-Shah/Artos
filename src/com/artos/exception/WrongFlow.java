@@ -17,17 +17,12 @@ package com.artos.exception;
 
 /**
  *
- * Checked Exception mainly used to highlight code is travelling through
- * wrong/unexpected flow
- * 
- * 
+ * Checked Exception used to highlight code travelling through wrong/unexpected
+ * path
  *
  */
 public class WrongFlow extends Exception {
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -7654109285223161620L;
 
 	public WrongFlow(String message) {
