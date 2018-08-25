@@ -22,7 +22,14 @@ import java.lang.annotation.Target;
 
 /**
  * 
+ * Annotation {@code BeforeTest} can be used to perform actions that are
+ * required prior to starting the test case. E.g. User may want to do
+ * preparation.
  * 
+ * <p>
+ * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by
+ * the compiler and retained by the VM at run time, so it may be read
+ * reflectively.
  *
  */
 // Make the annotation available at runtime:
