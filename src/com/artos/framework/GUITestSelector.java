@@ -131,7 +131,8 @@ public class GUITestSelector {
 	 *            The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
+		container = new JFrame(
+				"Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		container.setSize(new Dimension(500, 550));
@@ -174,7 +175,7 @@ public class GUITestSelector {
 
 		// loop count panel
 		JLabel loopLabel = new JLabel("Loop count:");
-		loopCountField = new JTextField("1", 5);
+		loopCountField = new JTextField(Integer.toString(loopCount), 5);
 		JPanel loopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		loopPanel.add(loopLabel);
 		loopPanel.add(loopCountField);
@@ -225,7 +226,8 @@ public class GUITestSelector {
 	}
 
 	/**
-	 * Set column widths and text alignment (and other style attributes, if needed)
+	 * Set column widths and text alignment (and other style attributes, if
+	 * needed)
 	 * 
 	 * @param testTableView
 	 *            the table to style
