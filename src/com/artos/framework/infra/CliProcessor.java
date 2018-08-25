@@ -51,7 +51,7 @@ public class CliProcessor {
 		// Create Option
 		Option testScript = Option.builder("ts").required(false).longOpt("testscript")
 				.desc("use test script to drive test : --testscript=\"./scripts/sampletest.xml\"").hasArg().build();
-		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos test tool").build();
+		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos").build();
 		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.theartos.com for more info").build();
 		Option contributors = Option.builder("c").required(false).longOpt("contributors").desc("Project Contributors name").build();
 
