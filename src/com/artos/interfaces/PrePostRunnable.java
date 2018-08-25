@@ -16,9 +16,9 @@
 package com.artos.interfaces;
 
 import com.artos.annotation.AfterTest;
-import com.artos.annotation.AfterTestsuite;
+import com.artos.annotation.AfterTestSuite;
 import com.artos.annotation.BeforeTest;
-import com.artos.annotation.BeforeTestsuite;
+import com.artos.annotation.BeforeTestSuite;
 import com.artos.framework.infra.TestContext;
 
 /**
@@ -60,7 +60,7 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of initialisation failed
 	 */
-	@BeforeTestsuite
+	@BeforeTestSuite
 	default public void beforeTestsuite(TestContext context) throws Exception {
 
 	}
@@ -73,7 +73,7 @@ public interface PrePostRunnable {
 	 * @throws Exception
 	 *             In case of cleanup failed
 	 */
-	@AfterTestsuite
+	@AfterTestSuite
 	default public void afterTestsuite(TestContext context) throws Exception {
 
 	}

@@ -22,13 +22,21 @@ import java.lang.annotation.Target;
 
 /**
  * 
+ * Annotation {@code BeforeTestSuite} can be used to perform actions that are
+ * required before starting a test suite. E.g. User may want to do a
+ * preparation. The method annotated by this annotation gets executed only once
+ * prior to test suite execution.
  * 
+ * <p>
+ * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by
+ * the compiler and retained by the VM at run time, so it may be read
+ * reflectively.
  *
  */
 // Make the annotation available at runtime:
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
 @Target(ElementType.METHOD)
-public @interface BeforeTestsuite {
+public @interface BeforeTestSuite {
 
 }
