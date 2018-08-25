@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * 
  * Annotation {@code Group} let user define the array of test groups. All the
- * tests belong to the global group by default which is defined as "<b>*<b>". In
+ * tests belong to the global group by default which is defined as "<b>*</b>". In
  * addition to the global group test is also part of any other groups defined by
  * the user.
  * 
