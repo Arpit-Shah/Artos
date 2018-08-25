@@ -198,12 +198,6 @@ public class ArtosRunner {
 						}
 					}
 
-					// Skip tests should not reach here but if reached then skip
-					if (t.isSkipTest()) {
-						notifyTestExecutionSkipped(t);
-						continue;
-					}
-
 					notifyTestExecutionStarted(t);
 					// Run Pre Method prior to any test Execution
 					prePostCycleInstance.beforeTest(context);
@@ -284,12 +278,6 @@ public class ArtosRunner {
 			List<Future<Runnable>> futures = new ArrayList<>();
 
 			for (TestObjectWrapper t : testList) {
-				// If user dictate test list then do not skip even if marked
-				// skip
-				if (t.isSkipTest()) {
-					notifyTestExecutionSkipped(t);
-					continue;
-				}
 
 				Future<?> f = service.submit(new runTestInParallel(context, t, prePostCycleInstance));
 				futures.add((Future<Runnable>) f);
@@ -317,49 +305,49 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	public void registerListener(TestExecutionListener listener) {
-		getListenerList().add(listener);
+		listenerList.add(listener);
 	}
 
 	public void deRegisterListener(TestExecutionListener listener) {
-		getListenerList().remove(listener);
+		listenerList.remove(listener);
 	}
 
 	public void deRegisterAllListener() {
-		getListenerList().clear();
+		listenerList.clear();
 	}
 
 	void notifyTestSuiteExecutionStarted(String testSuiteName) {
-		for (TestExecutionListener listener : getListenerList()) {
+		for (TestExecutionListener listener : listenerList) {
 			listener.testSuiteExecutionStarted(testSuiteName);
 		}
 	}
 
 	void notifyTestSuiteExecutionFinished(String testSuiteName) {
-		for (TestExecutionListener listener : getListenerList()) {
+		for (TestExecutionListener listener : listenerList) {
 			listener.testSuiteExecutionFinished(testSuiteName);
 		}
 	}
 
 	void notifyTestExecutionStarted(TestObjectWrapper t) {
-		for (TestExecutionListener listener : getListenerList()) {
+		for (TestExecutionListener listener : listenerList) {
 			listener.testExecutionStarted(t);
 		}
 	}
 
 	void notifyTestExecutionFinished(TestObjectWrapper t) {
-		for (TestExecutionListener listener : getListenerList()) {
+		for (TestExecutionListener listener : listenerList) {
 			listener.testExecutionFinished(t);
 		}
 	}
 
 	void notifyTestExecutionSkipped(TestObjectWrapper t) {
-		for (TestExecutionListener listener : getListenerList()) {
+		for (TestExecutionListener listener : listenerList) {
 			listener.testExecutionSkipped(t);
 		}
 	}
 
 	void notifyTestExecutionLoopCount(int count) {
-		for (TestExecutionListener listener : getListenerList()) {
+		for (TestExecutionListener listener : listenerList) {
 			listener.testExecutionLoopCount(count);
 		}
 	}
@@ -401,7 +389,11 @@ public class ArtosRunner {
 
 		if (null != (testSuiteObject = context.getGlobalObject(FWStaticStore.GLOBAL_TEST_SUITE))) {
 
-			// Get all test case information and store it for later use
+			/**
+			 * Get all test case object using reflection. If user provides XML
+			 * based test script then skip attribute set in annotation should be
+			 * ignored because XML test script must dictates the behaviour.
+			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 
@@ -427,17 +419,17 @@ public class ArtosRunner {
 				} else {
 					if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
 						listOfTransformedTestCases.add(testObjWrapper);
-					} else {
-						// System.err.println("WARNING (does not belong to
-						// group): " + t);
 					}
 				}
 			}
 
 		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
 
-			// If user provides test list then find list object from Hashmap
-			// Get all test case information and store it for later use
+			/**
+			 * Get all test case object using reflection. If user provides test
+			 * list then skip attribute set in annotation should be ignored
+			 * because test list must dictates the behaviour.
+			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 
@@ -465,14 +457,6 @@ public class ArtosRunner {
 			}
 		}
 		return false;
-	}
-
-	public List<TestExecutionListener> getListenerList() {
-		return listenerList;
-	}
-
-	public void setListenerList(List<TestExecutionListener> listenerList) {
-		this.listenerList = listenerList;
 	}
 }
 
