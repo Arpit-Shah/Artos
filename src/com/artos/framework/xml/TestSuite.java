@@ -21,6 +21,7 @@ import java.util.Map;
 public class TestSuite {
 
 	String suiteName;
+	int loopCount = 1; // default 1
 	List<String> groupList;
 	List<String> testFQCNList;
 	Map<String, String> testSuiteParameters;
@@ -67,6 +68,14 @@ public class TestSuite {
 
 	public void setGroupList(List<String> groupList) {
 		this.groupList = groupList;
+	}
+
+	public int getLoopCount() {
+		return loopCount;
+	}
+
+	public void setLoopCount(int loopCount) {
+		this.loopCount = loopCount;
 	}
 
 }
