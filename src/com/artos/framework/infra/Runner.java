@@ -15,6 +15,7 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -23,8 +24,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.logging.log4j.core.LoggerContext;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.logging.log4j.core.LoggerContext;
+import org.xml.sax.SAXException;
+
+import com.artos.exception.InvalidData;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.xml.TestScriptParser;
 import com.artos.framework.xml.TestSuite;
@@ -34,9 +39,8 @@ import com.artos.interfaces.TestExecutable;
 public class Runner {
 
 	Class<? extends PrePostRunnable> cls;
-	List<TestSuite> testSuiteList = null;
-	List<TestContext> testContextList = new ArrayList<>();
-	LoggerContext loggerContext;
+	// Default thread count should be 1
+	int threadCount = 1;
 
 	/**
 	 * @param cls
@@ -57,17 +61,28 @@ public class Runner {
 	 * 
 	 * @param args
 	 *            command line arguments
-	 * @param loopCycle
-	 *            test loop cycle
+	 * @param loopCount
+	 *            test loop count
+	 * 
 	 * @throws ExecutionException
 	 *             if the computation threw an exception
 	 * @throws InterruptedException
 	 *             if the current thread was interrupted while waiting
+	 * @throws InvalidData
+	 *             if user provides invalid data
+	 * @throws IOException
+	 *             if io operation error occurs
+	 * @throws SAXException
+	 *             If any parse errors occur.
+	 * @throws ParserConfigurationException
+	 *             if a DocumentBuildercannot be created which satisfies the
+	 *             configuration requested.
 	 */
-	public void run(String[] args, int loopCycle) throws InterruptedException, ExecutionException {
+	public void run(String[] args, int loopCount)
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
 
 		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCycle);
+		run(args, new ArrayList<>(), loopCount);
 	}
 
 	/**
@@ -83,53 +98,38 @@ public class Runner {
 	 *            command line arguments
 	 * @param testList
 	 *            testList provided by user
-	 * @param loopCycle
-	 *            test loop cycle
+	 * @param loopCount
+	 *            test loop count
 	 * @throws ExecutionException
 	 *             if the computation threw an exception
 	 * @throws InterruptedException
 	 *             if the current thread was interrupted while waiting
+	 * @throws InvalidData
+	 *             if user provides invalid data
+	 * @throws IOException
+	 *             if io operation error occurs
+	 * @throws SAXException
+	 *             If any parse errors occur.
+	 * @throws ParserConfigurationException
+	 *             if a DocumentBuildercannot be created which satisfies the
+	 *             configuration requested.
 	 */
 	@SuppressWarnings("unchecked")
-	public void run(String[] args, List<TestExecutable> testList, int loopCycle) throws InterruptedException, ExecutionException {
-		
+	public void run(String[] args, List<TestExecutable> testList, int loopCount)
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+
 		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
 
-		// Default thread count should be 1
-		int threadCount = 1;
-
-		// If test script is provided via command line then parse test script
-		if (null != CliProcessor.testScriptFile) {
-			TestScriptParser xml = new TestScriptParser();
-			testSuiteList = xml.readTestScript(CliProcessor.testScriptFile);
-
-			// Thread count should be same as number of test suite
+		// process test suites
+		List<TestSuite> testSuiteList = createTestSuiteList();
+		if (null != testSuiteList && !testSuiteList.isEmpty()) {
+			// Thread count should be same as number of test suites
 			threadCount = testSuiteList.size();
 		}
 
-		// Create loggerContext with all possible thread appenders
-		{
-			/**
-			 * Package name can not be used for log sub-directory name in case
-			 * where test cases are launched from project root directory, thus
-			 * log will come out in logging base directory.
-			 */
-			String logSubDir = "";
-			if (null != cls.getPackage()) {
-				logSubDir = cls.getPackage().getName();
-			}
-
-			// Get Framework configuration set by user
-			String logDirPath = FWStaticStore.frameworkConfig.getLogRootDir();
-			boolean enableLogDecoration = FWStaticStore.frameworkConfig.isEnableLogDecoration();
-			boolean enableTextLog = FWStaticStore.frameworkConfig.isEnableTextLog();
-			boolean enableHTMLLog = FWStaticStore.frameworkConfig.isEnableHTMLLog();
-
-			// Create loggerContext
-			OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList);
-			loggerContext = organisedLog.getLoggerContext();
-		}
+		// generate logger context
+		LoggerContext loggerContext = createGlobalLoggerContext(testSuiteList);
 
 		// Start Executor service
 		{
@@ -142,19 +142,30 @@ public class Runner {
 
 				// Create new context for each thread
 				TestContext context = new TestContext();
-				testContextList.add(context);
+
+				// store main() class object
+				context.setPrePostRunnableObj(cls);
+				// store thread latch
+				context.setThreadLatch(latch);
 
 				// Get logger for particular thread and set to context object
 				LogWrapper logWrapper = new LogWrapper(loggerContext, i);
+				// store logger
 				context.setOrganisedLogger(logWrapper);
 
-				// If TestSuite is present then store it in context
 				if (null != testSuiteList && !testSuiteList.isEmpty()) {
-					context.setGlobalObject(FWStaticStore.GLOBAL_TEST_SUITE, testSuiteList.get(i));
+					// store test suite
+					context.setTestSuite(testSuiteList.get(i));
+					// store loopCount from test suite
+					context.setTotalLoopCount(testSuiteList.get(i).getLoopCount());
+				} else {
+					// if testSuite is not provided then take loopCount from
+					// main() method
+					context.setTotalLoopCount(loopCount);
 				}
 
 				// Launch a thread with runnable
-				Future<?> f = service.submit(new SuiteTask(cls, testList, loopCycle, context, latch));
+				Future<?> f = service.submit(new SuiteTask(context, testList));
 				futures.add((Future<Runnable>) f);
 
 			}
@@ -174,6 +185,65 @@ public class Runner {
 			System.exit(0);
 		}
 	}
+
+	/**
+	 * If test script is provided via command line then parse test script and
+	 * generate list of test suites
+	 * 
+	 * @return list of test suites
+	 * 
+	 * @throws InvalidData
+	 *             if user provides invalid data
+	 * @throws IOException
+	 *             if io operation error occurs
+	 * @throws SAXException
+	 *             If any parse errors occur.
+	 * @throws ParserConfigurationException
+	 *             if a DocumentBuildercannot be created which satisfies the
+	 *             configuration requested.
+	 */
+	private List<TestSuite> createTestSuiteList() throws ParserConfigurationException, SAXException, IOException, InvalidData {
+		if (null == CliProcessor.testScriptFile) {
+			return null;
+		}
+
+		TestScriptParser xml = new TestScriptParser();
+		List<TestSuite> testSuiteList = xml.readTestScript(CliProcessor.testScriptFile);
+
+		return testSuiteList;
+	}
+
+	/**
+	 * Creates appenders for number of suites provided incase parallel execution
+	 * is required, if test script is not provided then appenders are created
+	 * for one thread
+	 * 
+	 * @param testSuiteList
+	 *            list of testSuites
+	 * @return LoggetContext
+	 */
+	private LoggerContext createGlobalLoggerContext(List<TestSuite> testSuiteList) {
+		// Create loggerContext with all possible thread appenders
+		/**
+		 * Package name can not be used for log sub-directory name in case where
+		 * test cases are launched from project root directory, thus log will
+		 * come out in logging base directory.
+		 */
+		String logSubDir = "";
+		if (null != cls.getPackage()) {
+			logSubDir = cls.getPackage().getName();
+		}
+
+		// Get Framework configuration set by user
+		String logDirPath = FWStaticStore.frameworkConfig.getLogRootDir();
+		boolean enableLogDecoration = FWStaticStore.frameworkConfig.isEnableLogDecoration();
+		boolean enableTextLog = FWStaticStore.frameworkConfig.isEnableTextLog();
+		boolean enableHTMLLog = FWStaticStore.frameworkConfig.isEnableHTMLLog();
+
+		// Create loggerContext
+		OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList);
+		return organisedLog.getLoggerContext();
+	}
 }
 
 /**
@@ -181,40 +251,29 @@ public class Runner {
  */
 class SuiteTask implements Runnable {
 
-	Class<? extends PrePostRunnable> cls;
-	List<TestExecutable> testList;
-	int loopCycle;
 	TestContext context;
+	List<TestExecutable> testList;
 	CountDownLatch latch;
 
 	/**
 	 * Constructor for Runnable
-	 * 
-	 * @param cls
-	 *            class containing main() method
-	 * @param testList
-	 *            list of TestExecutable (provided by user)
-	 * @param loopCycle
-	 *            number of loop cycle
+	 *
 	 * @param context
 	 *            test context
-	 * @param latch
-	 *            CountDownLatch to provide latch mechanism for each thread
+	 * @param testList
+	 *            list of TestExecutable (provided by user)
 	 */
-	public SuiteTask(Class<? extends PrePostRunnable> cls, List<TestExecutable> testList, int loopCycle, TestContext context, CountDownLatch latch) {
-		this.cls = cls;
+	public SuiteTask(TestContext context, List<TestExecutable> testList) {
 		this.testList = testList;
-		this.loopCycle = loopCycle;
 		this.context = context;
-		this.latch = latch;
 	}
 
 	@Override
 	public void run() {
 		try {
 			// Create ArtosRunner per thread
-			ArtosRunner artos = new ArtosRunner(cls, context, latch);
-			artos.run(testList, loopCycle);
+			ArtosRunner artos = new ArtosRunner(context);
+			artos.run(testList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			context.getLogger().error(e);

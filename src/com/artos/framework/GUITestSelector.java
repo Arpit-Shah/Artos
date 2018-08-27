@@ -43,19 +43,14 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import com.artos.framework.infra.TestContext;
 import com.artos.interfaces.TestRunnable;
 
-/**
- * 
- * 
- *
- */
 public class GUITestSelector {
 
+	private TestContext context;
 	private JFrame container;
-	private Class<?> cls;
 	private TestRunnerDataModel testRunnerDataModel;
-	private int loopCount;
 	private JTextField loopCountField;
 	private TestRunnable testRunner;
 	private ArrayList<TestObjectWrapper> selectedTests;
@@ -63,25 +58,22 @@ public class GUITestSelector {
 	/**
 	 * TestRunnerGui constructor
 	 * 
+	 * @param context
+	 *            TestContext
 	 * @param testList
 	 *            List of Tests defined in Main class
-	 * @param cls
-	 *            class object with main method
-	 * @param loopCount
-	 *            Number of times each test will execute
 	 * @param testRunner
 	 *            A TestRunner implementation that will execute the tests
 	 * @throws Exception
 	 *             if gui could not launch
 	 */
-	public GUITestSelector(List<TestObjectWrapper> testList, Class<?> cls, int loopCount, TestRunnable testRunner) throws Exception {
+	public GUITestSelector(TestContext context, List<TestObjectWrapper> testList, TestRunnable testRunner) throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
+		this.context = context;
 		testRunnerDataModel = new TestRunnerDataModel(testList);
-		this.cls = cls;
-		this.loopCount = loopCount;
 		this.testRunner = testRunner;
 		selectedTests = new ArrayList<TestObjectWrapper>();
 
@@ -117,7 +109,7 @@ public class GUITestSelector {
 			container.setVisible(true);
 		} else {
 			try {
-				testRunner.executeTest(testRunnerDataModel.getTestList(), cls, loopCount);
+				testRunner.executeTest(context, testRunnerDataModel.getTestList());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -175,7 +167,7 @@ public class GUITestSelector {
 
 		// loop count panel
 		JLabel loopLabel = new JLabel("Loop count:");
-		loopCountField = new JTextField(Integer.toString(loopCount), 5);
+		loopCountField = new JTextField(Integer.toString(context.getTotalLoopCount()), 5);
 		JPanel loopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		loopPanel.add(loopLabel);
 		loopPanel.add(loopCountField);
@@ -254,7 +246,7 @@ public class GUITestSelector {
 	private void execTest(final boolean selectedOnly) {
 		// fail silently if loopCountField value is not a valid integer
 		try {
-			this.loopCount = Integer.valueOf(loopCountField.getText());
+			context.setTotalLoopCount(Integer.valueOf(loopCountField.getText()));
 		} catch (Exception e) {
 			// use default value
 		}
@@ -265,9 +257,9 @@ public class GUITestSelector {
 			public void run() {
 				try {
 					if (selectedOnly) {
-						testRunner.executeTest(selectedTests, cls, loopCount);
+						testRunner.executeTest(context, selectedTests);
 					} else {
-						testRunner.executeTest(testRunnerDataModel.getTestList(), cls, loopCount);
+						testRunner.executeTest(context, testRunnerDataModel.getTestList());
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

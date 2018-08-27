@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -47,10 +46,8 @@ import com.artos.utils.UtilsFramework;
  */
 public class ArtosRunner {
 
-	Class<? extends PrePostRunnable> cls;
 	TestContext context;
 	List<TestExecutionListener> listenerList = new ArrayList<TestExecutionListener>();
-	CountDownLatch latch;
 
 	// ==================================================================================
 	// Constructor (Starting point of framework)
@@ -61,8 +58,6 @@ public class ArtosRunner {
 	 * main() method. Upon initialisation TestExecutionEventListener is
 	 * registered so test decoration can be printed.
 	 * 
-	 * @param cls
-	 *            Test class with main method
 	 * @param context
 	 *            TestContext object
 	 * @param latch
@@ -71,10 +66,8 @@ public class ArtosRunner {
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 */
-	public ArtosRunner(Class<? extends PrePostRunnable> cls, TestContext context, CountDownLatch latch) {
-		this.cls = cls;
+	public ArtosRunner(TestContext context) {
 		this.context = context;
-		this.latch = latch;
 
 		// Register default listener
 		TestExecutionEventListener testListener = new TestExecutionEventListener(context);
@@ -91,14 +84,12 @@ public class ArtosRunner {
 	 * @param testList
 	 *            List of tests to run. All test must be {@code TestExecutable}
 	 *            type
-	 * @param loopCycle
-	 *            Test loop execution count
 	 * @throws Exception
 	 *             Exception will be thrown if test execution failed
 	 */
-	public void run(List<TestExecutable> testList, int loopCycle) throws Exception {
+	public void run(List<TestExecutable> testList) throws Exception {
 		// Transform TestList into TestObjectWrapper Object list
-		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(cls, testList);
+		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
 			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
@@ -106,13 +97,13 @@ public class ArtosRunner {
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
-				public void executeTest(List<TestObjectWrapper> transformedTestList, Class<?> cls, int loopCount) throws Exception {
-					runTest(transformedTestList, cls, loopCount);
+				public void executeTest(TestContext context, List<TestObjectWrapper> transformedTestList) throws Exception {
+					runTest(transformedTestList);
 				}
 			};
-			new GUITestSelector((List<TestObjectWrapper>) transformedTestList, cls, loopCycle, runObj);
+			new GUITestSelector(context, (List<TestObjectWrapper>) transformedTestList, runObj);
 		} else {
-			runTest(transformedTestList, cls, loopCycle);
+			runTest(transformedTestList);
 		}
 	}
 
@@ -121,13 +112,9 @@ public class ArtosRunner {
 	 * 
 	 * @param transformedTestList
 	 *            test object list
-	 * @param cls
-	 *            class object which is executing test
-	 * @param loopCycle
-	 *            test loop cycle
 	 * @throws Exception
 	 */
-	private void runTest(List<TestObjectWrapper> transformedTestList, Class<?> cls, int loopCycle) throws Exception {
+	private void runTest(List<TestObjectWrapper> transformedTestList) throws Exception {
 
 		LogWrapper logger = context.getLogger();
 
@@ -136,9 +123,9 @@ public class ArtosRunner {
 		// found
 		boolean enableParallelTestRunning = false;
 		if (enableParallelTestRunning) {
-			runParallelThread(transformedTestList, cls, loopCycle, context);
+			runParallelThread(transformedTestList, context);
 		} else {
-			runSingleThread(transformedTestList, cls, loopCycle, context);
+			runSingleThread(transformedTestList, context);
 		}
 
 		// Print Test results
@@ -168,25 +155,25 @@ public class ArtosRunner {
 		}
 
 		// to release a thread lock
-		latch.countDown();
+		context.getThreadLatch().countDown();
 	}
 
-	private void runSingleThread(List<TestObjectWrapper> testList, Class<?> cls, int loopCycle, TestContext context)
+	private void runSingleThread(List<TestObjectWrapper> testList, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
 		// ********************************************************************************************
 		// TestSuite Start
 		// ********************************************************************************************
-		notifyTestSuiteExecutionStarted(cls.getName());
+		notifyTestSuiteExecutionStarted(context.getPrePostRunnableObj().getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 
 		try {
 
 			// Create an instance of Main class
-			PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
+			PrePostRunnable prePostCycleInstance = (PrePostRunnable) context.getPrePostRunnableObj().newInstance();
 
 			// Run prior to each test suit
 			prePostCycleInstance.beforeTestsuite(context);
-			for (int index = 0; index < loopCycle; index++) {
+			for (int index = 0; index < context.getTotalLoopCount(); index++) {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
 				for (TestObjectWrapper t : testList) {
@@ -221,7 +208,7 @@ public class ArtosRunner {
 
 		// Set Test Finish Time
 		context.setTestSuiteFinishTime(System.currentTimeMillis());
-		notifyTestSuiteExecutionFinished(cls.getName());
+		notifyTestSuiteExecutionFinished(context.getPrePostRunnableObj().getName());
 		// ********************************************************************************************
 		// TestSuite Finish
 		// ********************************************************************************************
@@ -258,20 +245,20 @@ public class ArtosRunner {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void runParallelThread(List<TestObjectWrapper> testList, Class<?> cls, int loopCycle, TestContext context)
+	private void runParallelThread(List<TestObjectWrapper> testList, TestContext context)
 			throws InstantiationException, IllegalAccessException, Exception {
 		// ********************************************************************************************
 		// Test Start
 		// ********************************************************************************************
-		notifyTestSuiteExecutionStarted(cls.getName());
+		notifyTestSuiteExecutionStarted(context.getPrePostRunnableObj().getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 
 		// Create an instance of Main class
-		PrePostRunnable prePostCycleInstance = (PrePostRunnable) cls.newInstance();
+		PrePostRunnable prePostCycleInstance = (PrePostRunnable) context.getPrePostRunnableObj().newInstance();
 
 		// Run prior to each test suit
 		prePostCycleInstance.beforeTestsuite(context);
-		for (int index = 0; index < loopCycle; index++) {
+		for (int index = 0; index < context.getTotalLoopCount(); index++) {
 			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
 			ExecutorService service = Executors.newFixedThreadPool(1000);
@@ -361,21 +348,19 @@ public class ArtosRunner {
 	 * This method can not transform test cases outside current package, so
 	 * those test cases will be omitted from the list
 	 * 
-	 * @param cls
-	 *            class with main method
 	 * @param listOfTestCases
 	 *            list of test cases required to be transformed
 	 * @return Test list formatted into {@code TestObjectWrapper} type
 	 */
-	public List<TestObjectWrapper> transformToTestObjWrapper(Class<?> cls, List<TestExecutable> listOfTestCases) {
+	public List<TestObjectWrapper> transformToTestObjWrapper(List<TestExecutable> listOfTestCases) {
 
 		Object testSuiteObject;
 		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
 
 		// If main() method executes from root then package name will be none
 		String packageName = "";
-		if (null != cls.getPackage()) {
-			packageName = cls.getPackage().getName();
+		if (null != context.getPrePostRunnableObj().getPackage()) {
+			packageName = context.getPrePostRunnableObj().getPackage().getName();
 		}
 		ScanTestSuite reflection = new ScanTestSuite(packageName);
 
@@ -387,7 +372,7 @@ public class ArtosRunner {
 		 * @formatter:on
 		 */
 
-		if (null != (testSuiteObject = context.getGlobalObject(FWStaticStore.GLOBAL_TEST_SUITE))) {
+		if (null != (testSuiteObject = context.getTestSuite())) {
 
 			/**
 			 * Get all test case object using reflection. If user provides XML
