@@ -17,6 +17,7 @@ package com.artos.framework.xml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -35,7 +37,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import com.artos.exception.InvalidData;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestObjectWrapper;
 
@@ -47,8 +51,17 @@ public class TestScriptParser {
 	 * @param testScriptFile
 	 *            testScript formatted with XML
 	 * @return list of test cases name
+	 * @throws ParserConfigurationException
+	 *             if a DocumentBuildercannot be created which satisfies the
+	 *             configuration requested.
+	 * @throws IOException
+	 *             If any IO errors occur.
+	 * @throws SAXException
+	 *             If any parse errors occur.
+	 * @throws InvalidData
+	 *             If user provides invalid data
 	 */
-	public List<TestSuite> readTestScript(File testScriptFile) {
+	public List<TestSuite> readTestScript(File testScriptFile) throws ParserConfigurationException, SAXException, IOException, InvalidData {
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -59,8 +72,6 @@ public class TestScriptParser {
 			return readTestScript(doc);
 		} catch (FileNotFoundException fe) {
 			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return null;
 	}
@@ -70,8 +81,10 @@ public class TestScriptParser {
 	 * 
 	 * @param doc
 	 *            Document object of XML file
+	 * @throws InvalidData
+	 *             thrown when invalid data is provided by user
 	 */
-	private List<TestSuite> readTestScript(Document doc) {
+	private List<TestSuite> readTestScript(Document doc) throws InvalidData {
 
 		List<TestSuite> testSuiteList = new ArrayList<>();
 
@@ -95,11 +108,29 @@ public class TestScriptParser {
 		return testSuiteList;
 	}
 
-	private void parseSuite(TestSuite _suite, Node suiteNode) {
+	private void parseSuite(TestSuite _suite, Node suiteNode) throws InvalidData {
 		if (suiteNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element eElement = (Element) suiteNode;
 			if ("suite".equals(eElement.getNodeName())) {
 				_suite.setSuiteName(eElement.getAttribute("name").trim());
+
+				// If loopcount attribute is not provided then assume 1, if
+				// provided then check if it is valid
+				String loopCount = eElement.getAttribute("loopcount").trim();
+
+				if ("".equals(loopCount)) {
+					_suite.setLoopCount(1);
+				} else {
+					try {
+						int nLoopCount = Integer.parseInt(loopCount);
+						if (nLoopCount <= 0) {
+							throw new InvalidData("Invalid Loop Count : " + loopCount);
+						}
+						_suite.setLoopCount(nLoopCount);
+					} catch (NumberFormatException e) {
+						throw new InvalidData("Invalid Loop Count : " + loopCount);
+					}
+				}
 			}
 
 			NodeList testsNodeList = eElement.getElementsByTagName("tests");
@@ -220,6 +251,10 @@ public class TestScriptParser {
 		attr.setValue(testList.get(0).getTestClassObject().getPackage().getName());
 		suite.setAttributeNode(attr);
 
+		Attr attr2 = doc.createAttribute("loopcount");
+		attr2.setValue("1");
+		suite.setAttributeNode(attr2);
+
 		createTestList(testList, doc, suite);
 		createSuiteParameters(doc, suite);
 		createSuiteGroups(doc, suite);
@@ -285,21 +320,23 @@ public class TestScriptParser {
 		property.setAttributeNode(attr1);
 	}
 
-//	public static void main(String[] args) {
-//		TestScriptParser xml = new TestScriptParser();
-//		List<TestSuite> testSuiteList = xml
-//				.readTestScript(new File("C:\\Arpit\\Arpit_Programming\\arpitos_test_fork\\script\\unit_test.Guardian.xml"));
-//		for (TestSuite suite : testSuiteList) {
-//			System.out.println(suite.getSuiteName());
-//			System.out.println(suite.getThreadName());
-//			List<String> testlist = suite.getTestFQCNList();
-//			for (String s : testlist) {
-//				System.out.println(s);
-//			}
-//			Map<String, String> parameterMap = suite.getTestSuiteParameters();
-//			for (Entry<String, String> entry : parameterMap.entrySet()) {
-//				System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
-//			}
-//		}
-//	}
+	// public static void main(String[] args) {
+	// TestScriptParser xml = new TestScriptParser();
+	// List<TestSuite> testSuiteList = xml
+	// .readTestScript(new
+	// File("C:\\Arpit\\Arpit_Programming\\arpitos_test_fork\\script\\unit_test.Guardian.xml"));
+	// for (TestSuite suite : testSuiteList) {
+	// System.out.println(suite.getSuiteName());
+	// System.out.println(suite.getThreadName());
+	// List<String> testlist = suite.getTestFQCNList();
+	// for (String s : testlist) {
+	// System.out.println(s);
+	// }
+	// Map<String, String> parameterMap = suite.getTestSuiteParameters();
+	// for (Entry<String, String> entry : parameterMap.entrySet()) {
+	// System.out.println("Key : " + entry.getKey() + " Value : " +
+	// entry.getValue());
+	// }
+	// }
+	// }
 }
