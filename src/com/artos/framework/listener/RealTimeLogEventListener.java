@@ -42,6 +42,7 @@ public class RealTimeLogEventListener implements RealTimeLogListener {
 	 * log4j logger object
 	 * 
 	 * @param context
+	 *            Test context
 	 */
 	public RealTimeLogEventListener(TestContext context) {
 		this.context = context;

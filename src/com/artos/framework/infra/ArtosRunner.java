@@ -60,9 +60,6 @@ public class ArtosRunner {
 	 * 
 	 * @param context
 	 *            TestContext object
-	 * @param latch
-	 *            CoundownLatch for thread which indicate executor about end
-	 *            execution of the thread
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 */
