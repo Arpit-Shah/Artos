@@ -37,7 +37,6 @@ public class FWStaticStore {
 	public static final String ARTOS_BUILD_DATE = new Version().getBuildDate();
 
 	// Global Hashmap key name
-	public static final String GLOBAL_TEST_SUITE = "TEST_SUITE";
 	public static final String GLOBAL_ANNOTATED_TEST_MAP = "ANNOTATED_TEST_MAP";
 
 }

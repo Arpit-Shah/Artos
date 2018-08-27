@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
@@ -26,6 +27,8 @@ import org.apache.logging.log4j.Level;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
+import com.artos.framework.xml.TestSuite;
+import com.artos.interfaces.PrePostRunnable;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user
@@ -48,6 +51,10 @@ public class TestContext {
 	private List<String> failedTestList = new ArrayList<>();
 	private List<String> skippedTestList = new ArrayList<>();
 	private List<String> ktfTestList = new ArrayList<>();
+	private TestSuite testSuite = null;
+	private int totalLoopCount = 1;
+	private Class<? extends PrePostRunnable> prePostRunnableObj = null;
+	private CountDownLatch threadLatch;
 
 	// Test suite start time
 	private long testSuiteStartTime;
@@ -210,8 +217,8 @@ public class TestContext {
 		String SkipCount = String.format("%-" + 4 + "s", skipCount);
 		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
 
-		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " " + JiraRef + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount
-				+ " K:" + KTFCount + " " + testTime);
+		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:"
+				+ KTFCount + " " + testTime + " " + JiraRef);
 	}
 
 	/**
@@ -479,6 +486,38 @@ public class TestContext {
 
 	public List<String> getKtfTestList() {
 		return ktfTestList;
+	}
+
+	public TestSuite getTestSuite() {
+		return testSuite;
+	}
+
+	public void setTestSuite(TestSuite testSuite) {
+		this.testSuite = testSuite;
+	}
+
+	public int getTotalLoopCount() {
+		return totalLoopCount;
+	}
+
+	public void setTotalLoopCount(int totalLoopCount) {
+		this.totalLoopCount = totalLoopCount;
+	}
+
+	public Class<? extends PrePostRunnable> getPrePostRunnableObj() {
+		return prePostRunnableObj;
+	}
+
+	public void setPrePostRunnableObj(Class<? extends PrePostRunnable> prePostRunnableObj) {
+		this.prePostRunnableObj = prePostRunnableObj;
+	}
+
+	public CountDownLatch getThreadLatch() {
+		return threadLatch;
+	}
+
+	public void setThreadLatch(CountDownLatch threadLatch) {
+		this.threadLatch = threadLatch;
 	}
 
 }
