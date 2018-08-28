@@ -90,18 +90,28 @@ public class ArtosRunner {
 	 */
 	public void run(List<TestExecutable> testList) throws Exception {
 		if (FWStaticStore.frameworkConfig.isGenerateEclipseTemplate()) {
-			File file = new File(FWStaticStore.TEMPLATE_BASE_DIR);
-			if (!file.exists() || !file.isDirectory()) {
-				file.mkdirs();
-			}
-			InputStream ins = getClass().getResourceAsStream("/com/artos/template/template.xml");
-			byte[] buffer = new byte[ins.available()];
-			ins.read(buffer);
+			// only create template file if not present already
+			File targetFile = new File(FWStaticStore.TEMPLATE_BASE_DIR + File.separator + "template.xml");
+			if (!targetFile.exists() || !targetFile.isFile()) {
 
-			File targetFile = new File(file.getAbsolutePath() + File.separator + "template.xml");
-			OutputStream outStream = new FileOutputStream(targetFile);
-			outStream.write(buffer);
+				// create dir if not present
+				File file = new File(FWStaticStore.TEMPLATE_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/template.xml");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
 		}
+		
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
