@@ -33,6 +33,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -254,6 +255,9 @@ public class TestScriptParser {
 		Attr attr2 = doc.createAttribute("loopcount");
 		attr2.setValue("1");
 		suite.setAttributeNode(attr2);
+		
+		Comment comment = doc.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\unit_test.Guardian.xml\"");
+		suite.getParentNode().insertBefore(comment, suite);
 
 		createTestList(testList, doc, suite);
 		createSuiteParameters(doc, suite);
@@ -320,23 +324,4 @@ public class TestScriptParser {
 		property.setAttributeNode(attr1);
 	}
 
-	// public static void main(String[] args) {
-	// TestScriptParser xml = new TestScriptParser();
-	// List<TestSuite> testSuiteList = xml
-	// .readTestScript(new
-	// File("C:\\Arpit\\Arpit_Programming\\arpitos_test_fork\\script\\unit_test.Guardian.xml"));
-	// for (TestSuite suite : testSuiteList) {
-	// System.out.println(suite.getSuiteName());
-	// System.out.println(suite.getThreadName());
-	// List<String> testlist = suite.getTestFQCNList();
-	// for (String s : testlist) {
-	// System.out.println(s);
-	// }
-	// Map<String, String> parameterMap = suite.getTestSuiteParameters();
-	// for (Entry<String, String> entry : parameterMap.entrySet()) {
-	// System.out.println("Key : " + entry.getKey() + " Value : " +
-	// entry.getValue());
-	// }
-	// }
-	// }
 }

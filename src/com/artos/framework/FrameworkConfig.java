@@ -75,11 +75,12 @@ public class FrameworkConfig {
 	private boolean enableHTMLLog = false;
 
 	// Features
-	private boolean enableGUITestSelector = false;
+	private boolean enableGUITestSelector = true;
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
-	private boolean stopOnFail = false;
+	private boolean generateEclipseTemplate = false;
 	private boolean generateTestScript = false;
+	private boolean stopOnFail = false;
 
 	/**
 	 * Constructor
@@ -402,6 +403,15 @@ public class FrameworkConfig {
 		}
 		{
 			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateEclipseTemplate())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("generateEclipseTemplate");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
 			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateTestScript())));
 			features.appendChild(property);
 
@@ -522,6 +532,9 @@ public class FrameworkConfig {
 					}
 					if ("enableOrganisationInfo".equals(eElement.getAttribute("name"))) {
 						setEnableOrganisationInfo(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("generateEclipseTemplate".equals(eElement.getAttribute("name"))) {
+						setGenerateEclipseTemplate(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 					if ("generateTestScript".equals(eElement.getAttribute("name"))) {
 						setGenerateTestScript(Boolean.parseBoolean(eElement.getTextContent()));
@@ -883,5 +896,13 @@ public class FrameworkConfig {
 
 	public void setStopOnFail(boolean stopOnFail) {
 		this.stopOnFail = stopOnFail;
+	}
+
+	public boolean isGenerateEclipseTemplate() {
+		return generateEclipseTemplate;
+	}
+
+	public void setGenerateEclipseTemplate(boolean generateEclipseTemplate) {
+		this.generateEclipseTemplate = generateEclipseTemplate;
 	}
 }

@@ -15,6 +15,10 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +89,19 @@ public class ArtosRunner {
 	 *             Exception will be thrown if test execution failed
 	 */
 	public void run(List<TestExecutable> testList) throws Exception {
+		if (FWStaticStore.frameworkConfig.isGenerateEclipseTemplate()) {
+			File file = new File(FWStaticStore.TEMPLATE_BASE_DIR);
+			if (!file.exists() || !file.isDirectory()) {
+				file.mkdirs();
+			}
+			InputStream ins = getClass().getResourceAsStream("/com/artos/template/template.xml");
+			byte[] buffer = new byte[ins.available()];
+			ins.read(buffer);
+
+			File targetFile = new File(file.getAbsolutePath() + File.separator + "template.xml");
+			OutputStream outStream = new FileOutputStream(targetFile);
+			outStream.write(buffer);
+		}
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
