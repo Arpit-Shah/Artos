@@ -41,7 +41,7 @@ public class Version {
 	public void readPropertiesFile() {
 		try {
 			Properties prop = new Properties();
-			prop.load(getClass().getResourceAsStream("/version.properties"));
+			prop.load(getClass().getResourceAsStream("/com/artos/version/version.properties"));
 			version = prop.getProperty("version");
 			buidDate = prop.getProperty("build.date");
 		} catch (Exception e) {

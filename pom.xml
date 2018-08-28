@@ -77,11 +77,8 @@
 			<version>1.14</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
-		<!-- <dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.21.0-GA</version>
-		</dependency>-->
+		<!-- <dependency> <groupId>org.javassist</groupId> <artifactId>javassist</artifactId> 
+			<version>3.21.0-GA</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
@@ -111,30 +108,14 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.scream3r/jssc 
-		<dependency>
-			<groupId>org.scream3r</groupId>
-			<artifactId>jssc</artifactId>
-			<version>2.8.0</version>
-		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.scream3r/jssc <dependency> 
+			<groupId>org.scream3r</groupId> <artifactId>jssc</artifactId> <version>2.8.0</version> 
+			</dependency> -->
 	</dependencies>
 
 	<!-- Build Plugins -->
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-
-		<!-- Following will update version.properites file with build number and 
-			timestamp , user can find updated file in /target/classes/version.properties 
-			location -->
-		<resources>
-			<resource>
-				<directory>${project.basedir}/src/com/artos/version</directory> <!-- Source directory -->
-				<filtering>true</filtering>
-				<includes>
-					<include>**/version.properties</include> <!-- Target file -->
-				</includes>
-			</resource>
-		</resources>
 
 		<!-- Maven Compiler Plugins -->
 		<!-- parent pom overrides for compiler plugin default values and you can't 
@@ -250,14 +231,15 @@
 			<!-- This plugin will copy resources (images) from com.artos.icons location 
 				to build target directory at class processing phase, so it will be packages 
 				in jar at correct location. Because we are using non standard resource directory, 
-				this has to be done -->
+				this has to be done. same way plugin will inject template and version file 
+				into compiled jar. When version file is processed, the variables will be 
+				replaced with project values -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.0.2</version>
 				<executions>
 					<execution>
 						<id>copy-resources</id>
-						<!-- here the phase you need -->
 						<phase>process-classes</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -267,6 +249,40 @@
 							<resources>
 								<resource>
 									<directory>${basedir}/src/com/artos/icons</directory>         <!-- source directory -->
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-resources-2</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/com/artos/template</outputDirectory>   <!-- output directory -->
+							<resources>
+								<resource>
+									<directory>${basedir}/src/com/artos/template</directory>         <!-- source directory -->
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<!-- Following will update version.properites file with build number 
+						and time stamp -->
+					<execution>
+						<id>copy-resources-3</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/com/artos/version</outputDirectory>   <!-- output directory -->
+							<resources>
+								<resource>
+									<directory>${basedir}/src/com/artos/version</directory>         <!-- source directory -->
 									<filtering>true</filtering>
 								</resource>
 							</resources>
