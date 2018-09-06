@@ -35,7 +35,7 @@ public class TestObjectWrapper {
 	List<String> groupList = new ArrayList<>();
 
 	// TestPlan
-	String testPlanDescription = "Warning : TestPlan Attribute is not set";
+	String testPlanDescription = "";
 	String testPlanPreparedBy = "???";
 	String testPlanPreparationDate = "???";
 	String testreviewedBy = "???";
