@@ -73,6 +73,7 @@ public class FrameworkConfig {
 	private boolean enableLogDecoration = false;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
+	private boolean enableExtentReport = false;
 
 	// Features
 	private boolean enableGUITestSelector = true;
@@ -263,6 +264,15 @@ public class FrameworkConfig {
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("enableHTMLLog");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableExtentReport())));
+			logger.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableExtentReport");
 			property.setAttributeNode(attr);
 		}
 
@@ -493,6 +503,9 @@ public class FrameworkConfig {
 					}
 					if ("enableHTMLLog".equals(eElement.getAttribute("name"))) {
 						setEnableHTMLLog(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("enableExtentReport".equals(eElement.getAttribute("name"))) {
+						setEnableExtentReport(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -904,5 +917,13 @@ public class FrameworkConfig {
 
 	public void setGenerateEclipseTemplate(boolean generateEclipseTemplate) {
 		this.generateEclipseTemplate = generateEclipseTemplate;
+	}
+
+	public boolean isEnableExtentReport() {
+		return enableExtentReport;
+	}
+
+	public void setEnableExtentReport(boolean enableExtentReport) {
+		this.enableExtentReport = enableExtentReport;
 	}
 }
