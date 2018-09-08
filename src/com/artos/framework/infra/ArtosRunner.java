@@ -33,12 +33,13 @@ import com.artos.framework.FWStaticStore;
 import com.artos.framework.GUITestSelector;
 import com.artos.framework.ScanTestSuite;
 import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.listener.ExtentReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
 import com.artos.framework.xml.TestScriptParser;
 import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
-import com.artos.interfaces.TestExecutionListener;
+import com.artos.interfaces.TestProgress;
 import com.artos.interfaces.TestRunnable;
 import com.artos.utils.Transform;
 import com.artos.utils.UtilsFramework;
@@ -51,7 +52,7 @@ import com.artos.utils.UtilsFramework;
 public class ArtosRunner {
 
 	TestContext context;
-	List<TestExecutionListener> listenerList = new ArrayList<TestExecutionListener>();
+	List<TestProgress> listenerList = new ArrayList<TestProgress>();
 
 	// ==================================================================================
 	// Constructor (Starting point of framework)
@@ -73,6 +74,14 @@ public class ArtosRunner {
 		// Register default listener
 		TestExecutionEventListener testListener = new TestExecutionEventListener(context);
 		registerListener(testListener);
+		context.registerListener(testListener);
+
+		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
+			ExtentReportListener extentListener = new ExtentReportListener(context);
+			registerListener(extentListener);
+			context.registerListener(extentListener);
+		}
+		
 	}
 
 	// ==================================================================================
@@ -111,7 +120,29 @@ public class ArtosRunner {
 				ins.close();
 			}
 		}
-		
+		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
+			// only create Extent config file if not present already
+			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "Extent_Config.xml");
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.CONFIG_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/Extent_Config.xml");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
+		}
+
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
@@ -315,11 +346,11 @@ public class ArtosRunner {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
-	public void registerListener(TestExecutionListener listener) {
+	public void registerListener(TestProgress listener) {
 		listenerList.add(listener);
 	}
 
-	public void deRegisterListener(TestExecutionListener listener) {
+	public void deRegisterListener(TestProgress listener) {
 		listenerList.remove(listener);
 	}
 
@@ -328,37 +359,37 @@ public class ArtosRunner {
 	}
 
 	void notifyTestSuiteExecutionStarted(String testSuiteName) {
-		for (TestExecutionListener listener : listenerList) {
+		for (TestProgress listener : listenerList) {
 			listener.testSuiteExecutionStarted(testSuiteName);
 		}
 	}
 
 	void notifyTestSuiteExecutionFinished(String testSuiteName) {
-		for (TestExecutionListener listener : listenerList) {
+		for (TestProgress listener : listenerList) {
 			listener.testSuiteExecutionFinished(testSuiteName);
 		}
 	}
 
 	void notifyTestExecutionStarted(TestObjectWrapper t) {
-		for (TestExecutionListener listener : listenerList) {
+		for (TestProgress listener : listenerList) {
 			listener.testExecutionStarted(t);
 		}
 	}
 
 	void notifyTestExecutionFinished(TestObjectWrapper t) {
-		for (TestExecutionListener listener : listenerList) {
+		for (TestProgress listener : listenerList) {
 			listener.testExecutionFinished(t);
 		}
 	}
 
 	void notifyTestExecutionSkipped(TestObjectWrapper t) {
-		for (TestExecutionListener listener : listenerList) {
+		for (TestProgress listener : listenerList) {
 			listener.testExecutionSkipped(t);
 		}
 	}
 
 	void notifyTestExecutionLoopCount(int count) {
-		for (TestExecutionListener listener : listenerList) {
+		for (TestProgress listener : listenerList) {
 			listener.testExecutionLoopCount(count);
 		}
 	}

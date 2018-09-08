@@ -24,25 +24,86 @@ import com.artos.framework.TestObjectWrapper;
  */
 public interface TestProgress {
 
+	/**
+	 * Method is called when test loop execution starts, This method is called
+	 * same number of time as loop count set by user.
+	 * 
+	 * @param count
+	 *            number of test suite execution loop count
+	 */
+	default void testExecutionLoopCount(int count) {
+	}
+
+	/**
+	 * Method is called when test suite execution starts
+	 * 
+	 * @param description
+	 *            description/name of the test suite
+	 */
 	default void testSuiteExecutionStarted(String description) {
 	}
 
+	/**
+	 * Method is called when test suite execution finishes
+	 * 
+	 * @param description
+	 *            description/name of the test suite
+	 */
 	default void testSuiteExecutionFinished(String description) {
 	}
 
+	/**
+	 * Method is called when test execution starts
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
 	default void testExecutionStarted(TestObjectWrapper t) {
 	}
 
+	/**
+	 * Method is called when test execution finishes
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
 	default void testExecutionFinished(TestObjectWrapper t) {
 	}
 
-	default void testResult(TestStatus testStatus, String description) {
-	}
-
+	/**
+	 * Method is called when test execution is skipped.
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
 	default void testExecutionSkipped(TestObjectWrapper t) {
 	}
 
-	default void testExecutionLoopCount(int count) {
+	/**
+	 * Method is called when user updates test status.
+	 * 
+	 * @param testStatus
+	 *            Test status set by user
+	 * @param msg
+	 *            description/reason provided by user
+	 * @see TestStatus
+	 */
+	default void testStatusUpdate(TestStatus testStatus, String msg) {
+	}
+
+	/**
+	 * Method is called when test result is finalised.
+	 * 
+	 * @param testStatus
+	 *            Test status set by user
+	 * @param msg
+	 *            bug tracking info (Ticket/JIRA number)
+	 * @see TestStatus
+	 */
+	default void testResult(TestStatus testStatus, String description) {
 	}
 
 }

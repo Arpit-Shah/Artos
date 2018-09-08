@@ -28,6 +28,9 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 
+import com.artos.framework.FWStaticStore;
+import com.relevantcodes.extentreports.ExtentReports;
+
 /** Wrapper class which provides abstraction for logging mechanism */
 public class LogWrapper {
 	static final String FQCN = LogWrapper.class.getName();
@@ -36,6 +39,7 @@ public class LogWrapper {
 	Logger generalLogger;
 	Logger summaryLogger;
 	Logger realTimeLogger;
+	ExtentReports extent = null;
 
 	/**
 	 * Constructor responsible for providing logWrapperObject per test suite
@@ -53,9 +57,28 @@ public class LogWrapper {
 	 */
 	public LogWrapper(LoggerContext loggerContext, int threadNumber) {
 		this.loggerContext = loggerContext;
+		this.threadNumber = threadNumber;
 		setGeneralLogger(loggerContext.getLogger(OrganisedLog.GENERAL_LOGGER_NAME_STX + threadNumber));
 		setSummaryLogger(loggerContext.getLogger(OrganisedLog.SUMMARY_LOGGER_NAME_STX + threadNumber));
 		setRealTimeLogger(loggerContext.getLogger(OrganisedLog.REALTIME_LOGGER_NAME_STX + threadNumber));
+		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
+			while (getCurrentGeneralLogFiles().isEmpty()) {
+				// wait until file is created
+			}
+			String logFilePath = getCurrentGeneralLogFiles().get(0).getAbsolutePath();
+			extent = new ExtentReports(logFilePath.substring(0, logFilePath.lastIndexOf(".")) + "-extent.html", true);
+			extent.loadConfig(new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "Extent_Config.xml"));
+		}
+	}
+
+	/** Disable Logging */
+	public void disableGeneralLog() {
+		getGeneralLogger().setLevel(Level.OFF);
+	}
+
+	/** Enable Logging */
+	public void enableGeneralLog() {
+		getGeneralLogger().setLevel(FWStaticStore.frameworkConfig.getLoglevelFromXML());
 	}
 
 	// ===================================================================
@@ -1777,5 +1800,13 @@ public class LogWrapper {
 
 	public void setThreadNumber(int threadNumber) {
 		this.threadNumber = threadNumber;
+	}
+
+	public ExtentReports getExtent() {
+		return extent;
+	}
+
+	public void setExtent(ExtentReports extent) {
+		this.extent = extent;
 	}
 }
