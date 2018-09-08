@@ -16,11 +16,12 @@
 package com.artos.framework.listener;
 
 import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
-import com.artos.interfaces.TestExecutionListener;
+import com.artos.interfaces.TestProgress;
 
-public class TestExecutionEventListener implements TestExecutionListener {
+public class TestExecutionEventListener implements TestProgress {
 
 	TestContext context;
 	LogWrapper logger;
@@ -67,7 +68,12 @@ public class TestExecutionEventListener implements TestExecutionListener {
 		logger.debug("\n---------------- Skipped Test : {} -------------------", t.getTestClassObject().getName());
 	}
 
+	@Override
 	public void testExecutionLoopCount(int count) {
 		logger.debug("\n---------------- (Test Loop Count : {}) -------------------", (count + 1));
+	}
+	
+	@Override
+	public void testResult(TestStatus testStatus, String description) {
 	}
 }

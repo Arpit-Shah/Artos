@@ -20,7 +20,7 @@ import org.apache.logging.log4j.core.Logger;
 
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
-import com.artos.interfaces.RealTimeLogListener;
+import com.artos.interfaces.RealTimeLoggable;
 import com.artos.utils.Transform;
 
 /**
@@ -30,7 +30,7 @@ import com.artos.utils.Transform;
  * file with name *-realtime.*
  *
  */
-public class RealTimeLogEventListener implements RealTimeLogListener {
+public class RealTimeLogEventListener implements RealTimeLoggable {
 
 	static final String FQCN = LogWrapper.class.getName();
 	Transform _tfm = new Transform();
