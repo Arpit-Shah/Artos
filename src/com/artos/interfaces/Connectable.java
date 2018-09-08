@@ -20,8 +20,9 @@ import java.util.concurrent.TimeUnit;
 import com.artos.utils.Heartbeat;
 
 /**
- * Used for any class which implements connections, If implemented then same
- * class can be used with common HeartBeat mechanism
+ * Interface recommended for classes which are responsible for making connections (socket,
+ * serial etc..) class which implements {@code Connectable} can be used along
+ * with {@code Heartbeat} class to provide hearbeat/keepalive.
  * 
  * @see Heartbeat
  */

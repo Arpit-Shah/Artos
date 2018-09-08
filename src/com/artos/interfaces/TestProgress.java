@@ -15,12 +15,14 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.interfaces;
 
+import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.TestObjectWrapper;
 
 /**
- * Used for listening to test case execution progress
+ * Interface recommended for any listener which requires to be notified test
+ * progress events.
  */
-public interface TestExecutionListener {
+public interface TestProgress {
 
 	default void testSuiteExecutionStarted(String description) {
 	}
@@ -32,6 +34,9 @@ public interface TestExecutionListener {
 	}
 
 	default void testExecutionFinished(TestObjectWrapper t) {
+	}
+
+	default void testResult(TestStatus testStatus, String description) {
 	}
 
 	default void testExecutionSkipped(TestObjectWrapper t) {
