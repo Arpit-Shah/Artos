@@ -99,7 +99,7 @@ public interface TestProgress {
 	 * 
 	 * @param testStatus
 	 *            Test status set by user
-	 * @param msg
+	 * @param description
 	 *            bug tracking info (Ticket/JIRA number)
 	 * @see TestStatus
 	 */

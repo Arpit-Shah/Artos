@@ -180,6 +180,7 @@ public class CustomPrompt implements ItemListener {
 	 * Starts GUI with count down timer
 	 * 
 	 * @throws Exception
+	 *             if any IO error occurred.
 	 */
 	public void start() throws Exception {
 
