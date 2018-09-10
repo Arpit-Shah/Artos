@@ -81,7 +81,7 @@ public class ArtosRunner {
 			registerListener(extentListener);
 			context.registerListener(extentListener);
 		}
-		
+
 	}
 
 	// ==================================================================================
@@ -98,51 +98,6 @@ public class ArtosRunner {
 	 *             Exception will be thrown if test execution failed
 	 */
 	public void run(List<TestExecutable> testList) throws Exception {
-		if (FWStaticStore.frameworkConfig.isGenerateEclipseTemplate()) {
-			// only create template file if not present already
-			File targetFile = new File(FWStaticStore.TEMPLATE_BASE_DIR + File.separator + "template.xml");
-			if (!targetFile.exists() || !targetFile.isFile()) {
-
-				// create dir if not present
-				File file = new File(FWStaticStore.TEMPLATE_BASE_DIR);
-				if (!file.exists() || !file.isDirectory()) {
-					file.mkdirs();
-				}
-
-				InputStream ins = getClass().getResourceAsStream("/com/artos/template/template.xml");
-				byte[] buffer = new byte[ins.available()];
-				ins.read(buffer);
-
-				OutputStream outStream = new FileOutputStream(targetFile);
-				outStream.write(buffer);
-				outStream.flush();
-				outStream.close();
-				ins.close();
-			}
-		}
-		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
-			// only create Extent config file if not present already
-			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "Extent_Config.xml");
-			if (!targetFile.exists() || !targetFile.isFile()) {
-
-				// create dir if not present
-				File file = new File(FWStaticStore.CONFIG_BASE_DIR);
-				if (!file.exists() || !file.isDirectory()) {
-					file.mkdirs();
-				}
-
-				InputStream ins = getClass().getResourceAsStream("/com/artos/template/Extent_Config.xml");
-				byte[] buffer = new byte[ins.available()];
-				ins.read(buffer);
-
-				OutputStream outStream = new FileOutputStream(targetFile);
-				outStream.write(buffer);
-				outStream.flush();
-				outStream.close();
-				ins.close();
-			}
-		}
-
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
@@ -185,7 +140,7 @@ public class ArtosRunner {
 
 		// Print Test results
 		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
-				+ " KTF:" + context.getCurrentKTFCount() + " TOTAL:" + context.getTotalTestCount());
+				+ " KTF:" + context.getCurrentKTFCount() + " EXECUTED:" + context.getTotalTestCount() + " TOTAL:" + transformedTestList.size());
 
 		// Print Test suite Start and Finish time
 		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
@@ -227,7 +182,10 @@ public class ArtosRunner {
 			PrePostRunnable prePostCycleInstance = (PrePostRunnable) context.getPrePostRunnableObj().newInstance();
 
 			// Run prior to each test suit
-			prePostCycleInstance.beforeTestsuite(context);
+			notifyBeforeTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
+			prePostCycleInstance.beforeTestSuite(context);
+			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
+
 			for (int index = 0; index < context.getTotalLoopCount(); index++) {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
@@ -240,25 +198,34 @@ public class ArtosRunner {
 						}
 					}
 
-					notifyTestExecutionStarted(t);
 					// Run Pre Method prior to any test Execution
+					notifyBeforeTestMethodStarted(t);
 					prePostCycleInstance.beforeTest(context);
+					notifyBeforeTestMethodFinished(t);
 
+					notifyTestExecutionStarted(t);
 					runIndividualTest(t);
+					notifyTestExecutionFinished(t);
 
 					// Run Post Method prior to any test Execution
+					notifyAfterTestMethodStarted(t);
 					prePostCycleInstance.afterTest(context);
-					notifyTestExecutionFinished(t);
+					notifyAfterTestMethodFinished(t);
+
 				}
 				// --------------------------------------------------------------------------------------------
 			}
+
 			// Run at the end of each test suit
-			prePostCycleInstance.afterTestsuite(context);
+			notifyAfterTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
+			prePostCycleInstance.afterTestSuite(context);
+			notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 
 		} catch (Throwable e) {
 			// Handle if any exception in pre-post runnable
 			e.printStackTrace();
-			context.getLogger().error(e);
+			UtilsFramework.writePrintStackTrace(context, e);
+			notifyTestSuiteException(e.getMessage());
 		}
 
 		// Set Test Finish Time
@@ -288,11 +255,13 @@ public class ArtosRunner {
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {
-			context.setTestStatus(TestStatus.FAIL);
+			context.setTestStatus(TestStatus.FAIL, e.getMessage());
 			UtilsFramework.writePrintStackTrace(context, e);
+			notifyTestException(e.getMessage());
 		} catch (Throwable ex) {
-			context.setTestStatus(TestStatus.FAIL);
+			context.setTestStatus(TestStatus.FAIL, ex.getMessage());
 			UtilsFramework.writePrintStackTrace(context, ex);
+			notifyTestException(ex.getMessage());
 		} finally {
 			long testFinishTime = System.currentTimeMillis();
 			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, testFinishTime);
@@ -312,7 +281,7 @@ public class ArtosRunner {
 		PrePostRunnable prePostCycleInstance = (PrePostRunnable) context.getPrePostRunnableObj().newInstance();
 
 		// Run prior to each test suit
-		prePostCycleInstance.beforeTestsuite(context);
+		prePostCycleInstance.beforeTestSuite(context);
 		for (int index = 0; index < context.getTotalLoopCount(); index++) {
 			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
@@ -336,7 +305,7 @@ public class ArtosRunner {
 			// --------------------------------------------------------------------------------------------
 		}
 		// Run at the end of each test suit
-		prePostCycleInstance.afterTestsuite(context);
+		prePostCycleInstance.afterTestSuite(context);
 		// ********************************************************************************************
 		// Test Finish
 		// ********************************************************************************************
@@ -358,6 +327,30 @@ public class ArtosRunner {
 		listenerList.clear();
 	}
 
+	void notifyBeforeTestSuiteMethodStarted(String testSuiteName) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeTestSuiteMethodStarted(testSuiteName);
+		}
+	}
+
+	void notifyBeforeTestSuiteMethodFinished(String testSuiteName) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeTestSuiteMethodFinished(testSuiteName);
+		}
+	}
+
+	void notifyAfterTestSuiteMethodStarted(String testSuiteName) {
+		for (TestProgress listener : listenerList) {
+			listener.afterTestSuiteMethodStarted(testSuiteName);
+		}
+	}
+
+	void notifyAfterTestSuiteMethodFinished(String testSuiteName) {
+		for (TestProgress listener : listenerList) {
+			listener.afterTestSuiteMethodFinished(testSuiteName);
+		}
+	}
+
 	void notifyTestSuiteExecutionStarted(String testSuiteName) {
 		for (TestProgress listener : listenerList) {
 			listener.testSuiteExecutionStarted(testSuiteName);
@@ -367,6 +360,30 @@ public class ArtosRunner {
 	void notifyTestSuiteExecutionFinished(String testSuiteName) {
 		for (TestProgress listener : listenerList) {
 			listener.testSuiteExecutionFinished(testSuiteName);
+		}
+	}
+
+	void notifyBeforeTestMethodStarted(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeTestMethodStarted(t);
+		}
+	}
+
+	void notifyBeforeTestMethodFinished(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeTestMethodFinished(t);
+		}
+	}
+
+	void notifyAfterTestMethodStarted(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.afterTestMethodStarted(t);
+		}
+	}
+
+	void notifyAfterTestMethodFinished(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.afterTestMethodFinished(t);
 		}
 	}
 
@@ -391,6 +408,18 @@ public class ArtosRunner {
 	void notifyTestExecutionLoopCount(int count) {
 		for (TestProgress listener : listenerList) {
 			listener.testExecutionLoopCount(count);
+		}
+	}
+
+	void notifyTestSuiteException(String description) {
+		for (TestProgress listener : listenerList) {
+			listener.testSuiteException(description);
+		}
+	}
+
+	void notifyTestException(String description) {
+		for (TestProgress listener : listenerList) {
+			listener.testException(description);
 		}
 	}
 
@@ -541,10 +570,10 @@ class runTestInParallel implements Runnable {
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {
-			context.setTestStatus(TestStatus.FAIL);
+			context.setTestStatus(TestStatus.FAIL, e.getMessage());
 			UtilsFramework.writePrintStackTrace(context, e);
 		} catch (Throwable ex) {
-			context.setTestStatus(TestStatus.FAIL);
+			context.setTestStatus(TestStatus.FAIL, ex.getMessage());
 			UtilsFramework.writePrintStackTrace(context, ex);
 		} finally {
 			long testFinishTime = System.currentTimeMillis();

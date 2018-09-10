@@ -15,7 +15,11 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -120,6 +124,7 @@ public class Runner {
 
 		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
+		generateRequiredFiles();
 
 		// process test suites
 		List<TestSuite> testSuiteList = createTestSuiteList();
@@ -183,6 +188,53 @@ public class Runner {
 
 			// Terminate JVM
 			System.exit(0);
+		}
+	}
+
+	private void generateRequiredFiles() throws IOException {
+		if (FWStaticStore.frameworkConfig.isGenerateEclipseTemplate()) {
+			// only create template file if not present already
+			File targetFile = new File(FWStaticStore.TEMPLATE_BASE_DIR + File.separator + "template.xml");
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.TEMPLATE_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/template.xml");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
+		}
+		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
+			// only create Extent config file if not present already
+			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "Extent_Config.xml");
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.CONFIG_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/Extent_Config.xml");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
 		}
 	}
 
