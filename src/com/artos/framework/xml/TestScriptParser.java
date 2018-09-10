@@ -256,7 +256,7 @@ public class TestScriptParser {
 		attr2.setValue("1");
 		suite.setAttributeNode(attr2);
 		
-		Comment comment = doc.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\unit_test.Guardian.xml\"");
+		Comment comment = doc.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\"+testList.get(0).getTestClassObject().getPackage().getName()+".xml\"");
 		suite.getParentNode().insertBefore(comment, suite);
 
 		createTestList(testList, doc, suite);
