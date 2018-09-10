@@ -61,7 +61,7 @@ public interface PrePostRunnable {
 	 *             In case of initialisation failed
 	 */
 	@BeforeTestSuite
-	default public void beforeTestsuite(TestContext context) throws Exception {
+	default public void beforeTestSuite(TestContext context) throws Exception {
 
 	}
 
@@ -74,7 +74,7 @@ public interface PrePostRunnable {
 	 *             In case of cleanup failed
 	 */
 	@AfterTestSuite
-	default public void afterTestsuite(TestContext context) throws Exception {
+	default public void afterTestSuite(TestContext context) throws Exception {
 
 	}
 
