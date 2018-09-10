@@ -144,7 +144,7 @@ public class TestContext {
 								+"\n******** KTF TEST PASSED *********"
 								+"\n**********************************");
 				//@formatter:on
-				setTestStatus(TestStatus.FAIL);
+				setTestStatus(TestStatus.FAIL, "KTF Test passed, which is not as expected");
 			}
 		}
 
