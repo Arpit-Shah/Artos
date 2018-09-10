@@ -15,12 +15,18 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.listener;
 
-import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.Enums.TestStatus;
+import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
 import com.artos.interfaces.TestProgress;
 
+/**
+ * Responsible for listening to test execution event and act according to
+ * requirement. Can be used for report generation, GUI tool update or plug-in
+ * development
+ *
+ */
 public class TestExecutionEventListener implements TestProgress {
 
 	TestContext context;
@@ -32,35 +38,77 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
+	public void beforeTestSuiteMethodStarted(String description) {
+		logger.trace("\n---------------- BeforeTestSuite Method Started -------------------");
+	}
+
+	@Override
+	public void beforeTestSuiteMethodFinished(String description) {
+		logger.trace("\n---------------- BeforeTestSuite Method Finished -------------------");
+	}
+
+	@Override
+	public void afterTestSuiteMethodStarted(String description) {
+		logger.trace("\n---------------- AfterTestSuite Method Started -------------------");
+	}
+
+	@Override
+	public void afterTestSuiteMethodFinished(String description) {
+		logger.trace("\n---------------- AfterTestSuite Method Finished -------------------");
+	}
+
+	@Override
 	public void testSuiteExecutionStarted(String description) {
-		logger.debug("\n---------------- Suite Start -------------------");
+		logger.trace("\n---------------- Test Suite Start -------------------");
 	}
 
 	@Override
 	public void testSuiteExecutionFinished(String description) {
-		logger.debug("\n---------------- Suite Finished -------------------");
+		logger.trace("\n---------------- Test Suite Finished -------------------");
 	}
 
 	@Override
-	public void testExecutionStarted(TestObjectWrapper t) {
+	public void beforeTestMethodStarted(TestObjectWrapper t) {
+		logger.trace("\n---------------- BeforeTest Method Started -------------------");
+
 		// @formatter:off
-		context.getLogger().info("*************************************************************************"
-								+ "\nTest Name	: {}" 
-								+ "\nWritten BY	: {}"
-								+ "\nDate		: {}"
-								+ "\nShort Desc	: {}"
-								+ "\n*************************************************************************"
-								, t.getTestClassObject().getName()
-								, t.getTestPlanPreparedBy()
-								, t.getTestPlanPreparationDate()
-								, t.getTestPlanDescription()
-								);
+				context.getLogger().info("*************************************************************************"
+										+ "\nTest Name	: {}" 
+										+ "\nWritten BY	: {}"
+										+ "\nDate		: {}"
+										+ "\nShort Desc	: {}"
+										+ "\n*************************************************************************"
+										, t.getTestClassObject().getName()
+										, t.getTestPlanPreparedBy()
+										, t.getTestPlanPreparationDate()
+										, t.getTestPlanDescription()
+										);
 		// @formatter:on
 	}
 
 	@Override
+	public void beforeTestMethodFinished(TestObjectWrapper t) {
+		logger.trace("\n---------------- BeforeTest Method Finished -------------------");
+	}
+
+	@Override
+	public void testExecutionStarted(TestObjectWrapper t) {
+		logger.trace("\n---------------- Test Starts -------------------");
+	}
+
+	@Override
 	public void testExecutionFinished(TestObjectWrapper t) {
-		// logger.info("\n---------------- Test Finish -------------------");
+		logger.trace("\n---------------- Test Finish -------------------");
+	}
+
+	@Override
+	public void afterTestMethodStarted(TestObjectWrapper t) {
+		logger.trace("\n---------------- AfterTest Method Execution Started -------------------");
+	}
+
+	@Override
+	public void afterTestMethodFinished(TestObjectWrapper t) {
+		logger.trace("\n---------------- AfterTest Method Execution Finished -------------------");
 	}
 
 	@Override
@@ -70,10 +118,26 @@ public class TestExecutionEventListener implements TestProgress {
 
 	@Override
 	public void testExecutionLoopCount(int count) {
-		logger.debug("\n---------------- (Test Loop Count : {}) -------------------", (count + 1));
+		logger.info("\n---------------- (Test Loop Count : {}) -------------------", (count + 1));
 	}
-	
+
+	@Override
+	public void testSuiteException(String description) {
+		logger.trace("\n---------------- Test Suite Exception -------------------");
+	}
+
+	@Override
+	public void testException(String description) {
+		logger.trace("\n---------------- Test Case Exception -------------------");
+	}
+
+	@Override
+	public void testStatusUpdate(TestStatus testStatus, String msg) {
+		logger.trace("\n---------------- Test Status Update -------------------");
+	}
+
 	@Override
 	public void testResult(TestStatus testStatus, String description) {
+		logger.trace("\n---------------- Test Result -------------------");
 	}
 }

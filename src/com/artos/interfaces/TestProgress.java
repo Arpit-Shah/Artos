@@ -31,8 +31,23 @@ public interface TestProgress {
 	 * @param count
 	 *            number of test suite execution loop count
 	 */
-	default void testExecutionLoopCount(int count) {
-	}
+	public void testExecutionLoopCount(int count);
+
+	/**
+	 * Method is called before {@code BeforeTestSuite} method execution starts
+	 * 
+	 * @param description
+	 *            description/name of the test suite
+	 */
+	public void beforeTestSuiteMethodStarted(String description);
+
+	/**
+	 * Method is called after {@code BeforeTestSuite} method execution finished
+	 * 
+	 * @param description
+	 *            description/name of the test suite
+	 */
+	public void beforeTestSuiteMethodFinished(String description);
 
 	/**
 	 * Method is called when test suite execution starts
@@ -40,8 +55,7 @@ public interface TestProgress {
 	 * @param description
 	 *            description/name of the test suite
 	 */
-	default void testSuiteExecutionStarted(String description) {
-	}
+	public void testSuiteExecutionStarted(String description);
 
 	/**
 	 * Method is called when test suite execution finishes
@@ -49,8 +63,59 @@ public interface TestProgress {
 	 * @param description
 	 *            description/name of the test suite
 	 */
-	default void testSuiteExecutionFinished(String description) {
-	}
+	public void testSuiteExecutionFinished(String description);
+
+	/**
+	 * Method is called before {@code AfterTestSuite} method execution starts
+	 * 
+	 * @param description
+	 *            description/name of the test suite
+	 */
+	public void afterTestSuiteMethodStarted(String description);
+
+	/**
+	 * Method is called after {@code AfterTestSuite} method execution finishes
+	 * 
+	 * @param description
+	 *            description/name of the test suite
+	 */
+	public void afterTestSuiteMethodFinished(String description);
+
+	/**
+	 * Method is called before {@code BeforeTest} method execution starts
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void beforeTestMethodStarted(TestObjectWrapper t);
+
+	/**
+	 * Method is called after {@code BeforeTest} method execution finishes
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void beforeTestMethodFinished(TestObjectWrapper t);
+
+	/**
+	 * Method is called before {@code AfterTest} method execution started
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void afterTestMethodStarted(TestObjectWrapper t);
+
+	/**
+	 * Method is called after {@code AfterTest} method execution finishes
+	 * 
+	 * @param t
+	 *            test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void afterTestMethodFinished(TestObjectWrapper t);
 
 	/**
 	 * Method is called when test execution starts
@@ -59,8 +124,7 @@ public interface TestProgress {
 	 *            test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	default void testExecutionStarted(TestObjectWrapper t) {
-	}
+	public void testExecutionStarted(TestObjectWrapper t);
 
 	/**
 	 * Method is called when test execution finishes
@@ -69,8 +133,7 @@ public interface TestProgress {
 	 *            test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	default void testExecutionFinished(TestObjectWrapper t) {
-	}
+	public void testExecutionFinished(TestObjectWrapper t);
 
 	/**
 	 * Method is called when test execution is skipped.
@@ -79,8 +142,7 @@ public interface TestProgress {
 	 *            test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	default void testExecutionSkipped(TestObjectWrapper t) {
-	}
+	public void testExecutionSkipped(TestObjectWrapper t);
 
 	/**
 	 * Method is called when user updates test status.
@@ -91,8 +153,7 @@ public interface TestProgress {
 	 *            description/reason provided by user
 	 * @see TestStatus
 	 */
-	default void testStatusUpdate(TestStatus testStatus, String msg) {
-	}
+	public void testStatusUpdate(TestStatus testStatus, String msg);
 
 	/**
 	 * Method is called when test result is finalised.
@@ -103,7 +164,23 @@ public interface TestProgress {
 	 *            bug tracking info (Ticket/JIRA number)
 	 * @see TestStatus
 	 */
-	default void testResult(TestStatus testStatus, String description) {
-	}
+	public void testResult(TestStatus testStatus, String description);
+
+	/**
+	 * Method is called when exception is thrown during test suite execution
+	 * which can not be handled on test level
+	 * 
+	 * @param description
+	 *            Description of an error/exception
+	 */
+	public void testSuiteException(String description);
+
+	/**
+	 * Method is called when exception is thrown during test case execution
+	 * 
+	 * @param description
+	 *            Description of an error/exception
+	 */
+	public void testException(String description);
 
 }

@@ -17,6 +17,7 @@ package com.artos.framework.listener;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.Version;
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
 import com.artos.interfaces.TestProgress;
@@ -39,6 +40,7 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testSuiteExecutionStarted(String description) {
 		extent = logger.getExtent();
+		extent.addSystemInfo("Artos Version", new Version().getBuildVersion());
 	}
 
 	@Override
@@ -50,15 +52,18 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testExecutionStarted(TestObjectWrapper t) {
 		test = extent.startTest(t.getTestClassObject().getName(), t.getTestPlanDescription());
+		test.assignAuthor(t.getTestPlanPreparedBy());
 	}
 
 	@Override
 	public void testExecutionFinished(TestObjectWrapper t) {
 		extent.endTest(test);
+		test = null;
 	}
 
 	@Override
 	public void testExecutionSkipped(TestObjectWrapper t) {
+		test.log(LogStatus.SKIP, "Skipped Test Case: " + t.getTestClassObject().getName());
 	}
 
 	@Override
@@ -66,27 +71,91 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	public void testStatusUpdate(TestStatus testStatus, String description) {
-		if (TestStatus.FAIL == testStatus) {
-			test.log(LogStatus.FAIL, description);
-		} else if (TestStatus.KTF == testStatus) {
-			test.log(LogStatus.PASS, description);
-		} else if (TestStatus.SKIP == testStatus) {
-			test.log(LogStatus.SKIP, description);
-		} else if (TestStatus.PASS == testStatus) {
-			test.log(LogStatus.PASS, description);
+		if (null != test) {
+			if (TestStatus.FAIL == testStatus) {
+				test.log(LogStatus.FAIL, description);
+			} else if (TestStatus.KTF == testStatus) {
+				test.log(LogStatus.PASS, description);
+			} else if (TestStatus.SKIP == testStatus) {
+				test.log(LogStatus.SKIP, description);
+			} else if (TestStatus.PASS == testStatus) {
+				test.log(LogStatus.PASS, description);
+			}
 		}
 	}
 
 	@Override
 	public void testResult(TestStatus testStatus, String description) {
-		if (TestStatus.FAIL == testStatus) {
-			test.log(LogStatus.FAIL, description);
-		} else if (TestStatus.KTF == testStatus) {
-			test.log(LogStatus.PASS, description);
-		} else if (TestStatus.SKIP == testStatus) {
-			test.log(LogStatus.SKIP, description);
-		} else if (TestStatus.PASS == testStatus) {
-			test.log(LogStatus.PASS, description);
+		if (null != test) {
+			if (TestStatus.FAIL == testStatus) {
+				test.log(LogStatus.FAIL, description);
+			} else if (TestStatus.KTF == testStatus) {
+				test.log(LogStatus.PASS, description);
+			} else if (TestStatus.SKIP == testStatus) {
+				test.log(LogStatus.SKIP, description);
+			} else if (TestStatus.PASS == testStatus) {
+				test.log(LogStatus.PASS, description);
+			}
 		}
+	}
+
+	@Override
+	public void beforeTestSuiteMethodStarted(String description) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void beforeTestSuiteMethodFinished(String description) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterTestSuiteMethodStarted(String description) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterTestSuiteMethodFinished(String description) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void beforeTestMethodStarted(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void beforeTestMethodFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterTestMethodStarted(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterTestMethodFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void testSuiteException(String description) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void testException(String description) {
+		// TODO Auto-generated method stub
+
 	}
 }
