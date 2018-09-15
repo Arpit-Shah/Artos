@@ -85,8 +85,47 @@ public class Runner {
 	public void run(String[] args, int loopCount)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
 
+		// Add a default group if user does not pass a group parameter
+		List<String> groupList = new ArrayList<>();
+		groupList.add("*");
+
 		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount);
+		run(args, new ArrayList<>(), loopCount, groupList);
+	}
+
+	/**
+	 * Responsible for executing test cases.
+	 * 
+	 * <PRE>
+	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
+	 * - Test script is not provided then test list will be prepared using reflection. supplied group list will be applied.
+	 * </PRE>
+	 * 
+	 * @param args
+	 *            command line arguments
+	 * @param loopCount
+	 *            test loop count
+	 * @param groupList
+	 *            group list required to filter test cases
+	 * @throws ExecutionException
+	 *             if the computation threw an exception
+	 * @throws InterruptedException
+	 *             if the current thread was interrupted while waiting
+	 * @throws InvalidData
+	 *             if user provides invalid data
+	 * @throws IOException
+	 *             if io operation error occurs
+	 * @throws SAXException
+	 *             If any parse errors occur.
+	 * @throws ParserConfigurationException
+	 *             if a DocumentBuildercannot be created which satisfies the
+	 *             configuration requested.
+	 */
+	public void run(String[] args, int loopCount, List<String> groupList)
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+
+		// pass empty array list so reflection will be used
+		run(args, new ArrayList<>(), loopCount, groupList);
 	}
 
 	/**
@@ -118,8 +157,50 @@ public class Runner {
 	 *             if a DocumentBuildercannot be created which satisfies the
 	 *             configuration requested.
 	 */
-	@SuppressWarnings("unchecked")
 	public void run(String[] args, List<TestExecutable> testList, int loopCount)
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+
+		// Add a default group if user does not pass a group parameter
+		List<String> groupList = new ArrayList<>();
+		groupList.add("*");
+
+		// pass empty array list so reflection will be used
+		run(args, new ArrayList<>(), loopCount, groupList);
+	}
+
+	/**
+	 * Responsible for executing test cases.
+	 * 
+	 * <PRE>
+	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
+	 * - In absence of test script, ArrayList() provided by user will be used to generate test list. 
+	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
+	 * </PRE>
+	 * 
+	 * @param args
+	 *            command line arguments
+	 * @param testList
+	 *            testList provided by user
+	 * @param loopCount
+	 *            test loop count
+	 * @param groupList
+	 *            group list required to filter test cases
+	 * @throws ExecutionException
+	 *             if the computation threw an exception
+	 * @throws InterruptedException
+	 *             if the current thread was interrupted while waiting
+	 * @throws InvalidData
+	 *             if user provides invalid data
+	 * @throws IOException
+	 *             if io operation error occurs
+	 * @throws SAXException
+	 *             If any parse errors occur.
+	 * @throws ParserConfigurationException
+	 *             if a DocumentBuildercannot be created which satisfies the
+	 *             configuration requested.
+	 */
+	@SuppressWarnings("unchecked")
+	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> groupList)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
 
 		// Process command line arguments
@@ -170,7 +251,7 @@ public class Runner {
 				}
 
 				// Launch a thread with runnable
-				Future<?> f = service.submit(new SuiteTask(context, testList));
+				Future<?> f = service.submit(new SuiteTask(context, testList, groupList));
 				futures.add((Future<Runnable>) f);
 
 			}
@@ -305,6 +386,7 @@ class SuiteTask implements Runnable {
 
 	TestContext context;
 	List<TestExecutable> testList;
+	List<String> groupList;
 	CountDownLatch latch;
 
 	/**
@@ -315,9 +397,10 @@ class SuiteTask implements Runnable {
 	 * @param testList
 	 *            list of TestExecutable (provided by user)
 	 */
-	public SuiteTask(TestContext context, List<TestExecutable> testList) {
-		this.testList = testList;
+	public SuiteTask(TestContext context, List<TestExecutable> testList, List<String> groupList) {
 		this.context = context;
+		this.testList = testList;
+		this.groupList = groupList;
 	}
 
 	@Override
@@ -325,7 +408,7 @@ class SuiteTask implements Runnable {
 		try {
 			// Create ArtosRunner per thread
 			ArtosRunner artos = new ArtosRunner(context);
-			artos.run(testList);
+			artos.run(testList, groupList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			context.getLogger().error(e);

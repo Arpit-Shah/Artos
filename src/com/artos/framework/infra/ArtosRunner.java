@@ -90,12 +90,18 @@ public class ArtosRunner {
 	 * @param testList
 	 *            List of tests to run. All test must be {@code TestExecutable}
 	 *            type
+	 * @param groupList
+	 *            Group list which is required for test case filtering
 	 * @throws Exception
 	 *             Exception will be thrown if test execution failed
 	 */
-	public void run(List<TestExecutable> testList) throws Exception {
+	public void run(List<TestExecutable> testList, List<String> groupList) throws Exception {
+		if (null == groupList || groupList.isEmpty()) {
+			new Exception("Group must be specified");
+		}
+
 		// Transform TestList into TestObjectWrapper Object list
-		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList);
+		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList, groupList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
 			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
@@ -134,12 +140,10 @@ public class ArtosRunner {
 			runSingleThread(transformedTestList, context);
 		}
 
-		
 		// Print Test results
 		notifyTestSuiteSummaryPrinting("");
-		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:"
-				+ context.getCurrentSkipCount() + " KTF:" + context.getCurrentKTFCount() + " EXECUTED:" + context.getTotalTestCount() + " TOTAL:"
-				+ transformedTestList.size());
+		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
+				+ " KTF:" + context.getCurrentKTFCount() + " EXECUTED:" + context.getTotalTestCount() + " TOTAL:" + transformedTestList.size());
 
 		// Print Test suite Start and Finish time
 		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
@@ -153,7 +157,7 @@ public class ArtosRunner {
 		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
 				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
-		
+
 		notifyTestSuiteFailureHighlight("");
 		if (context.getCurrentFailCount() > 0) {
 			System.err.println("********************************************************");
@@ -423,13 +427,13 @@ public class ArtosRunner {
 			listener.testException(description);
 		}
 	}
-	
+
 	void notifyTestSuiteSummaryPrinting(String description) {
 		for (TestProgress listener : listenerList) {
 			listener.testSuiteSummaryPrinting(description);
 		}
 	}
-	
+
 	void notifyTestSuiteFailureHighlight(String description) {
 		for (TestProgress listener : listenerList) {
 			listener.testSuiteFailureHighlight(description);
@@ -447,9 +451,11 @@ public class ArtosRunner {
 	 * 
 	 * @param listOfTestCases
 	 *            list of test cases required to be transformed
+	 * @param groupList
+	 *            user specified groupList
 	 * @return Test list formatted into {@code TestObjectWrapper} type
 	 */
-	public List<TestObjectWrapper> transformToTestObjWrapper(List<TestExecutable> listOfTestCases) {
+	public List<TestObjectWrapper> transformToTestObjWrapper(List<TestExecutable> listOfTestCases, List<String> groupList) {
 
 		Object testSuiteObject;
 		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
@@ -521,12 +527,20 @@ public class ArtosRunner {
 				if (null == testObjWrapper) {
 					System.err.println(t.getClass().getName() + " not present in given test suite");
 				} else {
-					listOfTransformedTestCases.add(testObjWrapper);
+					if (belongsToApprovedGroup(groupList, testObjWrapper.getGroupList())) {
+						listOfTransformedTestCases.add(testObjWrapper);
+					}
 				}
 			}
 
 		} else {
-			listOfTransformedTestCases = reflection.getTestObjWrapperList(true, true);
+			List<TestObjectWrapper> listOfTestObj = reflection.getTestObjWrapperList(true, true);
+			for (TestObjectWrapper t : listOfTestObj) {
+				if (belongsToApprovedGroup(groupList, t.getGroupList())) {
+					listOfTransformedTestCases.add(t);
+				}
+			}
+
 		}
 
 		return listOfTransformedTestCases;
