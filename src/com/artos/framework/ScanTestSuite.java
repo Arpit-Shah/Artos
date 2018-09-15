@@ -225,7 +225,7 @@ public class ScanTestSuite {
 		StringBuilder sb = new StringBuilder();
 
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
-			sb.append("\nTestCaseName : " + testObject.getTestClassObject().getName());
+			sb.append("\n\nTestCaseName : " + testObject.getTestClassObject().getName());
 			sb.append("\nSkipTest : " + Boolean.toString(testObject.isSkipTest()));
 			sb.append("\nTestSequence : " + testObject.getTestsequence());
 			sb.append("\nTestLabel : " + testObject.getLabelList());

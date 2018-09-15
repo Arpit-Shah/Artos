@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import com.artos.framework.listener.RealTimeLogEventListener;
 import com.artos.interfaces.Connectable;
 import com.artos.interfaces.ConnectableFilter;
+import com.artos.interfaces.ConnectableMessageParser;
 
 /**
  * This class listens for client connection and accepts single client connection
@@ -47,6 +48,7 @@ public class TCPServer implements Connectable {
 	Queue<byte[]> queue = new LinkedList<byte[]>();
 	List<ConnectableFilter> filterList = null;
 	RealTimeLogEventListener realTimeListener = null;
+	ConnectableMessageParser msgParser = null;
 	Transform _transform = new Transform();
 
 	/**
@@ -68,17 +70,21 @@ public class TCPServer implements Connectable {
 	 * @param nPort
 	 *            Port Number, or 0 to use a port number that is automatically
 	 *            allocated
+	 * @param msgParser
+	 *            parser which is used to separate relevant msgs from received
+	 *            TCP byte array
 	 * @param filterList
 	 *            list of filters
 	 */
-	public TCPServer(int nPort, List<ConnectableFilter> filterList) {
+	public TCPServer(int nPort, ConnectableMessageParser msgParser, List<ConnectableFilter> filterList) {
 		this.nPort = nPort;
+		this.msgParser = msgParser;
 		this.filterList = filterList;
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks until
-	 * a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks
+	 * until a connection is made.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when opening the socket.
@@ -89,13 +95,13 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks until
-	 * a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks
+	 * until a connection is made.
 	 * 
 	 * Setting soTimeout to a non-zero timeout, a call to accept() for this
-	 * ServerSocket will block for only this amount of time. If the timeout expires,
-	 * a java.net.SocketTimeoutException is raised, though the ServerSocket is still
-	 * valid.
+	 * ServerSocket will block for only this amount of time. If the timeout
+	 * expires, a java.net.SocketTimeoutException is raised, though the
+	 * ServerSocket is still valid.
 	 * 
 	 * @param soTimeout
 	 *            the specified timeout in milliseconds.
@@ -129,9 +135,9 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Closes this socket. Once a socket has been closed, it is not available for
-	 * further networking use (i.e. can't be reconnected or rebound). A new socket
-	 * needs to be created.
+	 * Closes this socket. Once a socket has been closed, it is not available
+	 * for further networking use (i.e. can't be reconnected or rebound). A new
+	 * socket needs to be created.
 	 * 
 	 * @throws IOException
 	 *             if an I/O error occurs when closing this socket.
@@ -156,8 +162,8 @@ public class TCPServer implements Connectable {
 
 	/**
 	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received within
-	 * timeout period
+	 * queue or timeout has occurred. null is returned if no message received
+	 * within timeout period
 	 * 
 	 * @param timeout
 	 *            msg timeout
@@ -165,9 +171,9 @@ public class TCPServer implements Connectable {
 	 *            timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The interrupted
-	 *             status of the current thread is cleared when this exception is
-	 *             thrown.
+	 *             if any thread has interrupted the current thread. The
+	 *             interrupted status of the current thread is cleared when this
+	 *             exception is thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -238,7 +244,7 @@ public class TCPServer implements Connectable {
 			@Override
 			public void run() {
 				try {
-					clientProcessingPool.submit(new ClientTask(serverSocket, queue, realTimeListener, filterList));
+					clientProcessingPool.submit(new ClientTask(serverSocket, queue, realTimeListener, filterList, msgParser));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -321,19 +327,16 @@ class ClientTask implements Runnable {
 	volatile RealTimeLogEventListener realTimeListener;
 	Transform _transform = new Transform();
 	volatile List<ConnectableFilter> filterList = null;
+	byte[] leftOverBytes = null;
+	volatile ConnectableMessageParser msgParser = null;
 
-	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener) {
-		this.connector = connector;
-		this.queue = queue;
-		this.realTimeListener = realTimeListener;
-		this.filterList = null;
-	}
-
-	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener, List<ConnectableFilter> filterList) {
+	ClientTask(Socket connector, Queue<byte[]> queue, RealTimeLogEventListener realTimeListener, List<ConnectableFilter> filterList,
+			ConnectableMessageParser msgParser) {
 		this.connector = connector;
 		this.queue = queue;
 		this.realTimeListener = realTimeListener;
 		this.filterList = filterList;
+		this.msgParser = msgParser;
 	}
 
 	@Override
@@ -344,7 +347,26 @@ class ClientTask implements Runnable {
 				System.arraycopy(buffer, 0, readData, 0, read);
 				if (readData.length > 0) {
 					notifyReceive(readData);
-					applyFilter(readData);
+
+					/*
+					 * If user has not provided logic for msg parsing then do
+					 * simple filtering
+					 */
+					if (null == msgParser) {
+						applyFilter(readData);
+					} else {
+						/*
+						 * If user has provided message parsing logic then
+						 * assemble any left over data from previous byte[] to
+						 * readData and then put it through parsing logic to
+						 * separate each messages.
+						 */
+						if (null != leftOverBytes) {
+							readData = _transform.concat(leftOverBytes, readData);
+							leftOverBytes = null;
+						}
+						parseIncomingData(readData);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -354,6 +376,17 @@ class ClientTask implements Runnable {
 			} else {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private void parseIncomingData(byte[] readData) throws Exception {
+		List<byte[]> msgList = msgParser.parse(readData);
+		if (null != msgParser.getLeftOverBytes() && msgParser.getLeftOverBytes().length != 0) {
+			leftOverBytes = msgParser.getLeftOverBytes();
+		}
+		
+		for (byte[] msg : msgList) {
+			applyFilter(msg);
 		}
 	}
 
