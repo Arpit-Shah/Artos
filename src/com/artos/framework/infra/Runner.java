@@ -85,12 +85,8 @@ public class Runner {
 	public void run(String[] args, int loopCount)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
 
-		// Add a default group if user does not pass a group parameter
-		List<String> groupList = new ArrayList<>();
-		groupList.add("*");
-
 		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount, groupList);
+		run(args, new ArrayList<>(), loopCount, null);
 	}
 
 	/**
@@ -160,12 +156,8 @@ public class Runner {
 	public void run(String[] args, List<TestExecutable> testList, int loopCount)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
 
-		// Add a default group if user does not pass a group parameter
-		List<String> groupList = new ArrayList<>();
-		groupList.add("*");
-
 		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount, groupList);
+		run(args, testList, loopCount, null);
 	}
 
 	/**
@@ -205,6 +197,7 @@ public class Runner {
 
 		if(null == groupList || groupList.isEmpty()){
 			// Add a default group if user does not pass a group parameter
+			groupList = new ArrayList<>();
 			groupList.add("*");
 		}
 		
