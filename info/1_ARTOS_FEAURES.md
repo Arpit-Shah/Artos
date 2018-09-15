@@ -82,15 +82,15 @@ Definitions :
 
 * Purpose:
 	* Test status allows user to provide useful status updates during test case execution and conclude final outcome.
-	* Test status accepts string argument, where user can provide short description/reason for status update.
+	* User can provide short description/reason string during test status update.
 
 * Facilities:
 	* User can update test status multiple times within one test case execution.
 	* Among all updated status, status with worst outcome will be considered as final outcome/result of the test case.
 >	Example:
->	During test execution, if a test case status are updated in the following sequence:
+>	During single test case execution, if a test case status are updated in the following sequence:
 >   	PASS => PASS => FAIL => PASS
->   Then final outcome of the test case will be FAIL because that is the worst outcome.
+>   Then final outcome of the test case will be **FAIL** because that is the worst outcome.
 
 * Supported Test Status:
 
@@ -102,70 +102,82 @@ Definitions :
     |FAIL		|Test case failed						|3										|
 
 * Usage:
-> `context.setTestStatus(TestStatus.FAIL, "Did not expect to reach here");`
+Test status can be updated using following method :
+> `TestContext().setTestStatus(TestStatus.FAIL, "Did not expect to reach here");`
 
 ## Known to Fail
 
 * Purpose:
-	* There may be a test scenario(s) which are known to be the bug but can not be fixed straight away due to priority, project timelines and/or bug may not be worth fixing. In such case(s), those test case(s) status should be set to **KTF** upon test case failure, so those test case(s) does not end up in failed test cases list. This will help user identify known to fail test cases easily, thus do not waste their time in re-investigating.
-	* Second requirement is that when those scenarios are silently fixed or behaviour changes then test engineer should be notified by marking test case with **FAIL**.
+	* There may be a test scenario(s) which are known to be the bug but can not be fixed straight away due to:
+		> *  Priority
+		> OR
+		> *  Project timelines
+		> OR
+		> *  Bug may not be worth fixing.
+
+    In such case(s), those test case(s) should be marked as "known to fail" using @KnownToFail annotation and test status should be set to **KTF** upon test case failure. This will ensure that test case(s) does not end up in failed test case(s) list and user does not waste time re-investigating same issue(s).
+	* Second requirement is that when "known to fail" test case(s) will start passing because:
+		> * Bug is silently fixed
+		> OR
+		> * Software behaviour has changed
+
+	Then test engineer should be notified by marking test case with **FAIL** status.
 
 * Facilities:
-	* Test case marked as known to fail, must fall into result catagory of **KTF** or **FAIL**. Any other test status will force test case as **FAIL**.
-	* Bug/JIRA/Ticket number can be set to `@KnownToFail` attribute. If provided, it will be printed in following reports:
+	* Known to fail test case(s) end result is expected to be either **KTF** or **FAIL**. If test result is different then test case will be considered **FAIL** by the test framework. This will help user identify if bug was silently fixed or software behaviour has changed.
+	* `@KnownToFail` annotation can also be used to mark test as "Known to Fail" and/or set bug reference number.
+	* If bug reerence number is provided, it will be printed in following reports:
 		* Summary report
 		* Extent report.
 
 * Usage:
-	* User must set `@KnownToFail` annotation ==ktf== attribute to true for test case(s) which may fail with ==KTF== status.
-		Example: `@KnownToFail(ktf = true, bugref = "TICKET-123, TICKET-456")`
+	* User can mark test case as "Known to Fail" and/or user can set bug reference using `@KnownToFail` annotation.
+> Example: `@KnownToFail(ktf = true, bugref = "TICKET-123, TICKET-456")`
 
-## Inbuilt Logging Framework
+## Logging Framework
 
 * Purpose:
-	* Logging is heart of any test framework.
-	* Log framework should meet following requirements:
-		* Logging should not introduce delay in test execution.
-		* Log framework should be efficient and must not loose logs regardless of test case behaviour.
-		* Log framework should have roll over policy to avoid large log files.
-		* Seperate log files should be generated per test suite execution.
-		* Log files should be stored in logical directory structure.
-		* Log files should be tracked for email attachment.
-		* Log framework should support log levels.
-		* Logs framework should allow enabling/disabling logs dynamically during execution time.
-		* Log should have time stamp.
+	* Logs and reports are heart of any test framework.
+	* Artos log framework :
+		* Pre-configured and ready to be used.
+        * Capable of producing text and/or html log files.
+		* Generats real-time logs which can be used for performance measurement.
+		* Generates summary report which can be used as customer facing reports. (Seperate to Extent Report)
+		* Provides features which can be very useful in test development. features are listed below.
 
 * Facilities:
     * Two log layouts are supported:
         * Text layout (Default enabled).
         * HTML layout (Default disabled).
-    * Three log files are generated per test suite execution:
+    * Two log files are generated per test suite execution:
         * General log file : All logs (Same as console log).
         * Real Time log file : Send/receive message logs from connectable interfaces with timestamp.
-        * Summary report : Summarised pass/fail summary with test name and execution time and bug reference number.
-    * Log decoration:
+	* Report is generated per test suite:
+        * Summary report : Summarised pass/fail summary with test name, execution time and bug reference number.
+    * Log patterns (decoration):
         * Decoration enabled pattern : `"[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable"`
         * Decoration disabled pattern : `"%msg%n%throwable"`
-            Refer : [Log4j Pattern](https://logging.apache.org/log4j/2.x/manual/layouts.html).
+        Refer : [Log4j Pattern](https://logging.apache.org/log4j/2.x/manual/layouts.html).
     * Log level support:
         * Following log levels are supported:
             | Level | Description 																						|
             |-------|---------------------------------------------------------------------------------------------------|
             |DEBUG 	|Designates fine-grained informational events that are most useful to debug an application.			|
             |ERROR	|Designates error events that might still allow the application to continue running.				|
-            |FATAL	|Designates severe error events that will presumably lead the application to abort.			|
+            |FATAL	|Designates severe error events that will presumably lead the application to abort.					|
             |INFO	|Designates informational messages that highlight the progress of the application at coarse level.	|
             |OFF	|The highest possible rank and is intended to turn off logging.										|
             |TRACE	|Designates finer-grained informational events than the DEBUG.										|
             |WARN	|Designates potentially harmful situations.															|
         * Note : Log level can be configured using `conf/Framework_Config.xml` file.
     * Log can be enabled/disabled dynamically (Only applicable to general log)
-        * Disable log dynamically : `context.getLogger().disableGeneralLog();`
-        * Enable log dynamically : `context.getLogger().enableGeneralLog();`
+        * Disable log dynamically : `TestContext().getLogger().disableGeneralLog();`
+        * Enable log dynamically : `TestContext().getLogger().enableGeneralLog();`
     * Parallel test suite execution will generate seperate log files per test suite.
+    	* Log files will be labelled using thread number.
     * Log files are organised under test suite name for ease of use
-        * Log files are created under the following hierarchy. RootDir => SubDir => TestSuiteName => Log file.
-        * Example : ./reporting/SN-123/com.test.testsuite1/..
+        * Log files are created under the following hierarchy. `RootDir => SubDir => TestSuiteName => Log file`.
+        > Example : `./reporting/SN-123/com.test.testsuite1/..`
         * Root directory and Sub directory location can be configured using `conf/Framework_Config.xml` file.
     * Log framework abstraction
         * Log framework is abstracted so that log framework can be changed in future without breaking existing test scripts.
@@ -178,7 +190,7 @@ Definitions :
         * Current log rollover policy is triggered based on a file size of 20MB.
         * 20MB was chosen to meet emailing requirement. Trigger policy can be exposed to user in future.
 	* Parameterised logging for efficiency
-		* Parameterised logging is less efficient compare to string concatanation but it is efficient in case of log level is reduced to INFO or ERROR, because system do not have to spend time concaneting string.
+		* Parameterised logging is less efficient compare to string concatanation but it is efficient in case of log level is reduced to **INFO** or **ERROR**, because system do not have to spend time concaneting string.
 
 * Usage:
 	* Enable/disable text/html log files:
@@ -186,42 +198,31 @@ Definitions :
 	* Change log level and log directory:
 		* Can be configured using `conf/Framework_Config.xml` file.
 	* logging simple string with level info or debug:
-	`context.getLogger().info("This is a test String" + "This is a test String 2");`
-	`context.getLogger().debug("This is a test String" + "This is a test String 2");`
+	> `TestContext().getLogger().info("This is a test String" + "This is a test String 2");`
+	> `TestContext().getLogger().debug("This is a test String" + "This is a test String 2");`
 	* logging parameterised string with level info or debug:
-	`context.getLogger().info("This is a test String {} {}", "one", "two");`
-	`context.getLogger().debug("This is a test String {} {}", "one", "two");`
+	> `TestContext().getLogger().info("This is a test String {} {}", "one", "two");`
+	> `TestContext().getLogger().debug("This is a test String {} {}", "one", "two");`
     * Disable logging during execution time:
-    `context.getLogger().disableGeneralLog();`
+    > `TestContext().getLogger().disableGeneralLog();`
     * Enable logging during execution time:
-    `context.getLogger().enableGeneralLog();`
+    > `TestContext().getLogger().enableGeneralLog();`
 
-## Inbuilt Offline Extent Report
+## Offline Extent Report
 
 * Purpose:
-	* Extent library generates professional looking report which can be distributed among customer or external parties.
+	* Professional looking Extent report which can be distributed among customer or external parties.
 
 * Facilities:
 	* If Extent configuration file is not present, then framework will generate default configuration file at location `conf/Extent_Config.xml`.
 	* Artos has inbuilt support for offline Extent reporting.
 	* If enabled, Artos will produce Extent report for every test suite execution.
-	* If test suites are run in parallel then seperate Extent report will be produced per test suite.
+	* Extent report includes test name, test writer's name and test case duration.
 	* Every test status update and description/reason will be reported via Extent report.
-	* Final test result with bug/JIRA/ticket number will be reported via Extent report.
+	* Final test result with bug reference number will be reported via Extent report.
 
 * Usage:
 	* Extent reporting can be enabled/disabled via `conf/Framework_Config.xml` file.
-
-## Stop on Fail
-
-* Purpose:
-	* Depending on the goal, some user may want to continue testing after any test case failure, in other case user may choose to stop after very first test case failure. Artos support both behaviours.
-
-* Facilities:
-	* By default Artos is setup to stop on first failure. it can be configured to continue.
-
-* Usage:
-	* Stop on Fail feature can be enabled/disabled via `conf/Framework_Config.xml` file.
 
 ## Real Time Logging
 
@@ -230,44 +231,56 @@ Definitions :
 
 * Facilities:
 	* Artos has inbult hooks for real time logging. All inbuilt connectors supports realtime logging.
-	* User can write new connectors by implementing `Connectable` interface and use `RealTimeLogEventListener` listener to capture realtime log events.
+	* User can write new connectors by implementing `Connectable` interface and use listener `RealTimeLogEventListener`  to capture realtime log events.
 	* Real time logs are printed with time stamp, user is not allowed to disable timestamp.
 	* If test suites are executed in parallel then seperate real time log file will be produced per test suite.
 	* Real time log file will roll over at 20MB of file size.
 	* Real time logs can not be disabled.
 
 * Usage:
-	* Collect real time logs in log file.
+	* Collect send receive events in real time with time stamp.
+
+## Stop on Fail
+
+* Purpose:
+	* Depending on the goal, some user may want to continue next test execution after a test case failure, in other case user may choose to stop after very first test case failure. Artos support both behaviours.
+
+* Facilities:
+	* By default Artos is setup to stop on first failure. it can be configured to continue executing rest of the test cases.
+
+* Usage:
+	* Stop on Fail feature can be enabled/disabled via `conf/Framework_Config.xml` file.
 
 ## Global parameters
 
 * Purpose:
-	* Test Cases may require sharing constructed object which could be of any type. Making an static object is not advisable all the time. Test case inter communication for sharing an object can create complex dependancy. Global parameter concept was brought in to avoid all of the above.
-	* User may want to set some parameters prior to test suite launch (Example: IP Address, Product SerialNumber etc..), which could be unique per test suite. Global parameters can also be used to add parameters in TestContext by setting them into XML test script.
+	* Test cases may require sharing object(s). Static objects are not always practical or could be thread unsafe. Sharing objects between test cases or test suites can create complex dependancy. Global parameter concept was added to avoid all of the above.
+	* User may want to inject some parameters prior to test suite launch (Example: IP Address, Product SerialNumber etc..), which could be unique per test suite. Global parameters can also be used to add parameters in TestContext by setting them into XML test script.
 
 * Facilities:
 	* Parameters can be set into Global Parameters during run time and/or upfront via xml test script.
 	* Parameters can always be updated during run time.
-	* Parameters can be polled using String name assigned to each parameters.
-	* Each Test Suite parameters are maintained seperately so they do not overwrite each others values during execution time.
+	* Parameters can be retrieved using string name assigned to each parameters.
+	* Each Test Suite parameter(s) are maintained seperately so they do not overwrite each others value during execution time.
 	* Parameterised testing can be supported using Global parameters.
 
 * Usage:
 	* Parametes can set during runtime using:
-	`context.setGlobalObject("PARAMETER-1", "TEST123");`
-    * Parametes can be polled during runtime using:
-	`context.getGlobalObject("PARAMETER-1");`
-    * Parameters can also be set via XML test script using following syntaxt:
+	> `TestContext().setGlobalObject("PARAMETER_1", "TEST123");`
+    * Parametes can be retrived during runtime using:
+	> `(String) TestContext().getGlobalObject("PARAMETER_1");`
+    * Parameters can be set via XML test script using following syntaxt:
 >     <parameters>
 >       <parameter name="PARAMETER_0">parameterValue_0</parameter>
 >       <parameter name="PARAMETER_1">parameterValue_1</parameter>
 >       <parameter name="PARAMETER_2">parameterValue_2</parameter>
 >     </parameters>
+>   Note : Only String type of parameters can be set using XML test script but `setGlobalObject() & getGlobalObject()` can be used to set/retrieve any type of object(s) during run time.
 
 ## Test Groups
 
 * Purpose:
-	* Test case can be grouped using group labels so user can execute test cases which belongs to specific group. This can help segrigate test cases based on features, automated, semiautomated, manual etc.. catagories.
+	* Test case can be grouped using `@Group` annotation. User can execute test case(s) which belong to specific group or groups. This can help segrigate test cases based on features, automated/semiautomated/manual etc.. catagories.
 
 * Facilities:
     * Artos support executing test cases based on assigned test group(s).
@@ -282,7 +295,7 @@ Definitions :
 >	 	<groups>
 >      		<group name="*"/>
 >    	</groups>
->	To run test cases belong to specific group
+>	To run test cases belong to specific group or groups
 >	 	<groups>
 >      		<group name="CI"/>
 >      		<group name="SEMI_AUTO"/>
@@ -291,16 +304,19 @@ Definitions :
 ## GUI Test Selector
 
 * Purpose:
-	* GUI test selector is designed to help user during development/debugging time. Commenting out test cases or editing test sequence/script multiple time during development/debugging is error prone. GUI test selector is designed to avoids all of listed issues.
+	* GUI test selector is designed to help user during development/debugging of test cases.
+	* Commenting out test cases or editing test sequence/script multiple time during development/debugging is error prone. GUI test selector is designed to avoids all of listed issues.
 
 * Facilities:
     * Following is allowed :
-        * GUI test selector lets user run selective test cases and/or allows user to set test execution loop count. User can run only selective test cases during development/debugging time without modifying existing test sequence/script or re-run same test cases multiple time.
-        * GUI test selector also helps third party who may receive test cases in JAR format and may want to run selective test cases.
+        * GUI test selector lets user run selective test cases and/or allows user to set test execution loop count.
+        * GUI test selector also helps third party who may receive test suite in JAR format and may want to run selective test cases.
         * If user runs multiple test suites using test script then seperate GUI test selector will be created per test suite.
     * Following is not allowed :
-        * User can not change test sequence using GUI test selector. This is to maintain test dependancy. If test cases are independent, then sequence does not matter in any case thus GUI selector has no role to play. If user believes that sequence is wrong then it should be changed in main() method or via test script.
-        * User can not change test group selection using GUI test selector. Before test cases are populated into the list of GUI test selector, test cases does not belong to specified group are removed and that is to maintain test purpose. If user believes that group assignment is wrong then it should be change in test script or test cases.
+        * User can not change test sequence using GUI test selector.
+        This is to maintain test dependancy. If test cases are independent, then sequence does not matter in any case thus GUI selector has no role to play. If user believes that sequence is wrong then it should be changed in main() method or via test script.
+        * User can not change test group selection using GUI test selector.
+        Before test cases are populated into GUI test selector, test cases are filtered for specified group(s). If user believes that group assignment is wrong then it should be change in test script prior to launching test suite.
 
 * Usage:
 	* GUI test selector can be enabled/disabled using `conf/Framework_Config.xml` file.
@@ -319,7 +335,7 @@ Definitions :
 |@KnownToFail		|Above the test class which is expected to fail	due to known issue		|Optional			|
 |@TestCase			|Above the test class which needs to recognised as a test case			|Mandatory			|
 |@TestPlan			|Above the test class. This provides basic info about test case			|Optional			|
-|@Group				|Above the test class. Assigns test case to group or array of group		|Optional			|
+|@Group				|Above the test class. Assigns test case to a group or array of group	|Optional			|
 
 ### @BeforeTestSuite @AfterTestSuite @BeforeTest @AfterTest
 > 	public class Main implements PrePostRunnable {
@@ -365,6 +381,18 @@ Definitions :
 >         }
 >     }
 
+* Information populated using `@TestPlan` annotation is used in logging.
+* Each new test case execution will print test plan in log file and then all the logs will be appended so user can easily identify which logs belogs to which test cases.
+* If `@TestPlan` annotation is populated correctly then user can use generate test plan function to output a test plan for entire suite.
+
+>		// for all test cases in project
+>		ScanTestSuite testPlan = new ScanTestSuite("");
+>		logger.info(testPlan.getTestPlan(context));
+>
+>		// for test cases within com.test.project package
+>		ScanTestSuite testPlan = new ScanTestSuite("com.test.project");
+>		logger.info(testPlan.getTestPlan(context));
+
 ### Test Sequence and Execution
 * Each test suite consist of atleast two types of classes:
 	* PrePostRunnable : A class which implements `PrePostRunnable` and has `main()` method.
@@ -401,7 +429,6 @@ Example code for PrePostRunnable class which supports all above methods
 >         	// tests.add(new Test_123());
 >         	// tests.add(new Test_abc());
 >         	// ---------------------------------------------------------------------
->
 >         	return tests;
 > 		}
 >
@@ -433,8 +460,7 @@ Some of the examples are shown below :
 
 ## Time Tracking
 Artos tracks time per test case and for the test suite.
-* Individual test case duration can be found in summary log file.
-* TestSuite and test case time duration are logged in summary report
+* Individual test case and test suite time duration can be found in summary report file.
 * TestSuite time duration is also logged in general log file.
 
 > Note :

@@ -1,4 +1,4 @@
-# Setup Meaven Project and Deploy it (OpenSource Project)
+# Setup Meaven Project and Deploy (OpenSource Project)
 
 Reference1 : [Central Server Provider (Sonatype)](http://central.sonatype.org/pages/apache-maven.html)
 Reference2 : [Working with pgp Signature](http://central.sonatype.org/pages/working-with-pgp-signatures.html)
