@@ -167,6 +167,24 @@ public interface TestProgress {
 	public void testResult(TestStatus testStatus, String description);
 
 	/**
+	 * Method is called when test suite execution is finished and summary
+	 * requires to be printed
+	 * 
+	 * @param description
+	 *            description/summary statement
+	 */
+	public void testSuiteSummaryPrinting(String description);
+
+	/**
+	 * Method is called when test suite execution is finished and at the end
+	 * failure highlight is required.
+	 * 
+	 * @param description
+	 *            description/summary statement
+	 */
+	public void testSuiteFailureHighlight(String description);
+
+	/**
 	 * Method is called when exception is thrown during test suite execution
 	 * which can not be handled on test level
 	 * 

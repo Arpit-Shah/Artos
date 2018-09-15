@@ -15,10 +15,6 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.artos.framework.infra;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -138,9 +134,12 @@ public class ArtosRunner {
 			runSingleThread(transformedTestList, context);
 		}
 
+		
 		// Print Test results
-		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
-				+ " KTF:" + context.getCurrentKTFCount() + " EXECUTED:" + context.getTotalTestCount() + " TOTAL:" + transformedTestList.size());
+		notifyTestSuiteSummaryPrinting("");
+		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:"
+				+ context.getCurrentSkipCount() + " KTF:" + context.getCurrentKTFCount() + " EXECUTED:" + context.getTotalTestCount() + " TOTAL:"
+				+ transformedTestList.size());
 
 		// Print Test suite Start and Finish time
 		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
@@ -150,10 +149,12 @@ public class ArtosRunner {
 		context.getLogger().getGeneralLogger().info("Test finish time : {}", timeStamp);
 		context.getLogger().getSummaryLogger().info("Test finish time : {}", timeStamp);
 
-		// Print Test suite total duration
+		// Print Test suite summary
 		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
 				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
+		
+		notifyTestSuiteFailureHighlight("");
 		if (context.getCurrentFailCount() > 0) {
 			System.err.println("********************************************************");
 			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
@@ -420,6 +421,18 @@ public class ArtosRunner {
 	void notifyTestException(String description) {
 		for (TestProgress listener : listenerList) {
 			listener.testException(description);
+		}
+	}
+	
+	void notifyTestSuiteSummaryPrinting(String description) {
+		for (TestProgress listener : listenerList) {
+			listener.testSuiteSummaryPrinting(description);
+		}
+	}
+	
+	void notifyTestSuiteFailureHighlight(String description) {
+		for (TestProgress listener : listenerList) {
+			listener.testSuiteFailureHighlight(description);
 		}
 	}
 

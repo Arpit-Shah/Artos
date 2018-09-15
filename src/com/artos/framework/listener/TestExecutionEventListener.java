@@ -73,11 +73,11 @@ public class TestExecutionEventListener implements TestProgress {
 
 		// @formatter:off
 				context.getLogger().info("*************************************************************************"
-										+ "\nTest Name	: {}" 
-										+ "\nWritten BY	: {}"
-										+ "\nDate		: {}"
-										+ "\nShort Desc	: {}"
-										+ "\n*************************************************************************"
+										+ System.lineSeparator() + "Test Name	: {}" 
+										+ System.lineSeparator() + "Written BY	: {}"
+										+ System.lineSeparator() + "Date		: {}"
+										+ System.lineSeparator() + "Short Desc	: {}"
+										+ System.lineSeparator() + "*************************************************************************"
 										, t.getTestClassObject().getName()
 										, t.getTestPlanPreparedBy()
 										, t.getTestPlanPreparationDate()
@@ -139,5 +139,17 @@ public class TestExecutionEventListener implements TestProgress {
 	@Override
 	public void testResult(TestStatus testStatus, String description) {
 		logger.trace("\n---------------- Test Result -------------------");
+	}
+
+	@Override
+	public void testSuiteSummaryPrinting(String description) {
+		logger.trace("\n---------------- Test Suite Summary -------------------");
+		logger.info("*************************************************************************");
+	}
+
+	@Override
+	public void testSuiteFailureHighlight(String description) {
+		logger.trace("\n---------------- Test Faliure Highlight -------------------");
+		logger.info("*************************************************************************");
 	}
 }

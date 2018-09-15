@@ -158,4 +158,16 @@ public class ExtentReportListener implements TestProgress {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void testSuiteSummaryPrinting(String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void testSuiteFailureHighlight(String description) {
+		// TODO Auto-generated method stub
+		
+	}
 }
