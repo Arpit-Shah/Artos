@@ -17,7 +17,7 @@ Artos command line parameters are optional
 >Example 2: User can pass multiple parameter(s) by passing multiple parameter(s) via command line:
 >>`--version --contributors`
 >>OR
->>`-v -c"`
+>>`-v -c`
 
 >Example 3: User can pass Test Script as shown below:
 >>`--testscript="./script/sampletest.xml"`

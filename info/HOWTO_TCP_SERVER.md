@@ -191,3 +191,22 @@ Above example de-serialise concatenated messages and construct list of messages 
     // server disconnect
     server.disconnect();
 ```
+Above example will launch server with message parser designed to de-serialise concatenated messages for provided specification.
+
+## Server real-time log
+
+Usage:
+* This interface allows user to listen server send/receive events and can log sent/received byte arrays real-time.
+* User can create their own listener by implementing `RealTimeLoggable` interface and can process events differently.
+* User is allowed register more than one listener at a time.
+
+> WARNING: Implementation of event listener may impact performance of sender and receiver thread so user should keep implementation simple and light.
+
+```
+TCPServer server = new TCPServer(1300);
+RealTimeLogEventListener realTimeListener = new RealTimeLogEventListener(context);
+server.setRealTimeListener(realTimeListener);
+server.connect();
+```
+
+Above code explains how to enable real time log using inbuilt listener. Once enabled, user will see all send receive log bytes are added to real-time log file with time stamp.
