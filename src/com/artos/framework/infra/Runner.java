@@ -195,12 +195,17 @@ public class Runner {
 	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> groupList)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
 
-		if(null == groupList || groupList.isEmpty()){
+		if (null == groupList || groupList.isEmpty()) {
 			// Add a default group if user does not pass a group parameter
 			groupList = new ArrayList<>();
 			groupList.add("*");
 		}
-		
+
+		// if loop count is set to 0 or negative then set to at least 1
+		if (loopCount < 1) {
+			loopCount = 1;
+		}
+
 		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
 		generateRequiredFiles();
