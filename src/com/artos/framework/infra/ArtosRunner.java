@@ -56,8 +56,8 @@ public class ArtosRunner {
 
 	/**
 	 * Constructor responsible for storing TestContext and class which contains
-	 * main() method. Upon initialisation TestExecutionEventListener is
-	 * registered so test decoration can be printed.
+	 * main() method. Upon initialisation TestExecutionEventListener is registered
+	 * so test decoration can be printed.
 	 * 
 	 * @param context
 	 *            TestContext object
@@ -88,8 +88,7 @@ public class ArtosRunner {
 	 * Runner for the framework
 	 * 
 	 * @param testList
-	 *            List of tests to run. All test must be {@code TestExecutable}
-	 *            type
+	 *            List of tests to run. All test must be {@code TestExecutable} type
 	 * @param groupList
 	 *            Group list which is required for test case filtering
 	 * @throws Exception
@@ -242,8 +241,8 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This method executes the test case and handles all the exception and set
-	 * the test status correctly
+	 * This method executes the test case and handles all the exception and set the
+	 * test status correctly
 	 * 
 	 * @param t
 	 *            TestCase {@code TestObjectWrapper}
@@ -445,9 +444,9 @@ public class ArtosRunner {
 	// ==================================================================================
 	/**
 	 * This method transforms given test list of{@code TestEecutable} type into
-	 * {@code TestObjectWrapper} type list. This method will only consider test
-	 * This method can not transform test cases outside current package, so
-	 * those test cases will be omitted from the list
+	 * {@code TestObjectWrapper} type list. This method will only consider test This
+	 * method can not transform test cases outside current package, so those test
+	 * cases will be omitted from the list
 	 * 
 	 * @param listOfTestCases
 	 *            list of test cases required to be transformed
@@ -478,9 +477,9 @@ public class ArtosRunner {
 		if (null != (testSuiteObject = context.getTestSuite())) {
 
 			/**
-			 * Get all test case object using reflection. If user provides XML
-			 * based test script then skip attribute set in annotation should be
-			 * ignored because XML test script must dictates the behaviour.
+			 * Get all test case object using reflection. If user provides XML based test
+			 * script then skip attribute set in annotation should be ignored because XML
+			 * test script must dictates the behaviour.
 			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
@@ -498,15 +497,24 @@ public class ArtosRunner {
 			// Get list of all test name
 			List<String> testNameList = suite.getTestFQCNList();
 
-			// Create Test object list from test script
-			for (String t : testNameList) {
-				TestObjectWrapper testObjWrapper = testCaseMap.get(t);
+			// If test list is empty then assume user wants to run all test cases
+			if (testNameList.isEmpty()) {
+				for (Map.Entry<String, TestObjectWrapper> entry : testCaseMap.entrySet()) {
+					if (belongsToApprovedGroup(suite.getGroupList(), entry.getValue().getGroupList())) {
+						listOfTransformedTestCases.add(entry.getValue());
+					}
+				}
+			} else {
+				// Create Test object list from test script
+				for (String t : testNameList) {
+					TestObjectWrapper testObjWrapper = testCaseMap.get(t);
 
-				if (null == testObjWrapper) {
-					System.err.println("WARNING (not found): " + t);
-				} else {
-					if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
-						listOfTransformedTestCases.add(testObjWrapper);
+					if (null == testObjWrapper) {
+						System.err.println("WARNING (not found): " + t);
+					} else {
+						if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
+							listOfTransformedTestCases.add(testObjWrapper);
+						}
 					}
 				}
 			}
@@ -514,9 +522,9 @@ public class ArtosRunner {
 		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
 
 			/**
-			 * Get all test case object using reflection. If user provides test
-			 * list then skip attribute set in annotation should be ignored
-			 * because test list must dictates the behaviour.
+			 * Get all test case object using reflection. If user provides test list then
+			 * skip attribute set in annotation should be ignored because test list must
+			 * dictates the behaviour.
 			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);

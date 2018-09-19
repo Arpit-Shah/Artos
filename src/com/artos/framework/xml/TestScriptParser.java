@@ -99,9 +99,8 @@ public class TestScriptParser {
 			Node suiteNode = suiteNodeList.item(temp);
 			parseSuite(_suite, suiteNode);
 
-			// Only add test suite in the list if atleast one test case is
-			// specified
-			if (null != _suite.getTestFQCNList() && !_suite.getTestFQCNList().isEmpty()) {
+			// add test suite in the list even no test list is provided
+			if (null != _suite.getTestFQCNList()) {
 				testSuiteList.add(_suite);
 			}
 		}
