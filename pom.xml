@@ -4,18 +4,18 @@
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://bitbucket.org/ShahArpit/arpitos_fork</url>
-	<description>Automated Regression and Unit Test System</description>
+	<description>The Artos "ART OF SYSTEM TESTING" is a framework designed for regression, functional, integration, end to end and/or unit testing</description>
 	<inceptionYear>2018</inceptionYear>
 
 	<!-- Project GAV Info -->
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.arpitos</groupId>
+	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
 	<version>0.0.1</version>
 
 	<!-- Organisation Info -->
 	<organization>
-		<url>www.arpitos.com</url>
+		<url>www.theartos.com</url>
 		<name>Artos</name>
 	</organization>
 
@@ -31,9 +31,9 @@
 	<developers>
 		<developer>
 			<name>Arpit Shah</name>
-			<email>arpit.shah1@gmail.com</email>
+			<email>artos.framework@gmail.com</email>
 			<organization>None</organization>
-			<organizationUrl>http://www.arpitos.com</organizationUrl>
+			<organizationUrl>http://www.theartos.com</organizationUrl>
 		</developer>
 	</developers>
 
