@@ -39,9 +39,9 @@
 
 	<!-- Source Repo Info -->
 	<scm>
-		<connection>scm:git:git://bitbucket.org/ShahArpit/arpitos_fork.git</connection>
-		<developerConnection>scm:git:ssh://git@bitbucket.org/ShahArpit/arpitos_fork.git</developerConnection>
-		<url>https://bitbucket.org/ShahArpit/arpitos_fork/src/master/</url>
+		<connection>scm:git:ssh://git@bitbucket.org/ShahArpit/artos.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.org/ShahArpit/artos.git</developerConnection>
+		<url>https://bitbucket.org/ShahArpit/artos.git</url>
 	</scm>
 
 	<properties>

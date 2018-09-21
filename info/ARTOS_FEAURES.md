@@ -8,6 +8,15 @@ Artos consists of the following:
 * Test Context
 * Utilities
 
+Maven download
+```
+<dependency>
+  <groupId>com.theartos</groupId>
+  <artifactId>artos</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+
 Requirement:
 * JDK 8 or higher
 
