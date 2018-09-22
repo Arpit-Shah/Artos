@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -39,9 +39,9 @@
 
 	<!-- Source Repo Info -->
 	<scm>
-		<connection>scm:git:ssh://git@bitbucket.org/ShahArpit/artos.git</connection>
-		<developerConnection>scm:git:ssh://git@bitbucket.org/ShahArpit/artos.git</developerConnection>
-		<url>https://bitbucket.org/ShahArpit/artos.git</url>
+		<connection>scm:git:git@github.com:Arpit-Shah/Artos.git</connection>
+		<url>scm:git:git@github.com:Arpit-Shah/Artos.git</url>
+		<developerConnection>scm:git:git@github.com:Arpit-Shah/Artos.git</developerConnection>
 	</scm>
 
 	<properties>
