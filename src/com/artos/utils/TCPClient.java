@@ -79,6 +79,9 @@ public class TCPClient implements Connectable {
 	 *            Server IP
 	 * @param nPort
 	 *            Server Port
+	 * @param msgParser
+	 *            {@code ConnectableMessageParser} object which contains logic
+	 *            to separate concatenated messages
 	 * @param filterList
 	 *            list of filters
 	 */

@@ -2,3 +2,4 @@
 /target/
 *.prefs
 .project
+.settings/com.wdev91.eclipse.copyright.xml
