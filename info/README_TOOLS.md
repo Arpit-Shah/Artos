@@ -8,3 +8,4 @@
 | Public GIT Repository		| BitBucket					|[BitBucket](https://bitbucket.org/)		|
 | GIT GUI					| SourceTree				|[GIT GUI](https://www.sourcetreeapp.com/)	|
 | Eclipse code analysis		| PMD						|[GIT GUI](https://www.sourcetreeapp.com/)	|
+| Eclipse copyright template| Copyright Generator		|[COPYRIGHT GENERATOR](https://dl.bintray.com/jmini/Eclipse-Copyright-Generator/)	|
