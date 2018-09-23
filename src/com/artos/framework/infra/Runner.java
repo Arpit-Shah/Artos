@@ -306,7 +306,7 @@ public class Runner {
 		}
 		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
 			// only create Extent config file if not present already
-			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "Extent_Config.xml");
+			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "extent_configuration.xml");
 			if (!targetFile.exists() || !targetFile.isFile()) {
 
 				// create dir if not present
@@ -315,7 +315,37 @@ public class Runner {
 					file.mkdirs();
 				}
 
-				InputStream ins = getClass().getResourceAsStream("/com/artos/template/Extent_Config.xml");
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/extent_configuration.xml");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
+		}
+		if (FWStaticStore.frameworkConfig.isEnableEmailClient()) {
+
+			String emailAuthSettingsFilePath = FWStaticStore.frameworkConfig.getEmailAuthSettingsFilePath();
+			// only create auth settings file if not present already
+			File targetFile = new File(emailAuthSettingsFilePath);
+
+			// if provided file is not named correctly then fail here
+			if (!targetFile.getName().equals("user_auth_settings.xml")) {
+				System.err.println("Invalid File Name : " + targetFile.getAbsolutePath());
+			}
+			
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.CONFIG_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/user_auth_settings.xml");
 				byte[] buffer = new byte[ins.available()];
 				ins.read(buffer);
 

@@ -73,7 +73,7 @@ public class LogWrapper {
 			}
 			String logFilePath = getCurrentGeneralLogFiles().get(0).getAbsolutePath();
 			extent = new ExtentReports(logFilePath.substring(0, logFilePath.lastIndexOf(".")) + "-extent.html", true);
-			extent.loadConfig(new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "Extent_Config.xml"));
+			extent.loadConfig(new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "extent_configuration.xml"));
 		}
 	}
 
