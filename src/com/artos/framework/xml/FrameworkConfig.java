@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.framework.xml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,53 +40,52 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.artos.framework.FWStaticStore;
+
 /**
  * This class is responsible for storing framework Configuration. During test
  * suit execution XML file will be searched at location ./conf
- * 
- * 
- *
  */
 public class FrameworkConfig {
 
-	final File fXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "Framework_Config.xml");
+	final File fXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "framework_configuration.xml");
 
 	// Organisation Info
-	private String Organisation_Name = "Organisation_Name";
+	private String Organisation_Name = "<Organisation> PTY LTD";
 	private String Organisation_Address = "XX, Test Street, Test address";
 	private String Organisation_Country = "NewZealand";
 	private String Organisation_Contact_Number = "+64 1234567";
-	private String Organisation_Email = "test@gmail.com";
-	private String Organisation_Website = "www." + FWStaticStore.TOOL_NAME.toLowerCase() + ".com";
+	private String Organisation_Email = "artos.framework@gmail.com";
+	private String Organisation_Website = "www.theartos.com";
 
 	// Email Settings Info
-	private String smtpServer = "smtp.gmail.com";
-	private String smtpSSLPort = "465";
-	private String smtpAuthRequired = "true";
-	private String sendersName = "Test Sender";
-	private String sendersEmail = "test@gmail.com";
-	private String sendersUserName = "test@gmail.com";
-	private String password = "password";
-	private String receiversName = "Test Receiver";
-	private String receiversEmail = "test@gmail.com";
+	private String emailSMTPServer = "smtp.gmail.com";
+	private String emailSMTPSSLPort = "587"; // "465";
+	private String emailSMTPAuthRequired = "true";
+	private String emailSendersName = "John Murray";
+	private String emailSendersEmail = "test@gmail.com";
+	private String emailAuthSettingsFilePath = FWStaticStore.CONFIG_BASE_DIR + "user_auth_settings.xml";
+	private String emailReceiversEmail = "test@gmail.com";
+	private String emailReceiversName = "Mac Murray";
 	private String emailSubject = FWStaticStore.TOOL_NAME + " Email Client";
-	private String messageText = "Test email from " + FWStaticStore.TOOL_NAME;
+	private String emailBody = "This is a test Email from " + FWStaticStore.TOOL_NAME;
 
 	// Logger
 	private String logLevel = "debug";
-	private String logRootDir = "./reporting/";
+	private String logRootDir = FWStaticStore.LOG_BASE_DIR;
 	private String logSubDir = "SN-123";
 	private boolean enableLogDecoration = false;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
-	private boolean enableExtentReport = false;
+	private boolean enableExtentReport = true;
 
 	// Features
 	private boolean enableGUITestSelector = true;
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
+	private boolean enableEmailClient = false;
 	private boolean generateEclipseTemplate = false;
-	private boolean generateTestScript = false;
+	private boolean generateTestScript = true;
 	private boolean stopOnFail = false;
 
 	/**
@@ -128,13 +127,19 @@ public class FrameworkConfig {
 			readOrganisationInfo(doc);
 			readLoggerConfig(doc);
 			readFeatures(doc);
-			readEmailSettings(doc);
+			if (isEnableEmailClient()) {
+				readEmailConfig(doc);
+			}
 		} catch (FileNotFoundException fe) {
 			System.out.println(fe.getMessage() + "\n" + "Fall back to Default Organisation values");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	// ===============================================================
+	// Write
+	// ===============================================================
 
 	/**
 	 * Writes default framework configuration file
@@ -152,66 +157,191 @@ public class FrameworkConfig {
 		Element rootElement = doc.createElement("configuration");
 		doc.appendChild(rootElement);
 
-		// Organisation Info elements
-		Element orgnization_info = doc.createElement("organization_info");
-		rootElement.appendChild(orgnization_info);
+		addOrganisatioInfo(doc, rootElement);
+		addLoggerConfig(doc, rootElement);
+		addEmailConfig(doc, rootElement);
+		addFeatureList(doc, rootElement);
+
+		// write the content into xml file
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(fXmlFile);
+
+		transformer.transform(source, result);
+
+	}
+
+	private void addFeatureList(Document doc, Element rootElement) {
+		// Features
+		Element features = doc.createElement("features");
+		rootElement.appendChild(features);
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableGUITestSelector())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableGUITestSelector");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableBanner())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableBanner");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableOrganisationInfo())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableOrganisationInfo");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableEmailClient())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableEmailClient");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateEclipseTemplate())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("generateEclipseTemplate");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateTestScript())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("generateTestScript");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isStopOnFail())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("stopOnFail");
+			property.setAttributeNode(attr);
+		}
+	}
+
+	private void addEmailConfig(Document doc, Element rootElement) {
+		// SMTP Settings
+		Element smtp_settings = doc.createElement("smtp_settings");
+		rootElement.appendChild(smtp_settings);
 
 		// Properties of Organisation Info
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getOrganisation_Name()));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(getEmailSMTPServer()));
+			smtp_settings.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("Name");
+			attr.setValue("ServerAddress");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getOrganisation_Address()));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(getEmailSMTPSSLPort()));
+			smtp_settings.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("Address");
+			attr.setValue("SSLPort");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getOrganisation_Country()));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(getEmailSMTPAuthRequired()));
+			smtp_settings.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("Country");
+			attr.setValue("SMTPAuth");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getOrganisation_Contact_Number()));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(getEmailSendersName()));
+			smtp_settings.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("Contact_Number");
+			attr.setValue("SendersName");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getOrganisation_Email()));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(getEmailSendersEmail()));
+			smtp_settings.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("Email");
+			attr.setValue("SendersEmail");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getOrganisation_Website()));
-			orgnization_info.appendChild(property);
+			property.appendChild(doc.createTextNode(getEmailAuthSettingsFilePath()));
+			smtp_settings.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("Website");
+			attr.setValue("emailAuthSettingsFilePath");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getEmailReceiversEmail()));
+			smtp_settings.appendChild(property);
 
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("ReceiversEmail");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getEmailReceiversName()));
+			smtp_settings.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("ReceiversName");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getEmailSubject()));
+			smtp_settings.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("EmailSubject");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getEmailBody()));
+			smtp_settings.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("EmailMessage");
+			property.setAttributeNode(attr);
+		}
+	}
+
+	private void addLoggerConfig(Document doc, Element rootElement) {
 		// Logger config elements
 		Element logger = doc.createElement("logger");
 		rootElement.appendChild(logger);
@@ -281,181 +411,73 @@ public class FrameworkConfig {
 			attr.setValue("enableExtentReport");
 			property.setAttributeNode(attr);
 		}
+	}
 
-		// SMTP Settings
-		Element smtp_settings = doc.createElement("smtp_settings");
-		rootElement.appendChild(smtp_settings);
+	private void addOrganisatioInfo(Document doc, Element rootElement) {
+		// Organisation Info elements
+		Element orgnization_info = doc.createElement("organization_info");
+		rootElement.appendChild(orgnization_info);
 
 		// Properties of Organisation Info
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getSmtpServer()));
-			smtp_settings.appendChild(property);
+			property.appendChild(doc.createTextNode(getOrganisation_Name()));
+			orgnization_info.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("ServerAddress");
+			attr.setValue("Name");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getSmtpSSLPort()));
-			smtp_settings.appendChild(property);
+			property.appendChild(doc.createTextNode(getOrganisation_Address()));
+			orgnization_info.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("SSLPort");
+			attr.setValue("Address");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getSmtpAuthRequired()));
-			smtp_settings.appendChild(property);
+			property.appendChild(doc.createTextNode(getOrganisation_Country()));
+			orgnization_info.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("SMTPAuth");
+			attr.setValue("Country");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getSendersName()));
-			smtp_settings.appendChild(property);
+			property.appendChild(doc.createTextNode(getOrganisation_Contact_Number()));
+			orgnization_info.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("SendersName");
+			attr.setValue("Contact_Number");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getSendersEmail()));
-			smtp_settings.appendChild(property);
+			property.appendChild(doc.createTextNode(getOrganisation_Email()));
+			orgnization_info.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("SendersEmail");
+			attr.setValue("Email");
 			property.setAttributeNode(attr);
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getSendersUserName()));
-			smtp_settings.appendChild(property);
+			property.appendChild(doc.createTextNode(getOrganisation_Website()));
+			orgnization_info.appendChild(property);
 
 			Attr attr = doc.createAttribute("name");
-			attr.setValue("SendersUserName");
+			attr.setValue("Website");
 			property.setAttributeNode(attr);
 		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getPassword()));
-			smtp_settings.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("Password");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getReceiversName()));
-			smtp_settings.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("ReceiversName");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getReceiversEmail()));
-			smtp_settings.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("ReceiversEmail");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getEmailSubject()));
-			smtp_settings.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("EmailSubject");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getMessageText()));
-			smtp_settings.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("EmailMessage");
-			property.setAttributeNode(attr);
-		}
-
-		// Features
-		Element features = doc.createElement("features");
-		rootElement.appendChild(features);
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(Boolean.toString(isEnableGUITestSelector())));
-			features.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("enableGUITestSelector");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(Boolean.toString(isEnableBanner())));
-			features.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("enableBanner");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(Boolean.toString(isEnableOrganisationInfo())));
-			features.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("enableOrganisationInfo");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateEclipseTemplate())));
-			features.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("generateEclipseTemplate");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateTestScript())));
-			features.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("generateTestScript");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(Boolean.toString(isStopOnFail())));
-			features.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("stopOnFail");
-			property.setAttributeNode(attr);
-		}
-
-		// write the content into xml file
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(fXmlFile);
-
-		transformer.transform(source, result);
-
 	}
+
+	// ===============================================================
+	// Read
+	// ===============================================================
 
 	/**
 	 * Reads logger info from config file
@@ -476,12 +498,7 @@ public class FrameworkConfig {
 				Node nChildNode = nChildList.item(i);
 				if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nChildNode;
-					// System.out.println(eElement.getNodeName());
-					// System.out.println(eElement.getAttribute("name"));
-					// System.out.println(eElement.getAttribute("name")
-					// +
-					// ":" +
-					// eElement.getTextContent());
+
 					if ("logLevel".equals(eElement.getAttribute("name"))) {
 						setLogLevel(eElement.getTextContent());
 					}
@@ -537,12 +554,7 @@ public class FrameworkConfig {
 				Node nChildNode = nChildList.item(i);
 				if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nChildNode;
-					// System.out.println(eElement.getNodeName());
-					// System.out.println(eElement.getAttribute("name"));
-					// System.out.println(eElement.getAttribute("name")
-					// +
-					// ":" +
-					// eElement.getTextContent());
+
 					if ("enableGUITestSelector".equals(eElement.getAttribute("name"))) {
 						setEnableGUITestSelector(Boolean.parseBoolean(eElement.getTextContent()));
 					}
@@ -551,6 +563,9 @@ public class FrameworkConfig {
 					}
 					if ("enableOrganisationInfo".equals(eElement.getAttribute("name"))) {
 						setEnableOrganisationInfo(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("enableEmailClient".equals(eElement.getAttribute("name"))) {
+						setEnableEmailClient(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 					if ("generateEclipseTemplate".equals(eElement.getAttribute("name"))) {
 						setGenerateEclipseTemplate(Boolean.parseBoolean(eElement.getTextContent()));
@@ -613,7 +628,7 @@ public class FrameworkConfig {
 		}
 	}
 
-	private void readEmailSettings(Document doc) {
+	private void readEmailConfig(Document doc) {
 		NodeList nList = doc.getElementsByTagName("smtp_settings");
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
@@ -624,37 +639,34 @@ public class FrameworkConfig {
 				if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nChildNode;
 					if ("ServerAddress".equals(eElement.getAttribute("name"))) {
-						setSmtpServer(eElement.getTextContent());
+						setEmailSMTPServer(eElement.getTextContent());
 					}
 					if ("SSLPort".equals(eElement.getAttribute("name"))) {
-						setSmtpSSLPort(eElement.getTextContent());
+						setEmailSMTPSSLPort(eElement.getTextContent());
 					}
 					if ("SMTPAuth".equals(eElement.getAttribute("name"))) {
-						setSmtpAuthRequired(eElement.getTextContent());
-					}
-					if ("SendersName".equals(eElement.getAttribute("name"))) {
-						setSendersName(eElement.getTextContent());
+						setEmailSMTPAuthRequired(eElement.getTextContent());
 					}
 					if ("SendersEmail".equals(eElement.getAttribute("name"))) {
-						setSendersEmail(eElement.getTextContent());
+						setEmailSendersEmail(eElement.getTextContent());
 					}
-					if ("SendersUserName".equals(eElement.getAttribute("name"))) {
-						setSendersUserName(eElement.getTextContent());
+					if ("SendersName".equals(eElement.getAttribute("name"))) {
+						setEmailSendersName(eElement.getTextContent());
 					}
-					if ("Password".equals(eElement.getAttribute("name"))) {
-						setPassword(eElement.getTextContent());
-					}
-					if ("ReceiversName".equals(eElement.getAttribute("name"))) {
-						setReceiversName(eElement.getTextContent());
+					if ("emailAuthSettingsFilePath".equals(eElement.getAttribute("name"))) {
+						setEmailAuthSettingsFilePath(eElement.getTextContent());
 					}
 					if ("ReceiversEmail".equals(eElement.getAttribute("name"))) {
-						setReceiversEmail(eElement.getTextContent());
+						setEmailReceiversEmail(eElement.getTextContent());
+					}
+					if ("ReceiversName".equals(eElement.getAttribute("name"))) {
+						setEmailReceiversName(eElement.getTextContent());
 					}
 					if ("EmailSubject".equals(eElement.getAttribute("name"))) {
 						setEmailSubject(eElement.getTextContent());
 					}
 					if ("EmailMessage".equals(eElement.getAttribute("name"))) {
-						setMessageText(eElement.getTextContent());
+						setEmailBody(eElement.getTextContent());
 					}
 				}
 			}
@@ -797,94 +809,6 @@ public class FrameworkConfig {
 		this.logSubDir = logSubDir;
 	}
 
-	public String getSmtpServer() {
-		return smtpServer;
-	}
-
-	public void setSmtpServer(String smtpServer) {
-		this.smtpServer = smtpServer;
-	}
-
-	public String getSmtpSSLPort() {
-		return smtpSSLPort;
-	}
-
-	public void setSmtpSSLPort(String smtpSSLPort) {
-		this.smtpSSLPort = smtpSSLPort;
-	}
-
-	public String getSmtpAuthRequired() {
-		return smtpAuthRequired;
-	}
-
-	public void setSmtpAuthRequired(String smtpAuthRequired) {
-		this.smtpAuthRequired = smtpAuthRequired;
-	}
-
-	public String getSendersName() {
-		return sendersName;
-	}
-
-	public void setSendersName(String sendersName) {
-		this.sendersName = sendersName;
-	}
-
-	public String getSendersEmail() {
-		return sendersEmail;
-	}
-
-	public void setSendersEmail(String sendersEmail) {
-		this.sendersEmail = sendersEmail;
-	}
-
-	public String getSendersUserName() {
-		return sendersUserName;
-	}
-
-	public void setSendersUserName(String sendersUserName) {
-		this.sendersUserName = sendersUserName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getReceiversName() {
-		return receiversName;
-	}
-
-	public void setReceiversName(String receiversName) {
-		this.receiversName = receiversName;
-	}
-
-	public String getReceiversEmail() {
-		return receiversEmail;
-	}
-
-	public void setReceiversEmail(String receiversEmail) {
-		this.receiversEmail = receiversEmail;
-	}
-
-	public String getEmailSubject() {
-		return emailSubject;
-	}
-
-	public void setEmailSubject(String emailSubject) {
-		this.emailSubject = emailSubject;
-	}
-
-	public String getMessageText() {
-		return messageText;
-	}
-
-	public void setMessageText(String messageText) {
-		this.messageText = messageText;
-	}
-
 	public boolean isEnableBanner() {
 		return enableBanner;
 	}
@@ -931,5 +855,93 @@ public class FrameworkConfig {
 
 	public void setEnableExtentReport(boolean enableExtentReport) {
 		this.enableExtentReport = enableExtentReport;
+	}
+
+	public String getEmailSMTPServer() {
+		return emailSMTPServer;
+	}
+
+	public void setEmailSMTPServer(String emailSMTPServer) {
+		this.emailSMTPServer = emailSMTPServer;
+	}
+
+	public String getEmailSMTPSSLPort() {
+		return emailSMTPSSLPort;
+	}
+
+	public void setEmailSMTPSSLPort(String emailSMTPSSLPort) {
+		this.emailSMTPSSLPort = emailSMTPSSLPort;
+	}
+
+	public String getEmailSMTPAuthRequired() {
+		return emailSMTPAuthRequired;
+	}
+
+	public void setEmailSMTPAuthRequired(String emailSMTPAuthRequired) {
+		this.emailSMTPAuthRequired = emailSMTPAuthRequired;
+	}
+
+	public String getEmailSendersName() {
+		return emailSendersName;
+	}
+
+	public void setEmailSendersName(String emailSendersName) {
+		this.emailSendersName = emailSendersName;
+	}
+
+	public String getEmailSendersEmail() {
+		return emailSendersEmail;
+	}
+
+	public void setEmailSendersEmail(String emailSendersEmail) {
+		this.emailSendersEmail = emailSendersEmail;
+	}
+
+	public String getEmailReceiversEmail() {
+		return emailReceiversEmail;
+	}
+
+	public void setEmailReceiversEmail(String emailReceiversEmail) {
+		this.emailReceiversEmail = emailReceiversEmail;
+	}
+
+	public String getEmailReceiversName() {
+		return emailReceiversName;
+	}
+
+	public void setEmailReceiversName(String emailReceiversName) {
+		this.emailReceiversName = emailReceiversName;
+	}
+
+	public String getEmailSubject() {
+		return emailSubject;
+	}
+
+	public void setEmailSubject(String emailSubject) {
+		this.emailSubject = emailSubject;
+	}
+
+	public String getEmailBody() {
+		return emailBody;
+	}
+
+	public void setEmailBody(String emailBody) {
+		this.emailBody = emailBody;
+	}
+
+	public boolean isEnableEmailClient() {
+		return enableEmailClient;
+	}
+
+	public void setEnableEmailClient(boolean enableEmailClient) {
+		this.enableEmailClient = enableEmailClient;
+	}
+
+	public String getEmailAuthSettingsFilePath() {
+		return emailAuthSettingsFilePath;
+	}
+
+	public void setEmailAuthSettingsFilePath(String emailAuthSettingsFilePath) {
+		this.emailAuthSettingsFilePath = emailAuthSettingsFilePath;
 	}
 }
