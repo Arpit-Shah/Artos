@@ -8,7 +8,7 @@ Artos consists of the following:
 * Test Context
 * Utilities
 
-Maven download
+Maven repository
 ```
 <dependency>
   <groupId>com.theartos</groupId>
@@ -63,10 +63,10 @@ Definitions:
 ## Framework Configuration
 
 * Purpose:
-	* User can customise framework behaviour by changing appropriate argument(s) from `conf/Framework_Config.xml` file.
+	* User can customise framework behaviour by changing appropriate argument(s) from `conf/framework_Configuration.xml` file.
 
 * Facilities:
-	* If not present, Artos will generate default configuration file at location `conf/Framework_Config.xml`.
+	* If not present, Artos will generate default configuration file at location `conf/framework_Configuration.xml`.
 	* User can override some of the framework configuration using `Runner` object constructor.
 	* List of configurable features:
 		* Organisation information (Stamped on top of log file).
@@ -124,18 +124,17 @@ Test status can be updated using following method :
 		> OR
 		> * Bug may not be worth fixing.
 
-    In such case(s), those test case(s) should be marked as "known to fail" using @KnownToFail annotation and test status should be set to **KTF** upon test case failure. This will ensure that test case(s) does not end up in failed test case(s) list and user does not waste time re-investigating same issue(s).
+    In such case(s), those test case(s) should be marked as "known to fail" by setting test status to **KTF** upon test case failure. This will ensure that test case(s) does not end up in failed test case(s) list and user does not waste time re-investigating same issue(s).
 	* Second requirement is that when "known to fail" test case(s) will start passing because:
 		> * Bug is silently fixed
 		> OR
 		> * Software behaviour has changed
 
-	Then test engineer should be notified by marking test case with **FAIL** status.
+	Then test engineer must be notified by marking test case with **FAIL** status. To enable this check user must set known to fail flag true using @KnownToFail annotation.
 
 * Facilities:
-	* Known to fail test case(s) end result is expected to be either **KTF** or **FAIL**. If test result is different then test case will be considered **FAIL** by the test framework. This will help user identify if bug was silently fixed or software behaviour has changed.
-	* `@KnownToFail` annotation can also be used to mark test as "Known to Fail" and/or set bug reference number.
-	* If bug reference number is provided, it will be printed in following reports:
+	* If @KnownToFail flag is set to true then test case(s) outcome is expected to be **KTF**. If test outcome is different then test case will be considered **FAIL**. This will help user identify if bug was silently fixed or software behaviour has changed.
+	* `@KnownToFail` annotation can also be used to set bug reference number. If bug reference number is provided, it will be printed in following reports:
 		* Summary report
 		* Extent report.
 
@@ -178,7 +177,7 @@ Test status can be updated using following method :
             |OFF	|The highest possible rank and is intended to turn off logging.										|
             |TRACE	|Designates finer-grained informational events than the DEBUG.										|
             |WARN	|Designates potentially harmful situations.															|
-        * Note: Log level can be configured using `conf/Framework_Config.xml` file.
+        * Note: Log level can be configured using `conf/framework_Configuration.xml` file.
     * Log can be enabled/disabled dynamically (Only applicable to general log)
         * Disable log dynamically: `TestContext().getLogger().disableGeneralLog();`
         * Enable log dynamically: `TestContext().getLogger().enableGeneralLog();`
@@ -187,7 +186,7 @@ Test status can be updated using following method :
     * Log files are organised under test suite name for ease of use
         * Log files are created under the following hierarchy. `RootDir => SubDir => TestSuiteName => Log file`.
         > Example: `./reporting/SN-123/com.test.testsuite1/..`
-        * Root directory and Sub directory location can be configured using `conf/Framework_Config.xml` file.
+        * Root directory and Sub directory location can be configured using `conf/framework_Configuration.xml` file.
     * Log framework abstraction
         * Log framework is abstracted so that log framework can be changed in future without breaking existing test scripts.
     * Log file tracking
@@ -203,9 +202,9 @@ Test status can be updated using following method :
 
 * Usage:
 	* Enable/disable text/html log files:
-		* Can be configured using `conf/Framework_Config.xml` file.
+		* Can be configured using `conf/framework_Configuration.xml` file.
 	* Change log level and log directory:
-		* Can be configured using `conf/Framework_Config.xml` file.
+		* Can be configured using `conf/framework_Configuration.xml` file.
 	* logging simple string with level info or debug:
 	> `TestContext().getLogger().info("This is a test String" + "This is a test String 2");`
 	> `TestContext().getLogger().debug("This is a test String" + "This is a test String 2");`
@@ -223,7 +222,7 @@ Test status can be updated using following method :
 	* Professional looking Extent report which can be distributed among customer or external parties.
 
 * Facilities:
-	* If Extent configuration file is not present, then framework will generate default configuration file at location `conf/Extent_Config.xml`.
+	* If Extent configuration file is not present, then framework will generate default configuration file at location `conf/extent_configuration.xml`.
 	* Artos has inbuilt support for offline Extent reporting.
 	* If enabled, Artos will produce Extent report for every test suite execution.
 	* Extent report includes test name, test writer's name and test case duration.
@@ -231,7 +230,7 @@ Test status can be updated using following method :
 	* Final test result with bug reference number will be reported via Extent report.
 
 * Usage:
-	* Extent reporting can be enabled/disabled via `conf/Framework_Config.xml` file.
+	* Extent reporting can be enabled/disabled via `conf/framework_Configuration.xml` file.
 
 ## Real Time Logging
 
@@ -244,7 +243,7 @@ Test status can be updated using following method :
 	* Real time logs are printed with time stamp, user is not allowed to disable timestamp.
 	* If test suites are executed in parallel then separate real time log file will be produced per test suite.
 	* Real time log file will roll over at 20MB of file size.
-	* Real time logs cannot be disabled.
+	* Real time logs cannot be disabled. If `RealTimeLogEventListener` is not provided then log file will remain empty.
 
 * Usage:
 	* Collect send receive events in real time with time stamp.
@@ -258,7 +257,7 @@ Test status can be updated using following method :
 	* By default, Artos is setup to stop on first failure. it can be configured to continue executing rest of the test cases.
 
 * Usage:
-	* Stop on Fail feature can be enabled/disabled via `conf/Framework_Config.xml` file.
+	* Stop on Fail feature can be enabled/disabled via `conf/framework_Configuration.xml` file.
 
 ## Global parameters
 
@@ -328,9 +327,9 @@ Test status can be updated using following method :
         Before test cases are populated into GUI test selector, test cases are filtered for specified group(s). If user believes that group assignment is wrong, then it should be change in test script prior to launching test suite.
 
 * Usage:
-	* GUI test selector can be enabled/disabled using `conf/Framework_Config.xml` file.
+	* GUI test selector can be enabled/disabled using `conf/framework_Configuration.xml` file.
 
-> Note: If tests are executed on build server than disable GUI test selector using `conf/Framework_Config.xml` file.
+> Note: If tests are executed on build server than disable GUI test selector using `conf/framework_Configuration.xml` file.
 
 ## Annotations to mark test cases
 * Artos support many annotations to make test system more flexible.
