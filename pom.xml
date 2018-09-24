@@ -32,15 +32,27 @@
 		<developer>
 			<name>Arpit Shah</name>
 			<email>artos.framework@gmail.com</email>
-			<organization>None</organization>
+			<organization>www.theartos.com</organization>
+			<organizationUrl>http://www.theartos.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Shobhit Bhatnagar</name>
+			<email>artos.framework@gmail.com</email>
+			<organization>www.theartos.com</organization>
+			<organizationUrl>http://www.theartos.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Swapna Soni</name>
+			<email>artos.framework@gmail.com</email>
+			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
 		</developer>
 	</developers>
 
 	<!-- Source Repo Info -->
 	<scm>
-		<connection>scm:git:git@github.com:Arpit-Shah/Artos.git</connection>
-		<url>scm:git:git@github.com:Arpit-Shah/Artos.git</url>
+		<connection>scm:git:git://github.com:Arpit-Shah/Artos.git</connection>
+		<url>https://github.com/Arpit-Shah/Artos</url>
 		<developerConnection>scm:git:git@github.com:Arpit-Shah/Artos.git</developerConnection>
 	</scm>
 
