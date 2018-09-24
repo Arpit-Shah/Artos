@@ -4,14 +4,14 @@
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://bitbucket.org/ShahArpit/arpitos_fork</url>
-	<description>The Artos "ART OF SYSTEM TESTING" is a framework designed for regression, functional, integration, end to end and/or unit testing</description>
+	<description>The Artos "ART OF SYSTEM TESTING" is a framework designed for regression, functional, integration, end to end and/or unit testing.</description>
 	<inceptionYear>2018</inceptionYear>
 
 	<!-- Project GAV Info -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -34,18 +34,28 @@
 			<email>artos.framework@gmail.com</email>
 			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Shobhit Bhatnagar</name>
 			<email>artos.framework@gmail.com</email>
 			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Swapna Soni</name>
 			<email>artos.framework@gmail.com</email>
 			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
 		</developer>
 	</developers>
 
