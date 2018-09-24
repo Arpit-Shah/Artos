@@ -31,6 +31,7 @@
 	<developers>
 		<developer>
 			<name>Arpit Shah</name>
+			<id>ASh</id>
 			<email>artos.framework@gmail.com</email>
 			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
@@ -41,6 +42,7 @@
 		</developer>
 		<developer>
 			<name>Shobhit Bhatnagar</name>
+			<id>SBh</id>
 			<email>artos.framework@gmail.com</email>
 			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
@@ -50,6 +52,7 @@
 		</developer>
 		<developer>
 			<name>Swapna Soni</name>
+			<id>SSo</id>
 			<email>artos.framework@gmail.com</email>
 			<organization>www.theartos.com</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
