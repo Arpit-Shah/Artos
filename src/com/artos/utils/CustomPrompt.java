@@ -115,7 +115,7 @@ import com.artos.framework.Enums.ExceptionValue;
  */
 public class CustomPrompt implements ItemListener {
 
-	String title = "";
+	String title = "CountDown Timer";
 	String str1 = "";
 	String str2 = "";
 	String str3 = "";
@@ -364,7 +364,7 @@ public class CustomPrompt implements ItemListener {
 		}
 		jf.setBackground(Color.BLACK);
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jf.setTitle("CountDown Timer");
+		jf.setTitle(title);
 		jf.pack();
 		jf.setLocationByPlatform(true);
 
@@ -453,11 +453,14 @@ public class CustomPrompt implements ItemListener {
 	}
 
 	private void disposeGUI() {
+
 		// jltime.setText("Stop");
 		jf.setVisible(false);
-		timer.stop();
+		if (null != timer) {
+			timer.stop();
+		}
 		jf.dispose();
-		if (ctdwnLatch != null) {
+		if (null != ctdwnLatch) {
 			ctdwnLatch.countDown();
 		}
 	}
@@ -593,10 +596,6 @@ public class CustomPrompt implements ItemListener {
 
 	public void setStr4(String str4) {
 		this.str4 = str4;
-	}
-
-	public void setTimer(Timer timer) {
-		this.timer = timer;
 	}
 
 	public void setStr5(String str5) {

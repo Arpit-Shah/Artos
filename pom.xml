@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -33,7 +33,8 @@
 			<name>Arpit Shah</name>
 			<id>ASh</id>
 			<email>artos.framework@gmail.com</email>
-			<organization>www.theartos.com</organization>
+			<url>https://www.theartos.com</url>
+			<organization>Artos</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
 			<roles>
 				<role>architect</role>
@@ -44,7 +45,8 @@
 			<name>Shobhit Bhatnagar</name>
 			<id>SBh</id>
 			<email>artos.framework@gmail.com</email>
-			<organization>www.theartos.com</organization>
+			<url>https://www.theartos.com</url>
+			<organization>Artos</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
 			<roles>
 				<role>developer</role>
@@ -54,7 +56,8 @@
 			<name>Swapna Soni</name>
 			<id>SSo</id>
 			<email>artos.framework@gmail.com</email>
-			<organization>www.theartos.com</organization>
+			<url>https://www.theartos.com</url>
+			<organization>Artos</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
 			<roles>
 				<role>developer</role>
@@ -64,9 +67,9 @@
 
 	<!-- Source Repo Info -->
 	<scm>
-		<connection>scm:git:git://github.com:Arpit-Shah/Artos.git</connection>
+		<connection>scm:git:https://github.com/Arpit-Shah/Artos</connection>
 		<url>https://github.com/Arpit-Shah/Artos</url>
-		<developerConnection>scm:git:git@github.com:Arpit-Shah/Artos.git</developerConnection>
+		<developerConnection>scm:git:https://github.com/Arpit-Shah/Artos</developerConnection>
 	</scm>
 
 	<properties>
