@@ -67,9 +67,9 @@
 
 	<!-- Source Repo Info -->
 	<scm>
-		<connection>scm:git:https://github.com/Arpit-Shah/Artos</connection>
+		<connection>scm:git:https://github.com/Arpit-Shah/Artos.git</connection>
+		<developerConnection>scm:git:https://github.com/Arpit-Shah/Artos.git</developerConnection>
 		<url>https://github.com/Arpit-Shah/Artos</url>
-		<developerConnection>scm:git:https://github.com/Arpit-Shah/Artos</developerConnection>
 	</scm>
 
 	<properties>
