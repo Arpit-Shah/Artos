@@ -148,12 +148,18 @@
 			<artifactId>mail</artifactId>
 			<version>1.4.7</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Build Plugins -->
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-
+		<testSourceDirectory>${basedir}/src/test</testSourceDirectory>
+		
 		<!-- Maven Compiler Plugins -->
 		<!-- parent pom overrides for compiler plugin default values and you can't 
 			fix it, you'll have to explicitely force the values in the compiler plugin 
