@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteOrder;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.artos.utils.Transform;
@@ -161,7 +162,7 @@ public class TestTransform {
 		long expectedResult1 = 999999999999999999l;
 		long resultArray1 = _tfm.bytesToDecimals(test1, ByteOrder.BIG_ENDIAN);
 		assertEquals(expectedResult1, resultArray1);
-		
+
 		byte[] test11 = _tfm.strHexToByteArray("FF FF 63 A7 B3 B6 E0 0D");
 		long expectedResult11 = 999999999999999999l;
 		long resultArray11 = _tfm.bytesToDecimals(test11, ByteOrder.LITTLE_ENDIAN);
@@ -171,7 +172,7 @@ public class TestTransform {
 		long expectedResult2 = 16;
 		long resultArray2 = _tfm.bytesToDecimals(test2, ByteOrder.BIG_ENDIAN);
 		assertEquals(expectedResult2, resultArray2);
-		
+
 		byte[] test22 = _tfm.strHexToByteArray("10");
 		long expectedResult22 = 16;
 		long resultArray22 = _tfm.bytesToDecimals(test22, ByteOrder.LITTLE_ENDIAN);
@@ -181,7 +182,7 @@ public class TestTransform {
 		long expectedResult3 = 16;
 		long resultArray3 = _tfm.bytesToDecimals(test3, ByteOrder.BIG_ENDIAN);
 		assertEquals(expectedResult3, resultArray3);
-		
+
 		byte[] test33 = _tfm.strHexToByteArray("10 00 00 00");
 		long expectedResult33 = 16;
 		long resultArray33 = _tfm.bytesToDecimals(test33, ByteOrder.LITTLE_ENDIAN);
@@ -248,41 +249,124 @@ public class TestTransform {
 		_tfm.bytes2ToInt(test2, ByteOrder.LITTLE_ENDIAN);
 	}
 
-	// @Test
-	// public void testBytesToShort() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGenerateRandomBytes() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testBytesReverseOrder() {
-	// fail("Not yet implemented");
-	// }
-	//
+	@Test
+	public void testBytesShort_ByteArray_DifferentByteOrder() {
+		byte[] test1 = _tfm.strHexToByteArray("7F FF");
+		short expectedResult1 = 32767;
+		short resultArray1 = _tfm.bytesToShort(test1, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult1, resultArray1);
+
+		byte[] test2 = _tfm.strHexToByteArray("FF 7F");
+		short expectedResult2 = 32767;
+		short resultArray2 = _tfm.bytesToShort(test2, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult2, resultArray2);
+	}
+
+	@Test
+	public void testBytesToShort_BadPath_Overflow() {
+		// bad path with extra byte, should only take first 4 bytes into
+		// consideration
+		byte[] test2 = _tfm.strHexToByteArray("FF 7F 01");
+		short expectedResult3 = 32767;
+		short resultArray3 = _tfm.bytesToShort(test2, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult3, resultArray3);
+	}
+
+	@Test(expected = BufferUnderflowException.class)
+	public void testBytes2ToShort_BadPath_Underflow() {
+		// bad path with value smaller than 4 bytes
+		byte[] test2 = _tfm.strHexToByteArray("FF");
+		_tfm.bytesToShort(test2, ByteOrder.LITTLE_ENDIAN);
+	}
+
+	@Test
+	public void testGenerateRandomBytes() {
+		byte[] random1 = _tfm.generateRandomBytes(Short.MAX_VALUE);
+		byte[] random2 = _tfm.generateRandomBytes(Short.MAX_VALUE);
+		assertEquals(Short.MAX_VALUE, random1.length);
+		assertEquals(Short.MAX_VALUE, random2.length);
+		Assert.assertNotEquals(random1, random2);
+	}
+
+	@Test
+	public void testBytesReverseOrder() {
+		byte[] test1 = _tfm.strHexToByteArray("7F FF FF FF");
+		byte[] reversed = _tfm.bytesReverseOrder(test1);
+		byte[] expected = _tfm.strHexToByteArray("FF FF FF 7F");
+		assertArrayEquals(expected, reversed);
+	}
+
 	// @Test
 	// public void testListToByteArray() {
 	// fail("Not yet implemented");
 	// }
-	//
-	// @Test
-	// public void testGetLowNibble() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGetHighNibble() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testSetBitOfTheByte() {
-	// fail("Not yet implemented");
-	// }
-	//
+
+	@Test
+	public void testGetLowNibble() {
+		byte returned = _tfm.getLowNibble((byte) 0x01);
+		assertEquals((byte) 0x01, returned);
+		
+		byte returned2 = _tfm.getLowNibble((byte) 0x3C);
+		assertEquals((byte) 0x0C, returned2);
+
+		byte returned3 = _tfm.getLowNibble((byte) 0xFF);
+		assertEquals((byte) 0x0F, returned3);
+	}
+
+	@Test
+	public void testGetHighNibble() {
+		byte returned = _tfm.getHighNibble((byte) 0x01);
+		assertEquals((byte) 0x00, returned);
+		
+		byte returned2 = _tfm.getHighNibble((byte) 0x3C);
+		assertEquals((byte) 0x03, returned2);
+
+		byte returned3 = _tfm.getHighNibble((byte) 0xFF);
+		assertEquals((byte) 0x0F, returned3);
+	}
+
+	@Test
+	public void testSetBitOfTheByte() {
+		byte test1 = (byte) 0x00;
+		test1 = _tfm.setBitOfTheByte(test1, 0);
+		assertEquals((byte) 0x01, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 1);
+		assertEquals((byte) 0x03, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 2);
+		assertEquals((byte) 0x07, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 3);
+		assertEquals((byte) 0x0F, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 4);
+		assertEquals((byte) 0x1F, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 5);
+		assertEquals((byte) 0x3F, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 6);
+		assertEquals((byte) 0x7F, test1);
+		test1 = _tfm.setBitOfTheByte(test1, 7);
+		assertEquals((byte) 0xFF, test1);
+	}
+	
+	@Test
+	public void testClearBitOfTheByte() {
+		byte test1 = (byte) 0xFF;
+		test1 = _tfm.clearBitOfTheByte(test1, 7);
+		assertEquals((byte) 0x7F, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 6);
+		assertEquals((byte) 0x3F, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 5);
+		assertEquals((byte) 0x1F, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 4);
+		assertEquals((byte) 0x0F, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 3);
+		assertEquals((byte) 0x07, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 2);
+		assertEquals((byte) 0x03, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 1);
+		assertEquals((byte) 0x01, test1);
+		test1 = _tfm.clearBitOfTheByte(test1, 0);
+		assertEquals((byte) 0x00, test1);
+	}
+
 	// @Test
 	// public void testClearBitOfTheByte() {
 	// fail("Not yet implemented");
