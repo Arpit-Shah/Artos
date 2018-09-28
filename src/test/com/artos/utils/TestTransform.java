@@ -47,6 +47,16 @@ public class TestTransform {
 	}
 
 	@Test
+	public void testConcatByteArray_ByteWithArray() {
+		byte test9 = 1;
+		byte[] test10 = new byte[] { 10 };
+		byte[] test11 = new byte[] { 1, 10, (byte) 255, 0 };
+		byte[] expectedResult = new byte[] { 1, 10, 1, 10, (byte) 255, 0 };
+		byte[] resultArray = _tfm.concat(test9, test10, test11);
+		assertArrayEquals(expectedResult, resultArray);
+	}
+
+	@Test
 	public void testBytesToHexString_Array() {
 		byte[] test1 = { 0, 1, 2, 10, (byte) 255 };
 		String expectedResult1 = "[5][00 01 02 0A FF]";
@@ -73,7 +83,7 @@ public class TestTransform {
 	}
 
 	@Test
-	public void testBytesToAsciiByteArray_Bytes() throws Exception {
+	public void testBytesToAscii_ByteArray() throws Exception {
 		byte[] test1 = { (byte) 0x54, (byte) 0x45, (byte) 0x53, (byte) 0x54 };
 		String expectedResult1 = "TEST";
 		String resultArray1 = _tfm.bytesToAscii(test1);
@@ -81,7 +91,7 @@ public class TestTransform {
 	}
 
 	@Test
-	public void testBytesToAsciiByte_SingleByte() throws Exception {
+	public void testBytesToAscii_SingleByte() throws Exception {
 		byte test2 = (byte) 0x54;
 		String expectedResult2 = "T";
 		String resultArray2 = _tfm.bytesToAscii(test2);
@@ -127,22 +137,117 @@ public class TestTransform {
 		assertEquals(expectedResult4, resultArray4);
 	}
 
-	//
-	// @Test
-	// public void testBytesToDecimals() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testBytesToInteger() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testBytes2ToInt() {
-	// fail("Not yet implemented");
-	// }
-	//
+	@Test
+	public void testBytesToDecimals() {
+		byte[] test1 = _tfm.strHexToByteArray("0D E0 B6 B3 A7 63 FF FF");
+		long expectedResult1 = 999999999999999999l;
+		long resultArray1 = _tfm.bytesToDecimals(test1);
+		assertEquals(expectedResult1, resultArray1);
+
+		byte[] test2 = _tfm.strHexToByteArray("10");
+		long expectedResult2 = 16;
+		long resultArray2 = _tfm.bytesToDecimals(test2);
+		assertEquals(expectedResult2, resultArray2);
+
+		byte[] test3 = _tfm.strHexToByteArray("00 00 00 10");
+		long expectedResult3 = 16;
+		long resultArray3 = _tfm.bytesToDecimals(test3);
+		assertEquals(expectedResult3, resultArray3);
+	}
+
+	@Test
+	public void testBytesToDecimals_DifferentByteOrder() {
+		byte[] test1 = _tfm.strHexToByteArray("0D E0 B6 B3 A7 63 FF FF");
+		long expectedResult1 = 999999999999999999l;
+		long resultArray1 = _tfm.bytesToDecimals(test1, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult1, resultArray1);
+		
+		byte[] test11 = _tfm.strHexToByteArray("FF FF 63 A7 B3 B6 E0 0D");
+		long expectedResult11 = 999999999999999999l;
+		long resultArray11 = _tfm.bytesToDecimals(test11, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult11, resultArray11);
+
+		byte[] test2 = _tfm.strHexToByteArray("10");
+		long expectedResult2 = 16;
+		long resultArray2 = _tfm.bytesToDecimals(test2, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult2, resultArray2);
+		
+		byte[] test22 = _tfm.strHexToByteArray("10");
+		long expectedResult22 = 16;
+		long resultArray22 = _tfm.bytesToDecimals(test22, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult22, resultArray22);
+
+		byte[] test3 = _tfm.strHexToByteArray("00 00 00 10");
+		long expectedResult3 = 16;
+		long resultArray3 = _tfm.bytesToDecimals(test3, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult3, resultArray3);
+		
+		byte[] test33 = _tfm.strHexToByteArray("10 00 00 00");
+		long expectedResult33 = 16;
+		long resultArray33 = _tfm.bytesToDecimals(test33, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult33, resultArray33);
+	}
+
+	@Test
+	public void testBytesToInteger_ByteArray_DifferentByteOrder() {
+		byte[] test1 = _tfm.strHexToByteArray("7F FF FF FF");
+		int expectedResult1 = 2147483647;
+		int resultArray1 = _tfm.bytesToInteger(test1, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult1, resultArray1);
+
+		byte[] test2 = _tfm.strHexToByteArray("FF FF FF 7F");
+		int expectedResult2 = 2147483647;
+		int resultArray2 = _tfm.bytesToInteger(test2, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult2, resultArray2);
+	}
+
+	@Test
+	public void testBytesToInteger_BadPath_Overflow() {
+		// bad path with extra byte, should only take first 4 bytes into
+		// consideration
+		byte[] test2 = _tfm.strHexToByteArray("FF FF FF 7F 01");
+		int expectedResult3 = 2147483647;
+		int resultArray3 = _tfm.bytesToInteger(test2, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult3, resultArray3);
+	}
+
+	@Test(expected = BufferUnderflowException.class)
+	public void testBytesToInteger_BadPath_Underflow() {
+		// bad path with value smaller than 4 bytes
+		byte[] test2 = _tfm.strHexToByteArray("FF FF FF");
+		_tfm.bytesToInteger(test2, ByteOrder.LITTLE_ENDIAN);
+	}
+
+	@Test
+	public void testBytes2ToInt_ByteArray_DifferentByteOrder() {
+		byte[] test1 = _tfm.strHexToByteArray("7F FF");
+		int expectedResult1 = 32767;
+		int resultArray1 = _tfm.bytes2ToInt(test1, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult1, resultArray1);
+
+		byte[] test2 = _tfm.strHexToByteArray("FF 7F");
+		int expectedResult2 = 32767;
+		int resultArray2 = _tfm.bytes2ToInt(test2, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult2, resultArray2);
+	}
+
+	@Test
+	public void testBytes2ToInt_BadPath_Overflow() {
+		// bad path with extra byte, should only take first 4 bytes into
+		// consideration
+		byte[] test2 = _tfm.strHexToByteArray("FF 7F 01");
+		int expectedResult3 = 32767;
+		int resultArray3 = _tfm.bytes2ToInt(test2, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult3, resultArray3);
+	}
+
+	@Test(expected = BufferUnderflowException.class)
+	public void testBytes2ToInt_BadPath_Underflow() {
+		// bad path with value smaller than 4 bytes
+		byte[] test2 = _tfm.strHexToByteArray("FF");
+		_tfm.bytes2ToInt(test2, ByteOrder.LITTLE_ENDIAN);
+	}
+
 	// @Test
 	// public void testBytesToShort() {
 	// fail("Not yet implemented");

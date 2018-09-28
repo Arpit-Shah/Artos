@@ -91,8 +91,8 @@ public class Transform {
 	}
 
 	/**
-	 * concatenates byte array with subsequent single byte in order it was provided
-	 * in.
+	 * concatenates byte array with subsequent single byte in order it was
+	 * provided in.
 	 * 
 	 * @param byteArray
 	 *            = first byte array
@@ -116,7 +116,8 @@ public class Transform {
 	}
 
 	/**
-	 * concatenates byte with subsequent byte arrays in order it was provided in.
+	 * concatenates byte with subsequent byte arrays in order it was provided
+	 * in.
 	 * 
 	 * @param data
 	 *            = first byte
@@ -137,6 +138,23 @@ public class Transform {
 			offset += array.length;
 		}
 		return result;
+	}
+
+	/**
+	 * Converts Byte to Hex String
+	 * 
+	 * <PRE>
+	 * Example: 
+	 * Sample : bytesToHexString((byte)0xFF);
+	 * Result : FF
+	 * </PRE>
+	 * 
+	 * @param data
+	 *            = data to be converted
+	 * @return Hex formatted string
+	 */
+	public String bytesToHexString(byte data) {
+		return bytesToHexString(data, false);
 	}
 
 	/**
@@ -194,23 +212,6 @@ public class Transform {
 			hex.append("]");
 		}
 		return hex.toString();
-	}
-
-	/**
-	 * Converts Byte to Hex String
-	 * 
-	 * <PRE>
-	 * Example: 
-	 * Sample : bytesToHexString((byte)0xFF);
-	 * Result : FF
-	 * </PRE>
-	 * 
-	 * @param data
-	 *            = data to be converted
-	 * @return Hex formatted string
-	 */
-	public String bytesToHexString(byte data) {
-		return bytesToHexString(data, false);
 	}
 
 	/**
@@ -297,7 +298,7 @@ public class Transform {
 
 	/**
 	 * <pre>
-	 * Sample : bytesToDecimals(new byte[]{00, 00, 00, 03}, ByteOrder.BIG_ENDIAN);
+	 * Sample : bytesToDecimals(new byte[]{00, 00, 00, 03});
 	 * Answer : 3
 	 * </pre>
 	 * 
@@ -306,15 +307,38 @@ public class Transform {
 	 * @return = long formatted data
 	 */
 	public long bytesToDecimals(byte[] bytes) {
+		return bytesToDecimals(bytes, ByteOrder.BIG_ENDIAN);
+	}
+
+	/**
+	 * <pre>
+	 * Sample : bytesToDecimals(new byte[]{00, 00, 00, 03}, ByteOrder.BIG_ENDIAN);
+	 * Sample : bytesToDecimals(new byte[]{03, 00, 00, 00}, ByteOrder.LITTLE_ENDIAN);
+	 * Answer : 3
+	 * </pre>
+	 * 
+	 * @param bytes
+	 *            = data to be converted
+	 * @param bo
+	 *            byte order before converting it to long
+	 * @return = long formatted data
+	 */
+	public long bytesToDecimals(byte[] bytes, ByteOrder bo) {
 		int size = 8;
 		byte[] temp = new byte[size];
 		Arrays.fill(temp, (byte) 0x00);
 
-		for (int i = bytes.length - 1; i >= 0; i--) {
-			temp[size - 1] = bytes[i];
-			size--;
+		if (bo == ByteOrder.BIG_ENDIAN) {
+			for (int i = bytes.length - 1; i >= 0; i--) {
+				temp[size - 1] = bytes[i];
+				size--;
+			}
+		} else {
+			for (int i = 0; i < bytes.length; i++) {
+				temp[i] = bytes[i];
+			}
 		}
-		return bytesToLong(temp, ByteOrder.BIG_ENDIAN);
+		return bytesToLong(temp, bo);
 	}
 
 	/**
@@ -336,13 +360,15 @@ public class Transform {
 	}
 
 	/**
-	 * 
+	 * @deprecated we recommend to use {@link #bytesToShort(byte[], ByteOrder)}
+	 *             instead
 	 * @param bytes
 	 *            Byte array
 	 * @param bo
 	 *            Byte order
 	 * @return Integer value
 	 */
+	@Deprecated
 	public int bytes2ToInt(byte[] bytes, ByteOrder bo) {
 		return bytesToShort(bytes, bo);
 	}

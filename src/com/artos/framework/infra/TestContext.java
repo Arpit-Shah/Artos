@@ -76,6 +76,8 @@ public class TestContext {
 	 * HERE" warning as soon as status is set to FAIL so user can pin point
 	 * location of the failure
 	 * 
+	 * @deprecated we recommend to use
+	 *             {@link #setTestStatus(TestStatus, String)} instead
 	 * @param testStatus
 	 *            Test Status
 	 */
