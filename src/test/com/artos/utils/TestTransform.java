@@ -367,15 +367,20 @@ public class TestTransform {
 		assertEquals((byte) 0x00, test1);
 	}
 
-	// @Test
-	// public void testClearBitOfTheByte() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testToogleBitOfTheByte() {
-	// fail("Not yet implemented");
-	// }
+	@Test
+	public void testToogleBitOfTheByte() {
+		byte test1 = (byte) 0xFF;
+		test1 = _tfm.toogleBitOfTheByte(test1, 0);
+		test1 = _tfm.toogleBitOfTheByte(test1, 1);
+		test1 = _tfm.toogleBitOfTheByte(test1, 2);
+		test1 = _tfm.toogleBitOfTheByte(test1, 3);
+		test1 = _tfm.toogleBitOfTheByte(test1, 4);
+		test1 = _tfm.toogleBitOfTheByte(test1, 5);
+		test1 = _tfm.toogleBitOfTheByte(test1, 6);
+		test1 = _tfm.toogleBitOfTheByte(test1, 7);
+		assertEquals((byte) 0x00, test1);
+		
+	}
 	//
 	// @Test
 	// public void testGetBitOfTheByte() {
