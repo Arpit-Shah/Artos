@@ -63,10 +63,10 @@ Definitions:
 ## Framework Configuration
 
 * Purpose:
-	* User can customise framework behaviour by changing appropriate argument(s) from `conf/framework_Configuration.xml` file.
+	* User can customise framework behaviour by changing appropriate argument(s) from `conf/framework_configuration.xml` file.
 
 * Facilities:
-	* If not present, Artos will generate default configuration file at location `conf/framework_Configuration.xml`.
+	* If not present, Artos will generate default configuration file at location `conf/framework_configuration.xml`.
 	* User can override some of the framework configuration using `Runner` object constructor.
 	* List of configurable features:
 		* Organisation information (Stamped on top of log file).
@@ -114,34 +114,6 @@ Definitions:
 Test status can be updated using following method :
 > `TestContext().setTestStatus(TestStatus.FAIL, "Did not expect to reach here");`
 
-## Known to Fail
-
-* Purpose:
-	* There may be a test scenario(s) which are known to be the bug but cannot be fixed straight away due to:
-		> * Priority
-		> OR
-		> * Project timelines
-		> OR
-		> * Bug may not be worth fixing.
-
-    In such case(s), those test case(s) should be marked as "known to fail" by setting test status to **KTF** upon test case failure. This will ensure that test case(s) does not end up in failed test case(s) list and user does not waste time re-investigating same issue(s).
-	* Second requirement is that when "known to fail" test case(s) will start passing because:
-		> * Bug is silently fixed
-		> OR
-		> * Software behaviour has changed
-
-	Then test engineer must be notified by marking test case with **FAIL** status. To enable this check user must set known to fail flag true using @KnownToFail annotation.
-
-* Facilities:
-	* If @KnownToFail flag is set to true then test case(s) outcome is expected to be **KTF**. If test outcome is different then test case will be considered **FAIL**. This will help user identify if bug was silently fixed or software behaviour has changed.
-	* `@KnownToFail` annotation can also be used to set bug reference number. If bug reference number is provided, it will be printed in following reports:
-		* Summary report
-		* Extent report.
-
-* Usage:
-	* User can mark test case as "Known to Fail" and/or user can set bug reference using `@KnownToFail` annotation.
-> Example: `@KnownToFail(ktf = true, bugref = "TICKET-123, TICKET-456")`
-
 ## Logging Framework
 
 * Purpose:
@@ -177,7 +149,7 @@ Test status can be updated using following method :
             |OFF	|The highest possible rank and is intended to turn off logging.										|
             |TRACE	|Designates finer-grained informational events than the DEBUG.										|
             |WARN	|Designates potentially harmful situations.															|
-        * Note: Log level can be configured using `conf/framework_Configuration.xml` file.
+        * Note: Log level can be configured using `conf/framework_configuration.xml` file.
     * Log can be enabled/disabled dynamically (Only applicable to general log)
         * Disable log dynamically: `TestContext().getLogger().disableGeneralLog();`
         * Enable log dynamically: `TestContext().getLogger().enableGeneralLog();`
@@ -186,7 +158,7 @@ Test status can be updated using following method :
     * Log files are organised under test suite name for ease of use
         * Log files are created under the following hierarchy. `RootDir => SubDir => TestSuiteName => Log file`.
         > Example: `./reporting/SN-123/com.test.testsuite1/..`
-        * Root directory and Sub directory location can be configured using `conf/framework_Configuration.xml` file.
+        * Root directory and Sub directory location can be configured using `conf/framework_configuration.xml` file.
     * Log framework abstraction
         * Log framework is abstracted so that log framework can be changed in future without breaking existing test scripts.
     * Log file tracking
@@ -202,9 +174,9 @@ Test status can be updated using following method :
 
 * Usage:
 	* Enable/disable text/html log files:
-		* Can be configured using `conf/framework_Configuration.xml` file.
+		* Can be configured using `conf/framework_configuration.xml` file.
 	* Change log level and log directory:
-		* Can be configured using `conf/framework_Configuration.xml` file.
+		* Can be configured using `conf/framework_configuration.xml` file.
 	* logging simple string with level info or debug:
 	> `TestContext().getLogger().info("This is a test String" + "This is a test String 2");`
 	> `TestContext().getLogger().debug("This is a test String" + "This is a test String 2");`
@@ -230,7 +202,7 @@ Test status can be updated using following method :
 	* Final test result with bug reference number will be reported via Extent report.
 
 * Usage:
-	* Extent reporting can be enabled/disabled via `conf/framework_Configuration.xml` file.
+	* Extent reporting can be enabled/disabled via `conf/framework_configuration.xml` file.
 
 ## Real Time Logging
 
@@ -257,7 +229,7 @@ Test status can be updated using following method :
 	* By default, Artos is setup to stop on first failure. it can be configured to continue executing rest of the test cases.
 
 * Usage:
-	* Stop on Fail feature can be enabled/disabled via `conf/framework_Configuration.xml` file.
+	* Stop on Fail feature can be enabled/disabled via `conf/framework_configuration.xml` file.
 
 ## Global parameters
 
@@ -285,30 +257,6 @@ Test status can be updated using following method :
 >     </parameters>
 >   Note: Only String type of parameters can be set using XML test script but `setGlobalObject() & getGlobalObject()` can be used to set/retrieve any type of object(s) during run time.
 
-## Test Groups
-
-* Purpose:
-	* Test case can be grouped using `@Group` annotation. User can execute test case(s) which belong to specific group or groups. This can help segregate test cases based on features, automated/semiautomated/manual etc.. categories.
-
-* Facilities:
-    * Artos support executing test cases based on assigned test group(s).
-    * All test case(s) by default belong to group called `"*"`.
-    * Group names are case in-sensitive.
-
-* Usage:
-	* User can assign each test cases to desired group(s) by using `@group` annotation.
-	`@Group(group = { "CI", "SEMI_AUTO" })`.
-	* Group policy can be configured using XML test script.
->	To run all test cases
->	 	<groups>
->      		<group name="*"/>
->    	</groups>
->	To run test cases, belong to specific group or groups
->	 	<groups>
->      		<group name="CI"/>
->      		<group name="SEMI_AUTO"/>
->    	</groups>
-
 ## GUI Test Selector
 
 * Purpose:
@@ -327,9 +275,9 @@ Test status can be updated using following method :
         Before test cases are populated into GUI test selector, test cases are filtered for specified group(s). If user believes that group assignment is wrong, then it should be change in test script prior to launching test suite.
 
 * Usage:
-	* GUI test selector can be enabled/disabled using `conf/framework_Configuration.xml` file.
+	* GUI test selector can be enabled/disabled using `conf/framework_configuration.xml` file.
 
-> Note: If tests are executed on build server than disable GUI test selector using `conf/framework_Configuration.xml` file.
+> Note: If tests are executed on build server than disable GUI test selector using `conf/framework_configuration.xml` file.
 
 ## Annotations to mark test cases
 * Artos support many annotations to make test system more flexible.
@@ -344,6 +292,7 @@ Test status can be updated using following method :
 |@TestCase			|Above the test class which needs to recognised as a test case			|Mandatory			|
 |@TestPlan			|Above the test class. This provides basic info about test case			|Optional			|
 |@Group				|Above the test class. Assigns test case to a group or array of group	|Optional			|
+|@ExpectedException	|Above the test class. Assigns expected Exception test may throw		|Optional			|
 
 ### @BeforeTestSuite @AfterTestSuite @BeforeTest @AfterTest
 > 	public class Main implements PrePostRunnable {
@@ -376,8 +325,9 @@ Test status can be updated using following method :
 >         }
 > 	}
 
-### @TestCase @TestPlan @KnownToFail @Group
+### @TestCase @TestPlan @KnownToFail @Group @ExpectedException
 >     @Group(group = { "CI", "SEMI_AUTO" })
+>     @ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*")
 >     @TestPlan(decription = "Test", preparedBy = "JohnM", preparationDate = "", reviewedBy = "", reviewDate = "")
 >     @TestCase(skip = false, sequence = 1, label = "regression")
 >     @KnownToFail(ktf = true, bugref = "JIRA-????")
@@ -400,6 +350,76 @@ Test status can be updated using following method :
 >		// for test cases within com.test.project package
 >		ScanTestSuite testPlan = new ScanTestSuite("com.test.project");
 >		logger.info(testPlan.getTestPlan(context));
+
+### Known to Fail
+
+* Purpose:
+	* There may be a test scenario(s) which are known to be the bug but cannot be fixed straight away due to:
+		> * Priority
+		> OR
+		> * Project timelines
+		> OR
+		> * Bug may not be worth fixing.
+
+    In such case(s), those test case(s) should be marked as "known to fail" using @KnownToFail annotation and test status should be set to **KTF** upon test case failure. This will ensure that test case(s) does not end up in failed test case(s) list and user does not waste time re-investigating same issue(s).
+	* Second requirement is that when "known to fail" test case(s) will start passing because:
+		> * Bug is silently fixed
+		> OR
+		> * Software behaviour has changed
+
+	Then test engineer should be notified by marking test case with **FAIL** status.
+
+* Facilities:
+	* Known to fail test case(s) end result is expected to be either **KTF** or **FAIL**. If test result is different then test case will be considered **FAIL** by the test framework. This will help user identify if bug was silently fixed or software behaviour has changed.
+	* `@KnownToFail` annotation can also be used to mark test as "Known to Fail" and/or set bug reference number.
+	* If bug reference number is provided, it will be printed in following reports:
+		* Summary report
+		* Extent report.
+
+* Usage:
+	* User can mark test case as "Known to Fail" and/or user can set bug reference using `@KnownToFail` annotation.
+> Example: `@KnownToFail(ktf = true, bugref = "TICKET-123, TICKET-456")`
+
+### Test Groups
+
+* Purpose:
+	* Test case can be grouped using `@Group` annotation. User can execute test case(s) which belong to specific group or groups. This can help segregate test cases based on features, automated/semiautomated/manual etc.. categories.
+
+* Facilities:
+    * Artos supports executing test cases based on assigned test group(s).
+    * All test case(s) by default belong to group called `"*"`.
+    * Group names are case in-sensitive.
+
+* Usage:
+	* User can assign each test cases to desired group(s) by using `@group` annotation.
+	`@Group(group = { "CI", "SEMI_AUTO" })`.
+	* Group policy can be configured using XML test script.
+>	To run all test cases
+>	 	<groups>
+>      		<group name="*"/>
+>    	</groups>
+>	To run test cases, belong to specific group or groups
+>	 	<groups>
+>      		<group name="CI"/>
+>      		<group name="SEMI_AUTO"/>
+>    	</groups>
+
+### Test Exception
+
+* Purpose:
+	* Test case can throw an exception. By specifying expected exception and/or exception message description, user can pass exception verification responsibility to runner.
+
+* Facilities:
+    * Artos supports handling test exception on runner level.
+    * Artos supports matching exception description using regular expression.
+
+* Usage:
+	* User can assign `@ExpectedException` annotation on top of test class as shown below.
+	`@ExpectedException(expectedException = Exception.class)`
+    OR
+	`@ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*")`
+	* If only exception is specified then upon test exception, exception class will be matched.
+	* If exception and exception message is specified thenupon test exception, exception class and exception message will be matched (using regex).
 
 ### Test Sequence and Execution
 * Each test suite consists of at least two types of classes:

@@ -33,6 +33,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
+import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
 import com.artos.annotation.KnownToFail;
 import com.artos.annotation.TestCase;
@@ -76,6 +77,7 @@ public class ScanTestSuite {
 			TestPlan testplan = cl.getAnnotation(TestPlan.class);
 			Group group = cl.getAnnotation(Group.class);
 			KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
+			ExpectedException expectedException = cl.getAnnotation(ExpectedException.class);
 
 			// @formatter:off
 			//			System.out.println("@Testcase = " + cl.getName()
@@ -155,6 +157,11 @@ public class ScanTestSuite {
 			if (null != ktf) {
 				testobj.setKTF(ktf.ktf());
 				testobj.setBugTrackingNumber(ktf.bugref());
+			}
+			
+			if(null != expectedException){
+				testobj.setExpectedException(expectedException.expectedException());
+				testobj.setExceptionContains(expectedException.contains());
 			}
 
 			testObjWrapperList_All.add(testobj);

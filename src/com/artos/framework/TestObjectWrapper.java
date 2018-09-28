@@ -51,6 +51,10 @@ public class TestObjectWrapper {
 	boolean KTF = false;
 	String bugTrackingNumber = "";
 
+	// ExpectedException
+	Class<? extends Throwable> expectedException = null;
+	String exceptionContains = "";
+
 	/**
 	 * Default constructor
 	 * 
@@ -164,6 +168,22 @@ public class TestObjectWrapper {
 
 	public void setLabelList(List<String> labelList) {
 		this.labelList = labelList;
+	}
+
+	public Class<? extends Throwable> getExpectedException() {
+		return expectedException;
+	}
+
+	public void setExpectedException(Class<? extends Throwable> expectedException) {
+		this.expectedException = expectedException;
+	}
+
+	public String getExceptionContains() {
+		return exceptionContains;
+	}
+
+	public void setExceptionContains(String exceptionContains) {
+		this.exceptionContains = exceptionContains;
 	}
 
 }

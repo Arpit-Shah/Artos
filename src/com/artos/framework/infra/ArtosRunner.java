@@ -62,8 +62,8 @@ public class ArtosRunner {
 
 	/**
 	 * Constructor responsible for storing TestContext and class which contains
-	 * main() method. Upon initialisation TestExecutionEventListener is registered
-	 * so test decoration can be printed.
+	 * main() method. Upon initialisation TestExecutionEventListener is
+	 * registered so test decoration can be printed.
 	 * 
 	 * @param context
 	 *            TestContext object
@@ -94,7 +94,8 @@ public class ArtosRunner {
 	 * Runner for the framework
 	 * 
 	 * @param testList
-	 *            List of tests to run. All test must be {@code TestExecutable} type
+	 *            List of tests to run. All test must be {@code TestExecutable}
+	 *            type
 	 * @param groupList
 	 *            Group list which is required for test case filtering
 	 * @throws Exception
@@ -247,8 +248,8 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This method executes the test case and handles all the exception and set the
-	 * test status correctly
+	 * This method executes the test case and handles all the exception and set
+	 * the test status correctly
 	 * 
 	 * @param t
 	 *            TestCase {@code TestObjectWrapper}
@@ -264,17 +265,52 @@ public class ArtosRunner {
 			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
 			// --------------------------------------------------------------------------------------------
 
-		} catch (Exception e) {
-			context.setTestStatus(TestStatus.FAIL, e.getMessage());
-			UtilsFramework.writePrintStackTrace(context, e);
+		} catch (Throwable e) {
+			processTestException(t, e);
 			notifyTestException(e.getMessage());
-		} catch (Throwable ex) {
-			context.setTestStatus(TestStatus.FAIL, ex.getMessage());
-			UtilsFramework.writePrintStackTrace(context, ex);
-			notifyTestException(ex.getMessage());
 		} finally {
 			long testFinishTime = System.currentTimeMillis();
 			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, testFinishTime);
+		}
+	}
+
+	/**
+	 * This function processes exception if test during run time throws
+	 * {@code Throwable} or {@code Exception}. If {@code ExpectedException}
+	 * annotation if specified then Exception will be validated using provided
+	 * parameters. Otherwise test will be considered failed.
+	 * 
+	 * @param t
+	 *            {@code TestObjectWrapper} object
+	 * @param e
+	 *            {@code Throwable} or {@code Exception}
+	 */
+	private void processTestException(TestObjectWrapper t, Throwable e) {
+		// If user has not specified expected exception then fail the test
+		if (t.getExpectedException() != null) {
+			if (e.getClass() == t.getExpectedException()) {
+				// Exception matches as specified by user
+				context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
+				/*
+				 * If User has provided regular expression then validate
+				 * exception message with regular expression
+				 */
+				if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
+					if (e.getMessage().matches(t.getExceptionContains())) {
+						context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
+					} else {
+						context.setTestStatus(TestStatus.FAIL, "Exception message does not match regex : \nRegularExpression : "
+								+ t.getExceptionContains() + "\nException Message : " + e.getMessage());
+					}
+				}
+			} else {
+				context.setTestStatus(TestStatus.FAIL, "Exception is not as expected : \nExpected : " + t.getExpectedException().getName()
+						+ "\nReturned : " + e.getClass().getName());
+				UtilsFramework.writePrintStackTrace(context, e);
+			}
+		} else {
+			context.setTestStatus(TestStatus.FAIL, e.getMessage());
+			UtilsFramework.writePrintStackTrace(context, e);
 		}
 	}
 
@@ -450,9 +486,9 @@ public class ArtosRunner {
 	// ==================================================================================
 	/**
 	 * This method transforms given test list of{@code TestEecutable} type into
-	 * {@code TestObjectWrapper} type list. This method will only consider test This
-	 * method can not transform test cases outside current package, so those test
-	 * cases will be omitted from the list
+	 * {@code TestObjectWrapper} type list. This method will only consider test
+	 * This method can not transform test cases outside current package, so
+	 * those test cases will be omitted from the list
 	 * 
 	 * @param listOfTestCases
 	 *            list of test cases required to be transformed
@@ -483,9 +519,9 @@ public class ArtosRunner {
 		if (null != (testSuiteObject = context.getTestSuite())) {
 
 			/**
-			 * Get all test case object using reflection. If user provides XML based test
-			 * script then skip attribute set in annotation should be ignored because XML
-			 * test script must dictates the behaviour.
+			 * Get all test case object using reflection. If user provides XML
+			 * based test script then skip attribute set in annotation should be
+			 * ignored because XML test script must dictates the behaviour.
 			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
@@ -503,7 +539,8 @@ public class ArtosRunner {
 			// Get list of all test name
 			List<String> testNameList = suite.getTestFQCNList();
 
-			// If test list is empty then assume user wants to run all test cases
+			// If test list is empty then assume user wants to run all test
+			// cases
 			if (testNameList.isEmpty()) {
 				for (Map.Entry<String, TestObjectWrapper> entry : testCaseMap.entrySet()) {
 					if (belongsToApprovedGroup(suite.getGroupList(), entry.getValue().getGroupList())) {
@@ -528,9 +565,9 @@ public class ArtosRunner {
 		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
 
 			/**
-			 * Get all test case object using reflection. If user provides test list then
-			 * skip attribute set in annotation should be ignored because test list must
-			 * dictates the behaviour.
+			 * Get all test case object using reflection. If user provides test
+			 * list then skip attribute set in annotation should be ignored
+			 * because test list must dictates the behaviour.
 			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
