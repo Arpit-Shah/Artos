@@ -26,15 +26,39 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-//Make the annotation available at runtime:
+/**
+ * 
+ * Annotation {@code ExpectedException} can be used to define expected exception
+ * during test case execution. Specified exception will remain in scope of test
+ * case where annotation {@code ExpectedException} is defined. User can
+ * optionally provide regular expression which can be used to match exception
+ * message.
+ * 
+ * <p>
+ * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by
+ * the compiler and retained by the VM at run time, so it may be read
+ * reflectively.
+ * </p>
+ *
+ */
+// Make the annotation available at runtime:
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
 @Target(ElementType.TYPE)
 public @interface ExpectedException {
+
+	/**
+	 * Mandatory argument which defines expected {@code Throwable} or
+	 * {@code Exception}
+	 * 
+	 * @return {@code Throwable} or {@code Exception} class
+	 */
 	Class<? extends Throwable> expectedException();
 
 	/**
 	 * Optional Exception Description, Accepts Regular expression
+	 * 
+	 * @return regular expression designed by user to match exception message
 	 */
 	String contains() default "";
 }

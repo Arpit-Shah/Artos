@@ -37,6 +37,7 @@ import java.lang.annotation.Target;
  * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by
  * the compiler and retained by the VM at run time, so it may be read
  * reflectively.
+ * </p>
  *
  */
 // Make the annotation available at runtime:

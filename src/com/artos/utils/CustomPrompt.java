@@ -56,8 +56,8 @@ import com.artos.framework.Enums.ExceptionValue;
  * using following features.
  * 
  * <PRE>
- * 1. Display Countdown Timer
- * 2. Display upto 10 line of text which can be updated after GUI is launched
+ * 1. Display Count down Timer
+ * 2. Display up to 10 line of text which can be updated after GUI is launched
  * 3. Display image
  * 4. Display/hide 2 buttons
  * 5. Override button text
@@ -92,7 +92,7 @@ import com.artos.framework.Enums.ExceptionValue;
  * CustomPrompt cntdwn2 = new CustomPrompt(cntdwnltch2, 5000);
  * cntdwn2.setBtnYesText("????");
  * cntdwn2.setBtnNoText("****");
- * cntdwn2.setStr1("Countdown Timer : Blocking");
+ * cntdwn2.setStr1("Count down Timer : Blocking");
  * cntdwn2.setStr2("Button Text override : true");
  * cntdwn2.setStr3("Text 3");
  * cntdwn2.setStr4("Text 4");
@@ -103,7 +103,7 @@ import com.artos.framework.Enums.ExceptionValue;
  * // line text
  * CountDownLatch cntdwnltch5 = new CountDownLatch(1);
  * CustomPrompt cntdwn5 = new CustomPrompt(cntdwnltch5, 10000);
- * cntdwn5.showImage(new File("./assets/images/test.jpg"));
+ * cntdwn5.setImage(new File("./assets/images/test.jpg"));
  * cntdwn5.setStr1("Text 1");
  * cntdwn5.setStr2("Text 2");
  * cntdwn3.setHideButtons(true);
@@ -488,71 +488,30 @@ public class CustomPrompt implements ItemListener {
 		}
 	}
 
-	/**
-	 * Sets text of the button on the left hand side
-	 * 
-	 * @param btnYesText
-	 *            button label
-	 */
 	public void setBtnYesText(String btnYesText) {
 		this.btnYesText = btnYesText.toUpperCase();
 	}
 
-	/**
-	 * Sets text of the button on the right hand side
-	 * 
-	 * @param btnNoText
-	 *            button label
-	 */
 	public void setBtnNoText(String btnNoText) {
 		this.btnNoText = btnNoText.toUpperCase();
 	}
 
-	/**
-	 * Sets object of Countdown latch. This object must be set before start()
-	 * method is executed, otherwise it will ignored.
-	 * 
-	 * @param ctdwnLatch
-	 *            CountDownLatch object
-	 */
 	public void setCtdwnLatch(CountDownLatch ctdwnLatch) {
 		this.ctdwnLatch = ctdwnLatch;
 	}
 
-	/**
-	 * Checks if button is set to be hide
-	 * 
-	 * @return True or False
-	 */
 	public boolean isHideButtons() {
 		return hideButtons;
 	}
 
-	/**
-	 * Hide button if set to true
-	 * 
-	 * @param hideButtons
-	 *            true = hide button, false = unhide
-	 */
 	public void setHideButtons(boolean hideButtons) {
 		this.hideButtons = hideButtons;
 	}
 
-	/**
-	 * Set title of the GUI
-	 * 
-	 * @param title
-	 *            title of GUI window
-	 */
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	/**
-	 * Allows user to query if Yes button was pressed
-	 * 
-	 * @return true if yes button is pressed (Left most button)
-	 */
 	public boolean isButtonYesPressed() {
 		return buttonYesPressed;
 	}
@@ -561,11 +520,6 @@ public class CustomPrompt implements ItemListener {
 		this.buttonYesPressed = buttonYesPressed;
 	}
 
-	/**
-	 * Allows user to query if No button was pressed
-	 * 
-	 * @return true if no button is pressed (Right most button)
-	 */
 	public boolean isButtonNoPressed() {
 		return buttonNoPressed;
 	}
@@ -578,7 +532,7 @@ public class CustomPrompt implements ItemListener {
 		return image;
 	}
 
-	public void showImage(File image) {
+	public void setImage(File image) {
 		this.image = image;
 	}
 
