@@ -30,7 +30,7 @@ import com.artos.framework.infra.TestContext;
 /**
  * 
  * 
- *
+ * 
  */
 public class Guard {
 
@@ -44,43 +44,43 @@ public class Guard {
 	static String strFormatEqual_fail = " format are not same";
 	static String strFormatNotEqual_fail = " format are same";
 
-	static void print(TestContext context, String reference, String actual) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
+	private static String constructMsg(String reference, String actual) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual;
 	}
 
-	static void print(TestContext context, byte reference, byte actual) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", _con.bytesToHexString(reference, true),
-				_con.bytesToHexString(actual, true));
+	private static String constructMsg(byte reference, byte actual) {
+		return "Finding:\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : "
+				+ _con.bytesToHexString(actual, true);
 	}
 
-	static void print(TestContext context, byte reference, byte actual, byte delta) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\n   Delta : {}", _con.bytesToHexString(reference, true),
-				_con.bytesToHexString(actual, true), _con.bytesToHexString(delta, true));
+	private static String constructMsg(byte reference, byte actual, byte delta) {
+		return "Finding:\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : "
+				+ _con.bytesToHexString(actual, true) + "\n   Delta : " + _con.bytesToHexString(delta, true);
 	}
 
-	static void print(TestContext context, byte[] reference, byte[] actual) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", _con.bytesToHexString(reference, true),
-				_con.bytesToHexString(actual, true));
+	private static String constructMsg(byte[] reference, byte[] actual) {
+		return "Finding:\nReference : " + _con.bytesToHexString(reference, true) + "\n   Actual : "
+				+ _con.bytesToHexString(actual, true);
 	}
 
-	static void print(TestContext context, int reference, int actual) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
+	private static String constructMsg(int reference, int actual) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual;
 	}
 
-	static void print(TestContext context, int reference, int actual, int delta) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\n   Delta : {}", reference, actual, delta);
+	private static String constructMsg(int reference, int actual, int delta) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta;
 	}
 
-	static void print(TestContext context, boolean reference, boolean actual) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
+	private static String constructMsg(boolean reference, boolean actual) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual;
 	}
 
-	static void print(TestContext context, long reference, long actual) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}", reference, actual);
+	private static String constructMsg(long reference, long actual) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual;
 	}
 
-	static void print(TestContext context, long reference, long actual, long delta) {
-		context.getLogger().debug("Finding:\nReference : {}\n   Actual : {}\n   Delta : {}", reference, actual, delta);
+	private static String constructMsg(long reference, long actual, long delta) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta;
 	}
 
 	// *******************************************************************************************
@@ -89,8 +89,7 @@ public class Guard {
 	/**
 	 * Validates if object is null
 	 * 
-	 * @param obj
-	 *            Object to be verified
+	 * @param obj Object to be verified
 	 * @return true|false
 	 */
 	public static boolean isNull(Object obj) {
@@ -106,10 +105,8 @@ public class Guard {
 	/**
 	 * Validates that two strings are equal and returns boolean as a result
 	 * 
-	 * @param reference
-	 *            Reference string value
-	 * @param actual
-	 *            Actual string value
+	 * @param reference Reference string value
+	 * @param actual    Actual string value
 	 * @return true|false
 	 */
 	public static boolean isEquals(String reference, String actual) {
@@ -123,21 +120,33 @@ public class Guard {
 	 * Validates that two strings are equal. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference string value
-	 * @param actual
-	 *            Actual string value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference string value
+	 * @param actual    Actual string value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, String reference, String actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardEquals(TestContext context, String desc, String reference, String actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (!isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two strings are equal. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference string value
+	 * @param actual Actual string value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(String reference, String actual) throws ValueNotAsExpected {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strEqual_fail + "\n" + constructMsg(reference, actual));
 		}
 	}
 
@@ -145,21 +154,33 @@ public class Guard {
 	 * Validates that two strings are <b>not</b> equal. If they are, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference string value
-	 * @param actual
-	 *            Actual string value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference string value
+	 * @param actual    Actual string value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardNotEquals(TestContext context, String desc, String reference, String actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardNotEquals(TestContext context, String desc, String reference, String actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two strings are <b>not</b> equal. If they are, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference string value
+	 * @param actual    Actual string value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardNotEquals(String reference, String actual) throws ValueNotAsExpected {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strNotEqual_fail + "\n" + constructMsg(reference, actual));
 		}
 	}
 
@@ -169,10 +190,8 @@ public class Guard {
 	/**
 	 * Validates that two boolean values are equal. Returns boolean response
 	 * 
-	 * @param reference
-	 *            Reference boolean value
-	 * @param actual
-	 *            Actual boolean value
+	 * @param reference Reference boolean value
+	 * @param actual    Actual boolean value
 	 * @return true | false
 	 */
 	public static boolean isEquals(boolean reference, boolean actual) {
@@ -186,21 +205,34 @@ public class Guard {
 	 * Validates that two boolean values are equal. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference boolean value
-	 * @param actual
-	 *            Actual boolean value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference boolean value
+	 * @param actual    Actual boolean value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, boolean reference, boolean actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardEquals(TestContext context, String desc, boolean reference, boolean actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (!isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two boolean values are equal. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference boolean value
+	 * @param actual    Actual boolean value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardEquals(boolean reference, boolean actual) throws ValueNotAsExpected {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -208,21 +240,34 @@ public class Guard {
 	 * Validates that two boolean values are <b>not</b> equal. If they are, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference boolean value
-	 * @param actual
-	 *            Actual boolean value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference boolean value
+	 * @param actual    Actual boolean value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardNotEquals(TestContext context, String desc, boolean reference, boolean actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardNotEquals(TestContext context, String desc, boolean reference, boolean actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two boolean values are <b>not</b> equal. If they are, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference boolean value
+	 * @param actual    Actual boolean value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardNotEquals(boolean reference, boolean actual) throws ValueNotAsExpected {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strNotEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -230,14 +275,11 @@ public class Guard {
 	 * Validates that passed value is true. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param actual
-	 *            Actual boolean value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context test context
+	 * @param desc    Message to be printed
+	 * @param actual  Actual boolean value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
 	public static void guardTrue(TestContext context, String desc, boolean actual) throws ValueNotAsExpected {
 		guardEquals(context, desc, true, actual);
@@ -247,14 +289,11 @@ public class Guard {
 	 * Validates that passed value is false. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param actual
-	 *            Actual boolean value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context test context
+	 * @param desc    Message to be printed
+	 * @param actual  Actual boolean value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
 	public static void guardFalse(TestContext context, String desc, boolean actual) throws ValueNotAsExpected {
 		guardEquals(context, desc, false, actual);
@@ -276,10 +315,8 @@ public class Guard {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param format
-	 *            Format string (using $ as a wild card character)
-	 * @param actual
-	 *            Actual string to be compared
+	 * @param format Format string (using $ as a wild card character)
+	 * @param actual Actual string to be compared
 	 * @return true | false
 	 */
 	public static boolean isFormatEquals(String format, String actual) {
@@ -301,21 +338,42 @@ public class Guard {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param format
-	 *            Format string (using $ as a wild card character)
-	 * @param actual
-	 *            Actual string to be compared
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context test context
+	 * @param desc    Message to be printed
+	 * @param format  Format string (using $ as a wild card character)
+	 * @param actual  Actual string to be compared
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardFormatEquals(TestContext context, String desc, String format, String actual) throws ValueNotAsExpected {
-		print(context, format, actual);
+	public static void guardFormatEquals(TestContext context, String desc, String format, String actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(format, actual));
 		if (!isFormatEquals(format, actual)) {
 			throw new ValueNotAsExpected(desc + strFormatEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that passed value follows reference format. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message. Wild card
+	 * character is <b>$</b>, if value 01.05.0012 require format checking where .
+	 * and 05 are static values then {@code format} value can be $$.05.$$$$
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : isFormatEquals("Version format checking", "$$.$$.$$$$", "01.02.0001");
+	 * }
+	 * </PRE>
+	 * 
+	 * @param format Format string (using $ as a wild card character)
+	 * @param actual  Actual string to be compared
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardFormatEquals(String format, String actual) throws ValueNotAsExpected {
+		if (!isFormatEquals(format, actual)) {
+			throw new ValueNotAsExpected(strFormatEqual_fail + constructMsg(format, actual));
 		}
 	}
 
@@ -331,21 +389,41 @@ public class Guard {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param format
-	 *            Format string (using $ as a wild card character)
-	 * @param actual
-	 *            Actual string to be compared
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context test context
+	 * @param desc    Message to be printed
+	 * @param format  Format string (using $ as a wild card character)
+	 * @param actual  Actual string to be compared
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardFormatNotEquals(TestContext context, String desc, String format, String actual) throws ValueNotAsExpected {
-		print(context, format, actual);
+	public static void guardFormatNotEquals(TestContext context, String desc, String format, String actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(format, actual));
 		if (isFormatEquals(format, actual)) {
 			throw new ValueNotAsExpected(desc + strFormatNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that passed value <b>does not</b> follow reference format. If it
+	 * does, an {@link ValueNotAsExpected} is thrown with the given message. Wild
+	 * card character is <b>$</b>, if value 01.05.0012 require format checking where
+	 * . and 05 are static values then {@code format} value can be $$.05.$$$$
+	 * 
+	 * <PRE>
+	 * {@code
+	 * Example : guardFormatNotEquals("Version format checking", "$$.$$", "01.02.0001");
+	 * }
+	 * </PRE>
+	 * 
+	 * @param format Format string (using $ as a wild card character)
+	 * @param actual  Actual string to be compared
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardFormatNotEquals(String format, String actual) throws ValueNotAsExpected {
+		if (isFormatEquals(format, actual)) {
+			throw new ValueNotAsExpected(strFormatNotEqual_fail + constructMsg(format, actual));
 		}
 	}
 
@@ -356,10 +434,8 @@ public class Guard {
 	 * Validates that two byte values are equal. Appropriate boolean value will be
 	 * returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte reference, byte actual) {
@@ -373,12 +449,9 @@ public class Guard {
 	 * Validates that two byte values are equal with allowed {@code delta} on either
 	 * side. Appropriate boolean value will be returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @param delta
-	 *            Variant allowed on either side of the reference value
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @param delta     Variant allowed on either side of the reference value
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte reference, byte actual, byte delta) {
@@ -407,20 +480,52 @@ public class Guard {
 	 * Validates that two byte values are equal. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, byte reference, byte actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardEquals(TestContext context, String desc, byte reference, byte actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two byte values are equal. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(byte reference, byte actual) throws ValueNotAsExpected {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that two byte values are equal with allowed {@code delta}. If they
+	 * are not, an {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param delta     Variant allowed on either side of reference value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(TestContext context, String desc, byte reference, byte actual, byte delta)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual, delta));
+		if (!isEquals(reference, actual, delta)) {
 			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
@@ -429,23 +534,15 @@ public class Guard {
 	 * Validates that two byte values are equal with allowed {@code delta}. If they
 	 * are not, an {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param delta
-	 *            Variant allowed on either side of reference value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param reference Reference byte value
+	 * @param delta     Variant allowed on either side of reference value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, byte reference, byte actual, byte delta) throws ValueNotAsExpected {
-		print(context, reference, actual, delta);
+	public static void guardEquals(byte reference, byte actual, byte delta) throws ValueNotAsExpected {
 		if (!isEquals(reference, actual, delta)) {
-			throw new ValueNotAsExpected(desc + strEqual_fail);
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual, delta));
 		}
 	}
 
@@ -453,21 +550,34 @@ public class Guard {
 	 * Validates that two byte values are <b>not</b> equal. If they are, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardNotEquals(TestContext context, String desc, byte reference, byte actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardNotEquals(TestContext context, String desc, byte reference, byte actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two byte values are <b>not</b> equal. If they are, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardNotEquals(byte reference, byte actual) throws ValueNotAsExpected {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strNotEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -476,21 +586,35 @@ public class Guard {
 	 * byte value. If they are not, an {@link ValueNotAsExpected} is thrown with the
 	 * given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardGreaterThan(TestContext context, String desc, byte reference, byte actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardGreaterThan(TestContext context, String desc, byte reference, byte actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference <= actual) {
 			throw new ValueNotAsExpected(desc + strGreater_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code actual} byte value is greater than {@code reference}
+	 * byte value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
+	 * 
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardGreaterThan(byte reference, byte actual) throws ValueNotAsExpected {
+		if (reference <= actual) {
+			throw new ValueNotAsExpected(strGreater_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -499,21 +623,35 @@ public class Guard {
 	 * {@code reference} byte value. If they are not, an {@link ValueNotAsExpected}
 	 * is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardGreaterOrEqualsTo(TestContext context, String desc, byte reference, byte actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardGreaterOrEqualsTo(TestContext context, String desc, byte reference, byte actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference < actual) {
 			throw new ValueNotAsExpected(desc + strGreaterOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code actual} byte value is greater than or equal to
+	 * {@code reference} byte value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
+	 * 
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardGreaterOrEqualsTo(byte reference, byte actual) throws ValueNotAsExpected {
+		if (reference < actual) {
+			throw new ValueNotAsExpected(strGreaterOrEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -522,21 +660,35 @@ public class Guard {
 	 * value. If they are not, an {@link ValueNotAsExpected} is thrown with the
 	 * given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardLessThan(TestContext context, String desc, byte reference, byte actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardLessThan(TestContext context, String desc, byte reference, byte actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference >= actual) {
 			throw new ValueNotAsExpected(desc + strLess_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code actual} byte value is less than {@code reference} byte
+	 * value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
+	 * 
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardLessThan(byte reference, byte actual) throws ValueNotAsExpected {
+		if (reference >= actual) {
+			throw new ValueNotAsExpected(strLess_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -545,21 +697,35 @@ public class Guard {
 	 * {@code reference} byte value. If they are not, an {@link ValueNotAsExpected}
 	 * is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte value
-	 * @param actual
-	 *            Actual byte value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardLessOrEqualsTo(TestContext context, String desc, byte reference, byte actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardLessOrEqualsTo(TestContext context, String desc, byte reference, byte actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference > actual) {
 			throw new ValueNotAsExpected(desc + strLessOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code actual} byte value is less than or equal to
+	 * {@code reference} byte value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
+	 * 
+	 * @param reference Reference byte value
+	 * @param actual    Actual byte value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardLessOrEqualsTo(byte reference, byte actual) throws ValueNotAsExpected {
+		if (reference > actual) {
+			throw new ValueNotAsExpected(strLessOrEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -570,10 +736,8 @@ public class Guard {
 	 * Validates that two byte arrays are equal. Appropriate boolean value will be
 	 * returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference byte array
-	 * @param actual
-	 *            Actual byte array
+	 * @param reference Reference byte array
+	 * @param actual    Actual byte array
 	 * @return true | false
 	 */
 	public static boolean isEquals(byte[] reference, byte[] actual) {
@@ -587,21 +751,33 @@ public class Guard {
 	 * Validates that two byte arrays are equal. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte array
-	 * @param actual
-	 *            Actual byte array
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte array
+	 * @param actual    Actual byte array
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, byte[] reference, byte[] actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardEquals(TestContext context, String desc, byte[] reference, byte[] actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (!isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two byte arrays are equal. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference byte array
+	 * @param actual    Actual byte array
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(byte[] reference, byte[] actual) throws ValueNotAsExpected {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -609,21 +785,33 @@ public class Guard {
 	 * Validates that two byte arrays are <b>not</b> equal. If they are, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference byte array
-	 * @param actual
-	 *            Actual byte array
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference byte array
+	 * @param actual    Actual byte array
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardNotEquals(TestContext context, String desc, byte[] reference, byte[] actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardNotEquals(TestContext context, String desc, byte[] reference, byte[] actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two byte arrays are <b>not</b> equal. If they are, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference byte array
+	 * @param actual    Actual byte array
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardNotEquals(byte[] reference, byte[] actual) throws ValueNotAsExpected {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strNotEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -634,10 +822,8 @@ public class Guard {
 	 * Validates that two integer values are equal. Appropriate boolean value will
 	 * be returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
 	 * @return true | false
 	 */
 	public static boolean isEquals(int reference, int actual) {
@@ -651,12 +837,9 @@ public class Guard {
 	 * Validates that two integer values are equal with allowed {@code delta} on
 	 * either side. Appropriate boolean value will be returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @param delta
-	 *            Variant allowed on either side of the reference value
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @param delta     Variant allowed on either side of the reference value
 	 * @return true | false
 	 */
 	public static boolean isEquals(int reference, int actual, int delta) {
@@ -685,20 +868,54 @@ public class Guard {
 	 * Validates that two integer values are equal. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, int reference, int actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardEquals(TestContext context, String desc, int reference, int actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two integer values are equal. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardEquals(int reference, int actual) throws ValueNotAsExpected {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that two integer values are equal with allowed {@code delta} on
+	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
+	 * 
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @param delta     Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(TestContext context, String desc, int reference, int actual, int delta)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual, delta));
+		if (!isEquals(reference, actual, delta)) {
 			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
@@ -708,23 +925,16 @@ public class Guard {
 	 * either side. If they are not, an {@link ValueNotAsExpected} is thrown with
 	 * the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @param delta
-	 *            Variant allowed on either side of the reference value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @param delta     Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, int reference, int actual, int delta) throws ValueNotAsExpected {
-		print(context, reference, actual, delta);
+
+	public static void guardEquals(int reference, int actual, int delta) throws ValueNotAsExpected {
 		if (!isEquals(reference, actual, delta)) {
-			throw new ValueNotAsExpected(desc + strEqual_fail);
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual, delta));
 		}
 	}
 
@@ -732,21 +942,34 @@ public class Guard {
 	 * Validates that two integer values are <b>not</b> equal. If they are, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardNotEquals(TestContext context, String desc, int reference, int actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardNotEquals(TestContext context, String desc, int reference, int actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two integer values are <b>not</b> equal. If they are, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardNotEquals(int reference, int actual) throws ValueNotAsExpected {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strNotEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -755,21 +978,34 @@ public class Guard {
 	 * integer value. If they are not, an {@link ValueNotAsExpected} is thrown with
 	 * the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardGreaterThan(TestContext context, String desc, int reference, int actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardGreaterThan(TestContext context, String desc, int reference, int actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference <= actual) {
 			throw new ValueNotAsExpected(desc + strGreater_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} integer value is greater than {@code actual}
+	 * integer value. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardGreaterThan(int reference, int actual) throws ValueNotAsExpected {
+		if (reference <= actual) {
+			throw new ValueNotAsExpected(strGreater_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -778,21 +1014,34 @@ public class Guard {
 	 * {@code actual} integer value. If they are not, an {@link ValueNotAsExpected}
 	 * is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardGreaterOrEqualsTo(TestContext context, String desc, int reference, int actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardGreaterOrEqualsTo(TestContext context, String desc, int reference, int actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference < actual) {
 			throw new ValueNotAsExpected(desc + strGreaterOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} integer value is greater than or equal to
+	 * {@code actual} integer value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardGreaterOrEqualsTo(int reference, int actual) throws ValueNotAsExpected {
+		if (reference < actual) {
+			throw new ValueNotAsExpected(strGreaterOrEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -801,21 +1050,34 @@ public class Guard {
 	 * integer value. If they are not, an {@link ValueNotAsExpected} is thrown with
 	 * the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardLessThan(TestContext context, String desc, int reference, int actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardLessThan(TestContext context, String desc, int reference, int actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference >= actual) {
 			throw new ValueNotAsExpected(desc + strLess_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} integer value is less than {@code actual}
+	 * integer value. If they are not, an {@link ValueNotAsExpected} is thrown with
+	 * the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardLessThan(int reference, int actual) throws ValueNotAsExpected {
+		if (reference >= actual) {
+			throw new ValueNotAsExpected(strLess_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -824,21 +1086,34 @@ public class Guard {
 	 * {@code actual} integer value. If they are not, an {@link ValueNotAsExpected}
 	 * is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference integer value
-	 * @param actual
-	 *            Actual integer value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardLessOrEqualsTo(TestContext context, String desc, int reference, int actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardLessOrEqualsTo(TestContext context, String desc, int reference, int actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference > actual) {
 			throw new ValueNotAsExpected(desc + strLessOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} integer value is less than or equal to
+	 * {@code actual} integer value. If they are not, an {@link ValueNotAsExpected}
+	 * is thrown with the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual    Actual integer value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardLessOrEqualsTo(int reference, int actual) throws ValueNotAsExpected {
+		if (reference > actual) {
+			throw new ValueNotAsExpected(strLessOrEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -849,10 +1124,8 @@ public class Guard {
 	 * Validates that two long values are equal. Appropriate boolean value will be
 	 * returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
 	 * @return true | false
 	 */
 	public static boolean isEquals(long reference, long actual) {
@@ -866,12 +1139,9 @@ public class Guard {
 	 * Validates that two long values are equal with allowed {@code delta} on either
 	 * side. Appropriate boolean value will be returned based on comparison.
 	 * 
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @param delta
-	 *            Variant allowed on either side of the reference value
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @param delta     Variant allowed on either side of the reference value
 	 * @return true | false
 	 */
 	public static boolean isEquals(long reference, long actual, long delta) {
@@ -900,20 +1170,53 @@ public class Guard {
 	 * Validates that two long values are equal. If they are not, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, long reference, long actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardEquals(TestContext context, String desc, long reference, long actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(desc + strEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two long values are equal. If they are not, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(long reference, long actual) throws ValueNotAsExpected {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that two long values are equal with allowed {@code delta} on either
+	 * side. If they are not, an {@link ValueNotAsExpected} is thrown with the given
+	 * message.
+	 * 
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @param delta     Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardEquals(TestContext context, String desc, long reference, long actual, long delta)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual, delta));
+		if (!isEquals(reference, actual, delta)) {
 			throw new ValueNotAsExpected(desc + strEqual_fail);
 		}
 	}
@@ -923,23 +1226,15 @@ public class Guard {
 	 * side. If they are not, an {@link ValueNotAsExpected} is thrown with the given
 	 * message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @param delta
-	 *            Variant allowed on either side of the reference value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @param delta     Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardEquals(TestContext context, String desc, long reference, long actual, long delta) throws ValueNotAsExpected {
-		print(context, reference, actual, delta);
+	public static void guardEquals(long reference, long actual, long delta) throws ValueNotAsExpected {
 		if (!isEquals(reference, actual, delta)) {
-			throw new ValueNotAsExpected(desc + strEqual_fail);
+			throw new ValueNotAsExpected(strEqual_fail + constructMsg(reference, actual, delta));
 		}
 	}
 
@@ -947,21 +1242,34 @@ public class Guard {
 	 * Validates that two long values are <b>not</b> equal. If they are, an
 	 * {@link ValueNotAsExpected} is thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardNotEquals(TestContext context, String desc, long reference, long actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardNotEquals(TestContext context, String desc, long reference, long actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (isEquals(reference, actual)) {
 			throw new ValueNotAsExpected(desc + strNotEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that two long values are <b>not</b> equal. If they are, an
+	 * {@link ValueNotAsExpected} is thrown with the given message.
+	 * 
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardNotEquals(long reference, long actual) throws ValueNotAsExpected {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpected(strNotEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -970,21 +1278,35 @@ public class Guard {
 	 * long value. If they are not, an {@link ValueNotAsExpected} is thrown with the
 	 * given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardGreaterThan(TestContext context, String desc, long reference, long actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardGreaterThan(TestContext context, String desc, long reference, long actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference <= actual) {
 			throw new ValueNotAsExpected(desc + strGreater_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} long value is greater than {@code actual}
+	 * long value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
+	 * 
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+
+	public static void guardGreaterThan(long reference, long actual) throws ValueNotAsExpected {
+		if (reference <= actual) {
+			throw new ValueNotAsExpected(strGreater_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -993,21 +1315,34 @@ public class Guard {
 	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected} is
 	 * thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardGreaterOrEquals(TestContext context, String desc, long reference, long actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardGreaterOrEquals(TestContext context, String desc, long reference, long actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference < actual) {
 			throw new ValueNotAsExpected(desc + strGreaterOrEqual_fail);
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} long value is greater than or equal to
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected} is
+	 * thrown with the given message.
+	 * 
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardGreaterOrEquals(long reference, long actual) throws ValueNotAsExpected {
+		if (reference < actual) {
+			throw new ValueNotAsExpected(strGreaterOrEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -1016,21 +1351,35 @@ public class Guard {
 	 * value. If they are not, an {@link ValueNotAsExpected} is thrown with the
 	 * given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardLessThan(TestContext context, String desc, long reference, long actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardLessThan(TestContext context, String desc, long reference, long actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference >= actual) {
 			throw new ValueNotAsExpected(desc + strLess_fail);
+		}
+	}
+	
+	/**
+	 * Validates that {@code reference} long value is less than {@code actual} long
+	 * value. If they are not, an {@link ValueNotAsExpected} is thrown with the
+	 * given message.
+	 * 
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	public static void guardLessThan(long reference, long actual)
+			throws ValueNotAsExpected {
+		if (reference >= actual) {
+			throw new ValueNotAsExpected(strLess_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -1039,21 +1388,36 @@ public class Guard {
 	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected} is
 	 * thrown with the given message.
 	 * 
-	 * @param context
-	 *            test context
-	 * @param desc
-	 *            Message to be printed
-	 * @param reference
-	 *            Reference long value
-	 * @param actual
-	 *            Actual long value
-	 * @throws ValueNotAsExpected
-	 *             Exception is thrown if value is not meeting defined criteria
+	 * @param context   test context
+	 * @param desc      Message to be printed
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
 	 */
-	public static void guardLessOrEqualsTo(TestContext context, String desc, long reference, long actual) throws ValueNotAsExpected {
-		print(context, reference, actual);
+	public static void guardLessOrEqualsTo(TestContext context, String desc, long reference, long actual)
+			throws ValueNotAsExpected {
+		context.getLogger().debug(constructMsg(reference, actual));
 		if (reference > actual) {
 			throw new ValueNotAsExpected(desc + strLessOrEqual_fail);
+		}
+	}
+	
+	/**
+	 * Validates that {@code reference} long value is less than or equal to
+	 * {@code actual} long value. If they are not, an {@link ValueNotAsExpected} is
+	 * thrown with the given message.
+	 * 
+	 * @param reference Reference long value
+	 * @param actual    Actual long value
+	 * @throws ValueNotAsExpected Exception is thrown if value is not meeting
+	 *                            defined criteria
+	 */
+	
+	public static void guardLessOrEqualsTo(long reference, long actual)
+			throws ValueNotAsExpected {
+		if (reference > actual) {
+			throw new ValueNotAsExpected(strLessOrEqual_fail + constructMsg(reference, actual));
 		}
 	}
 
@@ -1070,23 +1434,19 @@ public class Guard {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param context
-	 *            test context
-	 * @param e
-	 *            Exception which required to be verified
-	 * @param actual
-	 *            Actual string value
-	 * @throws Exception
-	 *             if exception message is not as expected then same exception is
-	 *             thrown again
+	 * @param context test context
+	 * @param e       Exception which required to be verified
+	 * @param actual  Actual string value
+	 * @throws Exception if exception message is not as expected then same exception
+	 *                   is thrown again
 	 */
 	public static void guardEquals(TestContext context, Exception e, String actual) throws Exception {
-		print(context, e.getMessage(), actual);
+		context.getLogger().debug(constructMsg(e.getMessage(), actual));
 		if (!e.getMessage().contains(actual)) {
 			throw e;
 		}
 	}
-
+	
 	// *******************************************************************************************
 	// Flow
 	// *******************************************************************************************
@@ -1100,10 +1460,8 @@ public class Guard {
 	 * }
 	 * </PRE>
 	 * 
-	 * @param msg
-	 *            Message to be printed
-	 * @throws WrongFlow
-	 *             Indicates that code is following wrong flow
+	 * @param msg Message to be printed
+	 * @throws WrongFlow Indicates that code is following wrong flow
 	 */
 	public static void guardWrongFlow(String msg) throws WrongFlow {
 		throw new WrongFlow(msg);
