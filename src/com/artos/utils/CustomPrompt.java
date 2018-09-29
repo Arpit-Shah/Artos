@@ -392,6 +392,11 @@ public class CustomPrompt implements ItemListener {
 
 	// Force stops GUI
 	public void stop() {
+		if (null != ctdwnLatch) {
+			while (ctdwnLatch.getCount() > 0) {
+				ctdwnLatch.countDown();
+			}
+		}
 		disposeGUI();
 	}
 
@@ -430,7 +435,7 @@ public class CustomPrompt implements ItemListener {
 			jltime.setText(format.format(hours) + ":" + format.format(minutes) + ":" + format.format(seconds));
 
 			if (remaining == 0) {
-				disposeGUI();
+				stop();
 			}
 		}
 	}
@@ -468,7 +473,6 @@ public class CustomPrompt implements ItemListener {
 	@Override
 	public void itemStateChanged(ItemEvent arg0) {
 		// TODO Auto-generated method stub
-
 	}
 
 	// code for what happens when user presses the start or reset button
@@ -478,16 +482,16 @@ public class CustomPrompt implements ItemListener {
 			String bname = e.getActionCommand();
 			if (bname.equals(btnYesText)) {
 				setButtonYesPressed(true);
-				disposeGUI();
+				stop();
 			} else if (bname.equals(btnNoText)) {
 				setButtonNoPressed(true);
-				disposeGUI();
+				stop();
 			} else {
 				// Do nothing
 			}
 		}
 	}
-
+	
 	public void setBtnYesText(String btnYesText) {
 		this.btnYesText = btnYesText.toUpperCase();
 	}
