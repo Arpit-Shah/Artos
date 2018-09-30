@@ -27,7 +27,7 @@ import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.infra.TestContext;
 
 /**
- * Used for GUITest Selector
+ * Used for GUI Test Selector
  */
 public interface TestRunnable {
 
