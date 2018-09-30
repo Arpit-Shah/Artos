@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -53,8 +54,7 @@ public class Runner {
 	int threadCount = 1;
 
 	/**
-	 * @param cls
-	 *            Class which contains main() method
+	 * @param cls Class which contains main() method
 	 * @see TestContext
 	 */
 	public Runner(Class<? extends PrePostRunnable> cls) {
@@ -69,24 +69,15 @@ public class Runner {
 	 * - Test script is not provided then test list will be prepared using reflection.
 	 * </PRE>
 	 * 
-	 * @param args
-	 *            command line arguments
-	 * @param loopCount
-	 *            test loop count
+	 * @param args command line arguments
+	 * @param loopCount test loop count
 	 * 
-	 * @throws ExecutionException
-	 *             if the computation threw an exception
-	 * @throws InterruptedException
-	 *             if the current thread was interrupted while waiting
-	 * @throws InvalidData
-	 *             if user provides invalid data
-	 * @throws IOException
-	 *             if io operation error occurs
-	 * @throws SAXException
-	 *             If any parse errors occur.
-	 * @throws ParserConfigurationException
-	 *             if a DocumentBuildercannot be created which satisfies the
-	 *             configuration requested.
+	 * @throws ExecutionException if the computation threw an exception
+	 * @throws InterruptedException if the current thread was interrupted while waiting
+	 * @throws InvalidData if user provides invalid data
+	 * @throws IOException if io operation error occurs
+	 * @throws SAXException If any parse errors occur.
+	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	public void run(String[] args, int loopCount)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
@@ -103,25 +94,15 @@ public class Runner {
 	 * - Test script is not provided then test list will be prepared using reflection. supplied group list will be applied.
 	 * </PRE>
 	 * 
-	 * @param args
-	 *            command line arguments
-	 * @param loopCount
-	 *            test loop count
-	 * @param groupList
-	 *            group list required to filter test cases
-	 * @throws ExecutionException
-	 *             if the computation threw an exception
-	 * @throws InterruptedException
-	 *             if the current thread was interrupted while waiting
-	 * @throws InvalidData
-	 *             if user provides invalid data
-	 * @throws IOException
-	 *             if io operation error occurs
-	 * @throws SAXException
-	 *             If any parse errors occur.
-	 * @throws ParserConfigurationException
-	 *             if a DocumentBuildercannot be created which satisfies the
-	 *             configuration requested.
+	 * @param args command line arguments
+	 * @param loopCount test loop count
+	 * @param groupList group list required to filter test cases
+	 * @throws ExecutionException if the computation threw an exception
+	 * @throws InterruptedException if the current thread was interrupted while waiting
+	 * @throws InvalidData if user provides invalid data
+	 * @throws IOException if io operation error occurs
+	 * @throws SAXException If any parse errors occur.
+	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	public void run(String[] args, int loopCount, List<String> groupList)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
@@ -139,25 +120,15 @@ public class Runner {
 	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
 	 * </PRE>
 	 * 
-	 * @param args
-	 *            command line arguments
-	 * @param testList
-	 *            testList provided by user
-	 * @param loopCount
-	 *            test loop count
-	 * @throws ExecutionException
-	 *             if the computation threw an exception
-	 * @throws InterruptedException
-	 *             if the current thread was interrupted while waiting
-	 * @throws InvalidData
-	 *             if user provides invalid data
-	 * @throws IOException
-	 *             if io operation error occurs
-	 * @throws SAXException
-	 *             If any parse errors occur.
-	 * @throws ParserConfigurationException
-	 *             if a DocumentBuildercannot be created which satisfies the
-	 *             configuration requested.
+	 * @param args command line arguments
+	 * @param testList testList provided by user
+	 * @param loopCount test loop count
+	 * @throws ExecutionException if the computation threw an exception
+	 * @throws InterruptedException if the current thread was interrupted while waiting
+	 * @throws InvalidData if user provides invalid data
+	 * @throws IOException if io operation error occurs
+	 * @throws SAXException If any parse errors occur.
+	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	public void run(String[] args, List<TestExecutable> testList, int loopCount)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
@@ -175,27 +146,16 @@ public class Runner {
 	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
 	 * </PRE>
 	 * 
-	 * @param args
-	 *            command line arguments
-	 * @param testList
-	 *            testList provided by user
-	 * @param loopCount
-	 *            test loop count
-	 * @param groupList
-	 *            group list required to filter test cases
-	 * @throws ExecutionException
-	 *             if the computation threw an exception
-	 * @throws InterruptedException
-	 *             if the current thread was interrupted while waiting
-	 * @throws InvalidData
-	 *             if user provides invalid data
-	 * @throws IOException
-	 *             if io operation error occurs
-	 * @throws SAXException
-	 *             If any parse errors occur.
-	 * @throws ParserConfigurationException
-	 *             if a DocumentBuildercannot be created which satisfies the
-	 *             configuration requested.
+	 * @param args command line arguments
+	 * @param testList testList provided by user
+	 * @param loopCount test loop count
+	 * @param groupList group list required to filter test cases
+	 * @throws ExecutionException if the computation threw an exception
+	 * @throws InterruptedException if the current thread was interrupted while waiting
+	 * @throws InvalidData if user provides invalid data
+	 * @throws IOException if io operation error occurs
+	 * @throws SAXException If any parse errors occur.
+	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	@SuppressWarnings("unchecked")
 	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> groupList)
@@ -307,6 +267,20 @@ public class Runner {
 		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
 			// only create Extent config file if not present already
 			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "extent_configuration.xml");
+
+			// TODO This code is temporary and can be removed after couple of releases
+			{
+				final File oldfXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "Extent_Config.xml");
+				if (oldfXmlFile.exists() && oldfXmlFile.isFile()) {
+					try {
+						File newFile = new File(targetFile.getParent(), targetFile.getName());
+						Files.move(oldfXmlFile.toPath(), newFile.toPath());
+					} catch (Exception e) {
+						System.err.println(e.getMessage());
+					}
+				}
+			}
+
 			if (!targetFile.exists() || !targetFile.isFile()) {
 
 				// create dir if not present
@@ -336,7 +310,7 @@ public class Runner {
 			if (!targetFile.getName().equals("user_auth_settings.xml")) {
 				System.err.println("Invalid File Name : " + targetFile.getAbsolutePath());
 			}
-			
+
 			if (!targetFile.exists() || !targetFile.isFile()) {
 
 				// create dir if not present
@@ -359,20 +333,14 @@ public class Runner {
 	}
 
 	/**
-	 * If test script is provided via command line then parse test script and
-	 * generate list of test suites
+	 * If test script is provided via command line then parse test script and generate list of test suites
 	 * 
 	 * @return list of test suites
 	 * 
-	 * @throws InvalidData
-	 *             if user provides invalid data
-	 * @throws IOException
-	 *             if io operation error occurs
-	 * @throws SAXException
-	 *             If any parse errors occur.
-	 * @throws ParserConfigurationException
-	 *             if a DocumentBuildercannot be created which satisfies the
-	 *             configuration requested.
+	 * @throws InvalidData if user provides invalid data
+	 * @throws IOException if io operation error occurs
+	 * @throws SAXException If any parse errors occur.
+	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	private List<TestSuite> createTestSuiteList() throws ParserConfigurationException, SAXException, IOException, InvalidData {
 		if (null == CliProcessor.testScriptFile) {
@@ -386,19 +354,16 @@ public class Runner {
 	}
 
 	/**
-	 * Creates appenders for number of suites provided incase parallel execution
-	 * is required, if test script is not provided then appenders are created
-	 * for one thread
+	 * Creates appenders for number of suites provided incase parallel execution is required, if test script is not provided then appenders are
+	 * created for one thread
 	 * 
-	 * @param testSuiteList
-	 *            list of testSuites
+	 * @param testSuiteList list of testSuites
 	 * @return LoggetContext
 	 */
 	private LoggerContext createGlobalLoggerContext(List<TestSuite> testSuiteList) {
 		// Create loggerContext with all possible thread appenders
 		/**
-		 * Package name can not be used for log sub-directory name in case where
-		 * test cases are launched from project root directory, thus log will
+		 * Package name can not be used for log sub-directory name in case where test cases are launched from project root directory, thus log will
 		 * come out in logging base directory.
 		 */
 		String logSubDir = "";
@@ -431,10 +396,8 @@ class SuiteTask implements Runnable {
 	/**
 	 * Constructor for Runnable
 	 *
-	 * @param context
-	 *            test context
-	 * @param testList
-	 *            list of TestExecutable (provided by user)
+	 * @param context test context
+	 * @param testList list of TestExecutable (provided by user)
 	 */
 	public SuiteTask(TestContext context, List<TestExecutable> testList, List<String> groupList) {
 		this.context = context;

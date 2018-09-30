@@ -23,6 +23,7 @@ package com.artos.framework.xml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,8 +44,7 @@ import org.w3c.dom.NodeList;
 import com.artos.framework.FWStaticStore;
 
 /**
- * This class is responsible for storing framework Configuration. During test
- * suit execution XML file will be searched at location ./conf
+ * This class is responsible for storing framework Configuration. During test suit execution XML file will be searched at location ./conf
  */
 public class FrameworkConfig {
 
@@ -91,23 +91,34 @@ public class FrameworkConfig {
 	/**
 	 * Constructor
 	 * 
-	 * @param createIfNotPresent
-	 *            enables creation of default configuration file if not present
+	 * @param createIfNotPresent enables creation of default configuration file if not present
 	 */
 	public FrameworkConfig(boolean createIfNotPresent) {
 		readXMLConfig(createIfNotPresent);
 	}
 
 	/**
-	 * Reads Framework configuration file and set global values so framework
-	 * configurations is available to everyone
+	 * Reads Framework configuration file and set global values so framework configurations is available to everyone
 	 * 
-	 * @param createIfNotPresent
-	 *            enables creation of default configuration file if not present
+	 * @param createIfNotPresent enables creation of default configuration file if not present
 	 */
 	public void readXMLConfig(boolean createIfNotPresent) {
 
 		try {
+
+			// TODO This code is temporary and can be removed after couple of releases
+			{
+				final File oldfXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "Framework_Config.xml");
+				if (oldfXmlFile.exists() && oldfXmlFile.isFile()) {
+					try {
+						File newFile = new File(fXmlFile.getParent(), fXmlFile.getName());
+						Files.move(oldfXmlFile.toPath(), newFile.toPath());
+					} catch (Exception e) {
+						System.err.println(e.getMessage());
+					}
+				}
+			}
+
 			if (!fXmlFile.exists() || !fXmlFile.isFile()) {
 				if (createIfNotPresent) {
 					fXmlFile.getParentFile().mkdirs();
@@ -144,8 +155,7 @@ public class FrameworkConfig {
 	/**
 	 * Writes default framework configuration file
 	 * 
-	 * @param fXmlFile
-	 *            Destination file object
+	 * @param fXmlFile Destination file object
 	 * @throws Exception
 	 */
 	private void writeDefaultConfig(File fXmlFile) throws Exception {
@@ -482,8 +492,7 @@ public class FrameworkConfig {
 	/**
 	 * Reads logger info from config file
 	 * 
-	 * @param doc
-	 *            Document object of XML file
+	 * @param doc Document object of XML file
 	 */
 	private void readLoggerConfig(Document doc) {
 		// System.out.println("Root element :" +
@@ -538,8 +547,7 @@ public class FrameworkConfig {
 	/**
 	 * Reads features info from config file
 	 * 
-	 * @param doc
-	 *            Document object of an XML file
+	 * @param doc Document object of an XML file
 	 */
 	private void readFeatures(Document doc) {
 		// System.out.println("Root element :" +
@@ -584,8 +592,7 @@ public class FrameworkConfig {
 	/**
 	 * Reads organisationInfo from config file
 	 * 
-	 * @param doc
-	 *            Document object of an XML file
+	 * @param doc Document object of an XML file
 	 */
 	private void readOrganisationInfo(Document doc) {
 		// System.out.println("Root element :" +
@@ -674,8 +681,7 @@ public class FrameworkConfig {
 	}
 
 	/**
-	 * Returns Log Level Enum value based on Framework configuration set in XML
-	 * file
+	 * Returns Log Level Enum value based on Framework configuration set in XML file
 	 * 
 	 * @see Level
 	 * 
