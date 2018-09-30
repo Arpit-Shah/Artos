@@ -32,8 +32,7 @@ public class UtilsString {
 	/**
 	 * Escape string to convert it to HTML
 	 * 
-	 * @param s
-	 *            HTML string which requires char escaping
+	 * @param s HTML string which requires char escaping
 	 * @return escaped HTML string
 	 */
 	public String escape(String s) {
@@ -82,23 +81,20 @@ public class UtilsString {
 	}
 
 	/**
-	 * This function is used to compare string format $ sign is used to ignore chars
-	 * during format comparison
+	 * This function is used to compare string format $ sign is used to ignore chars during format comparison
 	 * 
 	 * <PRE>
 	 * Example: Boolean bSuccess = CompareStringFormat("1.00.0001", "$.$$.$$$$");
 	 * </PRE>
 	 * 
-	 * @param strToCompare
-	 *            :- String which requires format check
-	 * @param strRef
-	 *            :- String which will be used as reference
+	 * @param strToCompare :- String which requires format check
+	 * @param strRef :- String which will be used as reference
 	 * @return :- True if string format is right otherwise false
 	 */
 	public static boolean compareStringFormat(String strToCompare, String strRef) {
 
-		if (strToCompare == null || strRef == null) {
-			return false;
+		if (null == strToCompare || null == strRef) {
+			return (strToCompare == strRef) ? true : false;
 		} else {
 			byte[] byteToCompare = strToCompare.getBytes();
 			byte[] byteRef = strRef.getBytes();
@@ -123,12 +119,9 @@ public class UtilsString {
 	/**
 	 * This Function check and return the correct format of the version.
 	 * 
-	 * @param strSource
-	 *            String which contains version information
-	 * @param format
-	 *            String of Format
-	 * @return Substring which matches the format, Null is returned if no match is
-	 *         found
+	 * @param strSource String which contains version information
+	 * @param format String of Format
+	 * @return Substring which matches the format, Null is returned if no match is found
 	 */
 	public static String fetchVersion(String strSource, String format) {
 		if ((null == strSource) || (strSource.length() < format.length())) {
@@ -146,10 +139,8 @@ public class UtilsString {
 	/**
 	 * Function that matches input string with given wild card pattern
 	 * 
-	 * @param str
-	 *            input string
-	 * @param pattern
-	 *            wild card pattern
+	 * @param str input string
+	 * @param pattern wild card pattern
 	 * @return true if wild card match is found, otherwise false is returned
 	 */
 	public static boolean wildCardMatch(String str, String pattern) {

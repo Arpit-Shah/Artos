@@ -123,7 +123,7 @@ Test status can be updated using following method :
         * Capable of producing text and/or html log files.
 		* Generates real-time logs which can be used for performance measurement.
 		* Generates summary report which can be used as customer facing reports. (Separate to Extent Report)
-		* Provides features which can be very useful in test development. features are listed below.
+		* Provides features which can be very useful in test development.
 
 * Facilities:
     * Two log layouts are supported:
@@ -158,14 +158,14 @@ Test status can be updated using following method :
     * Log files are organised under test suite name for ease of use
         * Log files are created under the following hierarchy. `RootDir => SubDir => TestSuiteName => Log file`.
         > Example: `./reporting/SN-123/com.test.testsuite1/..`
-        * Root directory and Sub directory location can be configured using `conf/framework_configuration.xml` file.
+        * Root directory and sub directory location can be configured using `conf/framework_configuration.xml` file.
     * Log framework abstraction
         * Log framework is abstracted so that log framework can be changed in future without breaking existing test scripts.
     * Log file tracking
         * All log files are tracked during runtime. If user requires to retrieve current log files (inclusive of text/html) they can utilise this functionality.
         * This functionality will also be used to find current log files and attach to email client.
-    * FAIL stamp injection
-        * FAIL Stamp is injected to log stream straight after test status is updated to FAIL. This allows user to know at which exact line the test case failed during execution.
+    * **FAIL** stamp injection
+        * **FAIL** Stamp is injected to log stream straight after test status is updated to FAIL. This allows user to know at which exact line the test case failed during execution.
     * Log rollover policy
         * Current log rollover policy is triggered based on a file size of 20MB.
         * 20MB was chosen to meet emailing requirement. Trigger policy can be exposed to user in future.
