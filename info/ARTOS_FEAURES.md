@@ -327,7 +327,7 @@ Test status can be updated using following method :
 
 ### @TestCase @TestPlan @KnownToFail @Group @ExpectedException
 >     @Group(group = { "CI", "SEMI_AUTO" })
->     @ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*")
+>     @ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]", enforce = true)
 >     @TestPlan(decription = "Test", preparedBy = "JohnM", preparationDate = "", reviewedBy = "", reviewDate = "")
 >     @TestCase(skip = false, sequence = 1, label = "regression")
 >     @KnownToFail(ktf = true, bugref = "JIRA-????")
@@ -418,8 +418,11 @@ Test status can be updated using following method :
 	`@ExpectedException(expectedException = Exception.class)`
     OR
 	`@ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*")`
+    OR
+    `@ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*", enforce = true)`
 	* If only exception is specified then upon test exception, exception class will be matched.
-	* If exception and exception message is specified thenupon test exception, exception class and exception message will be matched (using regex).
+	* If exception and exception message is specified then upon test exception, exception class and exception message will be matched (using regex).
+	* If `enforce = true` then test case must throw expected exception otherwise test case will be marked failed.
 
 ### Test Sequence and Execution
 * Each test suite consists of at least two types of classes:

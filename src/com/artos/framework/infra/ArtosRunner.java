@@ -47,9 +47,8 @@ import com.artos.utils.Transform;
 import com.artos.utils.UtilsFramework;
 
 /**
- * This class is responsible for running test cases. It initialising logger and
- * context with provided information. It is also responsible for running test
- * cases in given sequence (including pre/post methods)
+ * This class is responsible for running test cases. It initialising logger and context with provided information. It is also responsible for running
+ * test cases in given sequence (including pre/post methods)
  */
 public class ArtosRunner {
 
@@ -61,12 +60,10 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Constructor responsible for storing TestContext and class which contains
-	 * main() method. Upon initialisation TestExecutionEventListener is
+	 * Constructor responsible for storing TestContext and class which contains main() method. Upon initialisation TestExecutionEventListener is
 	 * registered so test decoration can be printed.
 	 * 
-	 * @param context
-	 *            TestContext object
+	 * @param context TestContext object
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 */
@@ -93,13 +90,9 @@ public class ArtosRunner {
 	/**
 	 * Runner for the framework
 	 * 
-	 * @param testList
-	 *            List of tests to run. All test must be {@code TestExecutable}
-	 *            type
-	 * @param groupList
-	 *            Group list which is required for test case filtering
-	 * @throws Exception
-	 *             Exception will be thrown if test execution failed
+	 * @param testList List of tests to run. All test must be {@code TestExecutable} type
+	 * @param groupList Group list which is required for test case filtering
+	 * @throws Exception Exception will be thrown if test execution failed
 	 */
 	public void run(List<TestExecutable> testList, List<String> groupList) throws Exception {
 		if (null == groupList || groupList.isEmpty()) {
@@ -128,8 +121,7 @@ public class ArtosRunner {
 	/**
 	 * This method executes test cases
 	 * 
-	 * @param transformedTestList
-	 *            test object list
+	 * @param transformedTestList test object list
 	 * @throws Exception
 	 */
 	private void runTest(List<TestObjectWrapper> transformedTestList) throws Exception {
@@ -248,11 +240,9 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This method executes the test case and handles all the exception and set
-	 * the test status correctly
+	 * This method executes the test case and handles all the exception and set the test status correctly
 	 * 
-	 * @param t
-	 *            TestCase {@code TestObjectWrapper}
+	 * @param t TestCase {@code TestObjectWrapper}
 	 */
 	private void runIndividualTest(TestObjectWrapper t) {
 		long testStartTime = System.currentTimeMillis();
@@ -265,6 +255,7 @@ public class ArtosRunner {
 			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
 			// --------------------------------------------------------------------------------------------
 
+			postTestValidation(t);
 		} catch (Throwable e) {
 			processTestException(t, e);
 			notifyTestException(e.getMessage());
@@ -275,37 +266,57 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This function processes exception if test during run time throws
-	 * {@code Throwable} or {@code Exception}. If {@code ExpectedException}
-	 * annotation if specified then Exception will be validated using provided
-	 * parameters. Otherwise test will be considered failed.
+	 * If test case executed successfully then do post validation and change test status accordingly
 	 * 
-	 * @param t
-	 *            {@code TestObjectWrapper} object
-	 * @param e
-	 *            {@code Throwable} or {@code Exception}
+	 * @param t {@code TestObjectWrapper} object
+	 */
+	private void postTestValidation(TestObjectWrapper t) {
+		if (t.isEnforceException()) {
+			// Exception annotation was specified but did not occur
+			context.setTestStatus(TestStatus.FAIL, "Exception was specified but did not occur");
+		}
+	}
+
+	/**
+	 * This function processes exception if test during run time throws {@code Throwable} or {@code Exception}. If {@code ExpectedException}
+	 * annotation if specified then Exception will be validated using provided parameters. Otherwise test will be considered failed.
+	 * 
+	 * @param t {@code TestObjectWrapper} object
+	 * @param e {@code Throwable} or {@code Exception}
 	 */
 	private void processTestException(TestObjectWrapper t, Throwable e) {
 		// If user has not specified expected exception then fail the test
-		if (t.getExpectedException() != null) {
-			if (e.getClass() == t.getExpectedException()) {
-				// Exception matches as specified by user
-				context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
-				/*
-				 * If User has provided regular expression then validate
-				 * exception message with regular expression
-				 */
-				if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
-					if (e.getMessage().matches(t.getExceptionContains())) {
-						context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
-					} else {
-						context.setTestStatus(TestStatus.FAIL, "Exception message does not match regex : \nRegularExpression : "
-								+ t.getExceptionContains() + "\nException Message : " + e.getMessage());
+		if (t.getExpectedExceptionList() != null && !t.getExpectedExceptionList().isEmpty()) {
+
+			boolean exceptionMatchFound = false;
+			for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
+				if (e.getClass() == exceptionClass) {
+					// Exception matches as specified by user
+					context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
+
+					/*
+					 * If User has provided regular expression then validate exception message with regular expression
+					 */
+					if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
+						if (e.getMessage().matches(t.getExceptionContains())) {
+							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
+						} else {
+							context.setTestStatus(TestStatus.FAIL, "Exception message does not match regex : \nRegularExpression : "
+									+ t.getExceptionContains() + "\nException Message : " + e.getMessage());
+						}
 					}
+
+					exceptionMatchFound = true;
+					break;
 				}
-			} else {
-				context.setTestStatus(TestStatus.FAIL, "Exception is not as expected : \nExpected : " + t.getExpectedException().getName()
-						+ "\nReturned : " + e.getClass().getName());
+			}
+			if (!exceptionMatchFound) {
+				String expectedExceptions = "";
+				for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
+					expectedExceptions += exceptionClass.getName() + " ";
+				}
+				context.setTestStatus(TestStatus.FAIL,
+						"Exception is not as expected : \nExpected : " + expectedExceptions + "\nReturned : " + e.getClass().getName());
 				UtilsFramework.writePrintStackTrace(context, e);
 			}
 		} else {
@@ -485,15 +496,11 @@ public class ArtosRunner {
 	// Facade for arranging test cases
 	// ==================================================================================
 	/**
-	 * This method transforms given test list of{@code TestEecutable} type into
-	 * {@code TestObjectWrapper} type list. This method will only consider test
-	 * This method can not transform test cases outside current package, so
-	 * those test cases will be omitted from the list
+	 * This method transforms given test list of{@code TestEecutable} type into {@code TestObjectWrapper} type list. This method will only consider
+	 * test This method can not transform test cases outside current package, so those test cases will be omitted from the list
 	 * 
-	 * @param listOfTestCases
-	 *            list of test cases required to be transformed
-	 * @param groupList
-	 *            user specified groupList
+	 * @param listOfTestCases list of test cases required to be transformed
+	 * @param groupList user specified groupList
 	 * @return Test list formatted into {@code TestObjectWrapper} type
 	 */
 	public List<TestObjectWrapper> transformToTestObjWrapper(List<TestExecutable> listOfTestCases, List<String> groupList) {
@@ -519,8 +526,7 @@ public class ArtosRunner {
 		if (null != (testSuiteObject = context.getTestSuite())) {
 
 			/**
-			 * Get all test case object using reflection. If user provides XML
-			 * based test script then skip attribute set in annotation should be
+			 * Get all test case object using reflection. If user provides XML based test script then skip attribute set in annotation should be
 			 * ignored because XML test script must dictates the behaviour.
 			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
@@ -565,9 +571,8 @@ public class ArtosRunner {
 		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
 
 			/**
-			 * Get all test case object using reflection. If user provides test
-			 * list then skip attribute set in annotation should be ignored
-			 * because test list must dictates the behaviour.
+			 * Get all test case object using reflection. If user provides test list then skip attribute set in annotation should be ignored because
+			 * test list must dictates the behaviour.
 			 */
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);

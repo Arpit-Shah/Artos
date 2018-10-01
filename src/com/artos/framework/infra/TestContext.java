@@ -36,8 +36,7 @@ import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestProgress;
 
 /**
- * This is TestContext which is wrapper around all objects/tools/loggers user
- * may need during test case execution. This class is also responsible for
+ * This is TestContext which is wrapper around all objects/tools/loggers user may need during test case execution. This class is also responsible for
  * Summarising test results.
  */
 public class TestContext {
@@ -71,15 +70,11 @@ public class TestContext {
 	Map<String, String> globalString = new HashMap<String, String>();
 
 	/**
-	 * Sets Test status in memory. Status is not finalised until
-	 * generateTestSummary() function is called. This function stamps "FAIL
-	 * HERE" warning as soon as status is set to FAIL so user can pin point
-	 * location of the failure
+	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
+	 * soon as status is set to FAIL so user can pin point location of the failure
 	 * 
-	 * @deprecated we recommend to use
-	 *             {@link #setTestStatus(TestStatus, String)} instead
-	 * @param testStatus
-	 *            Test Status
+	 * @deprecated we recommend to use {@link #setTestStatus(TestStatus, String)} instead
+	 * @param testStatus Test Status
 	 */
 	@Deprecated
 	public void setTestStatus(TestStatus testStatus) {
@@ -87,22 +82,17 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Test status in memory. Status is not finalised until
-	 * generateTestSummary() function is called. This function stamps "FAIL
-	 * HERE" warning as soon as status is set to FAIL so user can pin point
-	 * location of the failure
+	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
+	 * soon as status is set to FAIL so user can pin point location of the failure
 	 * 
-	 * @param testStatus
-	 *            Test Status
-	 * @param description
-	 *            status description or reason
+	 * @param testStatus Test Status
+	 * @param description status description or reason
 	 */
 	public void setTestStatus(TestStatus testStatus, String description) {
 
 		/*
-		 * Print status set by user and description/reason. User can not down
-		 * grade (FAIL=>KTF=>SKIP=>PASS) finalTest status but down graded status
-		 * is allowed to be printed.
+		 * Print status set by user and description/reason. User can not down grade (FAIL=>KTF=>SKIP=>PASS) finalTest status but down graded status is
+		 * allowed to be printed.
 		 */
 		if (null == description) {
 			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "] : ");
@@ -113,8 +103,7 @@ public class TestContext {
 		}
 
 		/*
-		 * User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS).
-		 * Which means once failed test case status can not become KTF, SKIP or
+		 * User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed test case status can not become KTF, SKIP or
 		 * PASS.
 		 */
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
@@ -132,15 +121,11 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. This also
-	 * includes bugTicketNumber if provided
+	 * Concludes final test result and generates summary report. This also includes bugTicketNumber if provided
 	 * 
-	 * @param strTestFQCN
-	 *            Test fully qualified class name (Example : com.test.unit.Abc)
-	 * @param testStartTime
-	 *            Test start Time in milliseconds
-	 * @param testFinishTime
-	 *            Test finish time in milliseconds
+	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
+	 * @param testStartTime Test start Time in milliseconds
+	 * @param testFinishTime Test finish time in milliseconds
 	 */
 	public void generateTestSummary(String strTestFQCN, long testStartTime, long testFinishTime) {
 		// Test is marked as known to fail and for some reason it pass then
@@ -191,22 +176,14 @@ public class TestContext {
 	/**
 	 * Append test summary to summary report
 	 * 
-	 * @param status
-	 *            Test status
-	 * @param strTestFQCN
-	 *            Test fully qualified class name (Example : com.test.unit.Abc)
-	 * @param bugTrackingNumber
-	 *            BugTracking Number
-	 * @param passCount
-	 *            Current passed test count
-	 * @param failCount
-	 *            Current failed test count
-	 * @param skipCount
-	 *            Current skipped test count
-	 * @param ktfCount
-	 *            Current known to fail test count
-	 * @param testDuration
-	 *            Test duration
+	 * @param status Test status
+	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
+	 * @param bugTrackingNumber BugTracking Number
+	 * @param passCount Current passed test count
+	 * @param failCount Current failed test count
+	 * @param skipCount Current skipped test count
+	 * @param ktfCount Current known to fail test count
+	 * @param testDuration Test duration
 	 */
 	private void appendSummaryReport(TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount, long failCount, long skipCount,
 			long ktfCount, long testDuration) {
@@ -417,17 +394,12 @@ public class TestContext {
 	}
 
 	/**
-	 * This method should be exercised as initial line for every test case, this
-	 * allows user to set properties of test case as known to fail. If known to
-	 * fail test case passes then it will be marked as a fail. Which will help
-	 * user figure out if developer has fixed some feature without letting them
-	 * know and gives test engineer an opportunity to re-look at the test case
-	 * behaviour.
+	 * This method should be exercised as initial line for every test case, this allows user to set properties of test case as known to fail. If known
+	 * to fail test case passes then it will be marked as a fail. Which will help user figure out if developer has fixed some feature without letting
+	 * them know and gives test engineer an opportunity to re-look at the test case behaviour.
 	 * 
-	 * @param knownToFail
-	 *            true|false
-	 * @param strBugTrackingReference
-	 *            Bug Tracking reference (Example : JIRA number)
+	 * @param knownToFail true|false
+	 * @param strBugTrackingReference Bug Tracking reference (Example : JIRA number)
 	 */
 	public void setKnownToFail(boolean knownToFail, String strBugTrackingReference) {
 		KnownToFail = knownToFail;
@@ -452,13 +424,10 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Object which is available globally to all test cases. User must
-	 * maintain Key for the HashTable
+	 * Sets Object which is available globally to all test cases. User must maintain Key for the HashTable
 	 * 
-	 * @param key
-	 *            = Key to recognise an Object
-	 * @param obj
-	 *            = Object to be stored
+	 * @param key = Key to recognise an Object
+	 * @param obj = Object to be stored
 	 */
 	public void setGlobalObject(String key, Object obj) {
 		globalObject.put(key, obj);
@@ -467,8 +436,7 @@ public class TestContext {
 	/**
 	 * Gets Globally set Object from the Map using provided Key.
 	 * 
-	 * @param key
-	 *            String key to retrieve an object
+	 * @param key String key to retrieve an object
 	 * @return Object associated with given key
 	 */
 	public Object getGlobalObject(String key) {
@@ -478,8 +446,7 @@ public class TestContext {
 	/**
 	 * Gets Globally set String from the Map using provided Key.
 	 * 
-	 * @param key
-	 *            String key to retrieve an object
+	 * @param key String key to retrieve an object
 	 * @return String associated with given key
 	 */
 	public String getGlobalString(String key) {
@@ -487,13 +454,10 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets String which is available globally to all test cases. User must
-	 * maintain Key for the HashTable
+	 * Sets String which is available globally to all test cases. User must maintain Key for the HashTable
 	 * 
-	 * @param key
-	 *            = Key to recognise an Object
-	 * @param value
-	 *            = Value to be stored
+	 * @param key = Key to recognise an Object
+	 * @param value = Value to be stored
 	 */
 	public void setGlobalString(String key, String value) {
 		globalString.put(key, value);
@@ -576,8 +540,7 @@ public class TestContext {
 	/**
 	 * Set LogWrapper object
 	 * 
-	 * @param logWrapper
-	 *            logWrapper Object
+	 * @param logWrapper logWrapper Object
 	 */
 	public void setOrganisedLogger(LogWrapper logWrapper) {
 		this.logWrapper = logWrapper;

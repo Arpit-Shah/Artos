@@ -55,8 +55,7 @@ public class ScanTestSuite {
 	/**
 	 * Default constructor. Scans all packages within provided package
 	 * 
-	 * @param packageName
-	 *            Base package name
+	 * @param packageName Base package name
 	 */
 	public ScanTestSuite(String packageName) {
 		scan(packageName);
@@ -65,8 +64,7 @@ public class ScanTestSuite {
 	/**
 	 * Scans for Test cases within provided packageName
 	 * 
-	 * @param packageName
-	 *            Base package name
+	 * @param packageName Base package name
 	 */
 	private void scan(String packageName) {
 
@@ -153,15 +151,18 @@ public class ScanTestSuite {
 						.replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
 			}
 
-			// KTF is optional attribute so it can be null
+			// KTF is optional annotation so it can be null
 			if (null != ktf) {
 				testobj.setKTF(ktf.ktf());
 				testobj.setBugTrackingNumber(ktf.bugref());
 			}
-			
-			if(null != expectedException){
-				testobj.setExpectedException(expectedException.expectedException());
+
+			// expectedException is optional annotation
+			if (null != expectedException) {
+				List<Class<? extends Throwable>> expectedExceptionsList = Arrays.asList(expectedException.expectedExceptions());
+				testobj.setExpectedExceptionList(expectedExceptionsList);
 				testobj.setExceptionContains(expectedException.contains());
+				testobj.setEnforceException(expectedException.enforce());
 			}
 
 			testObjWrapperList_All.add(testobj);
@@ -192,8 +193,7 @@ public class ScanTestSuite {
 	/**
 	 * logic to bubble sort the elements
 	 * 
-	 * @param array
-	 *            Array of all scanned test objects
+	 * @param array Array of all scanned test objects
 	 * @return
 	 */
 	private TestObjectWrapper[] bubble_srt(TestObjectWrapper[] array) {
@@ -213,12 +213,9 @@ public class ScanTestSuite {
 	/**
 	 * Swap object in the array
 	 * 
-	 * @param i
-	 *            To
-	 * @param j
-	 *            From
-	 * @param array
-	 *            Array of all scanned test objects
+	 * @param i To
+	 * @param j From
+	 * @param array Array of all scanned test objects
 	 */
 	private void swapNumbers(int i, int j, TestObjectWrapper[] array) {
 		TestObjectWrapper temp;
@@ -230,8 +227,7 @@ public class ScanTestSuite {
 	/**
 	 * Generates test plan using annotation provided in the test case classes
 	 * 
-	 * @param context
-	 *            Test Context
+	 * @param context Test Context
 	 * @return String Test Plan
 	 */
 	public String getTestPlan(TestContext context) {
@@ -255,10 +251,8 @@ public class ScanTestSuite {
 	/**
 	 * Returns all scanned test cases wrapped with TestObjWrapper components
 	 * 
-	 * @param sortBySeqNum
-	 *            Enables sorting of the test cases
-	 * @param removeSkippedTests
-	 *            Enables removal of test cases which are marked 'Skip'
+	 * @param sortBySeqNum Enables sorting of the test cases
+	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
 	 * @return List of {@code TestObjectWrapper}
 	 */
 	public List<TestObjectWrapper> getTestObjWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
@@ -285,18 +279,12 @@ public class ScanTestSuite {
 	/**
 	 * Returns all scanned test cases
 	 * 
-	 * @param sortBySeqNum
-	 *            Enables sorting of the test cases
-	 * @param removeSkippedTests
-	 *            Enables removal of test cases which are marked 'Skip'
+	 * @param sortBySeqNum Enables sorting of the test cases
+	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
 	 * @return List of {@code TestExecutable}
-	 * @throws IllegalAccessException
-	 *             if the class or its nullary constructor is not accessible.
-	 * @throws InstantiationException
-	 *             if this Class represents an abstract class, an interface, an
-	 *             array class, a primitive type, or void; or if the class has
-	 *             no nullary constructor; or if the instantiation fails for
-	 *             some other reason.
+	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
+	 * @throws InstantiationException if this Class represents an abstract class, an interface, an array class, a primitive type, or void; or if the
+	 *             class has no nullary constructor; or if the instantiation fails for some other reason.
 	 */
 	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws InstantiationException, IllegalAccessException {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
@@ -310,11 +298,9 @@ public class ScanTestSuite {
 	}
 
 	/**
-	 * Returns scanned test cases HashMap so user can search test case by
-	 * TestCase FQCN
+	 * Returns scanned test cases HashMap so user can search test case by TestCase FQCN
 	 * 
-	 * @param removeSkippedTests
-	 *            removes test cases marked with skipped
+	 * @param removeSkippedTests removes test cases marked with skipped
 	 * @return HashMap of all test objects
 	 */
 	public Map<String, TestObjectWrapper> getTestObjWrapperMap(boolean removeSkippedTests) {

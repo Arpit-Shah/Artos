@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class wraps test object with other necessary information which is
- * helpful during test execution
+ * This class wraps test object with other necessary information which is helpful during test execution
  * 
  * 
  *
@@ -52,18 +51,16 @@ public class TestObjectWrapper {
 	String bugTrackingNumber = "";
 
 	// ExpectedException
-	Class<? extends Throwable> expectedException = null;
+	List<Class<? extends Throwable>> expectedExceptionList = null;
 	String exceptionContains = "";
+	Boolean enforce = true;
 
 	/**
 	 * Default constructor
 	 * 
-	 * @param cls
-	 *            test class object
-	 * @param skipTest
-	 *            skip property as specified in annotation
-	 * @param testsequence
-	 *            test sequence as specified in annotation
+	 * @param cls test class object
+	 * @param skipTest skip property as specified in annotation
+	 * @param testsequence test sequence as specified in annotation
 	 */
 	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence) {
 		super();
@@ -170,12 +167,12 @@ public class TestObjectWrapper {
 		this.labelList = labelList;
 	}
 
-	public Class<? extends Throwable> getExpectedException() {
-		return expectedException;
+	public List<Class<? extends Throwable>> getExpectedExceptionList() {
+		return expectedExceptionList;
 	}
 
-	public void setExpectedException(Class<? extends Throwable> expectedException) {
-		this.expectedException = expectedException;
+	public void setExpectedExceptionList(List<Class<? extends Throwable>> expectedExceptionList) {
+		this.expectedExceptionList = expectedExceptionList;
 	}
 
 	public String getExceptionContains() {
@@ -184,6 +181,14 @@ public class TestObjectWrapper {
 
 	public void setExceptionContains(String exceptionContains) {
 		this.exceptionContains = exceptionContains;
+	}
+
+	public Boolean isEnforceException() {
+		return enforce;
+	}
+
+	public void setEnforceException(Boolean enforce) {
+		this.enforce = enforce;
 	}
 
 }

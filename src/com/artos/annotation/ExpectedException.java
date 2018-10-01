@@ -28,15 +28,12 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * Annotation {@code ExpectedException} can be used to define expected exception
- * during test case execution. Specified exception will remain in scope of test
- * case where annotation {@code ExpectedException} is defined. User can
- * optionally provide regular expression which can be used to match exception
- * message.
+ * Annotation {@code ExpectedException} can be used to define expected exception during test case execution. Specified exception will remain in scope
+ * of test case where annotation {@code ExpectedException} is defined. User can optionally provide regular expression which can be used to match
+ * exception message.
  * 
  * <p>
- * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by
- * the compiler and retained by the VM at run time, so it may be read
+ * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by the compiler and retained by the VM at run time, so it may be read
  * reflectively.
  * </p>
  *
@@ -48,12 +45,11 @@ import java.lang.annotation.Target;
 public @interface ExpectedException {
 
 	/**
-	 * Mandatory argument which defines expected {@code Throwable} or
-	 * {@code Exception}
+	 * Mandatory argument which defines expected {@code Throwable}(s) or {@code Exception}(s)
 	 * 
-	 * @return {@code Throwable} or {@code Exception} class
+	 * @return array of {@code Throwable} or {@code Exception} class
 	 */
-	Class<? extends Throwable> expectedException();
+	Class<? extends Throwable>[] expectedExceptions();
 
 	/**
 	 * Optional Exception Description, Accepts Regular expression
@@ -61,4 +57,11 @@ public @interface ExpectedException {
 	 * @return regular expression designed by user to match exception message
 	 */
 	String contains() default "";
+
+	/**
+	 * if enforce = true exception did not occur then test case will be marked failed.
+	 * 
+	 * @return
+	 */
+	boolean enforce() default true;
 }
