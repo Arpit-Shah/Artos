@@ -244,6 +244,7 @@ public class ScanTestSuite {
 			sb.append("\nPreparationDate : " + testObject.getTestPlanPreparationDate());
 			sb.append("\nReviewedBy : " + testObject.getTestreviewedBy());
 			sb.append("\nReviewedDate : " + testObject.getTestReviewDate());
+			sb.append("\nBDD Test Plan : " + testObject.getTestPlanBDD());
 		}
 
 		return sb.toString();
