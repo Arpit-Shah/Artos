@@ -229,25 +229,16 @@ public class ScanTestSuite {
 	 * Generates test plan using annotation provided in the test case classes
 	 * 
 	 * @param context Test Context
-	 * @return String Test Plan
+	 * @return {@code TestPlanWrapper} list
 	 */
-	public String getTestPlan(TestContext context) {
-		StringBuilder sb = new StringBuilder();
-
+	public List<TestPlanWrapper> getTestPlan(TestContext context) {
+		List<TestPlanWrapper> testPlanList = new ArrayList<>();
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
-			sb.append("\n\nTestCaseName : " + testObject.getTestClassObject().getName());
-			sb.append("\nSkipTest : " + Boolean.toString(testObject.isSkipTest()));
-			sb.append("\nTestSequence : " + testObject.getTestsequence());
-			sb.append("\nTestLabel : " + testObject.getLabelList());
-			sb.append("\nDescription : " + testObject.getTestPlanDescription());
-			sb.append("\nPreparedBy : " + testObject.getTestPlanPreparedBy());
-			sb.append("\nPreparationDate : " + testObject.getTestPlanPreparationDate());
-			sb.append("\nReviewedBy : " + testObject.getTestreviewedBy());
-			sb.append("\nReviewedDate : " + testObject.getTestReviewDate());
-			sb.append("\nBDD Test Plan : " + testObject.getTestPlanBDD());
+			testPlanList.add(new TestPlanWrapper(testObject.getTestClassObject().getName(), testObject.getTestPlanDescription(),
+					testObject.getTestPlanPreparedBy(), testObject.getTestPlanPreparationDate(), testObject.getTestreviewedBy(),
+					testObject.getTestReviewDate(), testObject.getTestPlanBDD()));
 		}
-
-		return sb.toString();
+		return testPlanList;
 	}
 
 	/**

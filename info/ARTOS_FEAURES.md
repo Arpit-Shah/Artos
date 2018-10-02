@@ -231,6 +231,58 @@ Test status can be updated using following method :
 * Usage:
 	* Stop on Fail feature can be enabled/disabled via `conf/framework_configuration.xml` file.
 
+## Test Plan Extraction
+
+* Purpose:
+	* Artos encourages user to write test plan OR short summary of test case purpose within test class. Test plan within same file encourages user to read test purpose prior to modifying/updating test case. There might be a time when user may want to output all test plan information in a file or on a console. Artos provides a way to extract test plan with few lines of code.
+
+* Facilities:
+	* Test plan can be written above each test class using `@TestPlan()` annotation.
+	| Annotation tag	| Tag description 			|
+	|-------------------|---------------------------|
+	|description      	|test case description      |
+    |preparedBy      	|test code writters name    |
+    |preparationDate   	|test case creation date    |
+    |reviewedBy      	|test code reviewer name    |
+    |reviewDate      	|test case review date     	|
+    |bdd		      	|test plan in Gherkin format|
+
+* Usage:
+	* Test Plan for entire test suite can be generated using following code:
+```
+	ScanTestSuite testPlan = new ScanTestSuite("");
+	List<TestPlanWrapper> testPlanObjectList = testPlan.getTestPlan(context);
+	for (TestPlanWrapper testPlanObject : testPlanObjectList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nTestCaseName : " + testPlanObject.getTestCaseName());
+        sb.append("\nDescription : " + testPlanObject.getTestDescription());
+        sb.append("\nPreparedBy : " + testPlanObject.getTestPreparedBy());
+        sb.append("\nPreparationDate : " + testPlanObject.getTestPreparationDate());
+        sb.append("\nReviewedBy : " + testPlanObject.getTestReviewedBy());
+        sb.append("\nReviewedDate : " + testPlanObject.getTestReviewedDate());
+        sb.append("\nBDD Test Plan : " + testPlanObject.getTestBDD());
+        System.out.println(sb.toString());
+    }
+```
+
+	* Test Plan for test cases inside specific package can be generated using following code:
+```
+	// replace com.artos.tests with fully qualified package name within test project
+	ScanTestSuite testPlan = new ScanTestSuite("com.artos.tests");
+	List<TestPlanWrapper> testPlanObjectList = testPlan.getTestPlan(context);
+	for (TestPlanWrapper testPlanObject : testPlanObjectList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nTestCaseName : " + testPlanObject.getTestCaseName());
+        sb.append("\nDescription : " + testPlanObject.getTestDescription());
+        sb.append("\nPreparedBy : " + testPlanObject.getTestPreparedBy());
+        sb.append("\nPreparationDate : " + testPlanObject.getTestPreparationDate());
+        sb.append("\nReviewedBy : " + testPlanObject.getTestReviewedBy());
+        sb.append("\nReviewedDate : " + testPlanObject.getTestReviewedDate());
+        sb.append("\nBDD Test Plan : " + testPlanObject.getTestBDD());
+        System.out.println(sb.toString());
+    }
+```
+
 ## Global parameters
 
 * Purpose:
