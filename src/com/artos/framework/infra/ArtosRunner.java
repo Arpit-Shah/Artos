@@ -271,7 +271,7 @@ public class ArtosRunner {
 	 * @param t {@code TestObjectWrapper} object
 	 */
 	private void postTestValidation(TestObjectWrapper t) {
-		if (t.isEnforceException()) {
+		if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty() && t.isEnforceException()) {
 			// Exception annotation was specified but did not occur
 			context.setTestStatus(TestStatus.FAIL, "Exception was specified but did not occur");
 		}
