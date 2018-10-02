@@ -333,7 +333,6 @@ Test status can be updated using following method :
 
 ## Annotations to mark test cases
 * Artos support many annotations to make test system more flexible.
-
 | Annotation 		| Usage 																|Mandatory/Optional	|
 |-------------------|-----------------------------------------------------------------------|-------------------|
 |@BeforeTestSuite   |Above the method which is executed prior to running a test suite		|Optional			|
@@ -347,61 +346,70 @@ Test status can be updated using following method :
 |@ExpectedException	|Above the test class. Assigns expected Exception test may throw		|Optional			|
 
 ### @BeforeTestSuite @AfterTestSuite @BeforeTest @AfterTest
-> 	public class Main implements PrePostRunnable {
->         public static ArrayList<TestExecutable> getTestList() throws Exception {
->             ...
->         }
->
->         public static void main(String[] args) throws Exception {
->             ...
->         }
->
->         @BeforeTestsuite
->         public void beforeTestsuite(TestContext context) throws Exception {
-> 			...
->         }
->
->         @AfterTestsuite
->         public void beforeTestsuite(TestContext context) throws Exception {
-> 			...
->         }
->
->         @BeforeTest
->         public void beforeTest(TestContext context) throws Exception {
-> 			...
->         }
->
->         @AfterTest
->         public void afterTest(TestContext context) throws Exception {
-> 			...
->         }
-> 	}
+
+* Annotation Example:
+```
+ 	public class Main implements PrePostRunnable {
+         public static ArrayList<TestExecutable> getTestList() throws Exception {
+             ...
+         }
+
+         public static void main(String[] args) throws Exception {
+             ...
+         }
+
+         @BeforeTestsuite
+         public void beforeTestsuite(TestContext context) throws Exception {
+ 			...
+         }
+
+         @AfterTestsuite
+         public void beforeTestsuite(TestContext context) throws Exception {
+ 			...
+         }
+
+         @BeforeTest
+         public void beforeTest(TestContext context) throws Exception {
+ 			...
+         }
+
+         @AfterTest
+         public void afterTest(TestContext context) throws Exception {
+ 			...
+         }
+ 	}
+```
 
 ### @TestCase @TestPlan @KnownToFail @Group @ExpectedException
->     @Group(group = { "CI", "SEMI_AUTO" })
->     @ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]", enforce = true)
->     @TestPlan(decription = "Test", preparedBy = "JohnM", preparationDate = "", reviewedBy = "", reviewDate = "")
->     @TestCase(skip = false, sequence = 1, label = "regression")
->     @KnownToFail(ktf = true, bugref = "JIRA-????")
->     public class Test_Annotation implements TestExecutable {
->         public void execute(TestContext context) throws Exception {
->             // --------------------------------------------------------------------------------------------
->             ...
->             // --------------------------------------------------------------------------------------------
->         }
->     }
+
+* Annotation Example:
+```
+     @Group(group = { "CI", "SEMI_AUTO" })
+     @ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]", enforce = true)
+     @TestPlan(decription = "Test", preparedBy = "JohnM", preparationDate = "", reviewedBy = "", reviewDate = "")
+     @TestCase(skip = false, sequence = 1, label = "regression")
+     @KnownToFail(ktf = true, bugref = "JIRA-????")
+     public class Test_Annotation implements TestExecutable {
+         public void execute(TestContext context) throws Exception {
+             // --------------------------------------------------------------------------------------------
+             ...
+             // --------------------------------------------------------------------------------------------
+         }
+     }
+```
 
 * Information populated using `@TestPlan` annotation is used in logging.
 * Each new test case execution will print test plan in log file and then all the logs will be appended so user can easily identify which logs belongs to which test cases.
 * If `@TestPlan` annotation is populated correctly then user can use generate test plan function to output a test plan for entire suite.
+```
+	// for all test cases in project
+	ScanTestSuite testPlan = new ScanTestSuite("");
+	logger.info(testPlan.getTestPlan(context));
 
->		// for all test cases in project
->		ScanTestSuite testPlan = new ScanTestSuite("");
->		logger.info(testPlan.getTestPlan(context));
->
->		// for test cases within com.test.project package
->		ScanTestSuite testPlan = new ScanTestSuite("com.test.project");
->		logger.info(testPlan.getTestPlan(context));
+	// for test cases within com.test.project package
+	ScanTestSuite testPlan = new ScanTestSuite("com.test.project");
+	logger.info(testPlan.getTestPlan(context));
+```
 
 ### Known to Fail
 
@@ -447,14 +455,18 @@ Test status can be updated using following method :
 	`@Group(group = { "CI", "SEMI_AUTO" })`.
 	* Group policy can be configured using XML test script.
 >	To run all test cases
->	 	<groups>
->      		<group name="*"/>
->    	</groups>
+```
+	 	<groups>
+      		<group name="*"/>
+    	</groups>
+```
 >	To run test cases, belong to specific group or groups
->	 	<groups>
->      		<group name="CI"/>
->      		<group name="SEMI_AUTO"/>
->    	</groups>
+```
+	 	<groups>
+      		<group name="CI"/>
+      		<group name="SEMI_AUTO"/>
+    	</groups>
+```
 
 ### Test Exception
 
@@ -504,22 +516,24 @@ Test status can be updated using following method :
 > WARNING: Test cases are only scanned within the same package (inclusive of child packages). If test case(s) specified in test script do not belong to the package scope, then those test case(s) will be ignored silently.
 
 Example code for PrePostRunnable class which supports all above methods
->     public class Main implements PrePostRunnable {
->         public static ArrayList<TestExecutable> getTestList() throws Exception {
->         	ArrayList<TestExecutable> tests = new ArrayList<TestExecutable>();
->         	// ---------------------------------------------------------------------
->         	// TODO User May Add Test Case Manually as show in sample below
->         	// tests.add(new Test_123());
->         	// tests.add(new Test_abc());
->         	// ---------------------------------------------------------------------
->         	return tests;
-> 		}
->
-> 		public static void main(String[] args) throws Exception {
-> 			Runner runner = new Runner(Main.class);
-> 			runner.run(args, getTestList(), 1);
-> 		}
-> 	}
+```
+     public class Main implements PrePostRunnable {
+         public static ArrayList<TestExecutable> getTestList() throws Exception {
+         	ArrayList<TestExecutable> tests = new ArrayList<TestExecutable>();
+         	// ---------------------------------------------------------------------
+         	// TODO User May Add Test Case Manually as show in sample below
+         	// tests.add(new Test_123());
+         	// tests.add(new Test_abc());
+         	// ---------------------------------------------------------------------
+         	return tests;
+ 		}
+
+ 		public static void main(String[] args) throws Exception {
+ 			Runner runner = new Runner(Main.class);
+ 			runner.run(args, getTestList(), 1);
+ 		}
+ 	}
+```
 
 ## Inbuilt Utilities for ease of use
 Artos has many inbuilt public utilities which can make test case writing easy. More Utilities will be added in future releases. Refer to API document for full information.
