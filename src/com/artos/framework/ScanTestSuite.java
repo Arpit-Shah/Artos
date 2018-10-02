@@ -101,6 +101,7 @@ public class ScanTestSuite {
 				testobj.setTestPlanPreparationDate(testplan.preparationDate());
 				testobj.setTestreviewedBy(testplan.reviewedBy());
 				testobj.setTestReviewDate(testplan.reviewDate());
+				testobj.setTestPlanBDD(testplan.bdd());
 			}
 
 			/*

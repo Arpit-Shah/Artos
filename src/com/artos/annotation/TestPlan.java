@@ -71,4 +71,11 @@ public @interface TestPlan {
 	 * @return test case review date
 	 */
 	String reviewDate() default "";
+
+	/**
+	 * Behaviour driven test plan, prefer to write it in Gherkin language
+	 * 
+	 * @return test plan in Gherkin format
+	 */
+	String bdd() default "";
 }

@@ -41,10 +41,11 @@ public class TestObjectWrapper {
 
 	// TestPlan
 	String testPlanDescription = "";
-	String testPlanPreparedBy = "???";
-	String testPlanPreparationDate = "???";
-	String testreviewedBy = "???";
-	String testReviewDate = "???";
+	String testPlanPreparedBy = "";
+	String testPlanPreparationDate = "";
+	String testreviewedBy = "";
+	String testReviewDate = "";
+	String testPlanBDD = "";
 
 	// KnowToFail
 	boolean KTF = false;
@@ -109,6 +110,14 @@ public class TestObjectWrapper {
 
 	public void setTestReviewDate(String testReviewDate) {
 		this.testReviewDate = testReviewDate;
+	}
+
+	public String getTestPlanBDD() {
+		return testPlanBDD;
+	}
+
+	public void setTestPlanBDD(String testPlanBDD) {
+		this.testPlanBDD = testPlanBDD;
 	}
 
 	public Class<?> getTestClassObject() {

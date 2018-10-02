@@ -28,8 +28,7 @@ import com.artos.framework.infra.TestContext;
 import com.artos.interfaces.TestProgress;
 
 /**
- * Responsible for listening to test execution event and act according to
- * requirement. Can be used for report generation, GUI tool update or plug-in
+ * Responsible for listening to test execution event and act according to requirement. Can be used for report generation, GUI tool update or plug-in
  * development
  *
  */
@@ -77,19 +76,41 @@ public class TestExecutionEventListener implements TestProgress {
 	public void beforeTestMethodStarted(TestObjectWrapper t) {
 		logger.trace("\n---------------- BeforeTest Method Started -------------------");
 
-		// @formatter:off
-				context.getLogger().info("*************************************************************************"
-										+ System.lineSeparator() + "Test Name	: {}" 
-										+ System.lineSeparator() + "Written BY	: {}"
-										+ System.lineSeparator() + "Date		: {}"
-										+ System.lineSeparator() + "Short Desc	: {}"
-										+ System.lineSeparator() + "*************************************************************************"
-										, t.getTestClassObject().getName()
-										, t.getTestPlanPreparedBy()
-										, t.getTestPlanPreparationDate()
-										, t.getTestPlanDescription()
-										);
-		// @formatter:on
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("*************************************************************************");
+		sb.append("\n");
+		sb.append("Test Name	: " + t.getTestClassObject().getName());
+		sb.append("\n");
+		if (!"".equals(t.getTestPlanPreparedBy())) {
+			sb.append("Written BY	: " + t.getTestPlanPreparedBy());
+			sb.append("\n");
+		}
+		if (!"".equals(t.getTestPlanPreparationDate())) {
+			sb.append("Date		: " + t.getTestPlanPreparationDate());
+			sb.append("\n");
+		}
+		if (!"".equals(t.getTestPlanDescription())) {
+			sb.append("Short Desc	: " + t.getTestPlanDescription());
+			sb.append("\n");
+		}
+		if (!"".equals(t.getTestPlanBDD())) {
+			String BDD = processBDD(t.getTestPlanBDD());
+			sb.append("BDD Test Plan	: " + BDD);
+			sb.append("\n");
+		}
+		sb.append("*************************************************************************");
+
+		context.getLogger().info(sb.toString());
+	}
+
+	private String processBDD(String testPlanBDD) {
+		String strBDD = testPlanBDD.replaceAll("[Gg][Ii][Vv][Ee][Nn]", "\nGIVEN");
+		strBDD = strBDD.replaceAll("[Aa][Nn][Dd]", "\nAND");
+		strBDD = strBDD.replaceAll("[Ww][Hh][Ee][Nn]", "\nWHEN");
+		strBDD = strBDD.replaceAll("[Tt][Hh][Ee][Nn]", "\nTHEN");
+		strBDD = strBDD.replaceAll("[Bb][Uu][Tt]", "\nBUT");
+		return strBDD;
 	}
 
 	@Override
