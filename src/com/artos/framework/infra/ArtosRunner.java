@@ -266,14 +266,22 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * If test case executed successfully then do post validation and change test status accordingly
+	 * After test case execution, perform post validation and update test status accordingly.
+	 * 
+	 * <PRE>
+	 * If test status is marked as SKIP or KTF then do not fail test case based on ExpectedException conditions. 
+	 * If test is marked as SKIP then user should have taken decision based on condition checking so test framework does not need to overrule decision.
+	 * If test is marked as KTF then user already knows that this test scenario is known to fail, so forcefully failing will dilute the meaning of having known to fail status.
+	 * </PRE>
 	 * 
 	 * @param t {@code TestObjectWrapper} object
 	 */
 	private void postTestValidation(TestObjectWrapper t) {
-		if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty() && t.isEnforceException()) {
-			// Exception annotation was specified but did not occur
-			context.setTestStatus(TestStatus.FAIL, "Exception was specified but did not occur");
+		if (context.getCurrentTestStatus() == TestStatus.PASS || context.getCurrentTestStatus() == TestStatus.FAIL) {
+			if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty() && t.isEnforceException()) {
+				// Exception annotation was specified but did not occur
+				context.setTestStatus(TestStatus.FAIL, "Exception was specified but did not occur");
+			}
 		}
 	}
 

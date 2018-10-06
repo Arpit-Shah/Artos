@@ -110,6 +110,11 @@ public class TestTransform {
 		long expectedResult2 = 999999999999999999l;
 		long resultArray2 = _tfm.bytesToLong(test2, ByteOrder.LITTLE_ENDIAN);
 		assertEquals(expectedResult2, resultArray2);
+		
+		byte[] test3 = _tfm.strHexToByteArray("00 00 00 00 00 00 00 04");
+		long expectedResult3 = 4l;
+		long resultArray3 = _tfm.bytesToLong(test3, ByteOrder.BIG_ENDIAN);
+		assertEquals(expectedResult3, resultArray3);
 	}
 
 	@Test
@@ -230,6 +235,11 @@ public class TestTransform {
 		int expectedResult2 = 32767;
 		int resultArray2 = _tfm.bytes2ToInt(test2, ByteOrder.LITTLE_ENDIAN);
 		assertEquals(expectedResult2, resultArray2);
+		
+		byte[] test3 = _tfm.strHexToByteArray("02 00");
+		int expectedResult3 = 2;
+		int resultArray3 = _tfm.bytes2ToInt(test3, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expectedResult3, resultArray3);
 	}
 
 	@Test

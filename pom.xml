@@ -159,7 +159,7 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>${basedir}/src/test</testSourceDirectory>
-		
+
 		<!-- Maven Compiler Plugins -->
 		<!-- parent pom overrides for compiler plugin default values and you can't 
 			fix it, you'll have to explicitely force the values in the compiler plugin 

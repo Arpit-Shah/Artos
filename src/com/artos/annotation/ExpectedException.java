@@ -61,7 +61,7 @@ public @interface ExpectedException {
 	/**
 	 * if enforce = true exception did not occur then test case will be marked failed.
 	 * 
-	 * @return
+	 * @return true if enforced, false if not enforced
 	 */
 	boolean enforce() default true;
 }
