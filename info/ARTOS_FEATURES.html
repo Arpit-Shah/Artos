@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>ARTOS_FEATURES.html</title>
+  <meta name="generator" content="Haroopad 0.13.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>div.oembedall-githubrepos{border:1px solid #DDD;border-radius:4px;list-style-type:none;margin:0 0 10px;padding:8px 10px 0;font:13.34px/1.4 helvetica,arial,freesans,clean,sans-serif;width:452px;background-color:#fff}div.oembedall-githubrepos .oembedall-body{background:-moz-linear-gradient(center top,#FAFAFA,#EFEFEF);background:-webkit-gradient(linear,left top,left bottom,from(#FAFAFA),to(#EFEFEF));border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-top:1px solid #EEE;margin-left:-10px;margin-top:8px;padding:5px 10px;width:100%}div.oembedall-githubrepos h3{font-size:14px;margin:0;padding-left:18px;white-space:nowrap}div.oembedall-githubrepos p.oembedall-description{color:#444;font-size:12px;margin:0 0 3px}div.oembedall-githubrepos p.oembedall-updated-at{color:#888;font-size:11px;margin:0}div.oembedall-githubrepos ul.oembedall-repo-stats{border:none;float:right;font-size:11px;font-weight:700;padding-left:15px;position:relative;z-index:5;margin:0}div.oembedall-githubrepos ul.oembedall-repo-stats li{border:none;color:#666;display:inline-block;list-style-type:none;margin:0!important}div.oembedall-githubrepos ul.oembedall-repo-stats li a{background-color:transparent;border:none;color:#666!important;background-position:5px -2px;background-repeat:no-repeat;border-left:1px solid #DDD;display:inline-block;height:21px;line-height:21px;padding:0 5px 0 23px}div.oembedall-githubrepos ul.oembedall-repo-stats li:first-child a{border-left:medium none;margin-right:-3px}div.oembedall-githubrepos ul.oembedall-repo-stats li a:hover{background:5px -27px no-repeat #4183C4;color:#FFF!important;text-decoration:none}div.oembedall-githubrepos ul.oembedall-repo-stats li:first-child a:hover{border-bottom-left-radius:3px;border-top-left-radius:3px}ul.oembedall-repo-stats li:last-child a:hover{border-bottom-right-radius:3px;border-top-right-radius:3px}span.oembedall-closehide{background-color:#aaa;border-radius:2px;cursor:pointer;margin-right:3px}div.oembedall-container{margin-top:5px;text-align:left}.oembedall-ljuser{font-weight:700}.oembedall-ljuser img{vertical-align:bottom;border:0;padding-right:1px}.oembedall-stoqembed{border-bottom:1px dotted #999;float:left;overflow:hidden;width:730px;line-height:1;background:#FFF;color:#000;font-family:Arial,Liberation Sans,DejaVu Sans,sans-serif;font-size:80%;text-align:left;margin:0;padding:0}.oembedall-stoqembed a{color:#07C;text-decoration:none;margin:0;padding:0}.oembedall-stoqembed a:hover{text-decoration:underline}.oembedall-stoqembed a:visited{color:#4A6B82}.oembedall-stoqembed h3{font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;font-size:130%;font-weight:700;margin:0;padding:0}.oembedall-stoqembed .oembedall-reputation-score{color:#444;font-size:120%;font-weight:700;margin-right:2px}.oembedall-stoqembed .oembedall-user-info{height:35px;width:185px}.oembedall-stoqembed .oembedall-user-info .oembedall-user-gravatar32{float:left;height:32px;width:32px}.oembedall-stoqembed .oembedall-user-info .oembedall-user-details{float:left;margin-left:5px;overflow:hidden;white-space:nowrap;width:145px}.oembedall-stoqembed .oembedall-question-hyperlink{font-weight:700}.oembedall-stoqembed .oembedall-stats{background:#EEE;margin:0 0 0 7px;padding:4px 7px 6px;width:58px}.oembedall-stoqembed .oembedall-statscontainer{float:left;margin-right:8px;width:86px}.oembedall-stoqembed .oembedall-votes{color:#555;padding:0 0 7px;text-align:center}.oembedall-stoqembed .oembedall-vote-count-post{font-size:240%;color:#808185;display:block;font-weight:700}.oembedall-stoqembed .oembedall-views{color:#999;padding-top:4px;text-align:center}.oembedall-stoqembed .oembedall-status{margin-top:-3px;padding:4px 0;text-align:center;background:#75845C;color:#FFF}.oembedall-stoqembed .oembedall-status strong{color:#FFF;display:block;font-size:140%}.oembedall-stoqembed .oembedall-summary{float:left;width:635px}.oembedall-stoqembed .oembedall-excerpt{line-height:1.2;margin:0;padding:0 0 5px}.oembedall-stoqembed .oembedall-tags{float:left;line-height:18px}.oembedall-stoqembed .oembedall-tags a:hover{text-decoration:none}.oembedall-stoqembed .oembedall-post-tag{background-color:#E0EAF1;border-bottom:1px solid #3E6D8E;border-right:1px solid #7F9FB6;color:#3E6D8E;font-size:90%;line-height:2.4;margin:2px 2px 2px 0;padding:3px 4px;text-decoration:none;white-space:nowrap}.oembedall-stoqembed .oembedall-post-tag:hover{background-color:#3E6D8E;border-bottom:1px solid #37607D;border-right:1px solid #37607D;color:#E0EAF1}.oembedall-stoqembed .oembedall-fr{float:right}.oembedall-stoqembed .oembedall-statsarrow{background-image:url(http://cdn.sstatic.net/stackoverflow/img/sprites.png?v=3);background-repeat:no-repeat;overflow:hidden;background-position:0 -435px;float:right;height:13px;margin-top:12px;width:7px}.oembedall-facebook1{border:1px solid #1A3C6C;padding:0;font:13.34px/1.4 verdana;width:500px}.oembedall-facebook2{background-color:#627add}.oembedall-facebook2 a{color:#e8e8e8;text-decoration:none}.oembedall-facebookBody{background-color:#fff;vertical-align:top;padding:5px}.oembedall-facebookBody .contents{display:inline-block;width:100%}.oembedall-facebookBody div img{float:left;margin-right:5px}div.oembedall-lanyard{-webkit-box-shadow:none;-webkit-transition-delay:0s;-webkit-transition-duration:.4000000059604645s;-webkit-transition-property:width;-webkit-transition-timing-function:cubic-bezier(0.42,0,.58,1);background-attachment:scroll;background-clip:border-box;background-color:transparent;background-image:none;background-origin:padding-box;border-width:0;box-shadow:none;color:#112644;display:block;float:left;font-family:'Trebuchet MS',Trebuchet,sans-serif;font-size:16px;height:253px;line-height:19px;margin:0;max-width:none;min-height:0;outline:#112644 0;overflow-x:visible;overflow-y:visible;padding:0;position:relative;text-align:left;vertical-align:baseline;width:804px}div.oembedall-lanyard .tagline{font-size:1.5em}div.oembedall-lanyard .wrapper{overflow:hidden;clear:both}div.oembedall-lanyard .split{float:left;display:inline}div.oembedall-lanyard .prominent-place .flag:active,div.oembedall-lanyard .prominent-place .flag:focus,div.oembedall-lanyard .prominent-place .flag:hover,div.oembedall-lanyard .prominent-place .flag:link,div.oembedall-lanyard .prominent-place .flag:visited{float:left;display:block;width:48px;height:48px;position:relative;top:-5px;margin-right:10px}div.oembedall-lanyard .place-context{font-size:.889em}div.oembedall-lanyard .prominent-place .sub-place{display:block}div.oembedall-lanyard .prominent-place{font-size:1.125em;line-height:1.1em;font-weight:400}div.oembedall-lanyard .main-date{color:#8CB4E0;font-weight:700;line-height:1.1}div.oembedall-lanyard .first{width:48.57%;margin:0 0 0 2.857%}.mermaid .label{color:#333}.node circle,.node polygon,.node rect{fill:#cde498;stroke:#13540c;stroke-width:1px}.edgePath .path{stroke:green;stroke-width:1.5px}.cluster rect{fill:#cdffb2;rx:40;stroke:#6eaa49;stroke-width:1px}.cluster text{fill:#333}.actor{stroke:#13540c;fill:#cde498}text.actor{fill:#000;stroke:none}.actor-line{stroke:grey}.messageLine0{stroke-width:1.5;stroke-dasharray:"2 2";marker-end:"url(#arrowhead)";stroke:#333}.messageLine1{stroke-width:1.5;stroke-dasharray:"2 2";stroke:#333}#arrowhead{fill:#333}#crosshead path{fill:#333!important;stroke:#333!important}.messageText{fill:#333;stroke:none}.labelBox{stroke:#326932;fill:#cde498}.labelText,.loopText{fill:#000;stroke:none}.loopLine{stroke-width:2;stroke-dasharray:"2 2";marker-end:"url(#arrowhead)";stroke:#326932}.note{stroke:#6eaa49;fill:#fff5ad}.noteText{fill:#000;stroke:none;font-family:'trebuchet ms',verdana,arial;font-size:14px}.section{stroke:none;opacity:.2}.section0,.section2{fill:#6eaa49}.section1,.section3{fill:#fff;opacity:.2}.sectionTitle0,.sectionTitle1,.sectionTitle2,.sectionTitle3{fill:#333}.sectionTitle{text-anchor:start;font-size:11px;text-height:14px}.grid .tick{stroke:lightgrey;opacity:.3;shape-rendering:crispEdges}.grid path{stroke-width:0}.today{fill:none;stroke:red;stroke-width:2px}.task{stroke-width:2}.taskText{text-anchor:middle;font-size:11px}.taskTextOutsideRight{fill:#000;text-anchor:start;font-size:11px}.taskTextOutsideLeft{fill:#000;text-anchor:end;font-size:11px}.taskText0,.taskText1,.taskText2,.taskText3{fill:#fff}.task0,.task1,.task2,.task3{fill:#487e3a;stroke:#13540c}.taskTextOutside0,.taskTextOutside1,.taskTextOutside2,.taskTextOutside3{fill:#000}.active0,.active1,.active2,.active3{fill:#cde498;stroke:#13540c}.activeText0,.activeText1,.activeText2,.activeText3{fill:#000!important}.done0,.done1,.done2,.done3{stroke:grey;fill:lightgrey;stroke-width:2}.doneText0,.doneText1,.doneText2,.doneText3{fill:#000!important}.crit0,.crit1,.crit2,.crit3{stroke:#f88;fill:red;stroke-width:2}.activeCrit0,.activeCrit1,.activeCrit2,.activeCrit3{stroke:#f88;fill:#cde498;stroke-width:2}.doneCrit0,.doneCrit1,.doneCrit2,.doneCrit3{stroke:#f88;fill:lightgrey;stroke-width:2;cursor:pointer;shape-rendering:crispEdges}.activeCritText0,.activeCritText1,.activeCritText2,.activeCritText3,.doneCritText0,.doneCritText1,.doneCritText2,.doneCritText3{fill:#000!important}.titleText{text-anchor:middle;font-size:18px;fill:#000}text{font-family:'trebuchet ms',verdana,arial;font-size:14px}html{height:100%}body{margin:0!important;padding:5px 20px 26px!important;background-color:#fff;font-family:"Lucida Grande","Segoe UI","Apple SD Gothic Neo","Malgun Gothic","Lucida Sans Unicode",Helvetica,Arial,sans-serif;font-size:.9em;overflow-x:hidden;overflow-y:auto}br,h1,h2,h3,h4,h5,h6{clear:both}hr.page{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x;border:0;height:3px;padding:0}hr.underscore{border-top-style:dashed!important}body >:first-child{margin-top:0!important}img.plugin{box-shadow:0 1px 3px rgba(0,0,0,.1);border-radius:3px}iframe{border:0}figure{-webkit-margin-before:0;-webkit-margin-after:0;-webkit-margin-start:0;-webkit-margin-end:0}kbd{border:1px solid #aaa;-moz-border-radius:2px;-webkit-border-radius:2px;border-radius:2px;-moz-box-shadow:1px 2px 2px #ddd;-webkit-box-shadow:1px 2px 2px #ddd;box-shadow:1px 2px 2px #ddd;background-color:#f9f9f9;background-image:-moz-linear-gradient(top,#eee,#f9f9f9,#eee);background-image:-o-linear-gradient(top,#eee,#f9f9f9,#eee);background-image:-webkit-linear-gradient(top,#eee,#f9f9f9,#eee);background-image:linear-gradient(top,#eee,#f9f9f9,#eee);padding:1px 3px;font-family:inherit;font-size:.85em}.oembeded .oembed_photo{display:inline-block}img[data-echo]{margin:25px 0;width:100px;height:100px;background:url(../img/ajax.gif) center center no-repeat #fff}.spinner{display:inline-block;width:10px;height:10px;margin-bottom:-.1em;border:2px solid rgba(0,0,0,.5);border-top-color:transparent;border-radius:100%;-webkit-animation:spin 1s infinite linear;animation:spin 1s infinite linear}.spinner:after{content:'';display:block;width:0;height:0;position:absolute;top:-6px;left:0;border:4px solid transparent;border-bottom-color:rgba(0,0,0,.5);-webkit-transform:rotate(45deg);transform:rotate(45deg)}@-webkit-keyframes spin{to{-webkit-transform:rotate(360deg)}}@keyframes spin{to{transform:rotate(360deg)}}p.toc{margin:0!important}p.toc ul{padding-left:10px}p.toc>ul{padding:10px;margin:0 10px;display:inline-block;border:1px solid #ededed;border-radius:5px}p.toc li,p.toc ul{list-style-type:none}p.toc li{width:100%;padding:0;overflow:hidden}p.toc li a::after{content:"."}p.toc li a:before{content:"• "}p.toc h5{text-transform:uppercase}p.toc .title{float:left;padding-right:3px}p.toc .number{margin:0;float:right;padding-left:3px;background:#fff;display:none}input.task-list-item{margin-left:-1.62em}.markdown{font-family:"Hiragino Sans GB","Microsoft YaHei",STHeiti,SimSun,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",'Segoe UI',AppleSDGothicNeo-Medium,'Malgun Gothic',Verdana,Tahoma,sans-serif;padding:20px}.markdown a{text-decoration:none;vertical-align:baseline}.markdown a:hover{text-decoration:underline}.markdown h1{font-size:2.2em;font-weight:700;margin:1.5em 0 1em}.markdown h2{font-size:1.8em;font-weight:700;margin:1.275em 0 .85em}.markdown h3{font-size:1.6em;font-weight:700;margin:1.125em 0 .75em}.markdown h4{font-size:1.4em;font-weight:700;margin:.99em 0 .66em}.markdown h5{font-size:1.2em;font-weight:700;margin:.855em 0 .57em}.markdown h6{font-size:1em;font-weight:700;margin:.75em 0 .5em}.markdown h1+p,.markdown h1:first-child,.markdown h2+p,.markdown h2:first-child,.markdown h3+p,.markdown h3:first-child,.markdown h4+p,.markdown h4:first-child,.markdown h5+p,.markdown h5:first-child,.markdown h6+p,.markdown h6:first-child{margin-top:0}.markdown hr{border:1px solid #ccc}.markdown p{margin:1em 0;word-wrap:break-word}.markdown ol{list-style-type:decimal}.markdown li{display:list-item;line-height:1.4em}.markdown blockquote{margin:1em 20px}.markdown blockquote>:first-child{margin-top:0}.markdown blockquote>:last-child{margin-bottom:0}.markdown blockquote cite:before{content:'\2014 \00A0'}.markdown .code{border-radius:3px;word-wrap:break-word}.markdown pre{border-radius:3px;word-wrap:break-word;border:1px solid #ccc;overflow:auto;padding:.5em}.markdown pre code{border:0;display:block}.markdown pre>code{font-family:Consolas,Inconsolata,Courier,monospace;font-weight:700;white-space:pre;margin:0}.markdown code{border-radius:3px;word-wrap:break-word;border:1px solid #ccc;padding:0 5px;margin:0 2px}.markdown img{max-width:100%}.markdown mark{color:#000;background-color:#fcf8e3}.markdown table{padding:0;border-collapse:collapse;border-spacing:0;margin-bottom:16px}.markdown table tr td,.markdown table tr th{border:1px solid #ccc;margin:0;padding:6px 13px}.markdown table tr th{font-weight:700}.markdown table tr th>:first-child{margin-top:0}.markdown table tr th>:last-child{margin-bottom:0}.markdown table tr td>:first-child{margin-top:0}.markdown table tr td>:last-child{margin-bottom:0}@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,300,700);.haroopad{padding:20px;color:#222;font-size:15px;font-family:"Roboto Condensed",Tauri,"Hiragino Sans GB","Microsoft YaHei",STHeiti,SimSun,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",'Segoe UI',AppleSDGothicNeo-Medium,'Malgun Gothic',Verdana,Tahoma,sans-serif;background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased}.haroopad a{color:#3269a0}.haroopad a:hover{color:#4183c4}.haroopad h2{border-bottom:1px solid #e6e6e6}.haroopad h6{color:#777}.haroopad hr{border:1px solid #e6e6e6}.haroopad blockquote>code,.haroopad h1>code,.haroopad h2>code,.haroopad h3>code,.haroopad h4>code,.haroopad h5>code,.haroopad h6>code,.haroopad li>code,.haroopad p>code,.haroopad td>code{font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;font-size:85%;background-color:rgba(0,0,0,.02);padding:.2em .5em;border:1px solid #efefef}.haroopad pre>code{font-size:1em;letter-spacing:-1px;font-weight:700}.haroopad blockquote{border-left:4px solid #e6e6e6;padding:0 15px;color:#777}.haroopad table{background-color:#fafafa}.haroopad table tr td,.haroopad table tr th{border:1px solid #e6e6e6}.haroopad table tr:nth-child(2n){background-color:#f2f2f2}.hljs{display:block;overflow-x:auto;padding:.5em;background:#fdf6e3;color:#657b83;-webkit-text-size-adjust:none}.diff .hljs-header,.hljs-comment,.hljs-doctype,.hljs-javadoc,.hljs-pi,.lisp .hljs-string{color:#93a1a1}.css .hljs-tag,.hljs-addition,.hljs-keyword,.hljs-request,.hljs-status,.hljs-winutils,.method,.nginx .hljs-title{color:#859900}.hljs-command,.hljs-dartdoc,.hljs-hexcolor,.hljs-link_url,.hljs-number,.hljs-phpdoc,.hljs-regexp,.hljs-rules .hljs-value,.hljs-string,.hljs-tag .hljs-value,.tex .hljs-formula{color:#2aa198}.css .hljs-function,.hljs-built_in,.hljs-chunk,.hljs-decorator,.hljs-id,.hljs-identifier,.hljs-localvars,.hljs-title,.vhdl .hljs-literal{color:#268bd2}.hljs-attribute,.hljs-class .hljs-title,.hljs-constant,.hljs-link_reference,.hljs-parent,.hljs-type,.hljs-variable,.lisp .hljs-body,.smalltalk .hljs-number{color:#b58900}.css .hljs-pseudo,.diff .hljs-change,.hljs-attr_selector,.hljs-cdata,.hljs-header,.hljs-pragma,.hljs-preprocessor,.hljs-preprocessor .hljs-keyword,.hljs-shebang,.hljs-special,.hljs-subst,.hljs-symbol,.hljs-symbol .hljs-string{color:#cb4b16}.hljs-deletion,.hljs-important{color:#dc322f}.hljs-link_label{color:#6c71c4}.tex .hljs-formula{background:#eee8d5}.MathJax_Hover_Frame{border-radius:.25em;-webkit-border-radius:.25em;-moz-border-radius:.25em;-khtml-border-radius:.25em;box-shadow:0 0 15px #83A;-webkit-box-shadow:0 0 15px #83A;-moz-box-shadow:0 0 15px #83A;-khtml-box-shadow:0 0 15px #83A;border:1px solid #A6D!important;display:inline-block;position:absolute}.MathJax_Hover_Arrow{position:absolute;width:15px;height:11px;cursor:pointer}#MathJax_About{position:fixed;left:50%;width:auto;text-align:center;border:3px outset;padding:1em 2em;background-color:#DDD;color:#000;cursor:default;font-family:message-box;font-size:120%;font-style:normal;text-indent:0;text-transform:none;line-height:normal;letter-spacing:normal;word-spacing:normal;word-wrap:normal;white-space:nowrap;float:none;z-index:201;border-radius:15px;-webkit-border-radius:15px;-moz-border-radius:15px;-khtml-border-radius:15px;box-shadow:0 10px 20px gray;-webkit-box-shadow:0 10px 20px gray;-moz-box-shadow:0 10px 20px gray;-khtml-box-shadow:0 10px 20px gray;filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}.MathJax_Menu{position:absolute;background-color:#fff;color:#000;width:auto;padding:2px;border:1px solid #CCC;margin:0;cursor:default;font:menu;text-align:left;text-indent:0;text-transform:none;line-height:normal;letter-spacing:normal;word-spacing:normal;word-wrap:normal;white-space:nowrap;float:none;z-index:201;box-shadow:0 10px 20px gray;-webkit-box-shadow:0 10px 20px gray;-moz-box-shadow:0 10px 20px gray;-khtml-box-shadow:0 10px 20px gray;filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}.MathJax_MenuItem{padding:2px 2em;background:0 0}.MathJax_MenuArrow{position:absolute;right:.5em;color:#666}.MathJax_MenuActive .MathJax_MenuArrow{color:#fff}.MathJax_MenuArrow.RTL{left:.5em;right:auto}.MathJax_MenuCheck{position:absolute;left:.7em}.MathJax_MenuCheck.RTL{right:.7em;left:auto}.MathJax_MenuRadioCheck{position:absolute;left:1em}.MathJax_MenuRadioCheck.RTL{right:1em;left:auto}.MathJax_MenuLabel{padding:2px 2em 4px 1.33em;font-style:italic}.MathJax_MenuRule{border-top:1px solid #CCC;margin:4px 1px 0}.MathJax_MenuDisabled{color:GrayText}.MathJax_MenuActive{background-color:Highlight;color:HighlightText}.MathJax_Menu_Close{position:absolute;width:31px;height:31px;top:-15px;left:-15px}#MathJax_Zoom{position:absolute;background-color:#F0F0F0;overflow:auto;display:block;z-index:301;padding:.5em;border:1px solid #000;margin:0;font-weight:400;font-style:normal;text-align:left;text-indent:0;text-transform:none;line-height:normal;letter-spacing:normal;word-spacing:normal;word-wrap:normal;white-space:nowrap;float:none;box-shadow:5px 5px 15px #AAA;-webkit-box-shadow:5px 5px 15px #AAA;-moz-box-shadow:5px 5px 15px #AAA;-khtml-box-shadow:5px 5px 15px #AAA;filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}#MathJax_ZoomOverlay{position:absolute;left:0;top:0;z-index:300;display:inline-block;width:100%;height:100%;border:0;padding:0;margin:0;background-color:#fff;opacity:0;filter:alpha(opacity=0)}#MathJax_ZoomFrame{position:relative;display:inline-block;height:0;width:0}#MathJax_ZoomEventTrap{position:absolute;left:0;top:0;z-index:302;display:inline-block;border:0;padding:0;margin:0;background-color:#fff;opacity:0;filter:alpha(opacity=0)}.MathJax_Preview{color:#888}#MathJax_Message{position:fixed;left:1px;bottom:2px;background-color:#E6E6E6;border:1px solid #959595;margin:0;padding:2px 8px;z-index:102;color:#000;font-size:80%;width:auto;white-space:nowrap}#MathJax_MSIE_Frame{position:absolute;top:0;left:0;width:0;z-index:101;border:0;margin:0;padding:0}.MathJax_Error{color:#C00;font-style:italic}footer{position:fixed;font-size:.8em;text-align:right;bottom:0;margin-left:-25px;height:20px;width:100%}</style>
+</head>
+<body class="markdown haroopad">
+<p class="toc" style="undefined"></p><ul>
+<li><ul>
+<li><span class="title">
+<a href="#runner/test-executor" title="Runner/Test Executor">Runner/Test Executor</a>
+</span>
+<!--span class="number">
+0
+</span-->
+</li>
+<li><span class="title">
+<a href="#framework-configuration" title="Framework Configuration">Framework Configuration</a>
+</span>
+<!--span class="number">
+1
+</span-->
+</li>
+<li><span class="title">
+<a href="#test-status" title="Test Status">Test Status</a>
+</span>
+<!--span class="number">
+2
+</span-->
+</li>
+<li><span class="title">
+<a href="#logging-framework" title="Logging Framework">Logging Framework</a>
+</span>
+<!--span class="number">
+3
+</span-->
+</li>
+<li><span class="title">
+<a href="#offline-extent-report" title="Offline Extent Report">Offline Extent Report</a>
+</span>
+<!--span class="number">
+4
+</span-->
+</li>
+<li><span class="title">
+<a href="#real-time-logging" title="Real Time Logging">Real Time Logging</a>
+</span>
+<!--span class="number">
+5
+</span-->
+</li>
+<li><span class="title">
+<a href="#stop-on-fail" title="Stop on Fail">Stop on Fail</a>
+</span>
+<!--span class="number">
+6
+</span-->
+</li>
+<li><span class="title">
+<a href="#test-plan-extraction" title="Test Plan Extraction">Test Plan Extraction</a>
+</span>
+<!--span class="number">
+7
+</span-->
+</li>
+<li><span class="title">
+<a href="#global-parameters" title="Global parameters">Global parameters</a>
+</span>
+<!--span class="number">
+8
+</span-->
+</li>
+<li><span class="title">
+<a href="#gui-test-selector" title="GUI Test Selector">GUI Test Selector</a>
+</span>
+<!--span class="number">
+9
+</span-->
+</li>
+<li><span class="title">
+<a href="#annotations-to-mark-test-cases" title="Annotations to mark test cases">Annotations to mark test cases</a>
+</span>
+<!--span class="number">
+10
+</span-->
+<ul>
+<li><span class="title">
+<a href="#@beforetestsuite-@aftertestsuite-@beforetest-@aftertest" title="@BeforeTestSuite @AfterTestSuite @BeforeTest @AfterTest">@BeforeTestSuite @AfterTestSuite @BeforeTest @AfterTest</a>
+</span>
+<!--span class="number">
+11
+</span-->
+</li>
+<li><span class="title">
+<a href="#@testcase-@testplan-@knowntofail-@group-@expectedexception" title="@TestCase @TestPlan @KnownToFail @Group @ExpectedException">@TestCase @TestPlan @KnownToFail @Group @ExpectedException</a>
+</span>
+<!--span class="number">
+12
+</span-->
+</li>
+<li><span class="title">
+<a href="#known-to-fail" title="Known to Fail">Known to Fail</a>
+</span>
+<!--span class="number">
+13
+</span-->
+</li>
+<li><span class="title">
+<a href="#test-groups" title="Test Groups">Test Groups</a>
+</span>
+<!--span class="number">
+14
+</span-->
+</li>
+<li><span class="title">
+<a href="#test-exception" title="Test Exception">Test Exception</a>
+</span>
+<!--span class="number">
+15
+</span-->
+</li>
+<li><span class="title">
+<a href="#test-sequence-and-execution" title="Test Sequence and Execution">Test Sequence and Execution</a>
+</span>
+<!--span class="number">
+16
+</span-->
+</li>
+</ul>
+</li>
+<li><span class="title">
+<a href="#inbuilt-utilities-for-ease-of-use" title="Inbuilt Utilities for ease of use">Inbuilt Utilities for ease of use</a>
+</span>
+<!--span class="number">
+17
+</span-->
+</li>
+<li><span class="title">
+<a href="#inbuilt-exception-handling" title="Inbuilt Exception Handling">Inbuilt Exception Handling</a>
+</span>
+<!--span class="number">
+18
+</span-->
+</li>
+<li><span class="title">
+<a href="#time-tracking" title="Time Tracking">Time Tracking</a>
+</span>
+<!--span class="number">
+19
+</span-->
+</li>
+</ul>
+</li>
+
+</ul>
+<p></p><hr class="page"><h1 id="artos-(art-of-system-testing)"><a name="artos-(art-of-system-testing)" href="#artos-(art-of-system-testing)"></a>Artos (Art of System Testing)</h1><p>Artos is a test framework designed for functional, system, end to end and/or unit testing. The Artos was developed to provide a framework which can work out of the box so user can focus on writing test cases.</p><p>Artos consists of the following:</p><ul>
+<li>Runner/Test Executor</li><li>Log framework</li><li>Configuration</li><li>Test Context</li><li>Utilities</li></ul><p>Maven repository</p><pre><code data-origin="<pre><code>&amp;lt;dependency&amp;gt;
+  &amp;lt;groupId&amp;gt;com.theartos&amp;lt;/groupId&amp;gt;
+  &amp;lt;artifactId&amp;gt;artos&amp;lt;/artifactId&amp;gt;
+  &amp;lt;version&amp;gt;0.0.1&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+</code></pre>">&lt;dependency&gt;
+  &lt;groupId&gt;com.theartos&lt;/groupId&gt;
+  &lt;artifactId&gt;artos&lt;/artifactId&gt;
+  &lt;version&gt;0.0.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><p>Requirement:</p><ul>
+<li>JDK 8 or higher</li></ul><p>Definitions:</p><table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Suite</td>
+<td>Collection of test cases that are intended to be used to test a software program</td>
+</tr>
+<tr>
+<td>Test Script</td>
+<td>Set of instructions that will guide test runner on how to execute test cases</td>
+</tr>
+<tr>
+<td>Test Case</td>
+<td>Set of instructions that will be performed on the system under test</td>
+</tr>
+</tbody>
+</table><h1 id="artos-features"><a name="artos-features" href="#artos-features"></a>Artos Features</h1><ul>
+<li>Runner which provides flexibility to execute test cases multiple way.</li><li>Configurable framework.</li><li>Inbuilt logging framework (based on log4j).</li><li>Inbuilt log appenders and reports. (Text/HTML/Extent/Summary)</li><li>Annotation based test case parsing.</li><li>Real time logs for performance testing.</li><li>Inbuilt socket connectors.</li><li>Test status (with extra : Known to Fail status support).</li><li>Fail stamp in log file.</li><li>Inbuilt email client.</li><li>Listeners for developing plugins.</li><li>Auto generation of test scripts.</li><li>Global parameter storage per test suite.</li><li>GUI test selector for easy debugging.</li></ul><hr class="page"><h2 id="runner/test-executor"><a name="runner/test-executor" href="#runner/test-executor"></a>Runner/Test Executor</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Runner is responsible for sequentializing, executing and tracking test cases from start to end.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Artos provides test runner which can execute multiple test suites in parallel.</li><li>Artos test runner can be launched using:<ul>
+<li>Command line by providing xml test script.<br>  OR</li><li>main() method execution via IDE.</li></ul>
+</li></ul>
+</li></ul><blockquote>
+<p>Note: Artos recognise test cases using <code>@TestCase</code> annotations, any class without appropriate annotation(s) will be ignored.</p>
+</blockquote><h2 id="framework-configuration"><a name="framework-configuration" href="#framework-configuration"></a>Framework Configuration</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>User can customise framework behaviour by changing appropriate argument(s) from <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>If not present, Artos will generate default configuration file at location <code>conf/framework_configuration.xml</code>.</li><li>User can override some of the framework configuration using <code>Runner</code> object constructor.</li><li>List of configurable features:<ul>
+<li>Organisation information (Stamped on top of log file).</li><li>Change logger configuration:<ul>
+<li>Log level</li><li>Log base directory path.</li><li>Log sub directory path.</li><li>Enable/disable text logs.</li><li>Enable/disable html logs.</li><li>Enable/disable log decoration.</li><li>Enable/disable Extent report generation.</li></ul>
+</li><li>Configure email client settings.</li><li>Enable/disable:<ul>
+<li>Enable/disable framework banner.</li><li>Enable/disable organisation information.</li><li>Enable/disable GUI test selector.</li><li>Enable/disable auto generation of Eclipse IDE default template.</li><li>Enable/disable auto generation of the test scripts.</li><li>Enable/disable stop on fail.</li></ul>
+</li></ul>
+</li></ul>
+</li></ul><h2 id="test-status"><a name="test-status" href="#test-status"></a>Test Status</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Test status allows user to provide useful status updates during test case execution and conclude outcome.</li><li>User can provide short description/reason string during test status update.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>User can update test status multiple times within one test case execution.</li><li>Among all updated status, status with worst outcome will be considered as outcome/result of the test case.<blockquote>
+<p>   Example:<br>   During single test case execution, if a test case status are updated in the following sequence:</p>
+<pre><code data-origin="<pre><code>  PASS =&amp;gt; PASS =&amp;gt; FAIL =&amp;gt; PASS
+</code></pre>">  PASS =&gt; PASS =&gt; FAIL =&gt; PASS
+</code></pre><p>  Then outcome of the test case will be <strong>FAIL</strong> because that is the worst outcome.</p>
+</blockquote>
+</li></ul>
+</li><li><p>Supported Test Status:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Usage when</th>
+<th>Order (higher order = worst outcome)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PASS</td>
+<td>Test case executed without any errors</td>
+<td>0</td>
+</tr>
+<tr>
+<td>SKIP</td>
+<td>Test case is skipped</td>
+<td>1</td>
+</tr>
+<tr>
+<td>KTF</td>
+<td>Test case is known to fail</td>
+<td>2</td>
+</tr>
+<tr>
+<td>FAIL</td>
+<td>Test case failed</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+</li><li><p>Usage:<br>Test status can be updated using following method :</p>
+<blockquote>
+<p><code>TestContext().setTestStatus(TestStatus.FAIL, "Did not expect to reach here");</code></p>
+</blockquote>
+</li></ul><h2 id="logging-framework"><a name="logging-framework" href="#logging-framework"></a>Logging Framework</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Logs and reports are heart of any test framework.</li><li>Artos log framework:<ul>
+<li>Pre-configured and ready to be used.</li><li>Capable of producing text and/or html log files.</li><li>Generates real-time logs which can be used for performance measurement.</li><li>Generates summary report which can be used as customer facing reports. (Separate to Extent Report)</li><li>Provides features which can be very useful in test development.</li></ul>
+</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Two log layouts are supported:<ul>
+<li>Text layout (Default enabled).</li><li>HTML layout (Default disabled).</li></ul>
+</li><li>Two log files are generated per test suite execution:<ul>
+<li>General log file: All logs (Same as console log).</li><li>Real Time log file: Send/receive message logs from connectable interfaces with timestamp.</li></ul>
+</li><li>Report is generated per test suite:<ul>
+<li>Summary report: Summarised pass/fail summary with test name, execution time and bug reference number.</li></ul>
+</li><li>Log patterns (decoration):<ul>
+<li>Decoration enabled pattern: <code>"[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable"</code></li><li>Decoration disabled pattern: <code>"%msg%n%throwable"</code><br>Refer: <a href="https://logging.apache.org/log4j/2.x/manual/layouts.html">Log4j Pattern</a>.</li></ul>
+</li><li>Log level support:<ul>
+<li>Following log levels are supported:<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DEBUG</td>
+<td>Designates fine-grained informational events that are most useful to debug an application.</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td>Designates error events that might still allow the application to continue running.</td>
+</tr>
+<tr>
+<td>FATAL</td>
+<td>Designates severe error events that will presumably lead the application to abort.</td>
+</tr>
+<tr>
+<td>INFO</td>
+<td>Designates informational messages that highlight the progress of the application at coarse level.</td>
+</tr>
+<tr>
+<td>OFF</td>
+<td>The highest possible rank and is intended to turn off logging.</td>
+</tr>
+<tr>
+<td>TRACE</td>
+<td>Designates finer-grained informational events than the DEBUG.</td>
+</tr>
+<tr>
+<td>WARN</td>
+<td>Designates potentially harmful situations.</td>
+</tr>
+</tbody>
+</table>
+</li><li>Note: Log level can be configured using <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li><li>Log can be enabled/disabled dynamically (Only applicable to general log)<ul>
+<li>Disable log dynamically: <code>TestContext().getLogger().disableGeneralLog();</code></li><li>Enable log dynamically: <code>TestContext().getLogger().enableGeneralLog();</code></li></ul>
+</li><li>Parallel test suite execution will generate separate log files per test suite.<ul>
+<li>Log files will be labelled using thread number.</li></ul>
+</li><li>Log files are organised under test suite name for ease of use<ul>
+<li>Log files are created under the following hierarchy. <code>RootDir =&gt; SubDir =&gt; TestSuiteName =&gt; Log file</code>.<blockquote>
+<p>Example: <code>./reporting/SN-123/com.test.testsuite1/..</code></p>
+</blockquote>
+</li><li>Root directory and sub directory location can be configured using <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li><li>Log framework abstraction<ul>
+<li>Log framework is abstracted so that log framework can be changed in future without breaking existing test scripts.</li></ul>
+</li><li>Log file tracking<ul>
+<li>All log files are tracked during runtime. If user requires to retrieve current log files (inclusive of text/html) they can utilise this functionality.</li><li>This functionality will also be used to find current log files and attach to email client.</li></ul>
+</li><li><strong>FAIL</strong> stamp injection<ul>
+<li><strong>FAIL</strong> Stamp is injected to log stream straight after test status is updated to FAIL. This allows user to know at which exact line the test case failed during execution.</li></ul>
+</li><li>Log rollover policy<ul>
+<li>Current log rollover policy is triggered based on a file size of 20MB.</li><li>20MB was chosen to meet emailing requirement. Trigger policy can be exposed to user in future.</li></ul>
+</li><li>Parameterised logging for efficiency<ul>
+<li>Parameterised logging is less efficient compare to string concatenation but it is efficient in case of log level is reduced to <strong>INFO</strong> or <strong>ERROR</strong>, because system do not have to spend time concatenating string.</li></ul>
+</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>Enable/disable text/html log files:<ul>
+<li>Can be configured using <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li><li>Change log level and log directory:<ul>
+<li>Can be configured using <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li><li>logging simple string with level info or debug:<blockquote>
+<p><code>TestContext().getLogger().info("This is a test String" + "This is a test String 2");</code><br><code>TestContext().getLogger().debug("This is a test String" + "This is a test String 2");</code></p>
+</blockquote>
+</li><li>logging parameterised string with level info or debug:<blockquote>
+<p><code>TestContext().getLogger().info("This is a test String {} {}", "one", "two");</code><br><code>TestContext().getLogger().debug("This is a test String {} {}", "one", "two");</code></p>
+</blockquote>
+</li><li>Disable logging during execution time:<blockquote>
+<p><code>TestContext().getLogger().disableGeneralLog();</code></p>
+</blockquote>
+</li><li>Enable logging during execution time:<blockquote>
+<p><code>TestContext().getLogger().enableGeneralLog();</code></p>
+</blockquote>
+</li></ul>
+</li></ul><h2 id="offline-extent-report"><a name="offline-extent-report" href="#offline-extent-report"></a>Offline Extent Report</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Professional looking Extent report which can be distributed among customer or external parties.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>If Extent configuration file is not present, then framework will generate default configuration file at location <code>conf/extent_configuration.xml</code>.</li><li>Artos has inbuilt support for offline Extent reporting.</li><li>If enabled, Artos will produce Extent report for every test suite execution.</li><li>Extent report includes test name, test writer’s name and test case duration.</li><li>Every test status update and description/reason will be reported via Extent report.</li><li>Final test result with bug reference number will be reported via Extent report.</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>Extent reporting can be enabled/disabled via <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li></ul><h2 id="real-time-logging"><a name="real-time-logging" href="#real-time-logging"></a>Real Time Logging</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Performance testing requires real-time logs so time between messages can be measured accurately. Artos has inbuilt interface which can be used to provide real time logging.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Artos has inbult hooks for real time logging. All inbuilt connectors support real-time logging.</li><li>User can write new connectors by implementing <code>Connectable</code> interface and use listener <code>RealTimeLogEventListener</code> to capture real-time log events.</li><li>Real time logs are printed with time stamp, user is not allowed to disable timestamp.</li><li>If test suites are executed in parallel then separate real time log file will be produced per test suite.</li><li>Real time log file will roll over at 20MB of file size.</li><li>Real time logs cannot be disabled. If <code>RealTimeLogEventListener</code> is not provided then log file will remain empty.</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>Collect send receive events in real time with time stamp.</li></ul>
+</li></ul><h2 id="stop-on-fail"><a name="stop-on-fail" href="#stop-on-fail"></a>Stop on Fail</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Depending on the goal, some user may want to continue next test execution after a test case failure, in other case user may choose to stop after very first test case failure. Artos support both behaviours.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>By default, Artos is setup to stop on first failure. it can be configured to continue executing rest of the test cases.</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>Stop on Fail feature can be enabled/disabled via <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li></ul><h2 id="test-plan-extraction"><a name="test-plan-extraction" href="#test-plan-extraction"></a>Test Plan Extraction</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Artos encourages user to write test plan OR short summary of test case purpose within test class. Test plan within same file encourages user to read test purpose prior to modifying/updating test case. There might be a time when user may want to output all test plan information in a file or on a console. Artos provides a way to extract test plan with few lines of code.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Test plan can be written above each test class using <code>@TestPlan()</code> annotation.<table>
+<thead>
+<tr>
+<th>Annotation tag</th>
+<th>Tag description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description</td>
+<td>test case description</td>
+</tr>
+<tr>
+<td>preparedBy</td>
+<td>test code writters name</td>
+</tr>
+<tr>
+<td>preparationDate</td>
+<td>test case creation date</td>
+</tr>
+<tr>
+<td>reviewedBy</td>
+<td>test code reviewer name</td>
+</tr>
+<tr>
+<td>reviewDate</td>
+<td>test case review date</td>
+</tr>
+<tr>
+<td>bdd</td>
+<td>test plan in Gherkin format</td>
+</tr>
+</tbody>
+</table>
+</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li><p>Test Plan for entire test suite can be generated using following code:</p>
+<pre><code data-origin="<pre><code>ScanTestSuite testPlan = new ScanTestSuite(&quot;&quot;);
+List&amp;lt;TestPlanWrapper&amp;gt; testPlanObjectList = testPlan.getTestPlan(context);
+for (TestPlanWrapper testPlanObject : testPlanObjectList) {
+  StringBuilder sb = new StringBuilder();
+  sb.append(&quot;\nTestCaseName : &quot; + testPlanObject.getTestCaseName());
+  sb.append(&quot;\nDescription : &quot; + testPlanObject.getTestDescription());
+  sb.append(&quot;\nPreparedBy : &quot; + testPlanObject.getTestPreparedBy());
+  sb.append(&quot;\nPreparationDate : &quot; + testPlanObject.getTestPreparationDate());
+  sb.append(&quot;\nReviewedBy : &quot; + testPlanObject.getTestReviewedBy());
+  sb.append(&quot;\nReviewedDate : &quot; + testPlanObject.getTestReviewedDate());
+  sb.append(&quot;\nBDD Test Plan : &quot; + testPlanObject.getTestBDD());
+  System.out.println(sb.toString());
+}
+</code></pre>">ScanTestSuite testPlan = new ScanTestSuite("");
+List&lt;TestPlanWrapper&gt; testPlanObjectList = testPlan.getTestPlan(context);
+for (TestPlanWrapper testPlanObject : testPlanObjectList) {
+  StringBuilder sb = new StringBuilder();
+  sb.append("\nTestCaseName : " + testPlanObject.getTestCaseName());
+  sb.append("\nDescription : " + testPlanObject.getTestDescription());
+  sb.append("\nPreparedBy : " + testPlanObject.getTestPreparedBy());
+  sb.append("\nPreparationDate : " + testPlanObject.getTestPreparationDate());
+  sb.append("\nReviewedBy : " + testPlanObject.getTestReviewedBy());
+  sb.append("\nReviewedDate : " + testPlanObject.getTestReviewedDate());
+  sb.append("\nBDD Test Plan : " + testPlanObject.getTestBDD());
+  System.out.println(sb.toString());
+}
+</code></pre></li><li><p>Test Plan for test cases inside specific package can be generated using following code:</p>
+<pre><code data-origin="<pre><code>// replace com.artos.tests with fully qualified package name within test project
+ScanTestSuite testPlan = new ScanTestSuite(&quot;com.artos.tests&quot;);
+List&amp;lt;TestPlanWrapper&amp;gt; testPlanObjectList = testPlan.getTestPlan(context);
+for (TestPlanWrapper testPlanObject : testPlanObjectList) {
+  StringBuilder sb = new StringBuilder();
+  sb.append(&quot;\nTestCaseName : &quot; + testPlanObject.getTestCaseName());
+  sb.append(&quot;\nDescription : &quot; + testPlanObject.getTestDescription());
+  sb.append(&quot;\nPreparedBy : &quot; + testPlanObject.getTestPreparedBy());
+  sb.append(&quot;\nPreparationDate : &quot; + testPlanObject.getTestPreparationDate());
+  sb.append(&quot;\nReviewedBy : &quot; + testPlanObject.getTestReviewedBy());
+  sb.append(&quot;\nReviewedDate : &quot; + testPlanObject.getTestReviewedDate());
+  sb.append(&quot;\nBDD Test Plan : &quot; + testPlanObject.getTestBDD());
+  System.out.println(sb.toString());
+}
+</code></pre>">// replace com.artos.tests with fully qualified package name within test project
+ScanTestSuite testPlan = new ScanTestSuite("com.artos.tests");
+List&lt;TestPlanWrapper&gt; testPlanObjectList = testPlan.getTestPlan(context);
+for (TestPlanWrapper testPlanObject : testPlanObjectList) {
+  StringBuilder sb = new StringBuilder();
+  sb.append("\nTestCaseName : " + testPlanObject.getTestCaseName());
+  sb.append("\nDescription : " + testPlanObject.getTestDescription());
+  sb.append("\nPreparedBy : " + testPlanObject.getTestPreparedBy());
+  sb.append("\nPreparationDate : " + testPlanObject.getTestPreparationDate());
+  sb.append("\nReviewedBy : " + testPlanObject.getTestReviewedBy());
+  sb.append("\nReviewedDate : " + testPlanObject.getTestReviewedDate());
+  sb.append("\nBDD Test Plan : " + testPlanObject.getTestBDD());
+  System.out.println(sb.toString());
+}
+</code></pre></li></ul>
+</li></ul><h2 id="global-parameters"><a name="global-parameters" href="#global-parameters"></a>Global parameters</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Test cases may require sharing object(s). Static objects are not always practical or could be thread unsafe. Sharing objects between test cases or test suites can create complex dependency. Global parameter concept was added to avoid all the above.</li><li>User may want to inject some parameters prior to test suite launch (Example: IP Address, Product Serial Number etc..), which could be unique per test suite. Global parameters can also be used to add parameters in TestContext() by setting them into XML test script.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Parameters can be set into Global Parameters during run time and/or upfront via xml test script.</li><li>Parameters can always be updated during run time.</li><li>Parameters can be retrieved using string name assigned to each parameter.</li><li>Each Test Suite parameter(s) are maintained separately so they do not overwrite each other’s value during execution time.</li><li>Parameterised testing can be supported using Global parameters.</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>Parameters can set during runtime using:<blockquote>
+<p><code>TestContext().setGlobalObject("PARAMETER_1", "TEST123");</code></p>
+</blockquote>
+</li><li>Parameters can be retrieved during runtime using:<blockquote>
+<p><code>(String) TestContext().getGlobalObject("PARAMETER_1");</code></p>
+</blockquote>
+</li><li>Parameters can be set via XML test script using following syntax:<blockquote>
+<pre><code data-origin="<pre><code>&amp;lt;parameters&amp;gt;
+  &amp;lt;parameter name=&quot;PARAMETER_0&quot;&amp;gt;parameterValue_0&amp;lt;/parameter&amp;gt;
+  &amp;lt;parameter name=&quot;PARAMETER_1&quot;&amp;gt;parameterValue_1&amp;lt;/parameter&amp;gt;
+  &amp;lt;parameter name=&quot;PARAMETER_2&quot;&amp;gt;parameterValue_2&amp;lt;/parameter&amp;gt;
+&amp;lt;/parameters&amp;gt;
+</code></pre>">&lt;parameters&gt;
+  &lt;parameter name="PARAMETER_0"&gt;parameterValue_0&lt;/parameter&gt;
+  &lt;parameter name="PARAMETER_1"&gt;parameterValue_1&lt;/parameter&gt;
+  &lt;parameter name="PARAMETER_2"&gt;parameterValue_2&lt;/parameter&gt;
+&lt;/parameters&gt;
+</code></pre><p>  Note: Only String type of parameters can be set using XML test script but <code>setGlobalObject() &amp; getGlobalObject()</code> can be used to set/retrieve any type of object(s) during run time.</p>
+</blockquote>
+</li></ul>
+</li></ul><h2 id="gui-test-selector"><a name="gui-test-selector" href="#gui-test-selector"></a>GUI Test Selector</h2><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>GUI test selector is designed to help user during development/debugging of test cases.</li><li>Commenting out test cases or editing test sequence/script multiple time during development/debugging is error prone. GUI test selector is designed to avoids all listed issues.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Following is allowed:<ul>
+<li>GUI test selector lets user run selective test cases and/or allows user to set test execution loop count.</li><li>GUI test selector also helps third party who may receive test suite in JAR format and may want to run selective test cases.</li><li>If user runs multiple test suites using test script then separate GUI test selector will be created per test suite.</li></ul>
+</li><li>Following is not allowed:<ul>
+<li>User cannot change test sequence using GUI test selector.<br>This is to maintain test dependency. If test cases are independent, then sequence does not matter in any case thus GUI selector has no role to play. If user believes that sequence is wrong then it should be changed in main() method or via test script.</li><li>User cannot change test group selection using GUI test selector.<br>Before test cases are populated into GUI test selector, test cases are filtered for specified group(s). If user believes that group assignment is wrong, then it should be change in test script prior to launching test suite.</li></ul>
+</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>GUI test selector can be enabled/disabled using <code>conf/framework_configuration.xml</code> file.</li></ul>
+</li></ul><blockquote>
+<p>Note: If tests are executed on build server than disable GUI test selector using <code>conf/framework_configuration.xml</code> file.</p>
+</blockquote><h2 id="annotations-to-mark-test-cases"><a name="annotations-to-mark-test-cases" href="#annotations-to-mark-test-cases"></a>Annotations to mark test cases</h2><ul>
+<li>Artos support many annotations to make test system more flexible.<table>
+<thead>
+<tr>
+<th>Annotation</th>
+<th>Usage</th>
+<th>Mandatory/Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@BeforeTestSuite</td>
+<td>Above the method which is executed prior to running a test suite</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@AfterTestSuite</td>
+<td>Above the method which is executed post running a test suite</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@BeforeTest</td>
+<td>Above the method which is executed prior to running each test case</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@AfterTest</td>
+<td>Above the method which is executed post running each test case</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@KnownToFail</td>
+<td>Above the test class which is expected to fail    due to known issue</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@TestCase</td>
+<td>Above the test class which needs to recognised as a test case</td>
+<td>Mandatory</td>
+</tr>
+<tr>
+<td>@TestPlan</td>
+<td>Above the test class. This provides basic info about test case</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@Group</td>
+<td>Above the test class. Assigns test case to a group or array of group</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>@ExpectedException</td>
+<td>Above the test class. Assigns expected Exception test may throw</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+</li></ul><h3 id="@beforetestsuite-@aftertestsuite-@beforetest-@aftertest"><a name="@beforetestsuite-@aftertestsuite-@beforetest-@aftertest" href="#@beforetestsuite-@aftertestsuite-@beforetest-@aftertest"></a>@BeforeTestSuite @AfterTestSuite @BeforeTest @AfterTest</h3><ul>
+<li><p>Annotation Example:</p>
+<pre><code data-origin="<pre><code>   public class Main implements PrePostRunnable {
+       public static ArrayList&amp;lt;TestExecutable&amp;gt; getTestList() throws Exception {
+           ...
+       }
+
+       public static void main(String[] args) throws Exception {
+           ...
+       }
+
+       @BeforeTestsuite
+       public void beforeTestsuite(TestContext context) throws Exception {
+           ...
+       }
+
+       @AfterTestsuite
+       public void beforeTestsuite(TestContext context) throws Exception {
+           ...
+       }
+
+       @BeforeTest
+       public void beforeTest(TestContext context) throws Exception {
+           ...
+       }
+
+       @AfterTest
+       public void afterTest(TestContext context) throws Exception {
+           ...
+       }
+   }
+</code></pre>">   public class Main implements PrePostRunnable {
+       public static ArrayList&lt;TestExecutable&gt; getTestList() throws Exception {
+           ...
+       }
+
+       public static void main(String[] args) throws Exception {
+           ...
+       }
+
+       @BeforeTestsuite
+       public void beforeTestsuite(TestContext context) throws Exception {
+           ...
+       }
+
+       @AfterTestsuite
+       public void beforeTestsuite(TestContext context) throws Exception {
+           ...
+       }
+
+       @BeforeTest
+       public void beforeTest(TestContext context) throws Exception {
+           ...
+       }
+
+       @AfterTest
+       public void afterTest(TestContext context) throws Exception {
+           ...
+       }
+   }
+</code></pre></li></ul><h3 id="@testcase-@testplan-@knowntofail-@group-@expectedexception"><a name="@testcase-@testplan-@knowntofail-@group-@expectedexception" href="#@testcase-@testplan-@knowntofail-@group-@expectedexception"></a>@TestCase @TestPlan @KnownToFail @Group @ExpectedException</h3><ul>
+<li><p>Annotation Example:</p>
+<pre><code data-origin="<pre><code>   @Group(group = { &quot;CI&quot;, &quot;SEMI_AUTO&quot; })
+   @ExpectedException(expectedException = Exception.class, contains = &quot;[^0-9]*[12]&quot;, enforce = true)
+   @TestPlan(decription = &quot;Test&quot;, preparedBy = &quot;JohnM&quot;, preparationDate = &quot;&quot;, reviewedBy = &quot;&quot;, reviewDate = &quot;&quot;)
+   @TestCase(skip = false, sequence = 1, label = &quot;regression&quot;)
+   @KnownToFail(ktf = true, bugref = &quot;JIRA-????&quot;)
+   public class Test_Annotation implements TestExecutable {
+       public void execute(TestContext context) throws Exception {
+           // --------------------------------------------------------------------------------------------
+           ...
+           // --------------------------------------------------------------------------------------------
+       }
+   }
+</code></pre>">   @Group(group = { "CI", "SEMI_AUTO" })
+   @ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]", enforce = true)
+   @TestPlan(decription = "Test", preparedBy = "JohnM", preparationDate = "", reviewedBy = "", reviewDate = "")
+   @TestCase(skip = false, sequence = 1, label = "regression")
+   @KnownToFail(ktf = true, bugref = "JIRA-????")
+   public class Test_Annotation implements TestExecutable {
+       public void execute(TestContext context) throws Exception {
+           // --------------------------------------------------------------------------------------------
+           ...
+           // --------------------------------------------------------------------------------------------
+       }
+   }
+</code></pre></li><li><p>Information populated using <code>@TestPlan</code> annotation is used in logging.</p>
+</li><li>Each new test case execution will print test plan in log file and then all the logs will be appended so user can easily identify which logs belongs to which test cases.</li><li><p>If <code>@TestPlan</code> annotation is populated correctly then user can use generate test plan function to output a test plan for entire suite.</p>
+<pre><code data-origin="<pre><code>  // for all test cases in project
+  ScanTestSuite testPlan = new ScanTestSuite(&quot;&quot;);
+  logger.info(testPlan.getTestPlan(context));
+
+  // for test cases within com.test.project package
+  ScanTestSuite testPlan = new ScanTestSuite(&quot;com.test.project&quot;);
+  logger.info(testPlan.getTestPlan(context));
+</code></pre>">  // for all test cases in project
+  ScanTestSuite testPlan = new ScanTestSuite("");
+  logger.info(testPlan.getTestPlan(context));
+
+  // for test cases within com.test.project package
+  ScanTestSuite testPlan = new ScanTestSuite("com.test.project");
+  logger.info(testPlan.getTestPlan(context));
+</code></pre></li></ul><h3 id="known-to-fail"><a name="known-to-fail" href="#known-to-fail"></a>Known to Fail</h3><ul>
+<li><p>Purpose:</p>
+<ul>
+<li><p>There may be a test scenario(s) which are known to be the bug but cannot be fixed straight away due to:</p>
+<blockquote>
+<ul>
+<li>Priority<br>OR</li><li>Project timelines<br>OR</li><li>Bug may not be worth fixing.</li></ul>
+</blockquote>
+<p>In such case(s), those test case(s) should be marked as “known to fail” using @KnownToFail annotation and test status should be set to <strong>KTF</strong> upon test case failure. This will ensure that test case(s) does not end up in failed test case(s) list and user does not waste time re-investigating same issue(s).</p>
+</li><li><p>Second requirement is that when “known to fail” test case(s) will start passing because:</p>
+<blockquote>
+<ul>
+<li>Bug is silently fixed<br>OR</li><li>Software behaviour has changed</li></ul>
+</blockquote>
+<p>Then test engineer should be notified by marking test case with <strong>FAIL</strong> status.</p>
+</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Known to fail test case(s) end result is expected to be either <strong>KTF</strong> or <strong>FAIL</strong>. If test result is different then test case will be considered <strong>FAIL</strong> by the test framework. This will help user identify if bug was silently fixed or software behaviour has changed.</li><li><code>@KnownToFail</code> annotation can also be used to mark test as “Known to Fail” and/or set bug reference number.</li><li>If bug reference number is provided, it will be printed in following reports:<ul>
+<li>Summary report</li><li>Extent report.</li></ul>
+</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>User can mark test case as “Known to Fail” and/or user can set bug reference using <code>@KnownToFail</code> annotation.<blockquote>
+<p>Example: <code>@KnownToFail(ktf = true, bugref = "TICKET-123, TICKET-456")</code></p>
+</blockquote>
+</li></ul>
+</li></ul><h3 id="test-groups"><a name="test-groups" href="#test-groups"></a>Test Groups</h3><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Test case can be grouped using <code>@Group</code> annotation. User can execute test case(s) which belong to specific group or groups. This can help segregate test cases based on features, automated/semiautomated/manual etc.. categories.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Artos supports executing test cases based on assigned test group(s).</li><li>All test case(s) by default belong to group called <code>"*"</code>.</li><li>Group names are case in-sensitive.</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>User can assign each test cases to desired group(s) by using <code>@group</code> annotation.<br><code>@Group(group = { "CI", "SEMI_AUTO" })</code>.</li><li>Group policy can be configured using XML test script.<blockquote>
+<p>   To run all test cases</p>
+<pre><code data-origin="<pre><code>   &amp;lt;groups&amp;gt;
+        &amp;lt;group name=&quot;*&quot;/&amp;gt;
+  &amp;lt;/groups&amp;gt;
+</code></pre>">   &lt;groups&gt;
+        &lt;group name="*"/&gt;
+  &lt;/groups&gt;
+</code></pre><p>   To run test cases, belong to specific group or groups</p>
+<pre><code data-origin="<pre><code>   &amp;lt;groups&amp;gt;
+        &amp;lt;group name=&quot;CI&quot;/&amp;gt;
+        &amp;lt;group name=&quot;SEMI_AUTO&quot;/&amp;gt;
+  &amp;lt;/groups&amp;gt;
+</code></pre>">   &lt;groups&gt;
+        &lt;group name="CI"/&gt;
+        &lt;group name="SEMI_AUTO"/&gt;
+  &lt;/groups&gt;
+</code></pre></blockquote>
+</li></ul>
+</li></ul><h3 id="test-exception"><a name="test-exception" href="#test-exception"></a>Test Exception</h3><ul>
+<li><p>Purpose:</p>
+<ul>
+<li>Test case can throw an exception. By specifying expected exception and/or exception message description, user can pass exception verification responsibility to runner.</li></ul>
+</li><li><p>Facilities:</p>
+<ul>
+<li>Artos supports handling test exception on runner level.</li><li>Artos supports matching exception description using regular expression.</li></ul>
+</li><li><p>Usage:</p>
+<ul>
+<li>User can assign <code>@ExpectedException</code> annotation on top of test class as shown below.<br><code>@ExpectedException(expectedException = Exception.class)</code><br>OR<br><code>@ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*")</code><br>OR<br><code>@ExpectedException(expectedException = Exception.class, contains = "[^0-9]*[12]?[0-9]{1,2}[^0-9]*", enforce = true)</code></li><li>If only exception is specified then upon test exception, exception class will be matched.</li><li>If exception and exception message is specified then upon test exception, exception class and exception message will be matched (using regex).</li><li>If <code>enforce = true</code> then test case must throw expected exception otherwise test case will be marked failed.</li></ul>
+</li></ul><blockquote>
+<p>Note: If ExpectedException is enforced by <code>enforce = true</code> AND test case did not throw any exception BUT user sets test status to SKIP or KTF then test case outcome will be the status set by user (SKIP or KTF).</p>
+</blockquote><h3 id="test-sequence-and-execution"><a name="test-sequence-and-execution" href="#test-sequence-and-execution"></a>Test Sequence and Execution</h3><ul>
+<li>Each test suite consists of at least two types of classes:<ul>
+<li>PrePostRunnable : A class which implements <code>PrePostRunnable</code> and has <code>main()</code> method.<ul>
+<li>PrePostRunnable class is responsible for launching test runner which then executes test cases based on provided.</li><li>All test cases at the PrePostRunnable class package level and below will be considered in scope of testing.</li></ul>
+</li><li>TestExecutable : A class which implements <code>TestExecutable</code>.<ul>
+<li>All test class must have <code>@TestCase</code> annotation.</li></ul>
+</li></ul>
+</li><li>Test sequence can be decided four possible ways<ul>
+<li>CASE 1: Test list <code>List&lt;TestExecutable&gt;</code> is provided to <code>Runner</code> object constructor.<ul>
+<li>Test case(s) executed as per sequence provided in the <code>List&lt;TestExecutable&gt;</code>.</li><li>This method can guarantee the test case order of execution.</li><li>Test case(s) which are not added to <code>List&lt;TestExecutable&gt;</code> will be ignored.</li></ul>
+</li><li>CASE 2: <code>List&lt;TestExecutable&gt;</code> is empty AND <code>@TestCase</code> annotation <mark>“sequence”</mark> attribute is filled.<ul>
+<li>Tests will be executed in sequence provided in <mark>“sequence”</mark> attribute.</li><li>This method can guarantee the test case order of execution if each test cases are marked with unique sequence number.</li><li>If two or more test cases are marked with same sequence number, then scanning order priority will be considered for those test cases.</li><li>Test case(s) marked with <mark>skip</mark> = <mark>true</mark> attribute will be ignored during test execution cycle.</li></ul>
+</li><li>CASE 3: Test list <code>List&lt;TestExecutable&gt;</code> is empty AND all test case(s) sequence number are set to same value <code>@TestCase</code> annotation.<ul>
+<li>Test cases will be executed in the order of scan.</li><li>Scan order cannot be guaranteed.</li><li>This option can be exercised when test execution order is not important and test cases are independent.</li><li>This option can be exercised if test framework is used as unit test framework.</li></ul>
+</li><li>CASE 4: User provides test script via command line parameters<ul>
+<li>Test cases will be executed in the order provided via test script.</li><li>If test group is defined, then any test case(s) that do not belong to a specified group(s) will be ignored.<blockquote>
+<p>WARNING: Test cases are only scanned within the same package (inclusive of child packages). If test case(s) specified in test script do not belong to the package scope, then those test case(s) will be ignored silently.</p>
+</blockquote>
+</li></ul>
+</li></ul>
+</li></ul><p>Example code for PrePostRunnable class which supports all above methods</p><pre><code data-origin="<pre><code>     public class Main implements PrePostRunnable {
+         public static ArrayList&amp;lt;TestExecutable&amp;gt; getTestList() throws Exception {
+             ArrayList&amp;lt;TestExecutable&amp;gt; tests = new ArrayList&amp;lt;TestExecutable&amp;gt;();
+             // ---------------------------------------------------------------------
+             // TODO User May Add Test Case Manually as show in sample below
+             // tests.add(new Test_123());
+             // tests.add(new Test_abc());
+             // ---------------------------------------------------------------------
+             return tests;
+         }
+
+         public static void main(String[] args) throws Exception {
+             Runner runner = new Runner(Main.class);
+             runner.run(args, getTestList(), 1);
+         }
+     }
+</code></pre>">     public class Main implements PrePostRunnable {
+         public static ArrayList&lt;TestExecutable&gt; getTestList() throws Exception {
+             ArrayList&lt;TestExecutable&gt; tests = new ArrayList&lt;TestExecutable&gt;();
+             // ---------------------------------------------------------------------
+             // TODO User May Add Test Case Manually as show in sample below
+             // tests.add(new Test_123());
+             // tests.add(new Test_abc());
+             // ---------------------------------------------------------------------
+             return tests;
+         }
+
+         public static void main(String[] args) throws Exception {
+             Runner runner = new Runner(Main.class);
+             runner.run(args, getTestList(), 1);
+         }
+     }
+</code></pre><h2 id="inbuilt-utilities-for-ease-of-use"><a name="inbuilt-utilities-for-ease-of-use" href="#inbuilt-utilities-for-ease-of-use"></a>Inbuilt Utilities for ease of use</h2><p>Artos has many inbuilt public utilities which can make test case writing easy. More Utilities will be added in future releases. Refer to API document for full information.<br>Some of the examples are shown below:</p><ul>
+<li><code>Transform.java</code>: Provides data conversion methods which makes day to day transformation of objects easy.</li><li><code>Guard.java</code>: Provides method which can guard user (Similar to asserts in JUnit).</li><li><code>TCPClient.java</code> and <code>TCPServer.java</code>: Provides basic implementation of client/server to send/receive messages.</li><li><code>UDP.java</code>: Provides basic implementation of UDP client/server to send/receive messages.</li><li><code>Heartbeat.java</code>: Provides basic implementation of one way heartbeat.</li><li><code>PropertiesFileReader.java</code>: Provides easy way to read/write properties file in Java.</li><li><code>Tree.java</code>: Lets user print file tree (similar to Windows tree command output).</li><li><code>CustomPrompt.java</code>: Provides GUI Popup launcher which can be run in blocking or non-blocking mode. User can show countdown timer <em>and/or</em> text <em>and/or</em> PNG file <em>and/or</em> buttons with custom text.</li><li><code>UtilsTar.jar</code> and <code>UtilsZip.jar</code>: Provides simple implementation of tarring, untarring, undo-tgz, zip and unzip archives.</li><li>etc..</li></ul><h2 id="inbuilt-exception-handling"><a name="inbuilt-exception-handling" href="#inbuilt-exception-handling"></a>Inbuilt Exception Handling</h2><ul>
+<li>Artos handles exception and throwable during test suite execution.</li><li>If “stop on fail” is enabled and test case throws an exception, test case will be marked, test suite execution will stop and all the following test cases will be ignored.</li><li>If “stop on fail” is disabled and test case throws an exception, test case will be marked as failed and next test case execution will be attempted.</li><li>If an exception occurred outside test cases (Example: during before or after methods) then test suite execution will stop.</li></ul><h2 id="time-tracking"><a name="time-tracking" href="#time-tracking"></a>Time Tracking</h2><p>Artos tracks time per test case and for the test suite.</p><ul>
+<li>Individual test case and test suite time duration can be found in summary report file.</li><li>TestSuite time duration is also logged in general log file.</li></ul><blockquote>
+<p>Note:</p>
+<ul>
+<li>TestCase time duration does not include time taken by BeforeTestCase and AfterTestCase methods.</li><li>TestSuite time duration is inclusive of time taken by testcase(s), BeforeTestCase() and AfterTestCase() methods.</li></ul>
+</blockquote>
+
+<footer style="position:fixed; font-size:.8em; text-align:right; bottom:0px; margin-left:-25px; height:20px; width:100%;">generated by <a href="http://pad.haroopress.com" target="_blank">haroopad</a></footer>
+</body>
+</html>
