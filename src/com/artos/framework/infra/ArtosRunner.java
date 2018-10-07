@@ -530,7 +530,6 @@ public class ArtosRunner {
 		 * 3. If all of the above is not provided then use reflection to find test cases
 		 * @formatter:on
 		 */
-
 		if (null != (testSuiteObject = context.getTestSuite())) {
 
 			/**
@@ -598,7 +597,7 @@ public class ArtosRunner {
 			}
 
 		} else {
-			List<TestObjectWrapper> listOfTestObj = reflection.getTestObjWrapperList(true, true);
+			List<TestObjectWrapper> listOfTestObj = reflection.getTestObjWrapperList(true, true, true);
 			for (TestObjectWrapper t : listOfTestObj) {
 				if (belongsToApprovedGroup(groupList, t.getGroupList())) {
 					listOfTransformedTestCases.add(t);

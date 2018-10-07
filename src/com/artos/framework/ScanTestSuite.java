@@ -23,7 +23,7 @@ package com.artos.framework;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,6 +51,7 @@ public class ScanTestSuite {
 	Reflections reflection;
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
+	List<String> FQCN = new ArrayList<>();
 
 	/**
 	 * Default constructor. Scans all packages within provided package
@@ -77,20 +78,12 @@ public class ScanTestSuite {
 			KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
 			ExpectedException expectedException = cl.getAnnotation(ExpectedException.class);
 
-			// @formatter:off
-			//			System.out.println("@Testcase = " + cl.getName()
-			//			+ "\nskip : " + testcase.skip()
-			//			+ "\nscenario : " + testcase.sequence()
-			//			+ "\ndecription : " + testcase.label()
-			//			);
-			//			System.out.println("@Testcase = " + cl.getName()
-			//			+ "\ndecription : " + testplan.decription()
-			//			+ "\npreparedBy : " + testplan.preparedBy()
-			//			+ "\npreparationDate : " + testplan.preparationDate()
-			//			+ "\nreviewedBy : " + testplan.reviewedBy()
-			//			+ "\nreviewDate : " + testplan.reviewDate()
-			//			);
-			// @formatter:on
+			// When test case is in the root directory package will be null
+			if (null == cl.getPackage() && !FQCN.contains("")) {
+				FQCN.add("");
+			} else if (null != cl.getPackage() && !FQCN.contains(cl.getPackage().getName())) {
+				FQCN.add(cl.getPackage().getName());
+			}
 
 			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence());
 
@@ -187,6 +180,9 @@ public class ScanTestSuite {
 //			for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuite.class)) {
 //				System.out.println("@AfterTestsuite = " + method.getName() + " : " + method.getDeclaringClass().getName());
 //			}
+//			for(String p: FQCN){
+//				System.err.println(p);
+//			}
 //		}
 		// @formatter:on
 	}
@@ -194,10 +190,12 @@ public class ScanTestSuite {
 	/**
 	 * logic to bubble sort the elements
 	 * 
-	 * @param array Array of all scanned test objects
+	 * @param testObjWrapperList List of all test objects which requires sorting
 	 * @return
 	 */
-	private TestObjectWrapper[] bubble_srt(TestObjectWrapper[] array) {
+	private List<TestObjectWrapper> bubble_srt(List<TestObjectWrapper> testObjWrapperList) {
+
+		TestObjectWrapper[] array = testObjWrapperList.parallelStream().toArray(TestObjectWrapper[]::new);
 		int n = array.length;
 		int k;
 		for (int m = n; m >= 0; m--) {
@@ -208,7 +206,7 @@ public class ScanTestSuite {
 				}
 			}
 		}
-		return array;
+		return Arrays.asList(array);
 	}
 
 	/**
@@ -242,37 +240,92 @@ public class ScanTestSuite {
 	}
 
 	/**
-	 * Returns all scanned test cases wrapped with TestObjWrapper components
+	 * Returns all scanned test cases wrapped with TestObjWrapper components. if user has chosen to remove "SKIPPED" test cases then any test cases
+	 * marked with "skip=true" will be omitted from the list. If user has chosen to sort by sequence number then test cases will be sorted within
+	 * their test package by sequence number.
 	 * 
 	 * @param sortBySeqNum Enables sorting of the test cases
-	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
+	 * @param removeSkippedTests Enables removal of test cases which are marked 'skip=true'
+	 * @param sortWithinPackage Enables sorting test cases within package scope
 	 * @return List of {@code TestObjectWrapper}
 	 */
-	public List<TestObjectWrapper> getTestObjWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
-		// Convert list to array and then do bubble sort based on sequence
-		// number
-		TestObjectWrapper[] sortedArray = null;
+	public List<TestObjectWrapper> getTestObjWrapperList(boolean sortBySeqNum, boolean removeSkippedTests, boolean sortWithinPackage) {
 
-		if (!sortBySeqNum) {
-			if (removeSkippedTests) {
-				return testObjWrapperList_WithoutSkipped;
-			} else {
-				return testObjWrapperList_All;
-			}
+		if (sortBySeqNum && sortWithinPackage) {
+			return removeSkippedTests ? sortWithinPackage(testObjWrapperList_WithoutSkipped) : sortWithinPackage(testObjWrapperList_All);
+		} else if (sortBySeqNum && !sortWithinPackage) {
+			return removeSkippedTests ? bubble_srt(testObjWrapperList_WithoutSkipped) : bubble_srt(testObjWrapperList_All);
 		}
 
-		if (removeSkippedTests) {
-			sortedArray = bubble_srt(testObjWrapperList_WithoutSkipped.parallelStream().toArray(TestObjectWrapper[]::new));
-		} else {
-			sortedArray = bubble_srt(testObjWrapperList_All.parallelStream().toArray(TestObjectWrapper[]::new));
-		}
-		return Arrays.asList(sortedArray);
+		// If sorting is not required
+		return removeSkippedTests ? testObjWrapperList_WithoutSkipped : testObjWrapperList_All;
 	}
 
 	/**
-	 * Returns all scanned test cases
+	 * Sort test cases within package scope so any test cases within same package will remain together and sorted by sequence number assigned to them
 	 * 
-	 * @param sortBySeqNum Enables sorting of the test cases
+	 * @param listToBeSorted list of {@code TestObjectWrapper} which requires sorting
+	 * @return List of sorted test cases (sorted within package scope)
+	 */
+	private List<TestObjectWrapper> sortWithinPackage(List<TestObjectWrapper> listToBeSorted) {
+		List<TestObjectWrapper> sortedList = new ArrayList<>();
+
+		// Create list per package FQCN and add relevant test cases into those list
+		List<List<TestObjectWrapper>> listOfTestsList = getListOfTestsListPerFQCN(listToBeSorted, FQCN);
+
+		// Sort list per packages so test cases are sorted within package scope
+		for (List<TestObjectWrapper> testObjList : listOfTestsList) {
+
+			// Once sorted, All All of the sorted test cases to master list
+			sortedList.addAll(bubble_srt(testObjList));
+		}
+
+		// Return master list
+		return sortedList;
+	}
+
+	/**
+	 * This function breaks down one large test list into small test lists per package name (Using FQCN) so it can be used to rearrange test without
+	 * loosing scope of the package. If test case(s) are created in root directory then package FQCN will be empty string.
+	 * 
+	 * @param testObjlist List of {@code TestObjectWrapper} which requires separation
+	 * @param FQCN List of Fully Qualified Path Name (Package Name)
+	 * @return
+	 */
+	private List<List<TestObjectWrapper>> getListOfTestsListPerFQCN(List<TestObjectWrapper> testObjlist, List<String> FQCN) {
+		List<List<TestObjectWrapper>> listOfTestsList = new ArrayList<>();
+
+		// Iterate through all FQCN. Empty String means no package
+		for (String packageFQCN : FQCN) {
+
+			// Create List per FQCN
+			List<TestObjectWrapper> list = new ArrayList<>();
+
+			// Iterate through all test cases
+			for (TestObjectWrapper testObj : testObjlist) {
+
+				// If test case in root directory (which means no package FQCN)
+				if (packageFQCN.equals("") && null == testObj.getTestClassObject().getPackage()) {
+					list.add(testObj);
+				} else if (!packageFQCN.equals("") && null != testObj.getTestClassObject().getPackage()
+						&& testObj.getTestClassObject().getPackage().getName().equals(packageFQCN)) {
+					list.add(testObj);
+				}
+			}
+
+			// Add testList to Master List
+			listOfTestsList.add(list);
+		}
+
+		// Return master list
+		return listOfTestsList;
+	}
+
+	/**
+	 * Returns all scanned test cases. If sorted option is selected then test cases within same packages will sorted as per sequence number. If remove
+	 * skipped test case is selected then any test case marked "skip=true" will be omitted from the list.
+	 * 
+	 * @param sortBySeqNum Enables sorting of the test cases (Sorting happens within package scope)
 	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
 	 * @return List of {@code TestExecutable}
 	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
@@ -282,7 +335,7 @@ public class ScanTestSuite {
 	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws InstantiationException, IllegalAccessException {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
 
-		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(sortBySeqNum, removeSkippedTests);
+		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(sortBySeqNum, removeSkippedTests, true);
 		for (TestObjectWrapper t : testObjWrapperList) {
 			// create new Instance of test object so user can execute the test
 			testList.add((TestExecutable) t.getTestClassObject().newInstance());
@@ -291,15 +344,20 @@ public class ScanTestSuite {
 	}
 
 	/**
-	 * Returns scanned test cases HashMap so user can search test case by TestCase FQCN
+	 * Returns scanned test cases HashMap so user can search test case by TestCase FQCN.
 	 * 
 	 * @param removeSkippedTests removes test cases marked with skipped
 	 * @return HashMap of all test objects
 	 */
 	public Map<String, TestObjectWrapper> getTestObjWrapperMap(boolean removeSkippedTests) {
-		Map<String, TestObjectWrapper> testObjWrapperMap = new HashMap<>();
 
-		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(false, removeSkippedTests);
+		// This was made LinkedHashMap so it can preserve insertion order
+		Map<String, TestObjectWrapper> testObjWrapperMap = new LinkedHashMap<>();
+
+		// get sorted test case list (Sorted within package scope) so calling method can utilise sorting
+		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(true, removeSkippedTests, true);
+
+		// populate LinkedHashMap<> with test case FQCN as key so test case object can be queried using FQCN
 		for (TestObjectWrapper t : testObjWrapperList) {
 			// create new Instance of test object so user can execute the test
 			testObjWrapperMap.put(t.getTestClassObject().getName(), t);
