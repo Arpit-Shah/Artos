@@ -60,18 +60,16 @@ public class GUITestSelector {
 	private JTextField loopCountField;
 	private TestRunnable testRunner;
 	private ArrayList<TestObjectWrapper> selectedTests;
+	// Enables if package name column appears in selector
+	boolean enablePackgeName = false;
 
 	/**
 	 * TestRunnerGui constructor
 	 * 
-	 * @param context
-	 *            TestContext
-	 * @param testList
-	 *            List of Tests defined in Main class
-	 * @param testRunner
-	 *            A TestRunner implementation that will execute the tests
-	 * @throws Exception
-	 *             if gui could not launch
+	 * @param context TestContext
+	 * @param testList List of Tests defined in Main class
+	 * @param testRunner A TestRunner implementation that will execute the tests
+	 * @throws Exception if gui could not launch
 	 */
 	public GUITestSelector(TestContext context, List<TestObjectWrapper> testList, TestRunnable testRunner) throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
@@ -79,7 +77,7 @@ public class GUITestSelector {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		this.context = context;
-		testRunnerDataModel = new TestRunnerDataModel(testList);
+		testRunnerDataModel = new TestRunnerDataModel(testList, enablePackgeName);
 		this.testRunner = testRunner;
 		selectedTests = new ArrayList<TestObjectWrapper>();
 
@@ -125,12 +123,10 @@ public class GUITestSelector {
 	/**
 	 * Initialise the main container
 	 * 
-	 * @param packageName
-	 *            The package that TestRunnerHelper will run
+	 * @param packageName The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame(
-				"Test Selector"/* - packageName : " + packageName */);
+		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		container.setSize(new Dimension(500, 550));
@@ -139,8 +135,7 @@ public class GUITestSelector {
 	}
 
 	/**
-	 * Initialise all the components that will be placed in the main container
-	 * (including listeners)
+	 * Initialise all the components that will be placed in the main container (including listeners)
 	 */
 	private void initMainViewComponents() {
 		// to execute all tests
@@ -224,30 +219,45 @@ public class GUITestSelector {
 	}
 
 	/**
-	 * Set column widths and text alignment (and other style attributes, if
-	 * needed)
+	 * Set column widths and text alignment (and other style attributes, if needed)
 	 * 
-	 * @param testTableView
-	 *            the table to style
+	 * @param testTableView the table to style
 	 */
 	private void setTableStyle(JTable testTableView) {
-		// set column widths, we know we only have 2 columns for now
-		TableColumn col = testTableView.getColumnModel().getColumn(0);
-		col.setPreferredWidth(55);
-		// set column0 text to center align
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(JLabel.CENTER);
-		col.setCellRenderer(renderer);
 
-		col = testTableView.getColumnModel().getColumn(1);
-		col.setPreferredWidth(445);
+		// Enable package name column if required
+		if (enablePackgeName) {
+			// set column widths, we know we only have 2 columns for now
+			TableColumn col = testTableView.getColumnModel().getColumn(0);
+			col.setPreferredWidth(35);
+			// set column0 text to center align
+			DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+			renderer.setHorizontalAlignment(JLabel.CENTER);
+			col.setCellRenderer(renderer);
+
+			col = testTableView.getColumnModel().getColumn(1);
+			col.setPreferredWidth(280);
+
+			col = testTableView.getColumnModel().getColumn(2);
+			col.setPreferredWidth(200);
+		} else {
+			// set column widths, we know we only have 2 columns for now
+			TableColumn col = testTableView.getColumnModel().getColumn(0);
+			col.setPreferredWidth(55);
+			// set column0 text to center align
+			DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+			renderer.setHorizontalAlignment(JLabel.CENTER);
+			col.setCellRenderer(renderer);
+
+			col = testTableView.getColumnModel().getColumn(1);
+			col.setPreferredWidth(445);
+		}
 	}
 
 	/**
 	 * Call the delegate to execute the test
 	 * 
-	 * @param selectedOnly
-	 *            True if we want to run the selected tests only
+	 * @param selectedOnly True if we want to run the selected tests only
 	 */
 	private void execTest(final boolean selectedOnly) {
 		// fail silently if loopCountField value is not a valid integer
@@ -278,11 +288,20 @@ public class GUITestSelector {
 @SuppressWarnings("serial")
 class TestRunnerDataModel extends AbstractTableModel {
 	private List<TestObjectWrapper> testList;
-	private String[] columnNames = { "#", "Test Name" };
+	private String[] columnNames;
 	private String[][] displayData;
+	boolean enablePackgeName = false;
 
-	public TestRunnerDataModel(List<TestObjectWrapper> testList) {
+	public TestRunnerDataModel(List<TestObjectWrapper> testList, boolean enablePackgeName) {
 		this.testList = testList;
+		this.enablePackgeName = enablePackgeName;
+
+		// Enable if package name column is required
+		if (enablePackgeName) {
+			columnNames = new String[] { "#", "Test Name", "Package" };
+		} else {
+			columnNames = new String[] { "#", "Test Name" };
+		}
 		populateDisplayData();
 	}
 
@@ -302,6 +321,16 @@ class TestRunnerDataModel extends AbstractTableModel {
 			displayData[index][0] = String.valueOf(index);
 			// column1 - test name
 			displayData[index][1] = testName;
+
+			// Enable package name column if required
+			if (enablePackgeName) {
+				// column2 - package name
+				if (null == testList.get(index).getTestClassObject().getPackage()) {
+					displayData[index][2] = "";
+				} else {
+					displayData[index][2] = testList.get(index).getTestClassObject().getPackage().getName();
+				}
+			}
 		}
 	}
 
