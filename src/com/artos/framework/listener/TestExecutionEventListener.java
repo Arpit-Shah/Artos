@@ -105,11 +105,11 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	private String processBDD(String testPlanBDD) {
-		String strBDD = testPlanBDD.replaceAll("[Gg][Ii][Vv][Ee][Nn]", "\nGIVEN");
-		strBDD = strBDD.replaceAll("[Aa][Nn][Dd]", "\nAND");
-		strBDD = strBDD.replaceAll("[Ww][Hh][Ee][Nn]", "\nWHEN");
-		strBDD = strBDD.replaceAll("[Tt][Hh][Ee][Nn]", "\nTHEN");
-		strBDD = strBDD.replaceAll("[Bb][Uu][Tt]", "\nBUT");
+		String strBDD = testPlanBDD.replaceAll("\\b([Gg][Ii][Vv][Ee][Nn])\\b", "\nGIVEN");
+		strBDD = strBDD.replaceAll("\\b([Aa][Nn][Dd])\\b", "\nAND");
+		strBDD = strBDD.replaceAll("\\b([Ww][Hh][Ee][Nn])\\b", "\nWHEN");
+		strBDD = strBDD.replaceAll("\\b([Tt][Hh][Ee][Nn])\\b", "\nTHEN");
+		strBDD = strBDD.replaceAll("\\b([Bb][Uu][Tt])\\b", "\nBUT");
 		return strBDD;
 	}
 
