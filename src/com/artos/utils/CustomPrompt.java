@@ -51,9 +51,8 @@ import javax.swing.UIManager;
 import com.artos.framework.Enums.ExceptionValue;
 
 /**
- * Designed for providing GUI which can guide user during test execution, GUI
- * can be used in blocking or nonblocking manner. GUI can be used multiple ways
- * using following features.
+ * Designed for providing GUI which can guide user during test execution, GUI can be used in blocking or nonblocking manner. GUI can be used multiple
+ * ways using following features.
  * 
  * <PRE>
  * 1. Display Count down Timer
@@ -116,16 +115,16 @@ import com.artos.framework.Enums.ExceptionValue;
 public class CustomPrompt implements ItemListener {
 
 	String title = "CountDown Timer";
-	String str1 = "";
-	String str2 = "";
-	String str3 = "";
-	String str4 = "";
-	String str5 = "";
-	String str6 = "";
-	String str7 = "";
-	String str8 = "";
-	String str9 = "";
-	String str10 = "";
+	String str1 = null;
+	String str2 = null;
+	String str3 = null;
+	String str4 = null;
+	String str5 = null;
+	String str6 = null;
+	String str7 = null;
+	String str8 = null;
+	String str9 = null;
+	String str10 = null;
 	String btnYesText = "Yes";
 	String btnNoText = "No";
 	File image = null;
@@ -160,8 +159,7 @@ public class CustomPrompt implements ItemListener {
 	/**
 	 * Set time for count down timer in non-blocking mode
 	 * 
-	 * @param millis
-	 *            time in milliseconds for count down timer
+	 * @param millis time in milliseconds for count down timer
 	 */
 	public CustomPrompt(long millis) {
 		this.ctdwnLatch = null;
@@ -169,13 +167,10 @@ public class CustomPrompt implements ItemListener {
 	}
 
 	/**
-	 * Set time for count down timer in blocking mode. If CountdownLatch object
-	 * is null then non-blocking mode will be assumed.
+	 * Set time for count down timer in blocking mode. If CountdownLatch object is null then non-blocking mode will be assumed.
 	 * 
-	 * @param ctdwnLatch
-	 *            CountdownLatch object or null
-	 * @param millis
-	 *            time in milliseconds for count down timer
+	 * @param ctdwnLatch CountdownLatch object or null
+	 * @param millis time in milliseconds for count down timer
 	 */
 	public CustomPrompt(CountDownLatch ctdwnLatch, long millis) {
 		this.ctdwnLatch = ctdwnLatch;
@@ -185,8 +180,7 @@ public class CustomPrompt implements ItemListener {
 	/**
 	 * Starts GUI with count down timer
 	 * 
-	 * @throws Exception
-	 *             if any IO error occurred.
+	 * @throws Exception if any IO error occurred.
 	 */
 	public void start() throws Exception {
 
@@ -316,44 +310,35 @@ public class CustomPrompt implements ItemListener {
 		BoxLayout boxlayt = new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS);
 		jf.getContentPane().setLayout(boxlayt);
 		jf.getContentPane().add(timePanel);
-		if (null == str1 || "".equals(str1)) {
-		} else {
+		if (null != str1) {
 			jf.getContentPane().add(infoPanel1);
 		}
-		if (null == str2 || "".equals(str2)) {
-		} else {
+		if (null != str2) {
 			jf.getContentPane().add(infoPanel2);
 		}
-		if (null == str3 || "".equals(str3)) {
-		} else {
+		if (null != str3) {
 			jf.getContentPane().add(infoPanel3);
 		}
-		if (null == str4 || "".equals(str4)) {
-		} else {
+		if (null == str4) {
 			jf.getContentPane().add(infoPanel4);
 		}
-		if (null == str5 || "".equals(str5)) {
+		if (null != str5) {
 		} else {
 			jf.getContentPane().add(infoPanel5);
 		}
-		if (null == str6 || "".equals(str6)) {
-		} else {
+		if (null != str6) {
 			jf.getContentPane().add(infoPanel6);
 		}
-		if (null == str7 || "".equals(str7)) {
-		} else {
+		if (null != str7) {
 			jf.getContentPane().add(infoPanel7);
 		}
-		if (null == str8 || "".equals(str8)) {
-		} else {
+		if (null != str8) {
 			jf.getContentPane().add(infoPanel8);
 		}
-		if (null == str9 || "".equals(str9)) {
-		} else {
+		if (null != str9) {
 			jf.getContentPane().add(infoPanel9);
 		}
-		if (null == str10 || "".equals(str10)) {
-		} else {
+		if (null != str10) {
 			jf.getContentPane().add(infoPanel10);
 		}
 		if (null != getImage()) {
@@ -457,7 +442,10 @@ public class CustomPrompt implements ItemListener {
 		}
 	}
 
-	private void disposeGUI() {
+	/*
+	 * dispose call has to be synchronised. if called in async manner then it may get into thread deadlock
+	 */
+	synchronized private void disposeGUI() {
 
 		// jltime.setText("Stop");
 		jf.setVisible(false);
@@ -475,7 +463,7 @@ public class CustomPrompt implements ItemListener {
 		// TODO Auto-generated method stub
 	}
 
-	// code for what happens when user presses the start or reset button
+	// code for what happens when user presses the Yes or No button
 	public class Event implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -491,7 +479,7 @@ public class CustomPrompt implements ItemListener {
 			}
 		}
 	}
-	
+
 	public void setBtnYesText(String btnYesText) {
 		this.btnYesText = btnYesText.toUpperCase();
 	}
