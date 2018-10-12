@@ -5,15 +5,27 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.artos.exception.WrongFlow;
 import com.artos.utils.Guard;
+import com.artos.utils.Transform;
 
 public class TestGuard {
+
+	Transform _transform = new Transform();
+
+	// *******************************************************************************************
+	// NULL
+	// *******************************************************************************************
 
 	@Test
 	public void testIsNull() {
 		assertTrue(Guard.isNull(null));
 		assertFalse(Guard.isNull(new Object()));
 	}
+
+	// *******************************************************************************************
+	// String
+	// *******************************************************************************************
 
 	@Test
 	public void testIsEqualsString() {
@@ -129,6 +141,10 @@ public class TestGuard {
 		Guard.guardNotEquals(expected, actual);
 	}
 
+	// *******************************************************************************************
+	// Boolean
+	// *******************************************************************************************
+
 	@Test
 	public void testIsEqualsBoolean() {
 		// same value
@@ -223,6 +239,10 @@ public class TestGuard {
 			Guard.guardEquals(e, "values are not equal");
 		}
 	}
+
+	// *******************************************************************************************
+	// Format
+	// *******************************************************************************************
 
 	@Test
 	public void testIsFormatEquals() {
@@ -368,6 +388,10 @@ public class TestGuard {
 		Guard.guardFormatNotEquals(null, "1234");
 
 	}
+
+	// *******************************************************************************************
+	// Byte
+	// *******************************************************************************************
 
 	@Test
 	public void testIsEqualsByte() {
@@ -521,134 +545,629 @@ public class TestGuard {
 		}
 	}
 
-	// @Test
-	// public void testGuardGreaterOrEqualsToTestContextStringByteByte() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardLessThanTestContextStringByteByte() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardLessOrEqualsToTestContextStringByteByte() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testIsEqualsByteArrayByteArray() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardEqualsTestContextStringByteArrayByteArray() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardNotEqualsTestContextStringByteArrayByteArray() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testIsEqualsIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testIsEqualsIntIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardEqualsTestContextStringIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardEqualsTestContextStringIntIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardNotEqualsTestContextStringIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardGreaterThanTestContextStringIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardGreaterOrEqualsToTestContextStringIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardLessThanTestContextStringIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardLessOrEqualsToTestContextStringIntInt() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testIsEqualsLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testIsEqualsLongLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardEqualsTestContextStringLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardEqualsTestContextStringLongLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardNotEqualsTestContextStringLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardGreaterThanTestContextStringLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardGreaterOrEquals() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardLessThanTestContextStringLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardLessOrEqualsToTestContextStringLongLong() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardEqualsTestContextExceptionString() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testGuardWrongFlow() {
-	// fail("Not yet implemented");
-	// }
+	// *******************************************************************************************
+	// Byte Array
+	// *******************************************************************************************
+
+	@Test
+	public void testIsEqualsByteArray() {
+
+		byte[] testByteArray1 = _transform.strHexToByteArray("00 00 00 00");
+		byte[] testByteArray2 = _transform.strHexToByteArray("FF FF FF FF");
+		byte[] testByteArray3 = _transform.strHexToByteArray("FF FF 01 01");
+
+		assertTrue(Guard.isEquals(testByteArray1, testByteArray1));
+		assertTrue(Guard.isEquals(testByteArray2, testByteArray2));
+		assertTrue(Guard.isEquals(testByteArray3, testByteArray3));
+
+		assertFalse(Guard.isEquals(testByteArray1, testByteArray2));
+		assertFalse(Guard.isEquals(testByteArray2, testByteArray3));
+
+	}
+
+	@Test
+	public void testGuardEqualsByteArray() throws Exception {
+
+		byte[] testByteArray1 = _transform.strHexToByteArray("00 00 00 00");
+		byte[] testByteArray2 = _transform.strHexToByteArray("FF FF FF FF");
+		byte[] testByteArray3 = _transform.strHexToByteArray("FF FF 01 01");
+
+		Guard.guardEquals(testByteArray1, testByteArray1);
+		Guard.guardEquals(testByteArray2, testByteArray2);
+		Guard.guardEquals(testByteArray3, testByteArray3);
+
+		try {
+			Guard.guardEquals(testByteArray1, testByteArray2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(testByteArray1, testByteArray3);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+	}
+
+	@Test
+	public void testGuardNotEqualsByteArray() throws Exception {
+
+		byte[] testByteArray1 = _transform.strHexToByteArray("00 00 00 00");
+		byte[] testByteArray2 = _transform.strHexToByteArray("FF FF FF FF");
+		byte[] testByteArray3 = _transform.strHexToByteArray("FF FF 01 01");
+
+		try {
+			Guard.guardNotEquals(testByteArray1, testByteArray1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		try {
+			Guard.guardNotEquals(testByteArray2, testByteArray2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		Guard.guardNotEquals(testByteArray1, testByteArray2);
+		Guard.guardNotEquals(testByteArray2, testByteArray3);
+	}
+
+	// *******************************************************************************************
+	// Integer
+	// *******************************************************************************************
+
+	@Test
+	public void testIsEqualsInteger() {
+
+		assertTrue(Guard.isEquals(Integer.MAX_VALUE, Integer.MAX_VALUE));
+		assertTrue(Guard.isEquals(Integer.MIN_VALUE, Integer.MIN_VALUE));
+		assertTrue(Guard.isEquals(0, 0));
+		assertTrue(Guard.isEquals(2147483647 * 2, 2147483647 * 2));
+
+		assertFalse(Guard.isEquals(Integer.MAX_VALUE, Integer.MIN_VALUE));
+		assertFalse(Guard.isEquals(Integer.MAX_VALUE, Integer.MAX_VALUE - 1));
+		assertFalse(Guard.isEquals(Integer.MAX_VALUE, 0));
+
+	}
+
+	@Test
+	public void testGuardEqualsInteger() throws Exception {
+
+		Guard.guardEquals(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		Guard.guardEquals(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		Guard.guardEquals(0, 0);
+		Guard.guardEquals(Integer.MAX_VALUE, Integer.MAX_VALUE - 2, 2);
+		Guard.guardEquals(0, 2, 2);
+		Guard.guardEquals(Integer.MIN_VALUE, Integer.MIN_VALUE + 2, 2);
+		Guard.guardEquals(Integer.MIN_VALUE, 0 - 1, Integer.MAX_VALUE);
+		Guard.guardEquals(Integer.MAX_VALUE, 0 + 1, Integer.MAX_VALUE);
+
+		try {
+			Guard.guardEquals(Integer.MAX_VALUE, Integer.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(0, Integer.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(0, 5, 2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(Integer.MAX_VALUE, Integer.MAX_VALUE - 5, 2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+	}
+
+	@Test
+	public void testGuardNotEqualsInteger() throws Exception {
+
+		try {
+			Guard.guardNotEquals(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		try {
+			Guard.guardNotEquals(Integer.MIN_VALUE, Integer.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		Guard.guardNotEquals(Integer.MAX_VALUE, Integer.MIN_VALUE);
+		Guard.guardNotEquals(0, Integer.MAX_VALUE);
+		Guard.guardNotEquals(0, 1);
+		Guard.guardNotEquals(-1, 1);
+	}
+
+	@Test
+	public void testGuardGreaterThanInteger() throws Exception {
+		Guard.guardGreaterThan(1, 0);
+		Guard.guardGreaterThan(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+		Guard.guardGreaterThan(Integer.MAX_VALUE, Integer.MIN_VALUE);
+
+		try {
+			Guard.guardGreaterThan(0, 0);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+
+		try {
+			Guard.guardGreaterThan(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+
+		try {
+			Guard.guardGreaterThan(Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardGreaterOrEqualsToInteger() throws Exception {
+		Guard.guardGreaterOrEqualsTo(1, 0);
+		Guard.guardGreaterOrEqualsTo(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+		Guard.guardGreaterOrEqualsTo(0, 0);
+
+		try {
+			Guard.guardGreaterOrEqualsTo(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is less than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardLessThanInteger() throws Exception {
+		Guard.guardLessThan(0, 1);
+		Guard.guardLessThan(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+		Guard.guardLessThan(Integer.MIN_VALUE, Integer.MIN_VALUE + 1);
+
+		try {
+			Guard.guardLessThan(0, 0);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not less than expected value");
+		}
+
+		try {
+			Guard.guardLessThan(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not less than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardLessOrEqualsToInteger() throws Exception {
+		Guard.guardLessOrEqualsTo(0, 1);
+		Guard.guardLessOrEqualsTo(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+		Guard.guardLessOrEqualsTo(0, 0);
+
+		try {
+			Guard.guardLessOrEqualsTo(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is greater than expected value");
+		}
+	}
+
+	// *******************************************************************************************
+	// Long
+	// *******************************************************************************************
+
+	@Test
+	public void testIsEqualsLong() {
+
+		assertTrue(Guard.isEquals(Long.MAX_VALUE, Long.MAX_VALUE));
+		assertTrue(Guard.isEquals(Long.MIN_VALUE, Long.MIN_VALUE));
+		assertTrue(Guard.isEquals(0, 0));
+		assertTrue(Guard.isEquals(2147483647 * 2, 2147483647 * 2));
+
+		assertFalse(Guard.isEquals(Long.MAX_VALUE, Long.MIN_VALUE));
+		assertFalse(Guard.isEquals(Long.MAX_VALUE, Long.MAX_VALUE - 1));
+		assertFalse(Guard.isEquals(Long.MAX_VALUE, 0));
+
+	}
+
+	@Test
+	public void testGuardEqualsLong() throws Exception {
+
+		Guard.guardEquals(Long.MAX_VALUE, Long.MAX_VALUE);
+		Guard.guardEquals(Long.MIN_VALUE, Long.MIN_VALUE);
+		Guard.guardEquals(0, 0);
+		Guard.guardEquals(Long.MAX_VALUE, Long.MAX_VALUE - 2, 2);
+		Guard.guardEquals(0, 2, 2);
+		Guard.guardEquals(Long.MIN_VALUE, Long.MIN_VALUE + 2, 2);
+		Guard.guardEquals(Long.MIN_VALUE, 0 - 1, Long.MAX_VALUE);
+		Guard.guardEquals(Long.MAX_VALUE, 0 + 1, Long.MAX_VALUE);
+
+		try {
+			Guard.guardEquals(Long.MAX_VALUE, Long.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(0, Long.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(0, 5, 2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(Long.MAX_VALUE, Long.MAX_VALUE - 5, 2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+	}
+
+	@Test
+	public void testGuardNotEqualsLong() throws Exception {
+
+		try {
+			Guard.guardNotEquals(Long.MAX_VALUE, Long.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		try {
+			Guard.guardNotEquals(Long.MIN_VALUE, Long.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		Guard.guardNotEquals(Long.MAX_VALUE, Long.MIN_VALUE);
+		Guard.guardNotEquals(0, Long.MAX_VALUE);
+		Guard.guardNotEquals(0, 1);
+		Guard.guardNotEquals(-1, 1);
+	}
+
+	@Test
+	public void testGuardGreaterThanLong() throws Exception {
+		Guard.guardGreaterThan(1, 0);
+		Guard.guardGreaterThan(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+		Guard.guardGreaterThan(Long.MAX_VALUE, Long.MIN_VALUE);
+
+		try {
+			Guard.guardGreaterThan(0, 0);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+
+		try {
+			Guard.guardGreaterThan(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+
+		try {
+			Guard.guardGreaterThan(Long.MIN_VALUE, Long.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardGreaterOrEqualsToLong() throws Exception {
+		Guard.guardGreaterOrEqualsTo(1, 0);
+		Guard.guardGreaterOrEqualsTo(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+		Guard.guardGreaterOrEqualsTo(0, 0);
+
+		try {
+			Guard.guardGreaterOrEqualsTo(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is less than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardLessThanLong() throws Exception {
+		Guard.guardLessThan(0, 1);
+		Guard.guardLessThan(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+		Guard.guardLessThan(Long.MIN_VALUE, Long.MIN_VALUE + 1);
+
+		try {
+			Guard.guardLessThan(0, 0);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not less than expected value");
+		}
+
+		try {
+			Guard.guardLessThan(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not less than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardLessOrEqualsToLong() throws Exception {
+		Guard.guardLessOrEqualsTo(0, 1);
+		Guard.guardLessOrEqualsTo(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+		Guard.guardLessOrEqualsTo(0, 0);
+
+		try {
+			Guard.guardLessOrEqualsTo(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is greater than expected value");
+		}
+	}
+
+	// *******************************************************************************************
+	// Short
+	// *******************************************************************************************
+
+	@Test
+	public void testIsEqualsShort() {
+
+		assertTrue(Guard.isEquals(Short.MAX_VALUE, Short.MAX_VALUE));
+		assertTrue(Guard.isEquals(Short.MIN_VALUE, Short.MIN_VALUE));
+		assertTrue(Guard.isEquals(0, 0));
+		assertTrue(Guard.isEquals(2147483647 * 2, 2147483647 * 2));
+
+		assertFalse(Guard.isEquals(Short.MAX_VALUE, Short.MIN_VALUE));
+		assertFalse(Guard.isEquals(Short.MAX_VALUE, Short.MAX_VALUE - 1));
+		assertFalse(Guard.isEquals(Short.MAX_VALUE, 0));
+
+	}
+
+	@Test
+	public void testGuardEqualsShort() throws Exception {
+
+		Guard.guardEquals(Short.MAX_VALUE, Short.MAX_VALUE);
+		Guard.guardEquals(Short.MIN_VALUE, Short.MIN_VALUE);
+		Guard.guardEquals(0, 0);
+		Guard.guardEquals(Short.MAX_VALUE, Short.MAX_VALUE - 2, 2);
+		Guard.guardEquals(0, 2, 2);
+		Guard.guardEquals(Short.MIN_VALUE, Short.MIN_VALUE + 2, 2);
+		Guard.guardEquals(Short.MIN_VALUE, 0 - 1, Short.MAX_VALUE);
+		Guard.guardEquals(Short.MAX_VALUE, 0 + 1, Short.MAX_VALUE);
+
+		try {
+			Guard.guardEquals(Short.MAX_VALUE, Short.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(0, Short.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(0, 5, 2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			Guard.guardEquals(Short.MAX_VALUE, Short.MAX_VALUE - 5, 2);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+	}
+
+	@Test
+	public void testGuardNotEqualsShort() throws Exception {
+
+		try {
+			Guard.guardNotEquals(Short.MAX_VALUE, Short.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		try {
+			Guard.guardNotEquals(Short.MIN_VALUE, Short.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are equal");
+		}
+
+		Guard.guardNotEquals(Short.MAX_VALUE, Short.MIN_VALUE);
+		Guard.guardNotEquals(0, Short.MAX_VALUE);
+		Guard.guardNotEquals(0, 1);
+		Guard.guardNotEquals(-1, 1);
+	}
+
+	@Test
+	public void testGuardGreaterThanShort() throws Exception {
+		Guard.guardGreaterThan(1, 0);
+		Guard.guardGreaterThan(Short.MAX_VALUE, Short.MAX_VALUE - 1);
+		Guard.guardGreaterThan(Short.MAX_VALUE, Short.MIN_VALUE);
+
+		try {
+			Guard.guardGreaterThan(0, 0);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+
+		try {
+			Guard.guardGreaterThan(Short.MAX_VALUE - 1, Short.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+
+		try {
+			Guard.guardGreaterThan(Short.MIN_VALUE, Short.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not greater than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardGreaterOrEqualsToShort() throws Exception {
+		Guard.guardGreaterOrEqualsTo(1, 0);
+		Guard.guardGreaterOrEqualsTo(Short.MAX_VALUE, Short.MAX_VALUE - 1);
+		Guard.guardGreaterOrEqualsTo(0, 0);
+
+		try {
+			Guard.guardGreaterOrEqualsTo(Short.MAX_VALUE - 1, Short.MAX_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is less than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardLessThanShort() throws Exception {
+		Guard.guardLessThan(0, 1);
+		Guard.guardLessThan(Short.MAX_VALUE - 1, Short.MAX_VALUE);
+		Guard.guardLessThan(Short.MIN_VALUE, Short.MIN_VALUE + 1);
+
+		try {
+			Guard.guardLessThan(0, 0);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not less than expected value");
+		}
+
+		try {
+			Guard.guardLessThan(Short.MAX_VALUE, Short.MAX_VALUE - 1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is not less than expected value");
+		}
+	}
+
+	@Test
+	public void testGuardLessOrEqualsToShort() throws Exception {
+		Guard.guardLessOrEqualsTo(0, 1);
+		Guard.guardLessOrEqualsTo(Short.MAX_VALUE - 1, Short.MAX_VALUE);
+		Guard.guardLessOrEqualsTo(0, 0);
+
+		try {
+			Guard.guardLessOrEqualsTo(Short.MAX_VALUE, Short.MAX_VALUE - 1);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "actual value is greater than expected value");
+		}
+	}
+
+	// *******************************************************************************************
+	// Exception msg checking
+	// *******************************************************************************************
+
+	@Test
+	public void testExceptionMsgCheck() throws Exception {
+		Exception e = new Exception("Test");
+		Guard.guardEquals(e, "Test");
+	}
+
+	@Test(expected = Exception.class)
+	public void testExceptionMsgCheckBadPath() throws Exception {
+		try {
+			Guard.guardEquals(Short.MAX_VALUE, Short.MIN_VALUE);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "123");
+		}
+	}
+
+	// *******************************************************************************************
+	// Wrong flow
+	// *******************************************************************************************
+
+	@Test(expected = WrongFlow.class)
+	public void testWrongFlow() throws Exception {
+		Guard.guardWrongFlow("Wrong flow test");
+	}
 
 }
