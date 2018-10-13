@@ -50,8 +50,7 @@ public class Transform {
 	/**
 	 * concatenates multiple byte arrays.
 	 * 
-	 * @param arrays
-	 *            = byte arrays
+	 * @param arrays = byte arrays
 	 * @return concatenated byte array
 	 */
 	public byte[] concat(byte[]... arrays) {
@@ -71,8 +70,7 @@ public class Transform {
 	/**
 	 * concatenate chain of single byte in order it was provided in.
 	 * 
-	 * @param data
-	 *            = byte(s) in sequence
+	 * @param data = byte(s) in sequence
 	 * @return concatenated byte array
 	 */
 	@SuppressWarnings("unused")
@@ -91,13 +89,10 @@ public class Transform {
 	}
 
 	/**
-	 * concatenates byte array with subsequent single byte in order it was
-	 * provided in.
+	 * concatenates byte array with subsequent single byte in order it was provided in.
 	 * 
-	 * @param byteArray
-	 *            = first byte array
-	 * @param rest
-	 *            = following byte array
+	 * @param byteArray = first byte array
+	 * @param rest = following byte array
 	 * @return = concatenated byte array
 	 */
 	@SuppressWarnings("unused")
@@ -116,13 +111,10 @@ public class Transform {
 	}
 
 	/**
-	 * concatenates byte with subsequent byte arrays in order it was provided
-	 * in.
+	 * concatenates byte with subsequent byte arrays in order it was provided in.
 	 * 
-	 * @param data
-	 *            = first byte
-	 * @param rest
-	 *            = following byte array
+	 * @param data = first byte
+	 * @param rest = following byte array
 	 * @return = concatenated byte array
 	 */
 	public byte[] concat(byte data, byte[]... rest) {
@@ -149,8 +141,7 @@ public class Transform {
 	 * Result : FF
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            = data to be converted
+	 * @param data = data to be converted
 	 * @return Hex formatted string
 	 */
 	public String bytesToHexString(byte data) {
@@ -166,8 +157,7 @@ public class Transform {
 	 * Result : 0102FF
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            = data to be converted
+	 * @param data = data to be converted
 	 * @return Hex formatted string
 	 */
 	public String bytesToHexString(byte[] data) {
@@ -185,15 +175,13 @@ public class Transform {
 	 * Result : 0102FF
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            = data to be converted
-	 * @param bDisplaySize
-	 *            = true/false
+	 * @param data = data to be converted
+	 * @param bDisplaySize = true/false
 	 * @return Hex formatted string
 	 */
 	public String bytesToHexString(byte[] data, boolean bDisplaySize) {
 		if (null == data) {
-			return null;
+			throw new NullPointerException();
 		}
 		StringBuilder hex = new StringBuilder();
 		if (bDisplaySize) {
@@ -225,10 +213,8 @@ public class Transform {
 	 * Result : FF
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            = data to be converted
-	 * @param bDisplaySize
-	 *            = true/false
+	 * @param data = data to be converted
+	 * @param bDisplaySize = true/false
 	 * @return Hex formatted string
 	 */
 	public String bytesToHexString(byte data, boolean bDisplaySize) {
@@ -241,11 +227,9 @@ public class Transform {
 	 * Answer : TEST
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            = data to be converted
+	 * @param data = data to be converted
 	 * @return = Ascii formatted String
-	 * @throws UnsupportedEncodingException
-	 *             Exception is thrown if invalid input is provided
+	 * @throws UnsupportedEncodingException Exception is thrown if invalid input is provided
 	 */
 	public String bytesToAscii(byte[] data) throws UnsupportedEncodingException {
 		return new String(data, "UTF-8");
@@ -257,11 +241,9 @@ public class Transform {
 	 * Answer : T
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            = data to be converted
+	 * @param data = data to be converted
 	 * @return = Ascii formatted String
-	 * @throws Exception
-	 *             = Exception is returned if invalid input data is provided
+	 * @throws Exception = Exception is returned if invalid input data is provided
 	 */
 	public String bytesToAscii(byte data) throws Exception {
 		return bytesToAscii(new byte[] { data });
@@ -269,9 +251,7 @@ public class Transform {
 
 	/**
 	 * 
-	 * @param byteArray
-	 *            Reads the first eight bytes, composing them into a long value
-	 *            according to the byte order
+	 * @param byteArray Reads the first eight bytes, composing them into a long value according to the byte order
 	 * @return long value
 	 */
 	public long bytesToLong(byte[] byteArray) {
@@ -284,10 +264,8 @@ public class Transform {
 	 * Answer : 999999999999999999
 	 * </pre>
 	 * 
-	 * @param bytes
-	 *            = data to be converted
-	 * @param bo
-	 *            byte order before converting it to long
+	 * @param bytes = data to be converted
+	 * @param bo byte order before converting it to long
 	 * @return = long formatted data
 	 */
 	public long bytesToLong(byte[] bytes, ByteOrder bo) {
@@ -302,8 +280,7 @@ public class Transform {
 	 * Answer : 3
 	 * </pre>
 	 * 
-	 * @param bytes
-	 *            = data to be converted
+	 * @param bytes = data to be converted
 	 * @return = long formatted data
 	 */
 	public long bytesToDecimals(byte[] bytes) {
@@ -317,10 +294,8 @@ public class Transform {
 	 * Answer : 3
 	 * </pre>
 	 * 
-	 * @param bytes
-	 *            = data to be converted
-	 * @param bo
-	 *            byte order before converting it to long
+	 * @param bytes = data to be converted
+	 * @param bo byte order before converting it to long
 	 * @return = long formatted data
 	 */
 	public long bytesToDecimals(byte[] bytes, ByteOrder bo) {
@@ -347,10 +322,8 @@ public class Transform {
 	 * Answer : 3
 	 * </pre>
 	 * 
-	 * @param bytes
-	 *            = data to be converted
-	 * @param bo
-	 *            byte order before converting it to long
+	 * @param bytes = data to be converted
+	 * @param bo byte order before converting it to long
 	 * @return = integer formatted data
 	 */
 	public int bytesToInteger(byte[] bytes, ByteOrder bo) {
@@ -360,12 +333,9 @@ public class Transform {
 	}
 
 	/**
-	 * @deprecated we recommend to use {@link #bytesToShort(byte[], ByteOrder)}
-	 *             instead
-	 * @param bytes
-	 *            Byte array
-	 * @param bo
-	 *            Byte order
+	 * @deprecated we recommend to use {@link #bytesToShort(byte[], ByteOrder)} instead
+	 * @param bytes Byte array
+	 * @param bo Byte order
 	 * @return Integer value
 	 */
 	@Deprecated
@@ -375,10 +345,8 @@ public class Transform {
 
 	/**
 	 * 
-	 * @param bytes
-	 *            Byte array
-	 * @param bo
-	 *            Byte order
+	 * @param bytes Byte array
+	 * @param bo Byte order
 	 * @return Short value
 	 */
 	public short bytesToShort(byte[] bytes, ByteOrder bo) {
@@ -390,8 +358,7 @@ public class Transform {
 	/**
 	 * Generates requested number of random bytes. Uses SecureRandom function
 	 * 
-	 * @param numberOfBytes
-	 *            Number of bytes
+	 * @param numberOfBytes Number of bytes
 	 * @return random number byte array
 	 */
 	public byte[] generateRandomBytes(int numberOfBytes) {
@@ -405,8 +372,7 @@ public class Transform {
 	/**
 	 * Reverse order of bytes
 	 * 
-	 * @param data
-	 *            Byte array
+	 * @param data Byte array
 	 * @return reversed byte array
 	 */
 	public byte[] bytesReverseOrder(byte[] data) {
@@ -422,8 +388,7 @@ public class Transform {
 
 	/**
 	 * 
-	 * @param list
-	 *            List of byte
+	 * @param list List of byte
 	 * @return byte array
 	 */
 	public byte[] listToByteArray(List<Byte> list) {
@@ -446,8 +411,7 @@ public class Transform {
 	 * Answer : 0xF0
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            Byte value
+	 * @param data Byte value
 	 * @return Low Nibble in byte format
 	 */
 	public byte getLowNibble(byte data) {
@@ -463,8 +427,7 @@ public class Transform {
 	 * Answer : 0x0F
 	 * </PRE>
 	 * 
-	 * @param data
-	 *            Byte Value
+	 * @param data Byte Value
 	 * @return High Nibble in byte format
 	 */
 	public byte getHighNibble(byte data) {
@@ -475,10 +438,8 @@ public class Transform {
 	/**
 	 * Sets Particular bit of the byte to high
 	 * 
-	 * @param data
-	 *            Byte Value
-	 * @param pos
-	 *            Bit position
+	 * @param data Byte Value
+	 * @param pos Bit position
 	 * @return Byte with set bit
 	 */
 	public byte setBitOfTheByte(byte data, int pos) {
@@ -488,10 +449,8 @@ public class Transform {
 	/**
 	 * Sets Particular bit of the byte to low
 	 * 
-	 * @param data
-	 *            Byte Value
-	 * @param pos
-	 *            Bit Position
+	 * @param data Byte Value
+	 * @param pos Bit Position
 	 * @return Byte with cleated bit
 	 */
 	public byte clearBitOfTheByte(byte data, int pos) {
@@ -501,10 +460,8 @@ public class Transform {
 	/**
 	 * Toggles particular bit of the byte
 	 * 
-	 * @param data
-	 *            Byte value
-	 * @param pos
-	 *            Bit position
+	 * @param data Byte value
+	 * @param pos Bit position
 	 * @return Byte with toogled bit
 	 */
 	public byte toogleBitOfTheByte(byte data, int pos) {
@@ -514,18 +471,16 @@ public class Transform {
 	/**
 	 * Returns particular bit of the byte
 	 * 
-	 * @param data
-	 *            Byte value
-	 * @param pos
-	 *            Bit Position
+	 * @param data Byte value
+	 * @param pos Bit Position
 	 * @return Value of the Bit (1 or 0)
 	 */
 	public int getBitOfTheByte(byte data, int pos) {
-		return (data & (0x01 << pos));
+		return 0 != (data & (0x01 << pos)) ? 1 : 0;
 	}
 
 	public boolean isBitSet(byte data, int pos) {
-		if (1 == getBitOfTheByte(data, pos)) {
+		if (0 != getBitOfTheByte(data, pos)) {
 			return true;
 		}
 		return false;
@@ -579,11 +534,9 @@ public class Transform {
 	/**
 	 * Converts String Hex to ASCII
 	 * 
-	 * @param strHex
-	 *            Hex formatter string
+	 * @param strHex Hex formatter string
 	 * @return ASCII String
-	 * @throws UnsupportedEncodingException
-	 *             Exception is thrown if invalid input is provided
+	 * @throws UnsupportedEncodingException Exception is thrown if invalid input is provided
 	 */
 	public String strHexToAscii(String strHex) throws UnsupportedEncodingException {
 
@@ -600,8 +553,7 @@ public class Transform {
 
 	/**
 	 * 
-	 * @param asciiValue
-	 *            ASCII string
+	 * @param asciiValue ASCII string
 	 * @return Hex String
 	 */
 	public String asciiToHexString(String asciiValue) {
@@ -679,10 +631,8 @@ public class Transform {
 	/**
 	 * Returns fix length string regardless of integer value
 	 * 
-	 * @param nNumber
-	 *            Integer value
-	 * @param nFixLenght
-	 *            String length
+	 * @param nNumber Integer value
+	 * @param nFixLenght String length
 	 * @return Fix length string
 	 */
 	public String intToFixLengthString(int nNumber, int nFixLenght) {
@@ -696,8 +646,7 @@ public class Transform {
 
 	/**
 	 * 
-	 * @param b
-	 *            Boolean value
+	 * @param b Boolean value
 	 * @return integer representation of boolean value
 	 */
 	public int booleanToInt(boolean b) {
@@ -728,10 +677,8 @@ public class Transform {
 	/**
 	 * MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm", System.milliseconds())
 	 * 
-	 * @param dateFormat
-	 *            the pattern describing the date and time format
-	 * @param timeInMilliseconds
-	 *            EPoch time value
+	 * @param dateFormat the pattern describing the date and time format
+	 * @param timeInMilliseconds EPoch time value
 	 * @return date formatter with given pattern
 	 */
 	public String MilliSecondsToFormattedDate(String dateFormat, long timeInMilliseconds) {
@@ -786,10 +733,8 @@ public class Transform {
 	/**
 	 * Generate Random number between provided high and low value
 	 * 
-	 * @param low
-	 *            random number low boundary
-	 * @param high
-	 *            random number high boundary
+	 * @param low random number low boundary
+	 * @param high random number high boundary
 	 * @return random integer value between high and low boundary
 	 */
 	public int randInt(int low, int high) {
@@ -812,8 +757,7 @@ public class Transform {
 	/**
 	 * Generate Random char array
 	 * 
-	 * @param length
-	 *            Char array length
+	 * @param length Char array length
 	 * @return random char array
 	 */
 	public char[] randChar(int length) {
@@ -830,8 +774,7 @@ public class Transform {
 	/**
 	 * Generate Random char String
 	 * 
-	 * @param length
-	 *            String length
+	 * @param length String length
 	 * @return random character string
 	 */
 	public String randString(int length) {
@@ -841,8 +784,7 @@ public class Transform {
 	/**
 	 * Generate Random byte array
 	 * 
-	 * @param length
-	 *            Byte array length
+	 * @param length Byte array length
 	 * @return random value byte array
 	 */
 	public byte[] randBytes(int length) {

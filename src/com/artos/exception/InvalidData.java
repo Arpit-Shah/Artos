@@ -30,6 +30,10 @@ public class InvalidData extends Exception {
 
 	private static final long serialVersionUID = 4966307464223695923L;
 
+	public InvalidData() {
+		super();
+	}
+	
 	public InvalidData(String message) {
 		super(message);
 	}

@@ -7,6 +7,6 @@
 | KeyPair for signing		| Gpg						|[GnuPG](https://gnupg.org/download/)		|
 | Public GIT Repository		| BitBucket					|[BitBucket](https://bitbucket.org/)		|
 | GIT GUI					| SourceTree				|[GIT GUI](https://www.sourcetreeapp.com/)	|
-| Eclipse code analysis		| PMD						|[GIT GUI](https://www.sourcetreeapp.com/)	|
+| Eclipse code analysis		| PMD						|[PMD](https://www.eclipse.org/)	|
+| Flow Chart				| Online editor				|[Draw Online](https://www.draw.io/)
 | Eclipse copyright template| Copyright Generator		|[COPYRIGHT GENERATOR](https://dl.bintray.com/jmini/Eclipse-Copyright-Generator/)	|
-| GITHUB Credential Manager | GITHUB Credential Manager	|[GITHUB Credential Manager](https://github.com/Microsoft/Git-Credential-Manager-for-Windows/releases/tag/v1.17.2)	|

@@ -23,13 +23,16 @@ package com.artos.exception;
 
 /**
  *
- * Checked Exception used to highlight code travelling through wrong/unexpected
- * path
+ * Checked Exception used to highlight code travelling through wrong/unexpected path
  *
  */
 public class WrongFlow extends Exception {
-	
+
 	private static final long serialVersionUID = -7654109285223161620L;
+
+	public WrongFlow() {
+		super();
+	}
 
 	public WrongFlow(String message) {
 		super(message);

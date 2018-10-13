@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,6 +61,7 @@ public class TestTransform {
 
 	@Test
 	public void testBytesToHexString_Array() {
+
 		byte[] test1 = { 0, 1, 2, 10, (byte) 255 };
 		String expectedResult1 = "[5][00 01 02 0A FF]";
 		String resultArray1 = _tfm.bytesToHexString(test1, true);
@@ -68,6 +71,9 @@ public class TestTransform {
 		String expectedResult2 = "0001020AFF";
 		String resultArray2 = _tfm.bytesToHexString(test2, false);
 		assertEquals(expectedResult2, resultArray2);
+
+		String resultArray3 = _tfm.bytesToHexString(test2);
+		assertEquals(expectedResult2, resultArray3);
 	}
 
 	@Test
@@ -81,6 +87,15 @@ public class TestTransform {
 		String expectedResult4 = "FF";
 		String resultArray4 = _tfm.bytesToHexString(test4, false);
 		assertEquals(expectedResult4, resultArray4);
+
+		String resultArray5 = _tfm.bytesToHexString(test4);
+		assertEquals(expectedResult4, resultArray5);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testBytesToHexString_Null() {
+		String resultArray2 = _tfm.bytesToHexString(null);
+		assertEquals(null, resultArray2);
 	}
 
 	@Test
@@ -99,6 +114,12 @@ public class TestTransform {
 		assertEquals(expectedResult2, resultArray2);
 	}
 
+	@Test(expected = NullPointerException.class)
+	public void testBytesToAscii_Null() throws Exception {
+		String resultArray2 = _tfm.bytesToAscii(null);
+		assertEquals(null, resultArray2);
+	}
+
 	@Test
 	public void testBytesToLong_ByteArray_DifferentByteOrder() {
 		byte[] test1 = _tfm.strHexToByteArray("0D E0 B6 B3 A7 63 FF FF");
@@ -110,11 +131,15 @@ public class TestTransform {
 		long expectedResult2 = 999999999999999999l;
 		long resultArray2 = _tfm.bytesToLong(test2, ByteOrder.LITTLE_ENDIAN);
 		assertEquals(expectedResult2, resultArray2);
-		
+
+		resultArray2 = _tfm.bytesToLong(test2);
+		assertEquals(expectedResult2, resultArray2);
+
 		byte[] test3 = _tfm.strHexToByteArray("00 00 00 00 00 00 00 04");
 		long expectedResult3 = 4l;
 		long resultArray3 = _tfm.bytesToLong(test3, ByteOrder.BIG_ENDIAN);
 		assertEquals(expectedResult3, resultArray3);
+
 	}
 
 	@Test
@@ -235,7 +260,7 @@ public class TestTransform {
 		int expectedResult2 = 32767;
 		int resultArray2 = _tfm.bytes2ToInt(test2, ByteOrder.LITTLE_ENDIAN);
 		assertEquals(expectedResult2, resultArray2);
-		
+
 		byte[] test3 = _tfm.strHexToByteArray("02 00");
 		int expectedResult3 = 2;
 		int resultArray3 = _tfm.bytes2ToInt(test3, ByteOrder.LITTLE_ENDIAN);
@@ -306,16 +331,23 @@ public class TestTransform {
 		assertArrayEquals(expected, reversed);
 	}
 
-	// @Test
-	// public void testListToByteArray() {
-	// fail("Not yet implemented");
-	// }
+	@Test
+	public void testListToByteArray() {
+		List<Byte> list = new ArrayList<>();
+		list.add((byte) 0x00);
+		list.add((byte) 0x01);
+		list.add((byte) 0x02);
+		list.add((byte) 0x04);
+		byte[] array = _tfm.listToByteArray(list);
+		byte[] expected = _tfm.strHexToByteArray("00 01 02 04");
+		assertArrayEquals(expected, array);
+	}
 
 	@Test
 	public void testGetLowNibble() {
 		byte returned = _tfm.getLowNibble((byte) 0x01);
 		assertEquals((byte) 0x01, returned);
-		
+
 		byte returned2 = _tfm.getLowNibble((byte) 0x3C);
 		assertEquals((byte) 0x0C, returned2);
 
@@ -327,7 +359,7 @@ public class TestTransform {
 	public void testGetHighNibble() {
 		byte returned = _tfm.getHighNibble((byte) 0x01);
 		assertEquals((byte) 0x00, returned);
-		
+
 		byte returned2 = _tfm.getHighNibble((byte) 0x3C);
 		assertEquals((byte) 0x03, returned2);
 
@@ -355,7 +387,7 @@ public class TestTransform {
 		test1 = _tfm.setBitOfTheByte(test1, 7);
 		assertEquals((byte) 0xFF, test1);
 	}
-	
+
 	@Test
 	public void testClearBitOfTheByte() {
 		byte test1 = (byte) 0xFF;
@@ -389,19 +421,55 @@ public class TestTransform {
 		test1 = _tfm.toogleBitOfTheByte(test1, 6);
 		test1 = _tfm.toogleBitOfTheByte(test1, 7);
 		assertEquals((byte) 0x00, test1);
-		
+
 	}
-	//
-	// @Test
-	// public void testGetBitOfTheByte() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testIsBitSet() {
-	// fail("Not yet implemented");
-	// }
-	//
+
+	@Test
+	public void testGetBitOfTheByte() {
+		byte test1 = (byte) 0xFF;
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 0));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 1));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 2));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 3));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 4));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 5));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 6));
+		assertEquals(1, _tfm.getBitOfTheByte(test1, 7));
+
+		test1 = (byte) 0x00;
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 0));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 1));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 2));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 3));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 4));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 5));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 6));
+		assertEquals(0, _tfm.getBitOfTheByte(test1, 7));
+	}
+
+	@Test
+	public void testIsBitSet() {
+		byte test1 = (byte) 0xFF;
+		assertEquals(true, _tfm.isBitSet(test1, 0));
+		assertEquals(true, _tfm.isBitSet(test1, 1));
+		assertEquals(true, _tfm.isBitSet(test1, 2));
+		assertEquals(true, _tfm.isBitSet(test1, 3));
+		assertEquals(true, _tfm.isBitSet(test1, 4));
+		assertEquals(true, _tfm.isBitSet(test1, 5));
+		assertEquals(true, _tfm.isBitSet(test1, 6));
+		assertEquals(true, _tfm.isBitSet(test1, 7));
+
+		test1 = (byte) 0x00;
+		assertEquals(false, _tfm.isBitSet(test1, 0));
+		assertEquals(false, _tfm.isBitSet(test1, 1));
+		assertEquals(false, _tfm.isBitSet(test1, 2));
+		assertEquals(false, _tfm.isBitSet(test1, 3));
+		assertEquals(false, _tfm.isBitSet(test1, 4));
+		assertEquals(false, _tfm.isBitSet(test1, 5));
+		assertEquals(false, _tfm.isBitSet(test1, 6));
+		assertEquals(false, _tfm.isBitSet(test1, 7));
+	}
+
 	// @Test
 	// public void testStrToByteArray() {
 	// fail("Not yet implemented");

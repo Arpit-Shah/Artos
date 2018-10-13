@@ -75,6 +75,7 @@ public class ArtosRunner {
 		registerListener(testListener);
 		context.registerListener(testListener);
 
+		// Register extent reporting listener
 		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
 			ExtentReportListener extentListener = new ExtentReportListener(context);
 			registerListener(extentListener);
@@ -95,10 +96,6 @@ public class ArtosRunner {
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
 	public void run(List<TestExecutable> testList, List<String> groupList) throws Exception {
-		if (null == groupList || groupList.isEmpty()) {
-			new Exception("Group must be specified");
-		}
-
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList, groupList);
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
@@ -513,6 +510,10 @@ public class ArtosRunner {
 	 */
 	public List<TestObjectWrapper> transformToTestObjWrapper(List<TestExecutable> listOfTestCases, List<String> groupList) {
 
+		if (null == groupList || groupList.isEmpty()) {
+			new Exception("Group must be specified");
+		}
+
 		Object testSuiteObject;
 		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
 
@@ -609,6 +610,12 @@ public class ArtosRunner {
 		return listOfTransformedTestCases;
 	}
 
+	/**
+	 * 
+	 * @param refGroupList list of user defined group via test script or via main class
+	 * @param testGroupList list of group test case belong to
+	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
+	 */
 	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
 		for (String group : refGroupList) {
 			if (testGroupList.contains(group)) {

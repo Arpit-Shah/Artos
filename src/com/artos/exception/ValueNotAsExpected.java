@@ -34,6 +34,10 @@ public class ValueNotAsExpected extends Exception {
 
 	private static final long serialVersionUID = 3143300873685133606L;
 
+	public ValueNotAsExpected() {
+		super();
+	}
+	
 	public ValueNotAsExpected(String message) {
 		super(message);
 	}
