@@ -28,14 +28,12 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * Mandatory Annotation {@code TestCase} defines class to be a test case. User
- * can provide optional parameters test sequence number {@code sequence()}, skip
- * attribute and label. All of the optional parameters will be ignored when user
- * runs test case via test script or via provided test list.
+ * Mandatory Annotation {@code TestCase} defines class to be a test case. User can provide optional parameters test sequence number
+ * {@code sequence()}, skip attribute and label. All of the optional parameters will be ignored when user runs test case via test script or via
+ * provided test list.
  * 
  * <p>
- * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by
- * the compiler and retained by the VM at run time, so it may be read
+ * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by the compiler and retained by the VM at run time, so it may be read
  * reflectively.
  * </p>
  *
@@ -47,16 +45,14 @@ import java.lang.annotation.Target;
 public @interface TestCase {
 
 	/**
-	 * Responsible for marking test to be skipped if set true. Ignored if test
-	 * list is provided via test script or using main() class.
+	 * Responsible for marking test to be skipped if set true. Ignored if test list is provided via test script or using main() class.
 	 * 
 	 * @return true = skip test|false = execute test
 	 */
 	boolean skip() default false;
 
 	/**
-	 * Defines sequence in which test case should execute. Ignored if test list
-	 * is provided via test script or using main() class.
+	 * Defines sequence in which test case should execute. Ignored if test list is provided via test script or using main() class.
 	 * 
 	 * @return test sequence number
 	 */
@@ -68,4 +64,11 @@ public @interface TestCase {
 	 * @return test case label
 	 */
 	String[] label() default { "all" };
+
+	/**
+	 * Data provider name set insider {@code DataProvider} annotation
+	 * 
+	 * @return data provider method name
+	 */
+	String dataprovider() default "";
 }
