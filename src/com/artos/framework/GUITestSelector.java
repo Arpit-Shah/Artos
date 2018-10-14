@@ -26,6 +26,8 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
@@ -128,6 +130,15 @@ public class GUITestSelector {
 	private void initMainFrame(String packageName) {
 		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+		// This is to ensure that thread lock is released and framework naturally exits
+		container.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				System.out.println("User Closed GUI Test Selector Window");
+				// to release a thread lock
+				context.getThreadLatch().countDown();
+			}
+		});
 
 		container.setSize(new Dimension(500, 550));
 		container.setResizable(false);
