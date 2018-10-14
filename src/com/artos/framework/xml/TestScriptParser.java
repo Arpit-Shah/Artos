@@ -46,7 +46,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.artos.exception.InvalidData;
+import com.artos.exception.InvalidDataException;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestObjectWrapper;
 
@@ -65,10 +65,10 @@ public class TestScriptParser {
 	 *             If any IO errors occur.
 	 * @throws SAXException
 	 *             If any parse errors occur.
-	 * @throws InvalidData
+	 * @throws InvalidDataException
 	 *             If user provides invalid data
 	 */
-	public List<TestSuite> readTestScript(File testScriptFile) throws ParserConfigurationException, SAXException, IOException, InvalidData {
+	public List<TestSuite> readTestScript(File testScriptFile) throws ParserConfigurationException, SAXException, IOException, InvalidDataException {
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -88,10 +88,10 @@ public class TestScriptParser {
 	 * 
 	 * @param doc
 	 *            Document object of XML file
-	 * @throws InvalidData
+	 * @throws InvalidDataException
 	 *             thrown when invalid data is provided by user
 	 */
-	private List<TestSuite> readTestScript(Document doc) throws InvalidData {
+	private List<TestSuite> readTestScript(Document doc) throws InvalidDataException {
 
 		List<TestSuite> testSuiteList = new ArrayList<>();
 
@@ -114,7 +114,7 @@ public class TestScriptParser {
 		return testSuiteList;
 	}
 
-	private void parseSuite(TestSuite _suite, Node suiteNode) throws InvalidData {
+	private void parseSuite(TestSuite _suite, Node suiteNode) throws InvalidDataException {
 		if (suiteNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element eElement = (Element) suiteNode;
 			if ("suite".equals(eElement.getNodeName())) {
@@ -130,11 +130,11 @@ public class TestScriptParser {
 					try {
 						int nLoopCount = Integer.parseInt(loopCount);
 						if (nLoopCount <= 0) {
-							throw new InvalidData("Invalid Loop Count : " + loopCount);
+							throw new InvalidDataException("Invalid Loop Count : " + loopCount);
 						}
 						_suite.setLoopCount(nLoopCount);
 					} catch (NumberFormatException e) {
-						throw new InvalidData("Invalid Loop Count : " + loopCount);
+						throw new InvalidDataException("Invalid Loop Count : " + loopCount);
 					}
 				}
 			}

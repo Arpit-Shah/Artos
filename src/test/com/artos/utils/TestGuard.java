@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.artos.exception.WrongFlow;
+import com.artos.exception.WrongFlowException;
 import com.artos.utils.Guard;
 import com.artos.utils.Transform;
 
@@ -1165,7 +1165,7 @@ public class TestGuard {
 	// Wrong flow
 	// *******************************************************************************************
 
-	@Test(expected = WrongFlow.class)
+	@Test(expected = WrongFlowException.class)
 	public void testWrongFlow() throws Exception {
 		Guard.guardWrongFlow("Wrong flow test");
 	}

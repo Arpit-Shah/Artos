@@ -30,15 +30,15 @@ import com.artos.utils.Guard;
  * @see Guard
  *
  */
-public class ValueNotAsExpected extends Exception {
+public class ValueNotAsExpectedException extends Exception {
 
 	private static final long serialVersionUID = 3143300873685133606L;
 
-	public ValueNotAsExpected() {
+	public ValueNotAsExpectedException() {
 		super();
 	}
 	
-	public ValueNotAsExpected(String message) {
+	public ValueNotAsExpectedException(String message) {
 		super(message);
 	}
 

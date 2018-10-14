@@ -22,20 +22,19 @@
 package com.artos.exception;
 
 /**
- * 
- * Checked Exception used for InvalidData
+ *
+ * Checked Exception used to highlight code travelling through wrong/unexpected path
  *
  */
-public class InvalidData extends Exception {
+public class WrongFlowException extends Exception {
 
-	private static final long serialVersionUID = 4966307464223695923L;
+	private static final long serialVersionUID = -7654109285223161620L;
 
-	public InvalidData() {
+	public WrongFlowException() {
 		super();
 	}
-	
-	public InvalidData(String message) {
+
+	public WrongFlowException(String message) {
 		super(message);
 	}
-
 }

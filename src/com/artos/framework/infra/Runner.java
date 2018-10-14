@@ -40,7 +40,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.xml.sax.SAXException;
 
-import com.artos.exception.InvalidData;
+import com.artos.exception.InvalidDataException;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.xml.TestScriptParser;
 import com.artos.framework.xml.TestSuite;
@@ -74,13 +74,13 @@ public class Runner {
 	 * 
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidData if user provides invalid data
+	 * @throws InvalidDataException if user provides invalid data
 	 * @throws IOException if io operation error occurs
 	 * @throws SAXException If any parse errors occur.
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	public void run(String[] args, int loopCount)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		// pass empty array list so reflection will be used
 		run(args, new ArrayList<>(), loopCount, null);
@@ -99,13 +99,13 @@ public class Runner {
 	 * @param groupList group list required to filter test cases
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidData if user provides invalid data
+	 * @throws InvalidDataException if user provides invalid data
 	 * @throws IOException if io operation error occurs
 	 * @throws SAXException If any parse errors occur.
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	public void run(String[] args, int loopCount, List<String> groupList)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		// pass empty array list so reflection will be used
 		run(args, new ArrayList<>(), loopCount, groupList);
@@ -125,13 +125,13 @@ public class Runner {
 	 * @param loopCount test loop count
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidData if user provides invalid data
+	 * @throws InvalidDataException if user provides invalid data
 	 * @throws IOException if io operation error occurs
 	 * @throws SAXException If any parse errors occur.
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	public void run(String[] args, List<TestExecutable> testList, int loopCount)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		// pass empty array list so reflection will be used
 		run(args, testList, loopCount, null);
@@ -152,14 +152,14 @@ public class Runner {
 	 * @param groupList group list required to filter test cases
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidData if user provides invalid data
+	 * @throws InvalidDataException if user provides invalid data
 	 * @throws IOException if io operation error occurs
 	 * @throws SAXException If any parse errors occur.
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	@SuppressWarnings("unchecked")
 	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> groupList)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidData {
+			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		if (null == groupList || groupList.isEmpty()) {
 			// Add a default group if user does not pass a group parameter
@@ -337,12 +337,12 @@ public class Runner {
 	 * 
 	 * @return list of test suites
 	 * 
-	 * @throws InvalidData if user provides invalid data
+	 * @throws InvalidDataException if user provides invalid data
 	 * @throws IOException if io operation error occurs
 	 * @throws SAXException If any parse errors occur.
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
-	private List<TestSuite> createTestSuiteList() throws ParserConfigurationException, SAXException, IOException, InvalidData {
+	private List<TestSuite> createTestSuiteList() throws ParserConfigurationException, SAXException, IOException, InvalidDataException {
 		if (null == CliProcessor.testScriptFile) {
 			return null;
 		}
