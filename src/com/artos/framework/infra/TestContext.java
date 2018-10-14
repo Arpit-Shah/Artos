@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
+import com.artos.framework.TestDataProvider;
 import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestProgress;
@@ -60,6 +61,7 @@ public class TestContext {
 	private Class<? extends PrePostRunnable> prePostRunnableObj = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
+	Map<String, TestDataProvider> dataProviderMap;
 
 	// Test suite start time
 	private long testSuiteStartTime;
@@ -572,6 +574,14 @@ public class TestContext {
 
 	public void setTestSuiteFinishTime(long testSuiteFinishTime) {
 		this.testSuiteFinishTime = testSuiteFinishTime;
+	}
+
+	public Map<String, TestDataProvider> getDataProviderMap() {
+		return dataProviderMap;
+	}
+
+	public void setDataProviderMap(Map<String, TestDataProvider> dataProviderMap) {
+		this.dataProviderMap = dataProviderMap;
 	}
 
 }

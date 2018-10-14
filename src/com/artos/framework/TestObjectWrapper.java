@@ -38,6 +38,7 @@ public class TestObjectWrapper {
 	int testsequence = 0;
 	List<String> labelList = new ArrayList<>();
 	List<String> groupList = new ArrayList<>();
+	String dataProviderName = "";
 
 	// TestPlan
 	String testPlanDescription = "";
@@ -63,13 +64,14 @@ public class TestObjectWrapper {
 	 * @param skipTest skip property as specified in annotation
 	 * @param testsequence test sequence as specified in annotation
 	 */
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName) {
 		super();
 
 		this.testClassObject = cls;
 
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
+		this.dataProviderName = dataProviderName;
 	}
 
 	public String getTestPlanDescription() {
@@ -198,6 +200,14 @@ public class TestObjectWrapper {
 
 	public void setEnforceException(Boolean enforce) {
 		this.enforce = enforce;
+	}
+
+	public String getDataProviderName() {
+		return dataProviderName;
+	}
+
+	public void setDataProviderName(String dataProviderName) {
+		this.dataProviderName = dataProviderName;
 	}
 
 }

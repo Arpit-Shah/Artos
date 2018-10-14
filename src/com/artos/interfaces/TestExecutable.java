@@ -28,6 +28,6 @@ import com.artos.framework.infra.TestContext;
  */
 public interface TestExecutable {
 
-	public void execute(TestContext context) throws Exception;
+	public void execute(TestContext context, Object data1, Object data2) throws Exception;
 
 }

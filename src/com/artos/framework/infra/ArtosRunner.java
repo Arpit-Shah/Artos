@@ -21,6 +21,7 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +31,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.artos.exception.InvalidDataException;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.GUITestSelector;
 import com.artos.framework.ScanTestSuite;
+import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.listener.ExtentReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
@@ -248,8 +251,56 @@ public class ArtosRunner {
 			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
 
 			// --------------------------------------------------------------------------------------------
-			// get test objects new instance and cast it to TestExecutable type
-			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
+			// if data provider name is not specified then only execute test once
+			if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
+
+				// get test objects new instance and cast it to TestExecutable type
+				// data provider argument should be set to null
+				((TestExecutable) t.getTestClassObject().newInstance()).execute(context, null, null);
+
+			} else {
+				// get dataProvider specified for this test case (dataprovider name is always stored in uppercase)
+				TestDataProvider dataProviderObj = context.getDataProviderMap().get(t.getDataProviderName().toUpperCase());
+
+				// If specified data provider is not found in the list then throw exception (Remember : Data provider name is case insensitive)
+				if (null == dataProviderObj) {
+					throw new InvalidObjectException("DataProvider is not found : " + (t.getDataProviderName()));
+				}
+
+				Object[][] data;
+				if (dataProviderObj.isStaticMethod()) {
+					// If data provider method is static then execute it to get data
+					data = (Object[][]) dataProviderObj.getMethod().invoke(null, new Object[] {});
+				} else {
+					// If data provider method is non-static then create instace of the class and then execute method
+					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), new Object[] {});
+				}
+
+				// If data provider method returns null then fail the test by throwing an exception
+				if (null == data) {
+					throw new InvalidDataException("DataProvider returned null : " + (t.getDataProviderName()));
+				}
+
+				// If data provider returns data then execute same test case multiple time by providing data one by one
+				for (int i = 0; i < data.length; i++) {
+
+					// Every execution print dataProvider count, so user know that same test case is running multiple time
+					context.getLogger().info("\nDataProvider:[" + dataProviderObj.getDataProviderName() + "][" + i + "]");
+
+					/*
+					 * @formatter:off
+					 * If 2D array then populate both field of the execute method. 
+					 * If 1D array then populate first field with value and second field with null. 
+					 * If 2D/1D array is empty then do not execute test case. silently move on. 
+					 * @formatter:on
+					 */
+					if (data[i].length == 2) {
+						((TestExecutable) t.getTestClassObject().newInstance()).execute(context, data[i][0], data[i][1]);
+					} else if (data[i].length == 1) {
+						((TestExecutable) t.getTestClassObject().newInstance()).execute(context, data[i][0], null);
+					}
+				}
+			}
 			// --------------------------------------------------------------------------------------------
 
 			postTestValidation(t);
@@ -524,6 +575,9 @@ public class ArtosRunner {
 		}
 		ScanTestSuite reflection = new ScanTestSuite(packageName);
 
+		// Store test dataProviders in context
+		context.setDataProviderMap(reflection.getDataProviderMap());
+
 		/*
 		 * @formatter:off
 		 * 1. If XML testScript is provided then use it
@@ -611,6 +665,7 @@ public class ArtosRunner {
 	}
 
 	/**
+	 * Validate if test case belongs to any user defined group(s)
 	 * 
 	 * @param refGroupList list of user defined group via test script or via main class
 	 * @param testGroupList list of group test case belong to
@@ -663,7 +718,7 @@ class runTestInParallel implements Runnable {
 
 			// --------------------------------------------------------------------------------------------
 			// get test objects new instance and cast it to TestExecutable type
-			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
+			((TestExecutable) t.getTestClassObject().newInstance()).execute(context, null, null);
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {
