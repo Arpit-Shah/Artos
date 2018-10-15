@@ -48,8 +48,6 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
-import com.artos.framework.Enums.ExceptionValue;
-
 /**
  * Designed for providing GUI which can guide user during test execution, GUI can be used in blocking or nonblocking manner. GUI can be used multiple
  * ways using following features.
@@ -114,6 +112,7 @@ import com.artos.framework.Enums.ExceptionValue;
  */
 public class CustomPrompt implements ItemListener {
 
+	int PANEL_MAX_WIDTH = 700;
 	String title = "CountDown Timer";
 	String str1 = null;
 	String str2 = null;
@@ -196,9 +195,12 @@ public class CustomPrompt implements ItemListener {
 			BufferedImage bimg = ImageIO.read(getImage());
 			int width = bimg.getWidth();
 			int height = bimg.getHeight();
-			if (width > 1000 || height > 1000) {
-				throw new Exception(ExceptionValue.OVERSIZE_OBJECT.getValue() + " : " + getImage().getAbsolutePath());
-			}
+
+			// Change coundown panel width to same as image width so it does not look ugly
+			PANEL_MAX_WIDTH = width;
+			// if (width > 1000 || height > 1000) {
+			// throw new Exception(ExceptionValue.OVERSIZE_OBJECT.getValue() + " : " + getImage().getAbsolutePath());
+			// }
 			iconlabel = new JLabel();
 			iconlabel.setIcon(icon);
 			imagePanel.add(iconlabel);
@@ -206,7 +208,7 @@ public class CustomPrompt implements ItemListener {
 		}
 
 		// Time Panel
-		Dimension timePanelDim = new Dimension(1000, 70);
+		Dimension timePanelDim = new Dimension(PANEL_MAX_WIDTH, 70);
 		jltime = new JLabel("00:00:00", SwingConstants.CENTER);
 		jltime.setForeground(Color.WHITE);
 		jltime.setBackground(Color.BLACK);
@@ -233,7 +235,7 @@ public class CustomPrompt implements ItemListener {
 		jbtnNo.addActionListener(e);
 
 		// Info Panel
-		Dimension infoPanelLabelDim = new Dimension(1000, 35);
+		Dimension infoPanelLabelDim = new Dimension(PANEL_MAX_WIDTH, 35);
 		Font font = new Font("Arial", Font.BOLD, 20);
 
 		JPanel infoPanel1 = new JPanel();
@@ -323,7 +325,6 @@ public class CustomPrompt implements ItemListener {
 			jf.getContentPane().add(infoPanel4);
 		}
 		if (null != str5) {
-		} else {
 			jf.getContentPane().add(infoPanel5);
 		}
 		if (null != str6) {
@@ -388,7 +389,7 @@ public class CustomPrompt implements ItemListener {
 	// this method will run when user presses the start button
 	void updateDisplay() {
 		Timeclass tc = new Timeclass();
-		timer = new Timer(1000, tc);
+		timer = new Timer(500, tc);
 		initial = System.currentTimeMillis();
 		timer.start();
 
