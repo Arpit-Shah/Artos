@@ -712,9 +712,9 @@ public class TestGuard {
 
 	@Test
 	public void testGuardGreaterThanInteger() throws Exception {
-		Guard.guardGreaterThan(1, 0);
-		Guard.guardGreaterThan(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
-		Guard.guardGreaterThan(Integer.MAX_VALUE, Integer.MIN_VALUE);
+		Guard.guardGreaterThan(0, 1);
+		Guard.guardGreaterThan(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+		Guard.guardGreaterThan(Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 		try {
 			Guard.guardGreaterThan(0, 0);
@@ -725,7 +725,7 @@ public class TestGuard {
 		}
 
 		try {
-			Guard.guardGreaterThan(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+			Guard.guardGreaterThan(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -733,7 +733,7 @@ public class TestGuard {
 		}
 
 		try {
-			Guard.guardGreaterThan(Integer.MIN_VALUE, Integer.MAX_VALUE);
+			Guard.guardGreaterThan(Integer.MAX_VALUE, Integer.MIN_VALUE);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -743,12 +743,12 @@ public class TestGuard {
 
 	@Test
 	public void testGuardGreaterOrEqualsToInteger() throws Exception {
-		Guard.guardGreaterOrEqualsTo(1, 0);
-		Guard.guardGreaterOrEqualsTo(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+		Guard.guardGreaterOrEqualsTo(0, 1);
+		Guard.guardGreaterOrEqualsTo(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
 		Guard.guardGreaterOrEqualsTo(0, 0);
 
 		try {
-			Guard.guardGreaterOrEqualsTo(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+			Guard.guardGreaterOrEqualsTo(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -758,9 +758,9 @@ public class TestGuard {
 
 	@Test
 	public void testGuardLessThanInteger() throws Exception {
-		Guard.guardLessThan(0, 1);
-		Guard.guardLessThan(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
-		Guard.guardLessThan(Integer.MIN_VALUE, Integer.MIN_VALUE + 1);
+		Guard.guardLessThan(1, 0);
+		Guard.guardLessThan(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+		Guard.guardLessThan(Integer.MIN_VALUE + 1, Integer.MIN_VALUE);
 
 		try {
 			Guard.guardLessThan(0, 0);
@@ -771,7 +771,7 @@ public class TestGuard {
 		}
 
 		try {
-			Guard.guardLessThan(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+			Guard.guardLessThan(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -781,12 +781,12 @@ public class TestGuard {
 
 	@Test
 	public void testGuardLessOrEqualsToInteger() throws Exception {
-		Guard.guardLessOrEqualsTo(0, 1);
-		Guard.guardLessOrEqualsTo(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+		Guard.guardLessOrEqualsTo(1, 0);
+		Guard.guardLessOrEqualsTo(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
 		Guard.guardLessOrEqualsTo(0, 0);
 
 		try {
-			Guard.guardLessOrEqualsTo(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
+			Guard.guardLessOrEqualsTo(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -885,9 +885,9 @@ public class TestGuard {
 
 	@Test
 	public void testGuardGreaterThanLong() throws Exception {
-		Guard.guardGreaterThan(1, 0);
-		Guard.guardGreaterThan(Long.MAX_VALUE, Long.MAX_VALUE - 1);
-		Guard.guardGreaterThan(Long.MAX_VALUE, Long.MIN_VALUE);
+		Guard.guardGreaterThan(0, 1);
+		Guard.guardGreaterThan(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+		Guard.guardGreaterThan(Long.MIN_VALUE, Long.MAX_VALUE);
 
 		try {
 			Guard.guardGreaterThan(0, 0);
@@ -898,7 +898,7 @@ public class TestGuard {
 		}
 
 		try {
-			Guard.guardGreaterThan(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+			Guard.guardGreaterThan(Long.MAX_VALUE, Long.MAX_VALUE - 1);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -906,7 +906,7 @@ public class TestGuard {
 		}
 
 		try {
-			Guard.guardGreaterThan(Long.MIN_VALUE, Long.MAX_VALUE);
+			Guard.guardGreaterThan(Long.MAX_VALUE, Long.MIN_VALUE);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -916,12 +916,12 @@ public class TestGuard {
 
 	@Test
 	public void testGuardGreaterOrEqualsToLong() throws Exception {
-		Guard.guardGreaterOrEqualsTo(1, 0);
-		Guard.guardGreaterOrEqualsTo(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+		Guard.guardGreaterOrEqualsTo(0, 1);
+		Guard.guardGreaterOrEqualsTo(Long.MAX_VALUE - 1, Long.MAX_VALUE);
 		Guard.guardGreaterOrEqualsTo(0, 0);
 
 		try {
-			Guard.guardGreaterOrEqualsTo(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+			Guard.guardGreaterOrEqualsTo(Long.MAX_VALUE, Long.MAX_VALUE - 1);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -931,9 +931,9 @@ public class TestGuard {
 
 	@Test
 	public void testGuardLessThanLong() throws Exception {
-		Guard.guardLessThan(0, 1);
-		Guard.guardLessThan(Long.MAX_VALUE - 1, Long.MAX_VALUE);
-		Guard.guardLessThan(Long.MIN_VALUE, Long.MIN_VALUE + 1);
+		Guard.guardLessThan(1, 0);
+		Guard.guardLessThan(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+		Guard.guardLessThan(Long.MIN_VALUE + 1, Long.MIN_VALUE);
 
 		try {
 			Guard.guardLessThan(0, 0);
@@ -944,7 +944,7 @@ public class TestGuard {
 		}
 
 		try {
-			Guard.guardLessThan(Long.MAX_VALUE, Long.MAX_VALUE - 1);
+			Guard.guardLessThan(Long.MAX_VALUE - 1, Long.MAX_VALUE);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
@@ -954,185 +954,12 @@ public class TestGuard {
 
 	@Test
 	public void testGuardLessOrEqualsToLong() throws Exception {
-		Guard.guardLessOrEqualsTo(0, 1);
-		Guard.guardLessOrEqualsTo(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+		Guard.guardLessOrEqualsTo(1, 0);
+		Guard.guardLessOrEqualsTo(Long.MAX_VALUE, Long.MAX_VALUE - 1);
 		Guard.guardLessOrEqualsTo(0, 0);
 
 		try {
-			Guard.guardLessOrEqualsTo(Long.MAX_VALUE, Long.MAX_VALUE - 1);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is greater than expected value");
-		}
-	}
-
-	// *******************************************************************************************
-	// Short
-	// *******************************************************************************************
-
-	@Test
-	public void testIsEqualsShort() {
-
-		assertTrue(Guard.isEquals(Short.MAX_VALUE, Short.MAX_VALUE));
-		assertTrue(Guard.isEquals(Short.MIN_VALUE, Short.MIN_VALUE));
-		assertTrue(Guard.isEquals(0, 0));
-		assertTrue(Guard.isEquals(2147483647 * 2, 2147483647 * 2));
-
-		assertFalse(Guard.isEquals(Short.MAX_VALUE, Short.MIN_VALUE));
-		assertFalse(Guard.isEquals(Short.MAX_VALUE, Short.MAX_VALUE - 1));
-		assertFalse(Guard.isEquals(Short.MAX_VALUE, 0));
-
-	}
-
-	@Test
-	public void testGuardEqualsShort() throws Exception {
-
-		Guard.guardEquals(Short.MAX_VALUE, Short.MAX_VALUE);
-		Guard.guardEquals(Short.MIN_VALUE, Short.MIN_VALUE);
-		Guard.guardEquals(0, 0);
-		Guard.guardEquals(Short.MAX_VALUE, Short.MAX_VALUE - 2, 2);
-		Guard.guardEquals(0, 2, 2);
-		Guard.guardEquals(Short.MIN_VALUE, Short.MIN_VALUE + 2, 2);
-		Guard.guardEquals(Short.MIN_VALUE, 0 - 1, Short.MAX_VALUE);
-		Guard.guardEquals(Short.MAX_VALUE, 0 + 1, Short.MAX_VALUE);
-
-		try {
-			Guard.guardEquals(Short.MAX_VALUE, Short.MIN_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "values are not equal");
-		}
-
-		try {
-			Guard.guardEquals(0, Short.MAX_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "values are not equal");
-		}
-
-		try {
-			Guard.guardEquals(0, 5, 2);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "values are not equal");
-		}
-
-		try {
-			Guard.guardEquals(Short.MAX_VALUE, Short.MAX_VALUE - 5, 2);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "values are not equal");
-		}
-
-	}
-
-	@Test
-	public void testGuardNotEqualsShort() throws Exception {
-
-		try {
-			Guard.guardNotEquals(Short.MAX_VALUE, Short.MAX_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "values are equal");
-		}
-
-		try {
-			Guard.guardNotEquals(Short.MIN_VALUE, Short.MIN_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "values are equal");
-		}
-
-		Guard.guardNotEquals(Short.MAX_VALUE, Short.MIN_VALUE);
-		Guard.guardNotEquals(0, Short.MAX_VALUE);
-		Guard.guardNotEquals(0, 1);
-		Guard.guardNotEquals(-1, 1);
-	}
-
-	@Test
-	public void testGuardGreaterThanShort() throws Exception {
-		Guard.guardGreaterThan(1, 0);
-		Guard.guardGreaterThan(Short.MAX_VALUE, Short.MAX_VALUE - 1);
-		Guard.guardGreaterThan(Short.MAX_VALUE, Short.MIN_VALUE);
-
-		try {
-			Guard.guardGreaterThan(0, 0);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is not greater than expected value");
-		}
-
-		try {
-			Guard.guardGreaterThan(Short.MAX_VALUE - 1, Short.MAX_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is not greater than expected value");
-		}
-
-		try {
-			Guard.guardGreaterThan(Short.MIN_VALUE, Short.MAX_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is not greater than expected value");
-		}
-	}
-
-	@Test
-	public void testGuardGreaterOrEqualsToShort() throws Exception {
-		Guard.guardGreaterOrEqualsTo(1, 0);
-		Guard.guardGreaterOrEqualsTo(Short.MAX_VALUE, Short.MAX_VALUE - 1);
-		Guard.guardGreaterOrEqualsTo(0, 0);
-
-		try {
-			Guard.guardGreaterOrEqualsTo(Short.MAX_VALUE - 1, Short.MAX_VALUE);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is less than expected value");
-		}
-	}
-
-	@Test
-	public void testGuardLessThanShort() throws Exception {
-		Guard.guardLessThan(0, 1);
-		Guard.guardLessThan(Short.MAX_VALUE - 1, Short.MAX_VALUE);
-		Guard.guardLessThan(Short.MIN_VALUE, Short.MIN_VALUE + 1);
-
-		try {
-			Guard.guardLessThan(0, 0);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is not less than expected value");
-		}
-
-		try {
-			Guard.guardLessThan(Short.MAX_VALUE, Short.MAX_VALUE - 1);
-
-			Guard.guardWrongFlow("Did not expect to reach here");
-		} catch (Exception e) {
-			Guard.guardEquals(e, "actual value is not less than expected value");
-		}
-	}
-
-	@Test
-	public void testGuardLessOrEqualsToShort() throws Exception {
-		Guard.guardLessOrEqualsTo(0, 1);
-		Guard.guardLessOrEqualsTo(Short.MAX_VALUE - 1, Short.MAX_VALUE);
-		Guard.guardLessOrEqualsTo(0, 0);
-
-		try {
-			Guard.guardLessOrEqualsTo(Short.MAX_VALUE, Short.MAX_VALUE - 1);
+			Guard.guardLessOrEqualsTo(Long.MAX_VALUE - 1, Long.MAX_VALUE);
 
 			Guard.guardWrongFlow("Did not expect to reach here");
 		} catch (Exception e) {
