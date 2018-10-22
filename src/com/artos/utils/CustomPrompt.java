@@ -321,7 +321,7 @@ public class CustomPrompt implements ItemListener {
 		if (null != str3) {
 			jf.getContentPane().add(infoPanel3);
 		}
-		if (null == str4) {
+		if (null != str4) {
 			jf.getContentPane().add(infoPanel4);
 		}
 		if (null != str5) {
