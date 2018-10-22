@@ -129,6 +129,16 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
+	public void childTestExecutionStarted(TestObjectWrapper t, String paramInfo) {
+		logger.trace("\n---------------- Child Test Starts -------------------");
+	}
+
+	@Override
+	public void childTestExecutionFinished(TestObjectWrapper t) {
+		logger.trace("\n---------------- Child Test Finish -------------------");
+	}
+
+	@Override
 	public void afterTestMethodStarted(TestObjectWrapper t) {
 		logger.trace("\n---------------- AfterTest Method Execution Started -------------------");
 	}
