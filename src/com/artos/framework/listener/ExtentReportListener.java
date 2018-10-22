@@ -36,7 +36,8 @@ public class ExtentReportListener implements TestProgress {
 	TestContext context;
 	LogWrapper logger;
 	ExtentReports extent = null;
-	ExtentTest test;
+	ExtentTest testParent;
+	ExtentTest testChild;
 
 	public ExtentReportListener(TestContext context) {
 		this.context = context;
@@ -57,19 +58,33 @@ public class ExtentReportListener implements TestProgress {
 
 	@Override
 	public void testExecutionStarted(TestObjectWrapper t) {
-		test = extent.startTest(t.getTestClassObject().getName(), t.getTestPlanDescription());
-		test.assignAuthor(t.getTestPlanPreparedBy());
+		testParent = extent.startTest(t.getTestClassObject().getName(), t.getTestPlanDescription());
+		testParent.assignAuthor(t.getTestPlanPreparedBy());
+	}
+
+	@Override
+	public void childTestExecutionStarted(TestObjectWrapper t, String paramInfo) {
+		testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
+		testChild.assignAuthor(t.getTestPlanPreparedBy());
 	}
 
 	@Override
 	public void testExecutionFinished(TestObjectWrapper t) {
-		extent.endTest(test);
-		test = null;
+		extent.endTest(testParent);
+		testParent = null;
+	}
+
+	@Override
+	public void childTestExecutionFinished(TestObjectWrapper t) {
+		// add child to parent
+		testParent.appendChild(testChild);
+		extent.endTest(testChild);
+		testChild = null;
 	}
 
 	@Override
 	public void testExecutionSkipped(TestObjectWrapper t) {
-		test.log(LogStatus.SKIP, "Skipped Test Case: " + t.getTestClassObject().getName());
+		testParent.log(LogStatus.SKIP, "Skipped Test Case: " + t.getTestClassObject().getName());
 	}
 
 	@Override
@@ -77,30 +92,50 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	public void testStatusUpdate(TestStatus testStatus, String description) {
-		if (null != test) {
+		if (null != testChild) {
 			if (TestStatus.FAIL == testStatus) {
-				test.log(LogStatus.FAIL, description);
+				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
-				test.log(LogStatus.PASS, description);
+				testChild.log(LogStatus.PASS, description);
 			} else if (TestStatus.SKIP == testStatus) {
-				test.log(LogStatus.SKIP, description);
+				testChild.log(LogStatus.SKIP, description);
 			} else if (TestStatus.PASS == testStatus) {
-				test.log(LogStatus.PASS, description);
+				testChild.log(LogStatus.PASS, description);
+			}
+		} else if (null != testParent) {
+			if (TestStatus.FAIL == testStatus) {
+				testParent.log(LogStatus.FAIL, description);
+			} else if (TestStatus.KTF == testStatus) {
+				testParent.log(LogStatus.PASS, description);
+			} else if (TestStatus.SKIP == testStatus) {
+				testParent.log(LogStatus.SKIP, description);
+			} else if (TestStatus.PASS == testStatus) {
+				testParent.log(LogStatus.PASS, description);
 			}
 		}
 	}
 
 	@Override
 	public void testResult(TestStatus testStatus, String description) {
-		if (null != test) {
+		if (null != testChild) {
 			if (TestStatus.FAIL == testStatus) {
-				test.log(LogStatus.FAIL, description);
+				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
-				test.log(LogStatus.PASS, description);
+				testChild.log(LogStatus.PASS, description);
 			} else if (TestStatus.SKIP == testStatus) {
-				test.log(LogStatus.SKIP, description);
+				testChild.log(LogStatus.SKIP, description);
 			} else if (TestStatus.PASS == testStatus) {
-				test.log(LogStatus.PASS, description);
+				testChild.log(LogStatus.PASS, description);
+			}
+		} else if (null != testParent) {
+			if (TestStatus.FAIL == testStatus) {
+				testParent.log(LogStatus.FAIL, description);
+			} else if (TestStatus.KTF == testStatus) {
+				testParent.log(LogStatus.PASS, description);
+			} else if (TestStatus.SKIP == testStatus) {
+				testParent.log(LogStatus.SKIP, description);
+			} else if (TestStatus.PASS == testStatus) {
+				testParent.log(LogStatus.PASS, description);
 			}
 		}
 	}
@@ -168,12 +203,12 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testSuiteSummaryPrinting(String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void testSuiteFailureHighlight(String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
