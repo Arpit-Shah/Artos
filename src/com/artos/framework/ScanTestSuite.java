@@ -24,6 +24,7 @@ package com.artos.framework;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public class ScanTestSuite {
 	Reflections reflection;
 	List<TestObjectWrapper> testObjWrapperList_All = new ArrayList<>();
 	List<TestObjectWrapper> testObjWrapperList_WithoutSkipped = new ArrayList<>();
-	List<String> FQCN = new ArrayList<>();
+	List<String> FQCNList = new ArrayList<>();
 	Map<String, TestDataProvider> dataProviderMap = new HashMap<>();
 
 	/**
@@ -101,10 +102,10 @@ public class ScanTestSuite {
 				ExpectedException expectedException = cl.getAnnotation(ExpectedException.class);
 
 				// When test case is in the root directory package will be null
-				if (null == cl.getPackage() && !FQCN.contains("")) {
-					FQCN.add("");
-				} else if (null != cl.getPackage() && !FQCN.contains(cl.getPackage().getName())) {
-					FQCN.add(cl.getPackage().getName());
+				if (null == cl.getPackage() && !FQCNList.contains("")) {
+					FQCNList.add("");
+				} else if (null != cl.getPackage() && !FQCNList.contains(cl.getPackage().getName())) {
+					FQCNList.add(cl.getPackage().getName());
 				}
 
 				TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.dataprovider());
@@ -218,18 +219,13 @@ public class ScanTestSuite {
 	 */
 	private List<TestObjectWrapper> bubble_srt(List<TestObjectWrapper> testObjWrapperList) {
 
-		TestObjectWrapper[] array = testObjWrapperList.parallelStream().toArray(TestObjectWrapper[]::new);
-		int n = array.length;
-		int k;
-		for (int m = n; m >= 0; m--) {
-			for (int i = 0; i < n - 1; i++) {
-				k = i + 1;
-				if (array[i].getTestsequence() > array[k].getTestsequence()) {
-					swapNumbers(i, k, array);
-				}
-			}
-		}
-		return Arrays.asList(array);
+		/*
+		 * TestObjectWrapper[] array = testObjWrapperList.parallelStream().toArray(TestObjectWrapper[]::new); int n = array.length; int k; for (int m
+		 * = n; m >= 0; m--) { for (int i = 0; i < n - 1; i++) { k = i + 1; if (array[i].getTestsequence() > array[k].getTestsequence()) {
+		 * swapNumbers(i, k, array); } } } return Arrays.asList(array);
+		 */
+
+		return testObjWrapperList.parallelStream().sorted(Comparator.comparing(t -> t.getTestsequence())).collect(Collectors.toList());
 	}
 
 	/**
@@ -293,13 +289,14 @@ public class ScanTestSuite {
 	private List<TestObjectWrapper> sortWithinPackage(List<TestObjectWrapper> listToBeSorted) {
 		List<TestObjectWrapper> sortedList = new ArrayList<>();
 
-		// Create list per package FQCN and add relevant test cases into those list
-		List<List<TestObjectWrapper>> listOfTestsList = getListOfTestsListPerFQCN(listToBeSorted, FQCN);
+		// sort FQCNList by Name
+		FQCNList = FQCNList.parallelStream().sorted(Comparator.comparing(s -> s.toString())).collect(Collectors.toList());
+		// Generate seperateList per package using FQCN Info and add those lists to listOfTestsList
+		List<List<TestObjectWrapper>> listOfTestsList = getListOfTestsListPerFQCN(listToBeSorted, FQCNList);
 
-		// Sort list per packages so test cases are sorted within package scope
+		// sort each list individually so test cases from same package remains together
 		for (List<TestObjectWrapper> testObjList : listOfTestsList) {
-
-			// Once sorted, All All of the sorted test cases to master list
+			// Once sorted, Add All of the sorted test cases to master list
 			sortedList.addAll(bubble_srt(testObjList));
 		}
 
