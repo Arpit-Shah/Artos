@@ -24,6 +24,8 @@ package com.artos.framework;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.artos.framework.Enums.TestStatus;
+
 /**
  * This class wraps test object with other necessary information which is helpful during test execution
  * 
@@ -31,6 +33,14 @@ import java.util.List;
  *
  */
 public class TestObjectWrapper {
+
+	// TestTracking variables
+	long testStartTime;
+	long testFinishTime;
+	/*
+	 * This will be used to store all parameterised tests status. If test case is not parameterised test case then only one status will be stored
+	 */
+	List<TestStatus> testOutcomeList = new ArrayList<>();
 
 	// TestCase
 	Class<?> testClassObject = null;
@@ -208,6 +218,30 @@ public class TestObjectWrapper {
 
 	public void setDataProviderName(String dataProviderName) {
 		this.dataProviderName = dataProviderName;
+	}
+
+	public long getTestStartTime() {
+		return testStartTime;
+	}
+
+	public void setTestStartTime(long testStartTime) {
+		this.testStartTime = testStartTime;
+	}
+
+	public long getTestFinishTime() {
+		return testFinishTime;
+	}
+
+	public void setTestFinishTime(long testFinishTime) {
+		this.testFinishTime = testFinishTime;
+	}
+
+	public List<TestStatus> getTestOutcomeList() {
+		return testOutcomeList;
+	}
+
+	public void setTestOutcomeList(List<TestStatus> testOutcomeList) {
+		this.testOutcomeList = testOutcomeList;
 	}
 
 }
