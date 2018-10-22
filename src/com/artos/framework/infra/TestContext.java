@@ -53,10 +53,6 @@ public class TestContext {
 	private long currentFailCount = 0;
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
-//	private List<String> passTestList = new ArrayList<>();
-//	private List<String> failedTestList = new ArrayList<>();
-//	private List<String> skippedTestList = new ArrayList<>();
-//	private List<String> ktfTestList = new ArrayList<>();
 	private TestSuite testSuite = null;
 	private int totalLoopCount = 1;
 	private Class<? extends PrePostRunnable> prePostRunnableObj = null;
@@ -151,16 +147,12 @@ public class TestContext {
 		// Store count details per status
 		if (getCurrentTestStatus() == TestStatus.PASS) {
 			setCurrentPassCount(getCurrentPassCount() + 1);
-//			passTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.FAIL) {
 			setCurrentFailCount(getCurrentFailCount() + 1);
-//			failedTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
 			setCurrentSkipCount(getCurrentSkipCount() + 1);
-//			skippedTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.KTF) {
 			setCurrentKTFCount(getCurrentKTFCount() + 1);
-//			ktfTestList.add(strTestFQCN);
 		}
 
 		long totalTestTime = t.getTestFinishTime() - t.getTestStartTime();
@@ -171,6 +163,7 @@ public class TestContext {
 		appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
+		// Update test object with final outcome, if parameterized test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
 		// reset status for next test
@@ -322,21 +315,6 @@ public class TestContext {
 	// *******************************************************************
 	// Getter and Setters
 	// *******************************************************************
-//	public List<String> getPassTestList() {
-//		return passTestList;
-//	}
-//
-//	public List<String> getFailedTestList() {
-//		return failedTestList;
-//	}
-//
-//	public List<String> getSkippedTestList() {
-//		return skippedTestList;
-//	}
-//
-//	public List<String> getKtfTestList() {
-//		return ktfTestList;
-//	}
 
 	public TestSuite getTestSuite() {
 		return testSuite;
