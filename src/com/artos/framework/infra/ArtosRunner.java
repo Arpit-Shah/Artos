@@ -31,7 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.artos.exception.InvalidDataException;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.GUITestSelector;
@@ -140,8 +139,18 @@ public class ArtosRunner {
 
 		// Print Test results
 		notifyTestSuiteSummaryPrinting("");
-		logger.info("PASS:" + context.getCurrentPassCount() + " FAIL:" + context.getCurrentFailCount() + " SKIP:" + context.getCurrentSkipCount()
-				+ " KTF:" + context.getCurrentKTFCount() + " EXECUTED:" + context.getTotalTestCount() + " TOTAL:" + transformedTestList.size());
+
+		// @formatter:off
+		logger.info(
+				"PASS:" + context.getCurrentPassCount() + 
+				" FAIL:" + context.getCurrentFailCount() + 
+				" SKIP:" + context.getCurrentSkipCount() + 
+				" KTF:" + context.getCurrentKTFCount() + 
+				" EXECUTED:" + context.getTotalTestCount() 
+				// Total does not make sense because parameterized test cases are considered as a test case
+				/*+ " TOTAL:" + transformedTestList.size()*/
+				);
+		// @formatter:on
 
 		// Print Test suite Start and Finish time
 		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
@@ -161,9 +170,26 @@ public class ArtosRunner {
 			System.err.println("********************************************************");
 			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
 			System.err.println("\n********************************************************");
-			for (int i = 0; i < context.getFailedTestList().size(); i++) {
-				System.err.println(String.format("%-4s%s", (i + 1), context.getFailedTestList().get(i)).replace(" ", "."));
+
+			int errorcount = 1;
+			for (TestObjectWrapper t : transformedTestList) {
+
+				// If test case is without date provider
+				if ("".equals(t.getDataProviderName()) && t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
+					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
+					errorcount++;
+
+					// If test case is with data provider
+				} else if (!"".equals(t.getDataProviderName())) {
+					for (int j = 0; j < t.getTestOutcomeList().size(); j++) {
+						if (t.getTestOutcomeList().get(j) == TestStatus.FAIL) {
+							System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()) + " : DataProvider[" + j + "]");
+							errorcount = errorcount++;
+						}
+					}
+				}
 			}
+
 			System.err.println("********************************************************\n********************************************************");
 		}
 
@@ -207,7 +233,12 @@ public class ArtosRunner {
 					notifyBeforeTestMethodFinished(t);
 
 					notifyTestExecutionStarted(t);
-					runIndividualTest(t);
+					// if data provider name is not specified then only execute test once
+					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
+						runIndividualTest(t, null, null);
+					} else {
+						runParameterizedTest(t);
+					}
 					notifyTestExecutionFinished(t);
 
 					// Run Post Method prior to any test Execution
@@ -226,7 +257,6 @@ public class ArtosRunner {
 
 		} catch (Throwable e) {
 			// Handle if any exception in pre-post runnable
-			e.printStackTrace();
 			UtilsFramework.writePrintStackTrace(context, e);
 			notifyTestSuiteException(e.getMessage());
 		}
@@ -244,63 +274,16 @@ public class ArtosRunner {
 	 * 
 	 * @param t TestCase {@code TestObjectWrapper}
 	 */
-	private void runIndividualTest(TestObjectWrapper t) {
-		long testStartTime = System.currentTimeMillis();
+	private void runIndividualTest(TestObjectWrapper t, Object... arg) {
+		t.setTestStartTime(System.currentTimeMillis());
 		try {
 			// Set Default Known to fail information
 			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
 
 			// --------------------------------------------------------------------------------------------
-			// if data provider name is not specified then only execute test once
-			if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
-
-				// get test objects new instance and cast it to TestExecutable type
-				// data provider argument should be set to null
-				((TestExecutable) t.getTestClassObject().newInstance()).execute(context, null, null);
-
-			} else {
-				// get dataProvider specified for this test case (dataprovider name is always stored in uppercase)
-				TestDataProvider dataProviderObj = context.getDataProviderMap().get(t.getDataProviderName().toUpperCase());
-
-				// If specified data provider is not found in the list then throw exception (Remember : Data provider name is case insensitive)
-				if (null == dataProviderObj) {
-					throw new InvalidObjectException("DataProvider is not found : " + (t.getDataProviderName()));
-				}
-
-				Object[][] data;
-				if (dataProviderObj.isStaticMethod()) {
-					// If data provider method is static then execute it to get data
-					data = (Object[][]) dataProviderObj.getMethod().invoke(null, new Object[] {});
-				} else {
-					// If data provider method is non-static then create instace of the class and then execute method
-					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), new Object[] {});
-				}
-
-				// If data provider method returns null then fail the test by throwing an exception
-				if (null == data) {
-					throw new InvalidDataException("DataProvider returned null : " + (t.getDataProviderName()));
-				}
-
-				// If data provider returns data then execute same test case multiple time by providing data one by one
-				for (int i = 0; i < data.length; i++) {
-
-					// Every execution print dataProvider count, so user know that same test case is running multiple time
-					context.getLogger().info("\nDataProvider:[" + dataProviderObj.getDataProviderName() + "][" + i + "]");
-
-					/*
-					 * @formatter:off
-					 * If 2D array then populate both field of the execute method. 
-					 * If 1D array then populate first field with value and second field with null. 
-					 * If 2D/1D array is empty then do not execute test case. silently move on. 
-					 * @formatter:on
-					 */
-					if (data[i].length == 2) {
-						((TestExecutable) t.getTestClassObject().newInstance()).execute(context, data[i][0], data[i][1]);
-					} else if (data[i].length == 1) {
-						((TestExecutable) t.getTestClassObject().newInstance()).execute(context, data[i][0], null);
-					}
-				}
-			}
+			// get test objects new instance and cast it to TestExecutable type
+			// data provider argument should be set to null
+			((TestExecutable) t.getTestClassObject().newInstance()).execute(context, arg[0], arg[1]);
 			// --------------------------------------------------------------------------------------------
 
 			postTestValidation(t);
@@ -308,8 +291,83 @@ public class ArtosRunner {
 			processTestException(t, e);
 			notifyTestException(e.getMessage());
 		} finally {
-			long testFinishTime = System.currentTimeMillis();
-			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, testFinishTime);
+			t.setTestFinishTime(System.currentTimeMillis());
+			context.generateTestSummary(t);
+		}
+	}
+
+	/**
+	 * This method executes the test case and handles all the exception and set the test status correctly
+	 * 
+	 * @param t TestCase {@code TestObjectWrapper}
+	 */
+	private void runParameterizedTest(TestObjectWrapper t) {
+		Object[][] data;
+		TestDataProvider dataProviderObj;
+
+		try {
+			// get dataProvider specified for this test case (data provider name is always stored in upper case)
+			dataProviderObj = context.getDataProviderMap().get(t.getDataProviderName().toUpperCase());
+
+			// If specified data provider is not found in the list then throw exception (Remember : Data provider name is case in-sensitive)
+			if (null == dataProviderObj) {
+				throw new InvalidObjectException("DataProvider method is not found or method is not public : " + (t.getDataProviderName()));
+			}
+
+			if (dataProviderObj.isStaticMethod()) {
+				// If data provider method is static then invoke method to get data
+				// Execute method with context as an argument so user can make use of information from context
+				data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
+			} else {
+				// If data provider method is non-static then create instance of the class and then invoke the method
+				// Execute method with context as an argument so user can make use of information from context
+				data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
+			}
+
+			// If data provider method returns null then fail the test by throwing an exception
+			if (null == data) {
+				throw new NullPointerException("DataProvider : " + (t.getDataProviderName()));
+			}
+
+			// If data provider returns data then execute same test case multiple time by providing data one by one
+			for (int i = 0; i < data.length; i++) {
+				String userInfo = "DataProvider(" + i + ")  : ";
+				if (data[i].length == 2) {
+					String firstType = data[i][0].getClass().getName();
+					String secondType = data[i][1].getClass().getName();
+					userInfo += "[" + firstType.substring(firstType.lastIndexOf(".") + 1) + "]["
+							+ secondType.substring(secondType.lastIndexOf(".") + 1) + "]";
+				} else if (data[i].length == 1) {
+					String firstType = data[i][0].getClass().getName();
+					userInfo += "[" + firstType.substring(firstType.lastIndexOf(".") + 1) + "][]";
+				}
+
+				notifyChildTestExecutionStarted(t, userInfo);
+
+				// Every execution print dataProvider count, so user know that same test case is running multiple time
+				context.getLogger().info(userInfo);
+
+			// @formatter:off
+			/* 
+			* If 2D array then populate both field of the execute method. 
+			* If 1D array then populate first field with value and second field with null. 
+			* If 2D/1D array is empty then do not execute test case. silently move on. 
+			*/
+			// @formatter:on
+				if (data[i].length == 2) {
+					runIndividualTest(t, data[i][0], data[i][1]);
+				} else if (data[i].length == 1) {
+					runIndividualTest(t, data[i][0], null);
+				} else {
+					// do not execute because array is empty
+				}
+
+				notifyChildTestExecutionFinished(t);
+			}
+		} catch (Exception e) {
+			// Handle if any exception
+			UtilsFramework.writePrintStackTrace(context, e);
+			notifyTestSuiteException(e.getMessage());
 		}
 	}
 
@@ -512,6 +570,18 @@ public class ArtosRunner {
 		}
 	}
 
+	void notifyChildTestExecutionStarted(TestObjectWrapper t, String userInfo) {
+		for (TestProgress listener : listenerList) {
+			listener.childTestExecutionStarted(t, userInfo);
+		}
+	}
+
+	void notifyChildTestExecutionFinished(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.childTestExecutionFinished(t);
+		}
+	}
+
 	void notifyTestExecutionSkipped(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
 			listener.testExecutionSkipped(t);
@@ -711,7 +781,7 @@ class runTestInParallel implements Runnable {
 	}
 
 	private void runIndividualTest(TestObjectWrapper t) {
-		long testStartTime = System.currentTimeMillis();
+		t.setTestStartTime(System.currentTimeMillis());
 		try {
 			// Set Default Known to fail information
 			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
@@ -728,8 +798,8 @@ class runTestInParallel implements Runnable {
 			context.setTestStatus(TestStatus.FAIL, ex.getMessage());
 			UtilsFramework.writePrintStackTrace(context, ex);
 		} finally {
-			long testFinishTime = System.currentTimeMillis();
-			context.generateTestSummary(t.getTestClassObject().getName(), testStartTime, testFinishTime);
+			t.setTestFinishTime(System.currentTimeMillis());
+			context.generateTestSummary(t);
 		}
 	}
 }
