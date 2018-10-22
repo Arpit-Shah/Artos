@@ -32,6 +32,7 @@ import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
 import com.artos.framework.TestDataProvider;
+import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestProgress;
@@ -52,10 +53,10 @@ public class TestContext {
 	private long currentFailCount = 0;
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
-	private List<String> passTestList = new ArrayList<>();
-	private List<String> failedTestList = new ArrayList<>();
-	private List<String> skippedTestList = new ArrayList<>();
-	private List<String> ktfTestList = new ArrayList<>();
+//	private List<String> passTestList = new ArrayList<>();
+//	private List<String> failedTestList = new ArrayList<>();
+//	private List<String> skippedTestList = new ArrayList<>();
+//	private List<String> ktfTestList = new ArrayList<>();
 	private TestSuite testSuite = null;
 	private int totalLoopCount = 1;
 	private Class<? extends PrePostRunnable> prePostRunnableObj = null;
@@ -125,11 +126,12 @@ public class TestContext {
 	/**
 	 * Concludes final test result and generates summary report. This also includes bugTicketNumber if provided
 	 * 
-	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
-	 * @param testStartTime Test start Time in milliseconds
-	 * @param testFinishTime Test finish time in milliseconds
+	 * @param t {@link TestObjectWrapper}
 	 */
-	public void generateTestSummary(String strTestFQCN, long testStartTime, long testFinishTime) {
+	public void generateTestSummary(TestObjectWrapper t) {
+
+		String strTestFQCN = t.getTestClassObject().getName();
+
 		// Test is marked as known to fail and for some reason it pass then
 		// consider that test Fail so user can look in to it
 		if (isKnownToFail()) {
@@ -149,19 +151,19 @@ public class TestContext {
 		// Store count details per status
 		if (getCurrentTestStatus() == TestStatus.PASS) {
 			setCurrentPassCount(getCurrentPassCount() + 1);
-			passTestList.add(strTestFQCN);
+//			passTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.FAIL) {
 			setCurrentFailCount(getCurrentFailCount() + 1);
-			failedTestList.add(strTestFQCN);
+//			failedTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
 			setCurrentSkipCount(getCurrentSkipCount() + 1);
-			skippedTestList.add(strTestFQCN);
+//			skippedTestList.add(strTestFQCN);
 		} else if (getCurrentTestStatus() == TestStatus.KTF) {
 			setCurrentKTFCount(getCurrentKTFCount() + 1);
-			ktfTestList.add(strTestFQCN);
+//			ktfTestList.add(strTestFQCN);
 		}
 
-		long totalTestTime = testFinishTime - testStartTime;
+		long totalTestTime = t.getTestFinishTime() - t.getTestStartTime();
 		// Finalise and add test result in log file
 		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name());
 
@@ -169,6 +171,7 @@ public class TestContext {
 		appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
+		t.getTestOutcomeList().add(getCurrentTestStatus());
 
 		// reset status for next test
 		resetTestStatus();
@@ -319,21 +322,21 @@ public class TestContext {
 	// *******************************************************************
 	// Getter and Setters
 	// *******************************************************************
-	public List<String> getPassTestList() {
-		return passTestList;
-	}
-
-	public List<String> getFailedTestList() {
-		return failedTestList;
-	}
-
-	public List<String> getSkippedTestList() {
-		return skippedTestList;
-	}
-
-	public List<String> getKtfTestList() {
-		return ktfTestList;
-	}
+//	public List<String> getPassTestList() {
+//		return passTestList;
+//	}
+//
+//	public List<String> getFailedTestList() {
+//		return failedTestList;
+//	}
+//
+//	public List<String> getSkippedTestList() {
+//		return skippedTestList;
+//	}
+//
+//	public List<String> getKtfTestList() {
+//		return ktfTestList;
+//	}
 
 	public TestSuite getTestSuite() {
 		return testSuite;
