@@ -85,12 +85,15 @@ public class GUITestSelector {
 
 		// If more than one test cases to select then only show GUI otherwise
 		// just run the suit
-		String packageName = "Default";
+
 		if (testList.size() > 1) {
+			String packageName = "ProjectRoot";
 			// get the package name from testList
-			String fullPackageName = testList.get(0).getTestClassObject().getPackage().toString();
-			int last = fullPackageName.lastIndexOf(".") + 1;
-			packageName = fullPackageName.substring(last);
+			if (null != testList.get(0).getTestClassObject().getPackage()) {
+				String fullPackageName = testList.get(0).getTestClassObject().getPackage().toString();
+				int last = fullPackageName.lastIndexOf(".") + 1;
+				packageName = fullPackageName.substring(last);
+			}
 
 			initMainFrame(packageName);
 			initMainViewComponents();
@@ -130,7 +133,7 @@ public class GUITestSelector {
 	private void initMainFrame(String packageName) {
 		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		// This is to ensure that thread lock is released and framework naturally exits
 		container.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {

@@ -55,18 +55,12 @@ public class TestScriptParser {
 	/**
 	 * Reads test script and provides list of test cases name back to user.
 	 * 
-	 * @param testScriptFile
-	 *            testScript formatted with XML
+	 * @param testScriptFile testScript formatted with XML
 	 * @return list of test cases name
-	 * @throws ParserConfigurationException
-	 *             if a DocumentBuildercannot be created which satisfies the
-	 *             configuration requested.
-	 * @throws IOException
-	 *             If any IO errors occur.
-	 * @throws SAXException
-	 *             If any parse errors occur.
-	 * @throws InvalidDataException
-	 *             If user provides invalid data
+	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
+	 * @throws IOException If any IO errors occur.
+	 * @throws SAXException If any parse errors occur.
+	 * @throws InvalidDataException If user provides invalid data
 	 */
 	public List<TestSuite> readTestScript(File testScriptFile) throws ParserConfigurationException, SAXException, IOException, InvalidDataException {
 		try {
@@ -86,10 +80,8 @@ public class TestScriptParser {
 	/**
 	 * Reads logger info from config file
 	 * 
-	 * @param doc
-	 *            Document object of XML file
-	 * @throws InvalidDataException
-	 *             thrown when invalid data is provided by user
+	 * @param doc Document object of XML file
+	 * @throws InvalidDataException thrown when invalid data is provided by user
 	 */
 	private List<TestSuite> readTestScript(Document doc) throws InvalidDataException {
 
@@ -231,7 +223,14 @@ public class TestScriptParser {
 			return;
 		}
 
-		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + testList.get(0).getTestClassObject().getPackage().getName() + ".xml");
+		String packageName;
+		// Package will be none if test is in root package
+		if (null == testList.get(0).getTestClassObject().getPackage()) {
+			packageName = "ProjectRoot";
+		} else {
+			packageName = testList.get(0).getTestClassObject().getPackage().getName();
+		}
+		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + packageName + ".xml");
 
 		if (scriptFile.exists() && scriptFile.isFile()) {
 			return;
@@ -254,14 +253,15 @@ public class TestScriptParser {
 		rootElement.appendChild(suite);
 
 		Attr attr = doc.createAttribute("name");
-		attr.setValue(testList.get(0).getTestClassObject().getPackage().getName());
+		attr.setValue(packageName);
 		suite.setAttributeNode(attr);
 
 		Attr attr2 = doc.createAttribute("loopcount");
 		attr2.setValue("1");
 		suite.setAttributeNode(attr2);
-		
-		Comment comment = doc.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\"+testList.get(0).getTestClassObject().getPackage().getName()+".xml\"");
+
+		Comment comment = doc
+				.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\" + packageName + ".xml\"");
 		suite.getParentNode().insertBefore(comment, suite);
 
 		createTestList(testList, doc, suite);
