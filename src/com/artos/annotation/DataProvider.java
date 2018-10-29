@@ -43,7 +43,9 @@ import java.lang.annotation.Target;
 public @interface DataProvider {
 
 	/**
-	 * Data Providers name, case in sensitive.
+	 * Data Providers name, case in-sensitive.
+	 * 
+	 * @return DataProviderName
 	 */
 	String name();
 

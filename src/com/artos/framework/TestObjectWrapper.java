@@ -73,6 +73,7 @@ public class TestObjectWrapper {
 	 * @param cls test class object
 	 * @param skipTest skip property as specified in annotation
 	 * @param testsequence test sequence as specified in annotation
+	 * @param dataProviderName Name of the dataProvider (Upper case)
 	 */
 	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName) {
 		super();
