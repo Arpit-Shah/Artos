@@ -157,7 +157,7 @@ public class TestContext {
 
 		long totalTestTime = t.getTestFinishTime() - t.getTestStartTime();
 		// Finalise and add test result in log file
-		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name());
+		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n");
 
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),

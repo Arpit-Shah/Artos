@@ -165,26 +165,41 @@ public class ArtosRunner {
 				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
 
+		// HighLight Failed Test Cases
+		highlightFailure(transformedTestList);
+
+		// to release a thread lock
+		context.getThreadLatch().countDown();
+	}
+
+	private void highlightFailure(List<TestObjectWrapper> transformedTestList) {
 		notifyTestSuiteFailureHighlight("");
+
 		if (context.getCurrentFailCount() > 0) {
 			System.err.println("********************************************************");
 			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
 			System.err.println("\n********************************************************");
 
-			int errorcount = 1;
+			int errorcount = 0;
 			for (TestObjectWrapper t : transformedTestList) {
+
+				/* If stopOnFail=true then test cases after first failure will not be executed which means TestOutcomeList will be empty */
+				if (t.getTestOutcomeList().isEmpty()) {
+					continue;
+				}
 
 				// If test case is without date provider
 				if ("".equals(t.getDataProviderName()) && t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
-					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
 					errorcount++;
+					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
+					
 
 					// If test case is with data provider
 				} else if (!"".equals(t.getDataProviderName())) {
 					for (int j = 0; j < t.getTestOutcomeList().size(); j++) {
 						if (t.getTestOutcomeList().get(j) == TestStatus.FAIL) {
+							errorcount++;
 							System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()) + " : DataProvider[" + j + "]");
-							errorcount = errorcount++;
 						}
 					}
 				}
@@ -192,9 +207,6 @@ public class ArtosRunner {
 
 			System.err.println("********************************************************\n********************************************************");
 		}
-
-		// to release a thread lock
-		context.getThreadLatch().countDown();
 	}
 
 	private void runSingleThread(List<TestObjectWrapper> testList, TestContext context)
@@ -311,7 +323,7 @@ public class ArtosRunner {
 
 			// If specified data provider is not found in the list then throw exception (Remember : Data provider name is case in-sensitive)
 			if (null == dataProviderObj) {
-				throw new InvalidObjectException("DataProvider method is not found or method is not public : " + (t.getDataProviderName()));
+				throw new InvalidObjectException("DataProvider not found (or private) : " + (t.getDataProviderName()));
 			}
 
 			if (dataProviderObj.isStaticMethod()) {

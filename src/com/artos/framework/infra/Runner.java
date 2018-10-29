@@ -185,7 +185,7 @@ public class Runner {
 
 		// generate logger context
 		LoggerContext loggerContext = createGlobalLoggerContext(testSuiteList);
-
+		
 		// Start Executor service
 		{
 			ExecutorService service = Executors.newFixedThreadPool(threadCount + 20);

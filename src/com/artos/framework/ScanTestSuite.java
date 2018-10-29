@@ -21,7 +21,6 @@
  ******************************************************************************/
 package com.artos.framework;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -77,50 +76,44 @@ public class ScanTestSuite {
 	 */
 	private void scan(String packageName) {
 
+		// Find all annotation
 		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 
-		// for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
-		for (Class<?> cl : reflection.getSubTypesOf(Object.class)) {
+		// GetAllDataProviderMethods => Filter Public methods => Get UpperCase DataProviderName => Store it
+		reflection.getMethodsAnnotatedWith(DataProvider.class).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
+			String dataProviderName = m.getAnnotation(DataProvider.class).name().toUpperCase();
+			TestDataProvider testDataProvider = new TestDataProvider(m, dataProviderName, m.getDeclaringClass(), Modifier.isStatic(m.getModifiers()));
+			dataProviderMap.put(dataProviderName, testDataProvider);
+		});
 
-			// Find all dataProvider methods
-			for (Method method : cl.getMethods()) {
-				if (method.isAnnotationPresent(DataProvider.class) && Modifier.isPublic(method.getModifiers())) {
-					String dataProviderName = method.getAnnotation(DataProvider.class).name();
-					boolean isStaticMethod = false;
-					if (Modifier.isStatic(method.getModifiers())) {
-						isStaticMethod = true;
-					}
-					dataProviderMap.put(dataProviderName.toUpperCase(), new TestDataProvider(method, dataProviderName, cl, isStaticMethod));
-				}
+		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
+
+			TestCase testcase = cl.getAnnotation(TestCase.class);
+			TestPlan testplan = cl.getAnnotation(TestPlan.class);
+			Group group = cl.getAnnotation(Group.class);
+			KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
+			ExpectedException expectedException = cl.getAnnotation(ExpectedException.class);
+
+			// When test case is in the root directory package will be null
+			if (null == cl.getPackage() && !FQCNList.contains("")) {
+				FQCNList.add("");
+			} else if (null != cl.getPackage() && !FQCNList.contains(cl.getPackage().getName())) {
+				FQCNList.add(cl.getPackage().getName());
 			}
 
-			if (cl.isAnnotationPresent(TestCase.class)) {
-				TestCase testcase = cl.getAnnotation(TestCase.class);
-				TestPlan testplan = cl.getAnnotation(TestPlan.class);
-				Group group = cl.getAnnotation(Group.class);
-				KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
-				ExpectedException expectedException = cl.getAnnotation(ExpectedException.class);
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.dataprovider());
 
-				// When test case is in the root directory package will be null
-				if (null == cl.getPackage() && !FQCNList.contains("")) {
-					FQCNList.add("");
-				} else if (null != cl.getPackage() && !FQCNList.contains(cl.getPackage().getName())) {
-					FQCNList.add(cl.getPackage().getName());
-				}
+			// Test Plan is optional attribute so it can be null
+			if (null != testplan) {
+				testobj.setTestPlanDescription(testplan.decription());
+				testobj.setTestPlanPreparedBy(testplan.preparedBy());
+				testobj.setTestPlanPreparationDate(testplan.preparationDate());
+				testobj.setTestreviewedBy(testplan.reviewedBy());
+				testobj.setTestReviewDate(testplan.reviewDate());
+				testobj.setTestPlanBDD(testplan.bdd());
+			}
 
-				TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.dataprovider());
-
-				// Test Plan is optional attribute so it can be null
-				if (null != testplan) {
-					testobj.setTestPlanDescription(testplan.decription());
-					testobj.setTestPlanPreparedBy(testplan.preparedBy());
-					testobj.setTestPlanPreparationDate(testplan.preparationDate());
-					testobj.setTestreviewedBy(testplan.reviewedBy());
-					testobj.setTestReviewDate(testplan.reviewDate());
-					testobj.setTestPlanBDD(testplan.bdd());
-				}
-
-				/*
+			/*
 			 * Store group list for each test cases.
 			 * 
 			 * @formatter:off
@@ -133,23 +126,23 @@ public class ScanTestSuite {
 			 * </PRE>
 			 * @formatter:on
 			 */
-				{
-					if (null != group) {
-						List<String> groupList = Arrays.asList(group.group());
-						testobj.setGroupList(groupList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
-								.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
-					} else {
-						testobj.setGroupList(new ArrayList<String>());
-					}
-
-					// each group must have * by default (which represents all
-					if (!testobj.getGroupList().contains("*")) {
-						testobj.getGroupList().add("*");
-					}
-					// System.out.println(testobj.getGroupList());
+			{
+				if (null != group) {
+					List<String> groupList = Arrays.asList(group.group());
+					testobj.setGroupList(groupList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
+							.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
+				} else {
+					// Create empty arrayList
+					testobj.setGroupList(new ArrayList<String>());
 				}
 
-				/*
+				// each group must have * by default (which represents all
+				if (!testobj.getGroupList().contains("*")) {
+					testobj.getGroupList().add("*");
+				}
+			}
+
+			/*
 			 * Store label list for each test cases.
 			 * 
 			 * @formatter:off
@@ -162,53 +155,31 @@ public class ScanTestSuite {
 			 * </PRE>
 			 * @formatter:on
 			 */
-				{
-					List<String> labelList = Arrays.asList(testcase.label());
-					testobj.setLabelList(labelList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
-							.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
-				}
+			{
+				List<String> labelList = Arrays.asList(testcase.label());
+				testobj.setLabelList(labelList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "")
+						.replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
+			}
 
-				// KTF is optional annotation so it can be null
-				if (null != ktf) {
-					testobj.setKTF(ktf.ktf());
-					testobj.setBugTrackingNumber(ktf.bugref());
-				}
+			// KTF is optional annotation so it can be null
+			if (null != ktf) {
+				testobj.setKTF(ktf.ktf());
+				testobj.setBugTrackingNumber(ktf.bugref());
+			}
 
-				// expectedException is optional annotation
-				if (null != expectedException) {
-					List<Class<? extends Throwable>> expectedExceptionsList = Arrays.asList(expectedException.expectedExceptions());
-					testobj.setExpectedExceptionList(expectedExceptionsList);
-					testobj.setExceptionContains(expectedException.contains());
-					testobj.setEnforceException(expectedException.enforce());
-				}
+			// expectedException is optional annotation
+			if (null != expectedException) {
+				List<Class<? extends Throwable>> expectedExceptionsList = Arrays.asList(expectedException.expectedExceptions());
+				testobj.setExpectedExceptionList(expectedExceptionsList);
+				testobj.setExceptionContains(expectedException.contains());
+				testobj.setEnforceException(expectedException.enforce());
+			}
 
-				testObjWrapperList_All.add(testobj);
-				if (!testcase.skip()) {
-					testObjWrapperList_WithoutSkipped.add(testobj);
-				}
+			testObjWrapperList_All.add(testobj);
+			if (!testcase.skip()) {
+				testObjWrapperList_WithoutSkipped.add(testobj);
 			}
 		}
-
-		// For debugging purpose
-		// @formatter:off
-//		{
-//			for (Method method : reflection.getMethodsAnnotatedWith(BeforeTest.class)) {
-//				System.out.println("@BeforeTest = " + method.getName() + " : " + method.getDeclaringClass().getName());
-//			}
-//			for (Method method : reflection.getMethodsAnnotatedWith(BeforeTestsuite.class)) {
-//				System.out.println("@BeforeTestsuite = " + method.getName() + " : " + method.getDeclaringClass().getName());
-//			}
-//			for (Method method : reflection.getMethodsAnnotatedWith(AfterTest.class)) {
-//				System.out.println("@AfterTest = " + method.getName() + " : " + method.getDeclaringClass().getName());
-//			}
-//			for (Method method : reflection.getMethodsAnnotatedWith(AfterTestsuite.class)) {
-//				System.out.println("@AfterTestsuite = " + method.getName() + " : " + method.getDeclaringClass().getName());
-//			}
-//			for(String p: FQCN){
-//				System.err.println(p);
-//			}
-//		}
-		// @formatter:on
 	}
 
 	/**
@@ -218,28 +189,7 @@ public class ScanTestSuite {
 	 * @return
 	 */
 	private List<TestObjectWrapper> bubble_srt(List<TestObjectWrapper> testObjWrapperList) {
-
-		/*
-		 * TestObjectWrapper[] array = testObjWrapperList.parallelStream().toArray(TestObjectWrapper[]::new); int n = array.length; int k; for (int m
-		 * = n; m >= 0; m--) { for (int i = 0; i < n - 1; i++) { k = i + 1; if (array[i].getTestsequence() > array[k].getTestsequence()) {
-		 * swapNumbers(i, k, array); } } } return Arrays.asList(array);
-		 */
-
 		return testObjWrapperList.parallelStream().sorted(Comparator.comparing(t -> t.getTestsequence())).collect(Collectors.toList());
-	}
-
-	/**
-	 * Swap object in the array
-	 * 
-	 * @param i To
-	 * @param j From
-	 * @param array Array of all scanned test objects
-	 */
-	private void swapNumbers(int i, int j, TestObjectWrapper[] array) {
-		TestObjectWrapper temp;
-		temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
 	}
 
 	/**
@@ -344,7 +294,7 @@ public class ScanTestSuite {
 	/**
 	 * Returns all scanned test cases. If sorted option is selected then test cases within same packages will sorted as per sequence number. If remove
 	 * skipped test case is selected then any test case marked "skip=true" will be omitted from the list.
-	 * 
+	 *
 	 * @param sortBySeqNum Enables sorting of the test cases (Sorting happens within package scope)
 	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
 	 * @return List of {@code TestExecutable}
@@ -382,6 +332,7 @@ public class ScanTestSuite {
 			// create new Instance of test object so user can execute the test
 			testObjWrapperMap.put(t.getTestClassObject().getName(), t);
 		}
+
 		return testObjWrapperMap;
 	}
 

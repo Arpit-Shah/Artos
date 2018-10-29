@@ -26,8 +26,7 @@ import java.io.File;
 import com.artos.framework.xml.FrameworkConfig;
 
 /**
- * This class provides container which holds all static element of test
- * framework
+ * This class provides container which holds all static element of test framework
  */
 public class FWStaticStore {
 
