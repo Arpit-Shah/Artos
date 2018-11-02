@@ -61,9 +61,9 @@ public class TestContext {
 	Map<String, TestDataProvider> dataProviderMap;
 
 	// Test suite start time
-	private long testSuiteStartTime;
+	private long testSuiteStartTime = 0;
 	// Test suite finish time
-	private long testSuiteFinishTime;
+	private long testSuiteFinishTime = 0;
 
 	Map<String, Object> globalObject = new HashMap<String, Object>();
 	Map<String, String> globalString = new HashMap<String, String>();

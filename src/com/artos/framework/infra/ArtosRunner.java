@@ -192,7 +192,6 @@ public class ArtosRunner {
 				if ("".equals(t.getDataProviderName()) && t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
 					errorcount++;
 					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
-					
 
 					// If test case is with data provider
 				} else if (!"".equals(t.getDataProviderName())) {
@@ -282,9 +281,10 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This method executes the test case and handles all the exception and set the test status correctly
+	 * This method executes test case with or without parameter. in case of failure or exception scenario test summary will be generated.
 	 * 
 	 * @param t TestCase {@code TestObjectWrapper}
+	 * @param arg objects which required for test case execution
 	 */
 	private void runIndividualTest(TestObjectWrapper t, Object... arg) {
 		t.setTestStartTime(System.currentTimeMillis());
@@ -309,7 +309,7 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This method executes the test case and handles all the exception and set the test status correctly
+	 * This method executes test case with or without parameter. in case of failure or exception scenario test summary will be generated.
 	 * 
 	 * @param t TestCase {@code TestObjectWrapper}
 	 */
@@ -336,51 +336,61 @@ public class ArtosRunner {
 				data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
 			}
 
-			// If data provider method returns null then fail the test by throwing an exception
-			if (null == data) {
-				throw new NullPointerException("DataProvider : " + (t.getDataProviderName()));
-			}
-
-			// If data provider returns data then execute same test case multiple time by providing data one by one
-			for (int i = 0; i < data.length; i++) {
-				String userInfo = "DataProvider(" + i + ")  : ";
-				if (data[i].length == 2) {
-					String firstType = data[i][0].getClass().getName();
-					String secondType = data[i][1].getClass().getName();
-					userInfo += "[" + firstType.substring(firstType.lastIndexOf(".") + 1) + "]["
-							+ secondType.substring(secondType.lastIndexOf(".") + 1) + "]";
-				} else if (data[i].length == 1) {
-					String firstType = data[i][0].getClass().getName();
-					userInfo += "[" + firstType.substring(firstType.lastIndexOf(".") + 1) + "][]";
+			// If data provider method returns null or empty object then execute test with null parameter
+			if (null == data || data.length == 0) {
+				executeChildTest(t, new String[][] {{}}, 0);
+			} else {
+				// If data provider returns data then execute same test case multiple time by providing data one by one
+				for (int i = 0; i < data.length; i++) {
+					executeChildTest(t, data, i);
 				}
-
-				notifyChildTestExecutionStarted(t, userInfo);
-
-				// Every execution print dataProvider count, so user know that same test case is running multiple time
-				context.getLogger().info(userInfo);
-
-			// @formatter:off
-			/* 
-			* If 2D array then populate both field of the execute method. 
-			* If 1D array then populate first field with value and second field with null. 
-			* If 2D/1D array is empty then do not execute test case. silently move on. 
-			*/
-			// @formatter:on
-				if (data[i].length == 2) {
-					runIndividualTest(t, data[i][0], data[i][1]);
-				} else if (data[i].length == 1) {
-					runIndividualTest(t, data[i][0], null);
-				} else {
-					// do not execute because array is empty
-				}
-
-				notifyChildTestExecutionFinished(t);
 			}
 		} catch (Exception e) {
-			// Handle if any exception
+			// Print Exception
 			UtilsFramework.writePrintStackTrace(context, e);
 			notifyTestSuiteException(e.getMessage());
+
+			// Mark current test as fail due to exception during data provider processing
+			context.setTestStatus(TestStatus.FAIL, e.getMessage());
+			context.generateTestSummary(t);
 		}
+	}
+
+	private void executeChildTest(TestObjectWrapper t, Object[][] data, int i) {
+		String userInfo = "DataProvider(" + i + ")  : ";
+		if (data[i].length == 2) {
+			String firstType = (null == data[i][0] ? null
+					: data[i][0].getClass().getName().substring(data[i][0].getClass().getName().lastIndexOf(".") + 1));
+			String secondType = (null == data[i][1] ? null
+					: data[i][1].getClass().getName().substring(data[i][1].getClass().getName().lastIndexOf(".") + 1));
+			userInfo += "[" + firstType + "][" + secondType + "]";
+		} else if (data[i].length == 1) {
+			String firstType = (null == data[i][0] ? null
+					: data[i][0].getClass().getName().substring(data[i][0].getClass().getName().lastIndexOf(".") + 1));
+			userInfo += "[" + firstType + "][]";
+		}
+
+		notifyChildTestExecutionStarted(t, userInfo);
+
+		// Every execution print dataProvider count, so user know that same test case is running multiple time
+		context.getLogger().info(userInfo);
+
+		// @formatter:off
+		/* 
+		 * If 2D array then populate both field of the execute method. 
+		 * If 1D array then populate first field with value and second field with null. 
+		 * If 2D/1D array is empty then do not execute test case. silently move on. 
+		 */
+		// @formatter:on
+		if (data[i].length == 2) {
+			runIndividualTest(t, data[i][0], data[i][1]);
+		} else if (data[i].length == 1) {
+			runIndividualTest(t, data[i][0], null);
+		} else {
+			runIndividualTest(t, null, null);
+		}
+
+		notifyChildTestExecutionFinished(t);
 	}
 
 	/**
@@ -670,10 +680,9 @@ public class ArtosRunner {
 		if (null != (testSuiteObject = context.getTestSuite())) {
 
 			/**
-			 * Get all test case object using reflection. If user provides XML based test script then skip attribute set in annotation should be
-			 * ignored because XML test script must dictates the behaviour.
+			 * Get all test case object using reflection. Any test cases marked skip will be skipped.
 			 */
-			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
+			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 
 			TestSuite suite = (TestSuite) testSuiteObject;
@@ -703,6 +712,7 @@ public class ArtosRunner {
 					TestObjectWrapper testObjWrapper = testCaseMap.get(t);
 
 					if (null == testObjWrapper) {
+						// This can happen if test is marked skipped or actually not present
 						System.err.println("WARNING (not found): " + t);
 					} else {
 						if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
@@ -715,16 +725,16 @@ public class ArtosRunner {
 		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
 
 			/**
-			 * Get all test case object using reflection. If user provides test list then skip attribute set in annotation should be ignored because
-			 * test list must dictates the behaviour.
+			 * Get all test case object using reflection. If test case marked skip then test case should be skipped from scanning list
 			 */
-			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(false);
+			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 
 			for (TestExecutable t : listOfTestCases) {
 				TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
 
 				if (null == testObjWrapper) {
+					// This can happen if test is marked skipped or actually not present
 					System.err.println(t.getClass().getName() + " not present in given test suite");
 				} else {
 					if (belongsToApprovedGroup(groupList, testObjWrapper.getGroupList())) {
