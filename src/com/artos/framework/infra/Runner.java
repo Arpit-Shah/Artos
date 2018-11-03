@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -268,19 +267,6 @@ public class Runner {
 			// only create Extent config file if not present already
 			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "extent_configuration.xml");
 
-			// TODO This code is temporary and can be removed after couple of releases
-			{
-				final File oldfXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "Extent_Config.xml");
-				if (oldfXmlFile.exists() && oldfXmlFile.isFile()) {
-					try {
-						File newFile = new File(targetFile.getParent(), targetFile.getName());
-						Files.move(oldfXmlFile.toPath(), newFile.toPath());
-					} catch (Exception e) {
-						System.err.println(e.getMessage());
-					}
-				}
-			}
-
 			if (!targetFile.exists() || !targetFile.isFile()) {
 
 				// create dir if not present
@@ -300,6 +286,7 @@ public class Runner {
 				ins.close();
 			}
 		}
+		
 		if (FWStaticStore.frameworkConfig.isEnableEmailClient()) {
 
 			String emailAuthSettingsFilePath = FWStaticStore.frameworkConfig.getEmailAuthSettingsFilePath();

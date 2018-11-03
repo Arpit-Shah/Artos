@@ -24,8 +24,6 @@ package com.artos.framework.infra;
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -34,13 +32,11 @@ import java.util.concurrent.TimeUnit;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.GUITestSelector;
-import com.artos.framework.ScanTestSuite;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.listener.ExtentReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
 import com.artos.framework.xml.TestScriptParser;
-import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
 import com.artos.interfaces.TestProgress;
@@ -99,7 +95,7 @@ public class ArtosRunner {
 	 */
 	public void run(List<TestExecutable> testList, List<String> groupList) throws Exception {
 		// Transform TestList into TestObjectWrapper Object list
-		List<TestObjectWrapper> transformedTestList = transformToTestObjWrapper(testList, groupList);
+		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context, testList, groupList).getListOfTransformedTestCases();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
 			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
@@ -183,7 +179,9 @@ public class ArtosRunner {
 			int errorcount = 0;
 			for (TestObjectWrapper t : transformedTestList) {
 
-				/* If stopOnFail=true then test cases after first failure will not be executed which means TestOutcomeList will be empty */
+				/*
+				 * If stopOnFail=true then test cases after first failure will not be executed which means TestOutcomeList will be empty
+				 */
 				if (t.getTestOutcomeList().isEmpty()) {
 					continue;
 				}
@@ -318,29 +316,30 @@ public class ArtosRunner {
 		TestDataProvider dataProviderObj;
 
 		try {
-			// get dataProvider specified for this test case (data provider name is always stored in upper case)
+			// get dataProvider specified for this test case (data provider name is always
+			// stored in upper case)
 			dataProviderObj = context.getDataProviderMap().get(t.getDataProviderName().toUpperCase());
 
-			// If specified data provider is not found in the list then throw exception (Remember : Data provider name is case in-sensitive)
+			// If specified data provider is not found in the list then throw exception
+			// (Remember : Data provider name is case in-sensitive)
 			if (null == dataProviderObj) {
 				throw new InvalidObjectException("DataProvider not found (or private) : " + (t.getDataProviderName()));
 			}
 
 			if (dataProviderObj.isStaticMethod()) {
-				// If data provider method is static then invoke method to get data
-				// Execute method with context as an argument so user can make use of information from context
 				data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
 			} else {
-				// If data provider method is non-static then create instance of the class and then invoke the method
-				// Execute method with context as an argument so user can make use of information from context
+				/* NonStatic data provider method needs an instance */
 				data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
 			}
 
-			// If data provider method returns null or empty object then execute test with null parameter
+			// If data provider method returns null or empty object then execute test with
+			// null parameter
 			if (null == data || data.length == 0) {
-				executeChildTest(t, new String[][] {{}}, 0);
+				executeChildTest(t, new String[][] { {} }, 0);
 			} else {
-				// If data provider returns data then execute same test case multiple time by providing data one by one
+				// If data provider returns data then execute same test case multiple time by
+				// providing data one by one
 				for (int i = 0; i < data.length; i++) {
 					executeChildTest(t, data, i);
 				}
@@ -372,7 +371,8 @@ public class ArtosRunner {
 
 		notifyChildTestExecutionStarted(t, userInfo);
 
-		// Every execution print dataProvider count, so user know that same test case is running multiple time
+		// Every execution print dataProvider count, so user know that same test case is
+		// running multiple time
 		context.getLogger().info(userInfo);
 
 		// @formatter:off
@@ -422,17 +422,15 @@ public class ArtosRunner {
 	 */
 	private void processTestException(TestObjectWrapper t, Throwable e) {
 		// If user has not specified expected exception then fail the test
-		if (t.getExpectedExceptionList() != null && !t.getExpectedExceptionList().isEmpty()) {
+		if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty()) {
 
 			boolean exceptionMatchFound = false;
 			for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
 				if (e.getClass() == exceptionClass) {
-					// Exception matches as specified by user
+					/* Exception matches as specified by user */
 					context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
 
-					/*
-					 * If User has provided regular expression then validate exception message with regular expression
-					 */
+					/* If regular expression then validate exception message with regular expression */
 					if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
 						if (e.getMessage().matches(t.getExceptionContains())) {
 							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
@@ -638,138 +636,6 @@ public class ArtosRunner {
 		for (TestProgress listener : listenerList) {
 			listener.testSuiteFailureHighlight(description);
 		}
-	}
-
-	// ==================================================================================
-	// Facade for arranging test cases
-	// ==================================================================================
-	/**
-	 * This method transforms given test list of{@code TestEecutable} type into {@code TestObjectWrapper} type list. This method will only consider
-	 * test This method can not transform test cases outside current package, so those test cases will be omitted from the list
-	 * 
-	 * @param listOfTestCases list of test cases required to be transformed
-	 * @param groupList user specified groupList
-	 * @return Test list formatted into {@code TestObjectWrapper} type
-	 */
-	public List<TestObjectWrapper> transformToTestObjWrapper(List<TestExecutable> listOfTestCases, List<String> groupList) {
-
-		if (null == groupList || groupList.isEmpty()) {
-			new Exception("Group must be specified");
-		}
-
-		Object testSuiteObject;
-		List<TestObjectWrapper> listOfTransformedTestCases = new ArrayList<>();
-
-		// If main() method executes from root then package name will be none
-		String packageName = "";
-		if (null != context.getPrePostRunnableObj().getPackage()) {
-			packageName = context.getPrePostRunnableObj().getPackage().getName();
-		}
-		ScanTestSuite reflection = new ScanTestSuite(packageName);
-
-		// Store test dataProviders in context
-		context.setDataProviderMap(reflection.getDataProviderMap());
-
-		/*
-		 * @formatter:off
-		 * 1. If XML testScript is provided then use it
-		 * 2. If user has provided testList using main() method then use it
-		 * 3. If all of the above is not provided then use reflection to find test cases
-		 * @formatter:on
-		 */
-		if (null != (testSuiteObject = context.getTestSuite())) {
-
-			/**
-			 * Get all test case object using reflection. Any test cases marked skip will be skipped.
-			 */
-			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
-			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
-
-			TestSuite suite = (TestSuite) testSuiteObject;
-
-			// populate all global parameters to context
-			Map<String, String> parameterMap = suite.getTestSuiteParameters();
-			if (null != parameterMap && !parameterMap.isEmpty()) {
-				for (Entry<String, String> entry : parameterMap.entrySet()) {
-					context.setGlobalObject(entry.getKey(), entry.getValue());
-				}
-			}
-
-			// Get list of all test name
-			List<String> testNameList = suite.getTestFQCNList();
-
-			// If test list is empty then assume user wants to run all test
-			// cases
-			if (testNameList.isEmpty()) {
-				for (Map.Entry<String, TestObjectWrapper> entry : testCaseMap.entrySet()) {
-					if (belongsToApprovedGroup(suite.getGroupList(), entry.getValue().getGroupList())) {
-						listOfTransformedTestCases.add(entry.getValue());
-					}
-				}
-			} else {
-				// Create Test object list from test script
-				for (String t : testNameList) {
-					TestObjectWrapper testObjWrapper = testCaseMap.get(t);
-
-					if (null == testObjWrapper) {
-						// This can happen if test is marked skipped or actually not present
-						System.err.println("WARNING (not found): " + t);
-					} else {
-						if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
-							listOfTransformedTestCases.add(testObjWrapper);
-						}
-					}
-				}
-			}
-
-		} else if (null != listOfTestCases && !listOfTestCases.isEmpty()) {
-
-			/**
-			 * Get all test case object using reflection. If test case marked skip then test case should be skipped from scanning list
-			 */
-			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
-			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
-
-			for (TestExecutable t : listOfTestCases) {
-				TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
-
-				if (null == testObjWrapper) {
-					// This can happen if test is marked skipped or actually not present
-					System.err.println(t.getClass().getName() + " not present in given test suite");
-				} else {
-					if (belongsToApprovedGroup(groupList, testObjWrapper.getGroupList())) {
-						listOfTransformedTestCases.add(testObjWrapper);
-					}
-				}
-			}
-
-		} else {
-			List<TestObjectWrapper> listOfTestObj = reflection.getTestObjWrapperList(true, true, true);
-			for (TestObjectWrapper t : listOfTestObj) {
-				if (belongsToApprovedGroup(groupList, t.getGroupList())) {
-					listOfTransformedTestCases.add(t);
-				}
-			}
-
-		}
-
-		return listOfTransformedTestCases;
-	}
-
-	/**
-	 * Validate if test case belongs to any user defined group(s)
-	 * 
-	 * @param refGroupList list of user defined group via test script or via main class
-	 * @param testGroupList list of group test case belong to
-	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
-	 */
-	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
-		for (String group : refGroupList) {
-			if (testGroupList.contains(group)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
 

@@ -23,7 +23,6 @@ package com.artos.framework.xml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Files;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -105,20 +104,6 @@ public class FrameworkConfig {
 	public void readXMLConfig(boolean createIfNotPresent) {
 
 		try {
-
-			// TODO This code is temporary and can be removed after couple of releases
-			{
-				final File oldfXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "Framework_Config.xml");
-				if (oldfXmlFile.exists() && oldfXmlFile.isFile()) {
-					try {
-						File newFile = new File(fXmlFile.getParent(), fXmlFile.getName());
-						Files.move(oldfXmlFile.toPath(), newFile.toPath());
-					} catch (Exception e) {
-						System.err.println(e.getMessage());
-					}
-				}
-			}
-
 			if (!fXmlFile.exists() || !fXmlFile.isFile()) {
 				if (createIfNotPresent) {
 					fXmlFile.getParentFile().mkdirs();

@@ -79,10 +79,14 @@ public class ScanTestSuite {
 		// Find all annotation
 		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 
-		// GetAllDataProviderMethods => Filter Public methods => Get UpperCase DataProviderName => Store it
+		// GetAllDataProviderMethods => Filter Public methods => Get UpperCase
+		// DataProviderName => Store it
 		reflection.getMethodsAnnotatedWith(DataProvider.class).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
 			String dataProviderName = m.getAnnotation(DataProvider.class).name().toUpperCase();
 			TestDataProvider testDataProvider = new TestDataProvider(m, dataProviderName, m.getDeclaringClass(), Modifier.isStatic(m.getModifiers()));
+			if (dataProviderMap.containsKey(dataProviderName)) {
+				System.err.println("Duplicate Dataprovider (case in-sensitive): " + m.getAnnotation(DataProvider.class).name());
+			}
 			dataProviderMap.put(dataProviderName, testDataProvider);
 		});
 
@@ -241,7 +245,8 @@ public class ScanTestSuite {
 
 		// sort FQCNList by Name
 		FQCNList = FQCNList.parallelStream().sorted(Comparator.comparing(s -> s.toString())).collect(Collectors.toList());
-		// Generate seperateList per package using FQCN Info and add those lists to listOfTestsList
+		// Generate seperateList per package using FQCN Info and add those lists to
+		// listOfTestsList
 		List<List<TestObjectWrapper>> listOfTestsList = getListOfTestsListPerFQCN(listToBeSorted, FQCNList);
 
 		// sort each list individually so test cases from same package remains together
@@ -324,10 +329,12 @@ public class ScanTestSuite {
 		// This was made LinkedHashMap so it can preserve insertion order
 		Map<String, TestObjectWrapper> testObjWrapperMap = new LinkedHashMap<>();
 
-		// get sorted test case list (Sorted within package scope) so calling method can utilise sorting
+		// get sorted test case list (Sorted within package scope) so calling method can
+		// utilise sorting
 		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(true, removeSkippedTests, true);
 
-		// populate LinkedHashMap<> with test case FQCN as key so test case object can be queried using FQCN
+		// populate LinkedHashMap<> with test case FQCN as key so test case object can
+		// be queried using FQCN
 		for (TestObjectWrapper t : testObjWrapperList) {
 			// create new Instance of test object so user can execute the test
 			testObjWrapperMap.put(t.getTestClassObject().getName(), t);
@@ -338,6 +345,18 @@ public class ScanTestSuite {
 
 	public Map<String, TestDataProvider> getDataProviderMap() {
 		return dataProviderMap;
+	}
+
+	public List<TestObjectWrapper> getTestObjWrapperList_All() {
+		return testObjWrapperList_All;
+	}
+
+	public List<TestObjectWrapper> getTestObjWrapperList_WithoutSkipped() {
+		return testObjWrapperList_WithoutSkipped;
+	}
+
+	public List<String> getFQCNList() {
+		return FQCNList;
 	}
 
 }
