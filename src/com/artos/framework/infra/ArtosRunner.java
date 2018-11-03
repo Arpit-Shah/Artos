@@ -219,7 +219,7 @@ public class ArtosRunner {
 			// Create an instance of Main class
 			PrePostRunnable prePostCycleInstance = (PrePostRunnable) context.getPrePostRunnableObj().newInstance();
 
-			// Run prior to each test suit
+			// Run prior to each test suite
 			notifyBeforeTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
 			prePostCycleInstance.beforeTestSuite(context);
 			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
@@ -285,8 +285,9 @@ public class ArtosRunner {
 	 * @param arg objects which required for test case execution
 	 */
 	private void runIndividualTest(TestObjectWrapper t, Object... arg) {
-		t.setTestStartTime(System.currentTimeMillis());
 		try {
+			t.setTestStartTime(System.currentTimeMillis());
+			
 			// Set Default Known to fail information
 			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
 
@@ -338,8 +339,6 @@ public class ArtosRunner {
 			if (null == data || data.length == 0) {
 				executeChildTest(t, new String[][] { {} }, 0);
 			} else {
-				// If data provider returns data then execute same test case multiple time by
-				// providing data one by one
 				for (int i = 0; i < data.length; i++) {
 					executeChildTest(t, data, i);
 				}
@@ -358,22 +357,18 @@ public class ArtosRunner {
 	private void executeChildTest(TestObjectWrapper t, Object[][] data, int i) {
 		String userInfo = "DataProvider(" + i + ")  : ";
 		if (data[i].length == 2) {
-			String firstType = (null == data[i][0] ? null
-					: data[i][0].getClass().getName().substring(data[i][0].getClass().getName().lastIndexOf(".") + 1));
-			String secondType = (null == data[i][1] ? null
-					: data[i][1].getClass().getName().substring(data[i][1].getClass().getName().lastIndexOf(".") + 1));
+			String firstType = (null == data[i][0] ? null : data[i][0].getClass().getSimpleName());
+			String secondType = (null == data[i][1] ? null : data[i][1].getClass().getSimpleName());
 			userInfo += "[" + firstType + "][" + secondType + "]";
 		} else if (data[i].length == 1) {
-			String firstType = (null == data[i][0] ? null
-					: data[i][0].getClass().getName().substring(data[i][0].getClass().getName().lastIndexOf(".") + 1));
+			String firstType = (null == data[i][0] ? null : data[i][0].getClass().getSimpleName());
 			userInfo += "[" + firstType + "][]";
+		} else {
+			userInfo += "[][]";
 		}
-
-		notifyChildTestExecutionStarted(t, userInfo);
-
-		// Every execution print dataProvider count, so user know that same test case is
-		// running multiple time
 		context.getLogger().info(userInfo);
+		
+		notifyChildTestExecutionStarted(t, userInfo);
 
 		// @formatter:off
 		/* 
