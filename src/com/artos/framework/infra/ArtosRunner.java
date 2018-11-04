@@ -24,10 +24,13 @@ package com.artos.framework.infra;
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
@@ -45,8 +48,7 @@ import com.artos.utils.Transform;
 import com.artos.utils.UtilsFramework;
 
 /**
- * This class is responsible for running test cases. It initialising logger and context with provided information. It is also responsible for running
- * test cases in given sequence (including pre/post methods)
+ * This class is responsible for running test cases in user defined manner
  */
 public class ArtosRunner {
 
@@ -279,23 +281,27 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This method executes test case with or without parameter. in case of failure or exception scenario test summary will be generated.
+	 * Responsible for execution individual test cases
 	 * 
-	 * @param t TestCase {@code TestObjectWrapper}
-	 * @param arg objects which required for test case execution
+	 * @param t TestCase in format {@code TestObjectWrapper}
+	 * @param arg Test parameters
 	 */
 	private void runIndividualTest(TestObjectWrapper t, Object... arg) {
+		// ********************************************************************************************
+		// TestCase Start
+		// ********************************************************************************************
 		try {
 			t.setTestStartTime(System.currentTimeMillis());
-			
+
 			// Set Default Known to fail information
 			context.setKnownToFail(t.isKTF(), t.getBugTrackingNumber());
 
-			// --------------------------------------------------------------------------------------------
-			// get test objects new instance and cast it to TestExecutable type
-			// data provider argument should be set to null
-			((TestExecutable) t.getTestClassObject().newInstance()).execute(context, arg[0], arg[1]);
-			// --------------------------------------------------------------------------------------------
+			// If test timeout is defined then monitor thread for timeout
+			if (0 != t.getTestTimeout()) {
+				runTestWithTimeout(t, arg);
+			} else {
+				runSimpleTest(t, arg);
+			}
 
 			postTestValidation(t);
 		} catch (Throwable e) {
@@ -305,12 +311,68 @@ public class ArtosRunner {
 			t.setTestFinishTime(System.currentTimeMillis());
 			context.generateTestSummary(t);
 		}
+		// ********************************************************************************************
+		// TestCase Finish
+		// ********************************************************************************************
 	}
 
 	/**
-	 * This method executes test case with or without parameter. in case of failure or exception scenario test summary will be generated.
+	 * Responsible for execution of a test case.
 	 * 
-	 * @param t TestCase {@code TestObjectWrapper}
+	 * @param t TestCase in format {@code TestObjectWrapper}
+	 * @param arg Test parameters
+	 * @throws Exception Exception during test execution
+	 */
+	private void runSimpleTest(TestObjectWrapper t, Object... arg) throws Exception {
+		// --------------------------------------------------------------------------------------------
+		// get test objects new instance and cast it to TestExecutable type
+		// data provider argument should be set to null
+		((TestExecutable) t.getTestClassObject().newInstance()).execute(context, arg[0], arg[1]);
+		// --------------------------------------------------------------------------------------------
+	}
+
+	/**
+	 * Responsible for executing test cases with thread timeout. If test case execution is not finished within expected time then test will be
+	 * considered failed.
+	 * 
+	 * @param t TestCase in format {@code TestObjectWrapper} object
+	 * @param arg Test parameters
+	 * @throws Throwable Exception during test execution
+	 */
+	private void runTestWithTimeout(TestObjectWrapper t, Object... arg) throws Throwable {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Future<String> future = executor.submit(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				runSimpleTest(t, arg);
+				return "TEST FINISHED WITHIN TIME";
+			}
+		});
+
+		try {
+			// System.out.println(future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS));
+			future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS);
+		} catch (TimeoutException e) {
+			future.cancel(true);
+			context.setTestStatus(TestStatus.FAIL, "TEST TIMED OUT");
+		} catch (ExecutionException e) {
+			future.cancel(true);
+			if (null == e.getCause()) {
+				// If no cause is listed then throw parent exception
+				throw e;
+			} else {
+				// If cause is listed then only throw cause
+				throw e.getCause();
+			}
+		}
+	}
+
+	/**
+	 * Responsible for executing data provider method which upon successful execution returns an array of parameters. TestCase will be re-run using
+	 * all parameters available in the parameter array. If data provider method returns empty array or null then test case will be executed only once
+	 * with null arguments.
+	 * 
+	 * @param t TestCase in format {@code TestObjectWrapper}
 	 */
 	private void runParameterizedTest(TestObjectWrapper t) {
 		Object[][] data;
@@ -354,42 +416,60 @@ public class ArtosRunner {
 		}
 	}
 
-	private void executeChildTest(TestObjectWrapper t, Object[][] data, int i) {
-		String userInfo = "DataProvider(" + i + ")  : ";
-		if (data[i].length == 2) {
-			String firstType = (null == data[i][0] ? null : data[i][0].getClass().getSimpleName());
-			String secondType = (null == data[i][1] ? null : data[i][1].getClass().getSimpleName());
+	/**
+	 * Responsible for execution of test cases (Considered as child test case) with given parameter. Parameterised object array index and value(s)
+	 * class type(s) will be printed prior to test execution for user's benefit.
+	 * 
+	 * @param t TestCase in format {@code TestObjectWrapper}
+	 * @param data Array of parameters
+	 * @param arrayIndex Parameter array index
+	 */
+	private void executeChildTest(TestObjectWrapper t, Object[][] data, int arrayIndex) {
+		String userInfo = "DataProvider(" + arrayIndex + ")  : ";
+		if (data[arrayIndex].length == 2) {
+			String firstType = (null == data[arrayIndex][0] ? null : data[arrayIndex][0].getClass().getSimpleName());
+			String secondType = (null == data[arrayIndex][1] ? null : data[arrayIndex][1].getClass().getSimpleName());
 			userInfo += "[" + firstType + "][" + secondType + "]";
-		} else if (data[i].length == 1) {
-			String firstType = (null == data[i][0] ? null : data[i][0].getClass().getSimpleName());
+		} else if (data[arrayIndex].length == 1) {
+			String firstType = (null == data[arrayIndex][0] ? null : data[arrayIndex][0].getClass().getSimpleName());
 			userInfo += "[" + firstType + "][]";
 		} else {
 			userInfo += "[][]";
 		}
 		context.getLogger().info(userInfo);
-		
+
+		// ********************************************************************************************
+		// Parameterised Child TestCase Start
+		// ********************************************************************************************
+
 		notifyChildTestExecutionStarted(t, userInfo);
 
 		// @formatter:off
 		/* 
 		 * If 2D array then populate both field of the execute method. 
 		 * If 1D array then populate first field with value and second field with null. 
-		 * If 2D/1D array is empty then do not execute test case. silently move on. 
+		 * If 2D/1D array is empty then execute method with both object being null. 
 		 */
 		// @formatter:on
-		if (data[i].length == 2) {
-			runIndividualTest(t, data[i][0], data[i][1]);
-		} else if (data[i].length == 1) {
-			runIndividualTest(t, data[i][0], null);
+		if (data[arrayIndex].length == 2) {
+			runIndividualTest(t, data[arrayIndex][0], data[arrayIndex][1]);
+		} else if (data[arrayIndex].length == 1) {
+			runIndividualTest(t, data[arrayIndex][0], null);
 		} else {
 			runIndividualTest(t, null, null);
 		}
 
 		notifyChildTestExecutionFinished(t);
+
+		// ********************************************************************************************
+		// Parameterised Child TestCase Finish
+		// ********************************************************************************************
 	}
 
 	/**
-	 * After test case execution, perform post validation and update test status accordingly.
+	 * Responsible for post validation after test case execution is successfully completed. If expected throwable(s)/exception(s) are defined by user
+	 * using {@code ExpectedException} and test case status is PASS or FAIL then test case should be marked failed for not throwing expected
+	 * throwable/exception.
 	 * 
 	 * <PRE>
 	 * If test status is marked as SKIP or KTF then do not fail test case based on ExpectedException conditions. 
@@ -409,10 +489,11 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * This function processes exception if test during run time throws {@code Throwable} or {@code Exception}. If {@code ExpectedException}
-	 * annotation if specified then Exception will be validated using provided parameters. Otherwise test will be considered failed.
+	 * Responsible for processing throwable/exception thrown by test cases during execution time. If {@code ExpectedException} annotation defines
+	 * expected throwable/exception and received throwable/exception does not match any of the defined throwable(s)/Exception(s) then test will be
+	 * marked as FAIL.
 	 * 
-	 * @param t {@code TestObjectWrapper} object
+	 * @param t test case in format {@code TestObjectWrapper}
 	 * @param e {@code Throwable} or {@code Exception}
 	 */
 	private void processTestException(TestObjectWrapper t, Throwable e) {

@@ -49,6 +49,7 @@ public class TestObjectWrapper {
 	List<String> labelList = new ArrayList<>();
 	List<String> groupList = new ArrayList<>();
 	String dataProviderName = "";
+	long testTimeout = 0;
 
 	// TestPlan
 	String testPlanDescription = "";
@@ -74,8 +75,9 @@ public class TestObjectWrapper {
 	 * @param skipTest skip property as specified in annotation
 	 * @param testsequence test sequence as specified in annotation
 	 * @param dataProviderName Name of the dataProvider (Upper case)
+	 * @param testTimeout test execution timeout, 0=no timeout
 	 */
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName, long testTimeout) {
 		super();
 
 		this.testClassObject = cls;
@@ -83,6 +85,7 @@ public class TestObjectWrapper {
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
 		this.dataProviderName = dataProviderName;
+		this.testTimeout = testTimeout;
 	}
 
 	public String getTestPlanDescription() {
@@ -243,6 +246,14 @@ public class TestObjectWrapper {
 
 	public void setTestOutcomeList(List<TestStatus> testOutcomeList) {
 		this.testOutcomeList = testOutcomeList;
+	}
+
+	public long getTestTimeout() {
+		return testTimeout;
+	}
+
+	public void setTestTimeout(long testTimeout) {
+		this.testTimeout = testTimeout;
 	}
 
 }
