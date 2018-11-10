@@ -62,8 +62,6 @@ public class GUITestSelector {
 	private JTextField loopCountField;
 	private TestRunnable testRunner;
 	private ArrayList<TestObjectWrapper> selectedTests;
-	// Enables if package name column appears in selector
-	boolean enablePackgeName = false;
 
 	/**
 	 * TestRunnerGui constructor
@@ -79,7 +77,7 @@ public class GUITestSelector {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		this.context = context;
-		testRunnerDataModel = new TestRunnerDataModel(testList, enablePackgeName);
+		testRunnerDataModel = new TestRunnerDataModel(testList);
 		this.testRunner = testRunner;
 		selectedTests = new ArrayList<TestObjectWrapper>();
 
@@ -239,32 +237,29 @@ public class GUITestSelector {
 	 */
 	private void setTableStyle(JTable testTableView) {
 
-		// Enable package name column if required
-		if (enablePackgeName) {
+		// set column widths, we know we only have 2 columns for now
+		TableColumn col = testTableView.getColumnModel().getColumn(0);
+		col.setPreferredWidth(35);
+		// set column0 text to centre align
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(JLabel.CENTER);
+		col.setCellRenderer(renderer);
+
+		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
 			// set column widths, we know we only have 2 columns for now
-			TableColumn col = testTableView.getColumnModel().getColumn(0);
+			col = testTableView.getColumnModel().getColumn(1);
 			col.setPreferredWidth(35);
-			// set column0 text to center align
-			DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+
+			// set column1 text to centre align
+			renderer = new DefaultTableCellRenderer();
 			renderer.setHorizontalAlignment(JLabel.CENTER);
 			col.setCellRenderer(renderer);
-
-			col = testTableView.getColumnModel().getColumn(1);
-			col.setPreferredWidth(280);
 
 			col = testTableView.getColumnModel().getColumn(2);
-			col.setPreferredWidth(200);
+			col.setPreferredWidth(420);
 		} else {
-			// set column widths, we know we only have 2 columns for now
-			TableColumn col = testTableView.getColumnModel().getColumn(0);
-			col.setPreferredWidth(55);
-			// set column0 text to center align
-			DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-			renderer.setHorizontalAlignment(JLabel.CENTER);
-			col.setCellRenderer(renderer);
-
 			col = testTableView.getColumnModel().getColumn(1);
-			col.setPreferredWidth(445);
+			col.setPreferredWidth(465);
 		}
 	}
 
@@ -304,15 +299,13 @@ class TestRunnerDataModel extends AbstractTableModel {
 	private List<TestObjectWrapper> testList;
 	private String[] columnNames;
 	private String[][] displayData;
-	boolean enablePackgeName = false;
 
-	public TestRunnerDataModel(List<TestObjectWrapper> testList, boolean enablePackgeName) {
+	public TestRunnerDataModel(List<TestObjectWrapper> testList) {
 		this.testList = testList;
-		this.enablePackgeName = enablePackgeName;
 
 		// Enable if package name column is required
-		if (enablePackgeName) {
-			columnNames = new String[] { "#", "Test Name", "Package" };
+		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
+			columnNames = new String[] { "#", "Seq", "Test Name" };
 		} else {
 			columnNames = new String[] { "#", "Test Name" };
 		}
@@ -333,17 +326,15 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 			// column0 - test number
 			displayData[index][0] = String.valueOf(index);
-			// column1 - test name
-			displayData[index][1] = testName;
-
-			// Enable package name column if required
-			if (enablePackgeName) {
-				// column2 - package name
-				if (null == testList.get(index).getTestClassObject().getPackage()) {
-					displayData[index][2] = "";
-				} else {
-					displayData[index][2] = testList.get(index).getTestClassObject().getPackage().getName();
-				}
+			
+			if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
+				// column1 - test seq
+				displayData[index][1] = Integer.toString(testList.get(index).getTestsequence());
+				// column2 - test name
+				displayData[index][2] = testName;
+			} else {
+				// column1 - test name
+				displayData[index][1] = testName;
 			}
 		}
 	}

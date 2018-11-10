@@ -99,6 +99,9 @@ public class TransformToTestObjectWrapper {
 	 */
 	private void testListProvidedByUserUsingMainMethod(TestContext context, List<TestExecutable> listOfTestCases, List<String> groupList,
 			ScanTestSuite reflection) {
+		
+		// Capitalise all group name to avoid case-sensitivity
+		groupList.replaceAll(String::toUpperCase);
 
 		// empty test list = assume all test cases
 		if (listOfTestCases.isEmpty()) {
@@ -129,6 +132,10 @@ public class TransformToTestObjectWrapper {
 	private void testListProvidedViaXMLTestScript(TestContext context, Object testSuiteObject, ScanTestSuite reflection) {
 		TestSuite suite = (TestSuite) testSuiteObject;
 
+		// Capitalise all group name to avoid case-sensitivity
+		List<String> groupList = suite.getGroupList();
+		groupList.replaceAll(String::toUpperCase);
+
 		// populate all global parameters to context
 		Map<String, String> parameterMap = suite.getTestSuiteParameters();
 		if (null != parameterMap && !parameterMap.isEmpty()) {
@@ -139,7 +146,7 @@ public class TransformToTestObjectWrapper {
 
 		// empty test list = assume all test cases
 		if (suite.getTestFQCNList().isEmpty()) {
-			testListIsNotProvided(suite.getGroupList(), reflection);
+			testListIsNotProvided(groupList, reflection);
 		} else {
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
@@ -152,7 +159,7 @@ public class TransformToTestObjectWrapper {
 					// This can happen if test is marked skipped or actually not present
 					System.err.println("WARNING (not found): " + t);
 				} else {
-					if (belongsToApprovedGroup(suite.getGroupList(), testObjWrapper.getGroupList())) {
+					if (belongsToApprovedGroup(groupList, testObjWrapper.getGroupList())) {
 						listOfTransformedTestCases.add(testObjWrapper);
 					}
 				}
@@ -180,17 +187,19 @@ public class TransformToTestObjectWrapper {
 	/**
 	 * Validate if test case belongs to any user defined group(s)
 	 * 
-	 * @param refGroupList list of user defined group via test script or via main class
+	 * @param refGroupList list of user defined group (via test script or via main class)
 	 * @param testGroupList list of group test case belong to
 	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
 	 */
 	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
-		for (String group : refGroupList) {
-			if (testGroupList.contains(group)) {
-				return true;
-			}
-		}
-		return false;
+		
+		return refGroupList.stream().anyMatch(num -> testGroupList.contains(num));
+//		for (String group : refGroupList) {
+//			if (testGroupList.contains(group)) {
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
 	public List<TestObjectWrapper> getListOfTransformedTestCases() {

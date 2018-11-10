@@ -32,6 +32,7 @@
   </smtp_settings>
   <features>
     <property name="enableGUITestSelector">true</property>
+    <property name="enableGUITestSelectorSeqNumber">true</property>
     <property name="enableBanner">true</property>
     <property name="enableOrganisationInfo">true</property>
     <property name="enableEmailClient">true</property>

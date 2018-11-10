@@ -80,6 +80,7 @@ public class FrameworkConfig {
 
 	// Features
 	private boolean enableGUITestSelector = true;
+	private boolean enableGUITestSelectorSeqNumber = false;
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
 	private boolean enableEmailClient = false;
@@ -180,6 +181,15 @@ public class FrameworkConfig {
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("enableGUITestSelector");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableGUITestSelectorSeqNumber())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableGUITestSelectorSeqNumber");
 			property.setAttributeNode(attr);
 		}
 		{
@@ -550,6 +560,9 @@ public class FrameworkConfig {
 
 					if ("enableGUITestSelector".equals(eElement.getAttribute("name"))) {
 						setEnableGUITestSelector(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("enableGUITestSelectorSeqNumber".equals(eElement.getAttribute("name"))) {
+						setEnableGUITestSelectorSeqNumber(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 					if ("enableBanner".equals(eElement.getAttribute("name"))) {
 						setEnableBanner(Boolean.parseBoolean(eElement.getTextContent()));
@@ -934,5 +947,13 @@ public class FrameworkConfig {
 
 	public void setEmailAuthSettingsFilePath(String emailAuthSettingsFilePath) {
 		this.emailAuthSettingsFilePath = emailAuthSettingsFilePath;
+	}
+
+	public boolean isEnableGUITestSelectorSeqNumber() {
+		return enableGUITestSelectorSeqNumber;
+	}
+
+	public void setEnableGUITestSelectorSeqNumber(boolean enableGUITestSelectorSeqNumber) {
+		this.enableGUITestSelectorSeqNumber = enableGUITestSelectorSeqNumber;
 	}
 }
