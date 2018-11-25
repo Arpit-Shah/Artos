@@ -21,10 +21,7 @@
  ******************************************************************************/
 package com.artos.interfaces;
 
-import com.artos.annotation.AfterTest;
-import com.artos.annotation.AfterTestSuite;
-import com.artos.annotation.BeforeTest;
-import com.artos.annotation.BeforeTestSuite;
+import com.artos.framework.infra.Runner;
 import com.artos.framework.infra.TestContext;
 
 /**
@@ -35,12 +32,9 @@ public interface PrePostRunnable {
 	/**
 	 * Runs prior to each test case execution
 	 * 
-	 * @param context
-	 *            Test Context
-	 * @throws Exception
-	 *             In case of pre execution failed
+	 * @param context Test Context
+	 * @throws Exception In case of pre execution failed
 	 */
-	@BeforeTest
 	default public void beforeTest(TestContext context) throws Exception {
 
 	}
@@ -48,40 +42,30 @@ public interface PrePostRunnable {
 	/**
 	 * Runs post each test case execution
 	 * 
-	 * @param context
-	 *            Test context
-	 * @throws Exception
-	 *             In case of test of post execution failed
+	 * @param context Test context
+	 * @throws Exception In case of test of post execution failed
 	 */
-	@AfterTest
 	default public void afterTest(TestContext context) throws Exception {
 
 	}
 
 	/**
-	 * Runs prior to test suit execution. Only run once
+	 * Runs prior to test suite execution. Only run once
 	 * 
-	 * @param context
-	 *            Test context
-	 * @throws Exception
-	 *             In case of initialisation failed
+	 * @param context Test context
+	 * @throws Exception In case of initialisation failed
 	 */
-	@BeforeTestSuite
 	default public void beforeTestSuite(TestContext context) throws Exception {
 
 	}
 
 	/**
-	 * Runs at the end of test suit execution. Only run once
+	 * Runs at the end of test suite execution. Only run once
 	 * 
-	 * @param context
-	 *            Test context
-	 * @throws Exception
-	 *             In case of cleanup failed
+	 * @param context Test context
+	 * @throws Exception In case of cleanup failed
 	 */
-	@AfterTestSuite
 	default public void afterTestSuite(TestContext context) throws Exception {
 
 	}
-
 }
