@@ -53,6 +53,21 @@ public class TestGuard {
 		expected = null;
 		actual = "testString";
 		assertFalse(Guard.isEquals(expected, actual));
+
+		// regex comparision
+		expected = "(\\d{2}\\.\\d{2}\\.\\d{4}(\\.\\d*)*)";
+		actual = "01.08.0082.150";
+		assertTrue(Guard.isEquals(expected, actual));
+
+		// regex comparision
+		expected = "(\\d{2}\\.\\d{2}\\.\\d{4}(\\.\\d*)*)";
+		actual = "01.08.0082";
+		assertTrue(Guard.isEquals(expected, actual));
+
+		// regex comparision
+		expected = "(\\d{2}\\.\\d{2}\\.\\d{4}(\\.\\d*)*)";
+		actual = "01.08.008";
+		assertFalse(Guard.isEquals(expected, actual));
 	}
 
 	@Test

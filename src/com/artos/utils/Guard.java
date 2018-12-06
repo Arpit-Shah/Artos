@@ -97,9 +97,9 @@ public class Guard {
 	// String
 	// *******************************************************************************************
 	/**
-	 * Validates that two strings are equal and returns boolean as a result
+	 * Validates that two strings are equal or reference value matches given regular expression and returns boolean as a result
 	 * 
-	 * @param reference Reference string value
+	 * @param reference Reference string value or regular expression
 	 * @param actual Actual string value
 	 * @return true|false
 	 */
@@ -108,16 +108,17 @@ public class Guard {
 			return (reference == actual) ? true : false;
 		}
 
-		return actual.equals(reference) ? true : false;
+		return (actual.equals(reference) || actual.matches(reference)) ? true : false;
 	}
 
 	/**
-	 * Validates that two strings are equal. If they are not, an {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * Validates that two strings are equal or reference value matches given regular expression. If they are not, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
 	 * 
 	 * @deprecated recommended alternative {@link #guardEquals(String, String)}
 	 * @param context test context
 	 * @param desc Message to be printed
-	 * @param reference Reference string value
+	 * @param reference Reference string value or regular expression
 	 * @param actual Actual string value
 	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
 	 */
@@ -131,9 +132,10 @@ public class Guard {
 	}
 
 	/**
-	 * Validates that two strings are equal. If they are not, an {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * Validates that two strings are equal or reference value matches given regular expression. If they are not, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
 	 * 
-	 * @param reference Reference string value
+	 * @param reference Reference string value or regular expression
 	 * @param actual Actual string value
 	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
 	 */
@@ -144,12 +146,13 @@ public class Guard {
 	}
 
 	/**
-	 * Validates that two strings are <b>not</b> equal. If they are, an {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * Validates that two strings are <b>not</b> equal or reference value <b>does not</b> match given regular expression. If they are, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
 	 * 
 	 * @deprecated recommended alternative {@link #guardNotEquals(String, String)}
 	 * @param context test context
 	 * @param desc Message to be printed
-	 * @param reference Reference string value
+	 * @param reference Reference string value or regular expression
 	 * @param actual Actual string value
 	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
 	 */
@@ -163,9 +166,10 @@ public class Guard {
 	}
 
 	/**
-	 * Validates that two strings are <b>not</b> equal. If they are, an {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * Validates that two strings are <b>not</b> equal or reference value <b>does not</b> match given regular expression. If they are, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
 	 * 
-	 * @param reference Reference string value
+	 * @param reference Reference string value or regular expression
 	 * @param actual Actual string value
 	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
 	 */
