@@ -39,7 +39,7 @@ public class FWStaticStore {
 	public static final String LOG_BASE_DIR = "." + File.separator + "reporting" + File.separator;
 
 	// Must be kept after default paths initialised
-	public static FrameworkConfig frameworkConfig = new FrameworkConfig(true);
+	public static FrameworkConfig frameworkConfig = null;
 	public static SystemProperties systemProperties = new SystemProperties();
 	public static final String ARTOS_BUILD_VERSION = new Version().getBuildVersion();
 	public static final String ARTOS_BUILD_DATE = new Version().getBuildDate();

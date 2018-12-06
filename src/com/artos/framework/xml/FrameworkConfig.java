@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.artos.framework.FWStaticStore;
+import com.artos.framework.infra.CliProcessor;
 
 /**
  * This class is responsible for storing framework Configuration. During test suit execution XML file will be searched at location ./conf
@@ -173,6 +174,7 @@ public class FrameworkConfig {
 	private void addFeatureList(Document doc, Element rootElement) {
 		// Features
 		Element features = doc.createElement("features");
+		features.setAttribute("profile", "dev");
 		rootElement.appendChild(features);
 		{
 			Element property = doc.createElement("property");
@@ -251,6 +253,7 @@ public class FrameworkConfig {
 	private void addEmailConfig(Document doc, Element rootElement) {
 		// SMTP Settings
 		Element smtp_settings = doc.createElement("smtp_settings");
+		smtp_settings.setAttribute("profile", "dev");
 		rootElement.appendChild(smtp_settings);
 
 		// Properties of Organisation Info
@@ -349,6 +352,7 @@ public class FrameworkConfig {
 	private void addLoggerConfig(Document doc, Element rootElement) {
 		// Logger config elements
 		Element logger = doc.createElement("logger");
+		logger.setAttribute("profile", "dev");
 		rootElement.appendChild(logger);
 		{
 			Element property = doc.createElement("property");
@@ -421,6 +425,7 @@ public class FrameworkConfig {
 	private void addOrganisatioInfo(Document doc, Element rootElement) {
 		// Organisation Info elements
 		Element orgnization_info = doc.createElement("organization_info");
+		orgnization_info.setAttribute("profile", "dev");
 		rootElement.appendChild(orgnization_info);
 
 		// Properties of Organisation Info
@@ -536,6 +541,21 @@ public class FrameworkConfig {
 					}
 				}
 			}
+
+			// process profile set by user
+			if (CliProcessor.profile == null) {
+				// If profile is not set then read first configuration in the path
+				break;
+			} else if (CliProcessor.profile != null) {
+				Element element = (Element) nNode;
+
+				// If profile is provided then look for configuration with given profile
+				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+					break;
+				} else if (temp == (nList.getLength() - 1)) {
+					System.err.println("Logger configuration with profile \"" + CliProcessor.profile + "\" is missing");
+				}
+			}
 		}
 	}
 
@@ -584,6 +604,21 @@ public class FrameworkConfig {
 					}
 				}
 			}
+
+			// process profile set by user
+			if (CliProcessor.profile == null) {
+				// If profile is not set then read first configuration in the path
+				break;
+			} else if (CliProcessor.profile != null) {
+				Element element = (Element) nNode;
+
+				// If profile is provided then look for configuration with given profile
+				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+					break;
+				} else if (temp == (nList.getLength() - 1)) {
+					System.err.println("Features configuration with profile \"" + CliProcessor.profile + "\" is missing");
+				}
+			}
 		}
 	}
 
@@ -630,6 +665,21 @@ public class FrameworkConfig {
 					}
 				}
 			}
+
+			// process profile set by user
+			if (CliProcessor.profile == null) {
+				// If profile is not set then read first configuration in the path
+				break;
+			} else if (CliProcessor.profile != null) {
+				Element element = (Element) nNode;
+
+				// If profile is provided then look for configuration with given profile
+				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+					break;
+				} else if (temp == (nList.getLength() - 1)) {
+					System.err.println("OrganisationInfo configuration with profile \"" + CliProcessor.profile + "\" is missing");
+				}
+			}
 		}
 	}
 
@@ -673,6 +723,21 @@ public class FrameworkConfig {
 					if ("EmailMessage".equals(eElement.getAttribute("name"))) {
 						setEmailBody(eElement.getTextContent());
 					}
+				}
+			}
+
+			// process profile set by user
+			if (CliProcessor.profile == null) {
+				// If profile is not set then read first configuration in the path
+				break;
+			} else if (CliProcessor.profile != null) {
+				Element element = (Element) nNode;
+
+				// If profile is provided then look for configuration with given profile
+				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+					break;
+				} else if (temp == (nList.getLength() - 1)) {
+					System.err.println("Email configuration with profile \"" + CliProcessor.profile + "\" is missing");
 				}
 			}
 		}

@@ -41,6 +41,7 @@ import org.xml.sax.SAXException;
 
 import com.artos.exception.InvalidDataException;
 import com.artos.framework.FWStaticStore;
+import com.artos.framework.xml.FrameworkConfig;
 import com.artos.framework.xml.TestScriptParser;
 import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.PrePostRunnable;
@@ -173,6 +174,7 @@ public class Runner {
 
 		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
+		FWStaticStore.frameworkConfig = new FrameworkConfig(true);
 		generateRequiredFiles();
 
 		// process test suites

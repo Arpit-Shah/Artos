@@ -38,12 +38,12 @@ import com.artos.framework.FWStaticStore;
 public class CliProcessor {
 
 	public static File testScriptFile = null;
+	public static String profile = null;
 
 	/**
 	 * Processes command line arguments
 	 * 
-	 * @param args
-	 *            Command line arguments
+	 * @param args Command line arguments
 	 */
 	public static void proessCommandLine(String[] args) {
 
@@ -58,8 +58,10 @@ public class CliProcessor {
 		Option testScript = Option.builder("ts").required(false).longOpt("testscript")
 				.desc("use test script to drive test : --testscript=\"./scripts/sampletest.xml\"").hasArg().build();
 		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos").build();
-		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.theartos.com for more info").build();
+		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.theartos.com for more info")
+				.build();
 		Option contributors = Option.builder("c").required(false).longOpt("contributors").desc("Project Contributors name").build();
+		Option testProfile = Option.builder("p").required(false).longOpt("profile").desc("Test Configuration Profile").hasArg().build();
 
 		// Add Option
 		Options options = new Options();
@@ -67,6 +69,7 @@ public class CliProcessor {
 		options.addOption(version);
 		options.addOption(help);
 		options.addOption(contributors);
+		options.addOption(testProfile);
 
 		// Process Options
 		try {
@@ -88,6 +91,9 @@ public class CliProcessor {
 				PrintWriter pw = new PrintWriter(System.out);
 				System.out.println("Project Contributors : " + "Arpit_Shah, Shobhit_Bhatnagar, Swapna_Soni");
 				pw.flush();
+			}
+			if (line.hasOption("profile")) {
+				profile = line.getOptionValue("profile");
 			}
 			// Store test script path if provided
 			if (line.hasOption("testscript")) {
