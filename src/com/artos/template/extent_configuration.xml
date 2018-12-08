@@ -11,7 +11,7 @@
 		<scripts>
             <![CDATA[
                 $(document).ready(function() {
-                    
+                    $('#enableDashboard').click();
                 });
             ]]>
 		</scripts>
