@@ -70,6 +70,7 @@ public class LogWrapper {
 		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
 			while (getCurrentGeneralLogFiles().isEmpty()) {
 				// wait until file is created
+				System.err.print(".");
 			}
 			String logFilePath = getCurrentGeneralLogFiles().get(0).getAbsolutePath();
 			extent = new ExtentReports(logFilePath.substring(0, logFilePath.lastIndexOf(".")) + "-extent.html", true);

@@ -24,6 +24,7 @@ package com.artos.framework.xml;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -31,6 +32,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.logging.log4j.Level;
 import org.w3c.dom.Attr;
@@ -147,11 +151,18 @@ public class FrameworkConfig {
 	 */
 	private void writeDefaultConfig(File fXmlFile) throws Exception {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		docFactory.setNamespaceAware(true);
+		docFactory.setValidating(true);
+		Schema schema = sf.newSchema(new StreamSource(FWStaticStore.CONFIG_BASE_DIR + File.separator + "framework_configuration.xsd"));
+		docFactory.setSchema(schema);
+
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
 		// root elements
 		Document doc = docBuilder.newDocument();
 		Element rootElement = doc.createElement("configuration");
+		rootElement.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "framework_configuration.xsd");
 		doc.appendChild(rootElement);
 
 		addOrganisatioInfo(doc, rootElement);

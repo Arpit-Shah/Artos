@@ -174,6 +174,7 @@ public class Runner {
 
 		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
+		provideSchema();
 		FWStaticStore.frameworkConfig = new FrameworkConfig(true);
 		generateRequiredFiles();
 
@@ -186,7 +187,7 @@ public class Runner {
 
 		// generate logger context
 		LoggerContext loggerContext = createGlobalLoggerContext(testSuiteList);
-		
+
 		// Start Executor service
 		{
 			ExecutorService service = Executors.newFixedThreadPool(threadCount + 20);
@@ -242,7 +243,35 @@ public class Runner {
 		}
 	}
 
+	private void provideSchema() throws IOException {
+		// transfer XML validator
+		boolean transferXSD = true;
+		if (transferXSD) {
+			// only create xsd file if not present already
+			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "framework_configuration.xsd");
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.CONFIG_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/framework_configuration.xsd");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
+		}
+	}
+
 	private void generateRequiredFiles() throws IOException {
+
 		if (FWStaticStore.frameworkConfig.isGenerateEclipseTemplate()) {
 			// only create template file if not present already
 			File targetFile = new File(FWStaticStore.TEMPLATE_BASE_DIR + File.separator + "template.xml");
@@ -288,7 +317,7 @@ public class Runner {
 				ins.close();
 			}
 		}
-		
+
 		if (FWStaticStore.frameworkConfig.isEnableEmailClient()) {
 
 			String emailAuthSettingsFilePath = FWStaticStore.frameworkConfig.getEmailAuthSettingsFilePath();

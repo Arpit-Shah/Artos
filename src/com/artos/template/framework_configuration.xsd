@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="configuration">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="features"/>
+        <xs:element ref="logger"/>
+        <xs:element ref="organization_info"/>
+        <xs:element ref="smtp_settings"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="features">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="profile" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logger">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="profile" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="organization_info">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="profile" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="smtp_settings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="profile" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="property">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
