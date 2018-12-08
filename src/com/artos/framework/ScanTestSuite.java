@@ -21,6 +21,8 @@
  ******************************************************************************/
 package com.artos.framework;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -28,13 +30,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
+import com.artos.annotation.AfterTest;
+import com.artos.annotation.AfterTestSuite;
+import com.artos.annotation.BeforeTest;
+import com.artos.annotation.BeforeTestSuite;
 import com.artos.annotation.DataProvider;
 import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
@@ -90,6 +98,11 @@ public class ScanTestSuite {
 			dataProviderMap.put(dataProviderName, testDataProvider);
 		});
 
+		// getAnnotatedMethod(BeforeTestSuite.class);
+		// getAnnotatedMethod(AfterTestSuite.class);
+		// getAnnotatedMethod(BeforeTest.class);
+		// getAnnotatedMethod(AfterTest.class);
+
 		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
 
 			TestCase testcase = cl.getAnnotation(TestCase.class);
@@ -105,7 +118,8 @@ public class ScanTestSuite {
 				FQCNList.add(cl.getPackage().getName());
 			}
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.dataprovider(), testcase.testtimeout());
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.dataprovider(),
+					testcase.testtimeout());
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {
@@ -184,6 +198,12 @@ public class ScanTestSuite {
 				testObjWrapperList_WithoutSkipped.add(testobj);
 			}
 		}
+	}
+
+	private void getAnnotatedMethod(Class<? extends Annotation> annotation) {
+		reflection.getMethodsAnnotatedWith(annotation).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
+			System.out.println(m.getDeclaringClass().getName());
+		});
 	}
 
 	/**
