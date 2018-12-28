@@ -42,7 +42,7 @@ public @interface TestPlan {
 	 * 
 	 * @return test short description
 	 */
-	String decription() default "";
+	String description() default "";
 
 	/**
 	 * Name of the person who prepared the test
