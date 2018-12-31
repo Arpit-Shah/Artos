@@ -67,6 +67,8 @@ public class TestContext {
 
 	Map<String, Object> globalObject = new HashMap<String, Object>();
 	Map<String, String> globalString = new HashMap<String, String>();
+	Object parameterisedObject1 = null;
+	Object parameterisedObject2 = null;
 
 	/**
 	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
@@ -562,6 +564,32 @@ public class TestContext {
 
 	public void setDataProviderMap(Map<String, TestDataProvider> dataProviderMap) {
 		this.dataProviderMap = dataProviderMap;
+	}
+
+	/**
+	 * Returns parameterised first Object if present otherwise Null
+	 * 
+	 * @return parameterised object or Null
+	 */
+	public Object getParameterisedObject1() {
+		return parameterisedObject1;
+	}
+
+	public void setParameterisedObject1(Object parameterisedObject1) {
+		this.parameterisedObject1 = parameterisedObject1;
+	}
+
+	/**
+	 * Returns parameterised second Object if present otherwise Null
+	 * 
+	 * @return parameterised object or Null
+	 */
+	public Object getParameterisedObject2() {
+		return parameterisedObject2;
+	}
+
+	public void setParameterisedObject2(Object parameterisedObject2) {
+		this.parameterisedObject2 = parameterisedObject2;
 	}
 
 }

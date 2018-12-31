@@ -21,8 +21,6 @@
  ******************************************************************************/
 package com.artos.framework;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,19 +28,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
-import com.artos.annotation.AfterTest;
-import com.artos.annotation.AfterTestSuite;
-import com.artos.annotation.BeforeTest;
-import com.artos.annotation.BeforeTestSuite;
 import com.artos.annotation.DataProvider;
 import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
@@ -123,7 +115,7 @@ public class ScanTestSuite {
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {
-				testobj.setTestPlanDescription(testplan.decription());
+				testobj.setTestPlanDescription(testplan.description());
 				testobj.setTestPlanPreparedBy(testplan.preparedBy());
 				testobj.setTestPlanPreparationDate(testplan.preparationDate());
 				testobj.setTestreviewedBy(testplan.reviewedBy());
@@ -196,15 +188,17 @@ public class ScanTestSuite {
 			testObjWrapperList_All.add(testobj);
 			if (!testcase.skip()) {
 				testObjWrapperList_WithoutSkipped.add(testobj);
+			} else {
+				FWStaticStore.logDebug(testobj.getTestClassObject().getName() + " : TestCase is marked as skip = true");
 			}
 		}
 	}
 
-	private void getAnnotatedMethod(Class<? extends Annotation> annotation) {
-		reflection.getMethodsAnnotatedWith(annotation).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
-			System.out.println(m.getDeclaringClass().getName());
-		});
-	}
+	// private void getAnnotatedMethod(Class<? extends Annotation> annotation) {
+	// reflection.getMethodsAnnotatedWith(annotation).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
+	// System.out.println(m.getDeclaringClass().getName());
+	// });
+	// }
 
 	/**
 	 * logic to bubble sort the elements

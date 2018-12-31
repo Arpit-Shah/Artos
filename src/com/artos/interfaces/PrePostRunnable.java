@@ -21,7 +21,7 @@
  ******************************************************************************/
 package com.artos.interfaces;
 
-import com.artos.framework.infra.Runner;
+import com.artos.framework.FWStaticStore;
 import com.artos.framework.infra.TestContext;
 
 /**
@@ -36,7 +36,7 @@ public interface PrePostRunnable {
 	 * @throws Exception In case of pre execution failed
 	 */
 	default public void beforeTest(TestContext context) throws Exception {
-
+		FWStaticStore.logDebug("beforeTest() default method executed");
 	}
 
 	/**
@@ -46,7 +46,7 @@ public interface PrePostRunnable {
 	 * @throws Exception In case of test of post execution failed
 	 */
 	default public void afterTest(TestContext context) throws Exception {
-
+		FWStaticStore.logDebug("afterTest() default method executed");
 	}
 
 	/**
@@ -56,7 +56,7 @@ public interface PrePostRunnable {
 	 * @throws Exception In case of initialisation failed
 	 */
 	default public void beforeTestSuite(TestContext context) throws Exception {
-
+		FWStaticStore.logDebug("beforeTestSuite() default method executed");
 	}
 
 	/**
@@ -66,6 +66,6 @@ public interface PrePostRunnable {
 	 * @throws Exception In case of cleanup failed
 	 */
 	default public void afterTestSuite(TestContext context) throws Exception {
-
+		FWStaticStore.logDebug("afterTestSuite() default method executed");
 	}
 }

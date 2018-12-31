@@ -19,38 +19,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.annotation;
 
-import java.io.File;
-
-import com.artos.framework.xml.FrameworkConfig;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This class provides container which holds all static element of test framework
+ * 
+ * Annotation {@code BeforeTestUnit} can be used to perform actions that are required prior to starting the test unit. E.g. User may want to do
+ * preparation.
+ * 
+ * <p>
+ * Annotation {@code RetentionPolicy.RUNTIME} is recorded in the class file by the compiler and retained by the VM at run time, so it may be read
+ * reflectively.
+ * </p>
+ *
  */
-public class FWStaticStore {
-
-	public static final String TOOL_NAME = "Artos";
-
-	// default paths
-	public static final String TESTSCRIPT_BASE_DIR = "." + File.separator + "script" + File.separator;
-	public static final String CONFIG_BASE_DIR = "." + File.separator + "conf" + File.separator;
-	public static final String TEMPLATE_BASE_DIR = "." + File.separator + "template" + File.separator;
-	public static final String LOG_BASE_DIR = "." + File.separator + "reporting" + File.separator;
-
-	// Must be kept after default paths initialised
-	public static FrameworkConfig frameworkConfig = null;
-	public static SystemProperties systemProperties = new SystemProperties();
-	public static final String ARTOS_BUILD_VERSION = new Version().getBuildVersion();
-	public static final String ARTOS_BUILD_DATE = new Version().getBuildDate();
-
-	// Global Hashmap key name
-	public static final String GLOBAL_ANNOTATED_TEST_MAP = "ANNOTATED_TEST_MAP";
-
-	public static void logDebug(String log) {
-		if (frameworkConfig.isEnableArtosDebug()) {
-			System.err.println("[DEBUG] " + log);
-		}
-	}
+// Make the annotation available at runtime:
+@Retention(RetentionPolicy.RUNTIME)
+// Allow to use only on types:
+@Target(ElementType.METHOD)
+public @interface BeforeTestUnit {
 
 }
