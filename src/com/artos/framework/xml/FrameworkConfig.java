@@ -89,6 +89,7 @@ public class FrameworkConfig {
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
 	private boolean enableEmailClient = false;
+	private boolean enableArtosDebug = false;
 	private boolean generateEclipseTemplate = false;
 	private boolean generateTestScript = true;
 	private boolean stopOnFail = false;
@@ -232,6 +233,16 @@ public class FrameworkConfig {
 			attr.setValue("enableEmailClient");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableArtosDebug())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableArtosDebug");
+			property.setAttributeNode(attr);
+		}
+		
 		{
 			Element property = doc.createElement("property");
 			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateEclipseTemplate())));
@@ -603,6 +614,9 @@ public class FrameworkConfig {
 					}
 					if ("enableEmailClient".equals(eElement.getAttribute("name"))) {
 						setEnableEmailClient(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("enableArtosDebug".equals(eElement.getAttribute("name"))) {
+						setEnableArtosDebug(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 					if ("generateEclipseTemplate".equals(eElement.getAttribute("name"))) {
 						setGenerateEclipseTemplate(Boolean.parseBoolean(eElement.getTextContent()));
@@ -1031,5 +1045,13 @@ public class FrameworkConfig {
 
 	public void setEnableGUITestSelectorSeqNumber(boolean enableGUITestSelectorSeqNumber) {
 		this.enableGUITestSelectorSeqNumber = enableGUITestSelectorSeqNumber;
+	}
+
+	public boolean isEnableArtosDebug() {
+		return enableArtosDebug;
+	}
+
+	public void setEnableArtosDebug(boolean enableArtosDebug) {
+		this.enableArtosDebug = enableArtosDebug;
 	}
 }
