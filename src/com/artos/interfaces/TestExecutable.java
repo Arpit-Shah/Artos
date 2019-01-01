@@ -21,6 +21,7 @@
  ******************************************************************************/
 package com.artos.interfaces;
 
+import com.artos.framework.FWStaticStore;
 import com.artos.framework.infra.TestContext;
 
 /**
@@ -28,6 +29,8 @@ import com.artos.framework.infra.TestContext;
  */
 public interface TestExecutable {
 
-	public void execute(TestContext context, Object data1, Object data2) throws Exception;
+	default public void execute(TestContext context) throws Exception {
+		FWStaticStore.logDebug("execute() default method executed");
+	}
 
 }
