@@ -45,6 +45,7 @@ public class TestContext {
 
 	private LogWrapper logWrapper;
 	private TestStatus currentTestStatus = TestStatus.PASS;
+	private TestStatus currentUnitTestStatus = TestStatus.PASS;
 	private boolean KnownToFail = false;
 
 	private String strBugTrackingReference = "";
@@ -103,8 +104,16 @@ public class TestContext {
 		}
 
 		/*
-		 * User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed test case status can not become KTF, SKIP or
-		 * PASS.
+		 * This Method maintains Unit Test Status. User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed test
+		 * case status can not become KTF, SKIP or PASS.
+		 */
+		if (testStatus.getValue() >= currentUnitTestStatus.getValue()) {
+			currentUnitTestStatus = testStatus;
+		}
+
+		/*
+		 * This Method maintains Test Case Test Status. User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed
+		 * test case status can not become KTF, SKIP or PASS.
 		 */
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
 			currentTestStatus = testStatus;
@@ -164,10 +173,11 @@ public class TestContext {
 		appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
-		// Update test object with final outcome, if parameterized test cases then status will be tracked in list
+		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
 		// reset status for next test
+		resetUnitTestStatus();
 		resetTestStatus();
 		setKnownToFail(false, "");
 	}
@@ -266,6 +276,12 @@ public class TestContext {
 	private void resetTestStatus() {
 		// Reset for next test
 		currentTestStatus = TestStatus.PASS;
+
+	}
+
+	private void resetUnitTestStatus() {
+		// Reset for next test
+		currentUnitTestStatus = TestStatus.PASS;
 	}
 
 	/**
@@ -590,6 +606,14 @@ public class TestContext {
 
 	public void setParameterisedObject2(Object parameterisedObject2) {
 		this.parameterisedObject2 = parameterisedObject2;
+	}
+
+	public TestStatus getCurrentUnitTestStatus() {
+		return currentUnitTestStatus;
+	}
+
+	public void setCurrentUnitTestStatus(TestStatus currentUnitTestStatus) {
+		this.currentUnitTestStatus = currentUnitTestStatus;
 	}
 
 }

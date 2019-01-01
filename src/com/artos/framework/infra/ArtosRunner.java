@@ -145,7 +145,7 @@ public class ArtosRunner {
 				" SKIP:" + context.getCurrentSkipCount() + 
 				" KTF:" + context.getCurrentKTFCount() + 
 				" EXECUTED:" + context.getTotalTestCount() 
-				// Total does not make sense because parameterized test cases are considered as a test case
+				// Total does not make sense because parameterised test cases are considered as a test case
 				/*+ " TOTAL:" + transformedTestList.size()*/
 				);
 		// @formatter:on
@@ -246,7 +246,7 @@ public class ArtosRunner {
 					notifyTestExecutionStarted(t);
 					// if data provider name is not specified then only execute test once
 					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
-						runIndividualTest(t, null, null);
+						runIndividualTest(t);
 					} else {
 						runParameterizedTest(t);
 					}
@@ -284,9 +284,8 @@ public class ArtosRunner {
 	 * Responsible for execution individual test cases
 	 * 
 	 * @param t TestCase in format {@code TestObjectWrapper}
-	 * @param arg Test parameters
 	 */
-	private void runIndividualTest(TestObjectWrapper t, Object... arg) {
+	private void runIndividualTest(TestObjectWrapper t) {
 		// ********************************************************************************************
 		// TestCase Start
 		// ********************************************************************************************
@@ -298,9 +297,9 @@ public class ArtosRunner {
 
 			// If test timeout is defined then monitor thread for timeout
 			if (0 != t.getTestTimeout()) {
-				runTestWithTimeout(t, arg);
+				runTestWithTimeout(t);
 			} else {
-				runSimpleTest(t, arg);
+				runSimpleTest(t);
 			}
 
 			postTestValidation(t);
@@ -314,57 +313,6 @@ public class ArtosRunner {
 		// ********************************************************************************************
 		// TestCase Finish
 		// ********************************************************************************************
-	}
-
-	/**
-	 * Responsible for execution of a test case.
-	 * 
-	 * @param t TestCase in format {@code TestObjectWrapper}
-	 * @param arg Test parameters
-	 * @throws Exception Exception during test execution
-	 */
-	private void runSimpleTest(TestObjectWrapper t, Object... arg) throws Exception {
-		// --------------------------------------------------------------------------------------------
-		// get test objects new instance and cast it to TestExecutable type
-		// data provider argument should be set to null
-		((TestExecutable) t.getTestClassObject().newInstance()).execute(context, arg[0], arg[1]);
-		// --------------------------------------------------------------------------------------------
-	}
-
-	/**
-	 * Responsible for executing test cases with thread timeout. If test case execution is not finished within expected time then test will be
-	 * considered failed.
-	 * 
-	 * @param t TestCase in format {@code TestObjectWrapper} object
-	 * @param arg Test parameters
-	 * @throws Throwable Exception during test execution
-	 */
-	private void runTestWithTimeout(TestObjectWrapper t, Object... arg) throws Throwable {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<String> future = executor.submit(new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				runSimpleTest(t, arg);
-				return "TEST FINISHED WITHIN TIME";
-			}
-		});
-
-		try {
-			// System.out.println(future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS));
-			future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS);
-		} catch (TimeoutException e) {
-			future.cancel(true);
-			context.setTestStatus(TestStatus.FAIL, "TEST TIMED OUT");
-		} catch (ExecutionException e) {
-			future.cancel(true);
-			if (null == e.getCause()) {
-				// If no cause is listed then throw parent exception
-				throw e;
-			} else {
-				// If cause is listed then only throw cause
-				throw e.getCause();
-			}
-		}
 	}
 
 	/**
@@ -417,6 +365,56 @@ public class ArtosRunner {
 	}
 
 	/**
+	 * Responsible for execution of a test case.
+	 * 
+	 * @param t TestCase in format {@code TestObjectWrapper}
+	 * @throws Exception Exception during test execution
+	 */
+	private void runSimpleTest(TestObjectWrapper t) throws Exception {
+		// --------------------------------------------------------------------------------------------
+		// Run execute Method (This is if test suite is designed as single test per test cases)
+		((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
+		// Run Unit tests (This is if test suite have unit tests)
+		new RunnerTestUnits(context).runSingleThreadUnits(t);
+		// --------------------------------------------------------------------------------------------
+	}
+
+	/**
+	 * Responsible for executing test case with thread timeout. If test case execution is not finished within expected time then test will be
+	 * considered failed.
+	 * 
+	 * @param t TestCase in format {@code TestObjectWrapper} object
+	 * @throws Throwable Exception during test execution
+	 */
+	private void runTestWithTimeout(TestObjectWrapper t) throws Throwable {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Future<String> future = executor.submit(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				runSimpleTest(t);
+				return "TEST CASE FINISHED WITHIN TIME";
+			}
+		});
+
+		try {
+			// System.out.println(future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS));
+			future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS);
+		} catch (TimeoutException e) {
+			future.cancel(true);
+			context.setTestStatus(TestStatus.FAIL, "TEST CASE TIMED OUT");
+		} catch (ExecutionException e) {
+			future.cancel(true);
+			if (null == e.getCause()) {
+				// If no cause is listed then throw parent exception
+				throw e;
+			} else {
+				// If cause is listed then only throw cause
+				throw e.getCause();
+			}
+		}
+	}
+
+	/**
 	 * Responsible for execution of test cases (Considered as child test case) with given parameter. Parameterised object array index and value(s)
 	 * class type(s) will be printed prior to test execution for user's benefit.
 	 * 
@@ -427,13 +425,20 @@ public class ArtosRunner {
 	private void executeChildTest(TestObjectWrapper t, Object[][] data, int arrayIndex) {
 		String userInfo = "DataProvider(" + arrayIndex + ")  : ";
 		if (data[arrayIndex].length == 2) {
-			String firstType = (null == data[arrayIndex][0] ? null : data[arrayIndex][0].getClass().getSimpleName());
-			String secondType = (null == data[arrayIndex][1] ? null : data[arrayIndex][1].getClass().getSimpleName());
+			context.setParameterisedObject1(null == data[arrayIndex][0] ? null : data[arrayIndex][0]);
+			context.setParameterisedObject2(null == data[arrayIndex][1] ? null : data[arrayIndex][1]);
+			String firstType = (context.getParameterisedObject1().getClass().getSimpleName());
+			String secondType = (context.getParameterisedObject2().getClass().getSimpleName());
 			userInfo += "[" + firstType + "][" + secondType + "]";
+
 		} else if (data[arrayIndex].length == 1) {
-			String firstType = (null == data[arrayIndex][0] ? null : data[arrayIndex][0].getClass().getSimpleName());
+			context.setParameterisedObject1(null == data[arrayIndex][0] ? null : data[arrayIndex][0]);
+			context.setParameterisedObject2(null);
+			String firstType = (context.getParameterisedObject1().getClass().getSimpleName());
 			userInfo += "[" + firstType + "][]";
 		} else {
+			context.setParameterisedObject1(null);
+			context.setParameterisedObject2(null);
 			userInfo += "[][]";
 		}
 		context.getLogger().info(userInfo);
@@ -444,20 +449,7 @@ public class ArtosRunner {
 
 		notifyChildTestExecutionStarted(t, userInfo);
 
-		// @formatter:off
-		/* 
-		 * If 2D array then populate both field of the execute method. 
-		 * If 1D array then populate first field with value and second field with null. 
-		 * If 2D/1D array is empty then execute method with both object being null. 
-		 */
-		// @formatter:on
-		if (data[arrayIndex].length == 2) {
-			runIndividualTest(t, data[arrayIndex][0], data[arrayIndex][1]);
-		} else if (data[arrayIndex].length == 1) {
-			runIndividualTest(t, data[arrayIndex][0], null);
-		} else {
-			runIndividualTest(t, null, null);
-		}
+		runIndividualTest(t);
 
 		notifyChildTestExecutionFinished(t);
 
@@ -755,7 +747,7 @@ class runTestInParallel implements Runnable {
 
 			// --------------------------------------------------------------------------------------------
 			// get test objects new instance and cast it to TestExecutable type
-			((TestExecutable) t.getTestClassObject().newInstance()).execute(context, null, null);
+			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {
