@@ -21,6 +21,7 @@
  ******************************************************************************/
 package com.artos.framework;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,11 @@ public class TestObjectWrapper {
 	List<String> groupList = new ArrayList<>();
 	String dataProviderName = "";
 	long testTimeout = 0;
+
+	// TestUnits
+	Method methodBeforeTestUnit = null;
+	Method methodAfterTestUnit = null;
+	List<TestUnitObjectWrapper> testUnitList = null;
 
 	// TestPlan
 	String testPlanDescription = "";
@@ -254,6 +260,38 @@ public class TestObjectWrapper {
 
 	public void setTestTimeout(long testTimeout) {
 		this.testTimeout = testTimeout;
+	}
+
+	public Method getMethodBeforeTestUnit() {
+		return methodBeforeTestUnit;
+	}
+
+	public void setMethodBeforeTestUnit(Method methodBeforeTestUnit) {
+		this.methodBeforeTestUnit = methodBeforeTestUnit;
+	}
+
+	public Method getMethodAfterTestUnit() {
+		return methodAfterTestUnit;
+	}
+
+	public void setMethodAfterTestUnit(Method methodAfterTestUnit) {
+		this.methodAfterTestUnit = methodAfterTestUnit;
+	}
+
+	public Boolean getEnforce() {
+		return enforce;
+	}
+
+	public void setEnforce(Boolean enforce) {
+		this.enforce = enforce;
+	}
+
+	public List<TestUnitObjectWrapper> getTestUnitList() {
+		return testUnitList;
+	}
+
+	public void setTestUnitList(List<TestUnitObjectWrapper> testUnitList) {
+		this.testUnitList = testUnitList;
 	}
 
 }
