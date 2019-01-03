@@ -45,6 +45,10 @@ public class TestUnitObjectWrapper {
 	String dataProviderName = "";
 	long testTimeout = 0;
 
+	// KnowToFail
+	boolean KTF = false;
+	String bugTrackingNumber = "";
+
 	// ExpectedException
 	List<Class<? extends Throwable>> expectedExceptionList = null;
 	String exceptionContains = "";
@@ -53,10 +57,9 @@ public class TestUnitObjectWrapper {
 	/**
 	 * Default constructor
 	 * 
-	 * @param cls test class object
+	 * @param method test method object
 	 * @param skipTest skip property as specified in annotation
 	 * @param testsequence test sequence as specified in annotation
-	 * @param dataProviderName Name of the dataProvider (Upper case)
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 */
 	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, long testTimeout) {
@@ -154,6 +157,22 @@ public class TestUnitObjectWrapper {
 
 	public void setDataProviderName(String dataProviderName) {
 		this.dataProviderName = dataProviderName;
+	}
+
+	public boolean isKTF() {
+		return KTF;
+	}
+
+	public void setKTF(boolean kTF) {
+		KTF = kTF;
+	}
+
+	public String getBugTrackingNumber() {
+		return bugTrackingNumber;
+	}
+
+	public void setBugTrackingNumber(String bugTrackingNumber) {
+		this.bugTrackingNumber = bugTrackingNumber;
 	}
 
 }

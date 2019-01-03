@@ -33,6 +33,7 @@ import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestProgress;
@@ -180,6 +181,31 @@ public class TestContext {
 		resetUnitTestStatus();
 		resetTestStatus();
 		setKnownToFail(false, "");
+	}
+
+	/**
+	 * Concludes test unit result.
+	 * 
+	 * @param unit {@link TestUnitObjectWrapper}
+	 */
+	public void generateUnitTestSummary(TestUnitObjectWrapper unit) {
+		// Test is marked as known to fail and for some reason it pass then
+		// consider that test Fail so user can look in to it
+		if (unit.isKTF()) {
+			if (getCurrentUnitTestStatus() == TestStatus.PASS) {
+				//@formatter:off
+				getLogger().warn("\n**********************************"
+								+"\n***** KTF TEST UNIT PASSED *******"
+								+"\n**********************************");
+				//@formatter:on
+				setTestStatus(TestStatus.FAIL, "KTF Test unit passed, which is not as expected");
+			}
+		}
+
+		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
+				+ unit.getTestUnitMethod().getName() + "()\n");
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
+				+ "] : " + unit.getTestUnitMethod().getName() + "() =>" + unit.getBugTrackingNumber());
 	}
 
 	/**

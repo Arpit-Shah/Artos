@@ -375,7 +375,7 @@ public class ScanTestSuite {
 	/**
 	 * Scans for Test units within provided test class
 	 * 
-	 * @param type current test case class
+	 * @param testObj current test case object
 	 */
 	public void scanForTestUnits(TestObjectWrapper testObj) {
 
@@ -413,6 +413,7 @@ public class ScanTestSuite {
 		// Iterate through all valid methods and construct a list of executable methods
 		for (Method method : methods) {
 			Unit unit = method.getAnnotation(Unit.class);
+			KnownToFail ktf = method.getAnnotation(KnownToFail.class);
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 
 			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.testtimeout());
@@ -422,6 +423,12 @@ public class ScanTestSuite {
 				testUnitObj.setExpectedExceptionList(expectedExceptionsList);
 				testUnitObj.setExceptionContains(expectedException.contains());
 				testUnitObj.setEnforce(expectedException.enforce());
+			}
+
+			// KTF is optional annotation so it can be null
+			if (null != ktf) {
+				testUnitObj.setKTF(ktf.ktf());
+				testUnitObj.setBugTrackingNumber(ktf.bugref());
 			}
 
 			testUnitWrapperList_All.add(testUnitObj);

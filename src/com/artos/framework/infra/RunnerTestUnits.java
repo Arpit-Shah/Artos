@@ -50,9 +50,8 @@ public class RunnerTestUnits {
 	 * Run unit tests
 	 * 
 	 * @param t test case
-	 * @throws Exception
 	 */
-	public void runSingleThreadUnits(TestObjectWrapper t) throws Exception {
+	public void runSingleThreadUnits(TestObjectWrapper t) {
 		this.t = t;
 		// ********************************************************************************************
 		// TestUnits Execution Start
@@ -98,20 +97,20 @@ public class RunnerTestUnits {
 					t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
 				}
 
-				// long testUnitDuration = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
-				// @formatter:off
-				context.getLogger().info(""
-					+ "\n[" 
-					+ context.getCurrentUnitTestStatus() 
-					+ "] : " + unit.getTestUnitMethod().getName() + "()" 
-					+ "\n"
-					/*+ "[Duration : "
-					+ String.format("%d min, %d sec", 
-							TimeUnit.MILLISECONDS.toMinutes(testUnitDuration),
-							TimeUnit.MILLISECONDS.toSeconds(testUnitDuration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(testUnitDuration)))
-					+ "]\n"*/
-				);
-				// @formatter:on
+//				// long testUnitDuration = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
+//				// @formatter:off
+//				context.getLogger().info(""
+//					+ "\n[" 
+//					+ context.getCurrentUnitTestStatus() 
+//					+ "] : " + unit.getTestUnitMethod().getName() + "()" 
+//					+ "\n"
+//					/*+ "[Duration : "
+//					+ String.format("%d min, %d sec", 
+//							TimeUnit.MILLISECONDS.toMinutes(testUnitDuration),
+//							TimeUnit.MILLISECONDS.toSeconds(testUnitDuration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(testUnitDuration)))
+//					+ "]\n"*/
+//				);
+//				// @formatter:on
 			}
 			// --------------------------------------------------------------------------------------------
 
@@ -151,7 +150,7 @@ public class RunnerTestUnits {
 			processTestUnitException(unit, e);
 		} finally {
 			unit.setTestUnitFinishTime(System.currentTimeMillis());
-			// context.generateTestSummary(unit);
+			context.generateUnitTestSummary(unit);
 		}
 		// ********************************************************************************************
 		// TestUnit Finish
@@ -296,7 +295,7 @@ public class RunnerTestUnits {
 	 * If test is marked as KTF then user already knows that this test scenario is known to fail, so forcefully failing will dilute the meaning of having known to fail status.
 	 * </PRE>
 	 * 
-	 * @param t {@code TestObjectWrapper} object
+	 * @param unit {@code TestUnitObjectWrapper} object
 	 */
 	private void postTestValidation(TestUnitObjectWrapper unit) {
 		if (context.getCurrentTestStatus() == TestStatus.PASS || context.getCurrentTestStatus() == TestStatus.FAIL) {
