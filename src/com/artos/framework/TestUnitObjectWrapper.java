@@ -36,7 +36,7 @@ public class TestUnitObjectWrapper {
 	/*
 	 * This will be used to store all parameterised tests status. If test case is not parameterised test case then only one status will be stored
 	 */
-	List<TestStatus> testOutcomeList = new ArrayList<>();
+	List<TestStatus> testUnitOutcomeList = new ArrayList<>();
 
 	// TestCase
 	Method testUnitMethod = null;
@@ -143,14 +143,6 @@ public class TestUnitObjectWrapper {
 		this.enforce = enforce;
 	}
 
-	public List<TestStatus> getTestOutcomeList() {
-		return testOutcomeList;
-	}
-
-	public void setTestOutcomeList(List<TestStatus> testOutcomeList) {
-		this.testOutcomeList = testOutcomeList;
-	}
-
 	public String getDataProviderName() {
 		return dataProviderName;
 	}
@@ -173,6 +165,14 @@ public class TestUnitObjectWrapper {
 
 	public void setBugTrackingNumber(String bugTrackingNumber) {
 		this.bugTrackingNumber = bugTrackingNumber;
+	}
+
+	public List<TestStatus> getTestUnitOutcomeList() {
+		return testUnitOutcomeList;
+	}
+
+	public void setTestUnitOutcomeList(List<TestStatus> testUnitOutcomeList) {
+		this.testUnitOutcomeList = testUnitOutcomeList;
 	}
 
 }

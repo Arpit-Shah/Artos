@@ -37,6 +37,7 @@ import com.artos.framework.FWStaticStore;
 import com.artos.framework.GUITestSelector;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.listener.ExtentReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
 import com.artos.framework.xml.TestScriptParser;
@@ -192,6 +193,7 @@ public class ArtosRunner {
 				if ("".equals(t.getDataProviderName()) && t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
 					errorcount++;
 					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
+					highlightTestUnitFailure(t, 0);
 
 					// If test case is with data provider
 				} else if (!"".equals(t.getDataProviderName())) {
@@ -199,12 +201,31 @@ public class ArtosRunner {
 						if (t.getTestOutcomeList().get(j) == TestStatus.FAIL) {
 							errorcount++;
 							System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()) + " : DataProvider[" + j + "]");
+							highlightTestUnitFailure(t, j);
 						}
 					}
 				}
 			}
 
 			System.err.println("********************************************************\n********************************************************");
+		}
+	}
+
+	/**
+	 * This method iterate through each unit test case and prints failed unit test case name. Each unit test case maintains test status list. If no
+	 * data provider is used then list should have only one component, if dataprovider is used then list could have same number of component as
+	 * executed data provider.
+	 * 
+	 * @param t TestObjectWrapper object
+	 * @param index test status index which is relevant for current test
+	 */
+	private void highlightTestUnitFailure(TestObjectWrapper t, int index) {
+		for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
+			// int unitErrorCount = 0;
+			if (unit.getTestUnitOutcomeList().get(index) == TestStatus.FAIL) {
+				// unitErrorCount++;
+				System.err.println(String.format("    |- %s"/* %-4s%s", unitErrorCount */, unit.getTestUnitMethod().getName() + "()"));
+			}
 		}
 	}
 

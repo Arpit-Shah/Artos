@@ -21,8 +21,10 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -180,6 +182,7 @@ public class TestContext {
 		// reset status for next test
 		resetUnitTestStatus();
 		resetTestStatus();
+		// Reset Known to fail status
 		setKnownToFail(false, "");
 	}
 
@@ -202,10 +205,16 @@ public class TestContext {
 			}
 		}
 
+		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
+
 		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
-				+ unit.getTestUnitMethod().getName() + "()\n");
+				+ unit.getTestUnitMethod().getName() + "()\n" + ".........................................................................");
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "] : " + unit.getTestUnitMethod().getName() + "() =>" + unit.getBugTrackingNumber());
+
+		// reset status for next test
+		resetUnitTestStatus();
 	}
 
 	/**
