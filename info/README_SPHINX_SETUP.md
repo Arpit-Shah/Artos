@@ -51,8 +51,11 @@ pip install -U sphinx
 ### Build First project ([Sphinx Tutorial](http://www.sphinx-doc.org/en/1.7/tutorial.html))
 * Go to location `C:\ASh\Programming\Artos\Sphinx\01.00.0000\`
 * Run command `.\make.bat html` to see output of .rst file to html in _build directory
+* Run command `.\make.bat singlehtml` to see output of .rst file to single html in _build directory
 OR
 * If you move generated files to alternate location `Example : C:\User\test\`, then write own .bat file to execute build with following command.
 > `sphinx-build -b html "C:\User\test" "C:\User\test\_build"`
 * If you see HTML output inside build directory then Sphinx setup is working and Sphinx is building correctly.
+
+### Install `sphinx_rtd_theme` theme and change conf.py to work correctly
 
