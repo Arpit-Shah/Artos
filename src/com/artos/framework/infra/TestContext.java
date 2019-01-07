@@ -21,10 +21,8 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -37,7 +35,6 @@ import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.xml.TestSuite;
-import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestProgress;
 
 /**
@@ -59,7 +56,7 @@ public class TestContext {
 	private long currentKTFCount = 0;
 	private TestSuite testSuite = null;
 	private int totalLoopCount = 1;
-	private Class<? extends PrePostRunnable> prePostRunnableObj = null;
+	private Class<?> prePostRunnableObj = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
 	Map<String, TestDataProvider> dataProviderMap;
@@ -384,11 +381,11 @@ public class TestContext {
 		this.totalLoopCount = totalLoopCount;
 	}
 
-	public Class<? extends PrePostRunnable> getPrePostRunnableObj() {
+	public Class<?> getPrePostRunnableObj() {
 		return prePostRunnableObj;
 	}
 
-	public void setPrePostRunnableObj(Class<? extends PrePostRunnable> prePostRunnableObj) {
+	public void setPrePostRunnableObj(Class<?> prePostRunnableObj) {
 		this.prePostRunnableObj = prePostRunnableObj;
 	}
 

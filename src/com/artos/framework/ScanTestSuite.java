@@ -37,7 +37,11 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
+import com.artos.annotation.AfterTest;
+import com.artos.annotation.AfterTestSuite;
 import com.artos.annotation.AfterTestUnit;
+import com.artos.annotation.BeforeTest;
+import com.artos.annotation.BeforeTestSuite;
 import com.artos.annotation.BeforeTestUnit;
 import com.artos.annotation.DataProvider;
 import com.artos.annotation.ExpectedException;
@@ -65,9 +69,20 @@ public class ScanTestSuite {
 	List<TestUnitObjectWrapper> testUnitWrapperList_WithoutSkipped = new ArrayList<>();
 	List<String> FQCNList = new ArrayList<>();
 	Map<String, TestDataProvider> dataProviderMap = new HashMap<>();
+	Method beforeTestSuite = null;
+	Method afterTestSuite = null;
+	Method beforeTest = null;
+	Method afterTest = null;
 
 	/**
-	 * Default constructor. Scans all packages within provided package
+	 * Default constructor
+	 */
+	public ScanTestSuite() {
+
+	}
+
+	/**
+	 * Scans all packages within provided package
 	 * 
 	 * @param packageName Base package name
 	 */
@@ -447,6 +462,84 @@ public class ScanTestSuite {
 	}
 
 	/**
+	 * logic to bubble sort the elements
+	 * 
+	 * @param testUnitObjWrapperList List of all test unit objects which requires sorting
+	 * @return
+	 */
+	private List<TestUnitObjectWrapper> bubble_srt_units(List<TestUnitObjectWrapper> testUnitWrapperList) {
+		return testUnitWrapperList.parallelStream().sorted(Comparator.comparing(m -> m.getTestsequence())).collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns all scanned unit test cases wrapped with TestUnitObjWrapper components. if user has chosen to remove "SKIPPED" test cases then any test
+	 * units marked with "skip=true" will be omitted from the list. If user has chosen to sort by sequence number then test units will be sorted by
+	 * sequence number.
+	 * 
+	 * @param sortBySeqNum Enables sorting of the test cases
+	 * @param removeSkippedTests Enables removal of test cases which are marked 'skip=true'
+	 * @return List of {@code TestUnitObjectWrapper}
+	 */
+	private List<TestUnitObjectWrapper> getTestUnitObjectWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
+		if (sortBySeqNum) {
+			return removeSkippedTests ? bubble_srt_units(testUnitWrapperList_WithoutSkipped) : bubble_srt_units(testUnitWrapperList_All);
+		}
+
+		// If sorting is not required
+		return removeSkippedTests ? testUnitWrapperList_WithoutSkipped : testUnitWrapperList_All;
+	}
+
+	// **********************************************************************
+	//
+	// Scanning a class for common pre and post methods (Non Unit)
+	//
+	// **********************************************************************
+
+	/**
+	 * Scans for Test units within provided test class
+	 * 
+	 * @param testObj current test case object
+	 */
+	public void scanForPrePostMethods(Class<?> cl) {
+
+		Class<?> klass = cl;
+
+		// Scan method within all classes and super classes
+		while (klass != Object.class) {
+			/*
+			 * need to iterated thought hierarchy in order to retrieve methods from above the current instance iterate though the list of methods
+			 * declared in the class represented by klass variable, and add those annotated with the specified annotation
+			 */
+			final List<Method> allMethods = new ArrayList<Method>(Arrays.asList(klass.getDeclaredMethods()));
+			for (final Method method : allMethods) {
+				if (isValidMethod(method, BeforeTestSuite.class)) {
+					beforeTestSuite = method;
+				}
+
+				if (isValidMethod(method, AfterTestSuite.class)) {
+					afterTestSuite = method;
+				}
+
+				if (isValidMethod(method, BeforeTest.class)) {
+					beforeTest = method;
+				}
+
+				if (isValidMethod(method, AfterTest.class)) {
+					afterTest = method;
+				}
+			}
+			// move to the upper class in the hierarchy in search for more methods
+			klass = klass.getSuperclass();
+		}
+	}
+
+	// **********************************************************************
+	//
+	// Generic
+	//
+	// **********************************************************************
+
+	/**
 	 * Validates if method follows all rules of being {@link Unit}
 	 * 
 	 * @param method method object
@@ -487,33 +580,6 @@ public class ScanTestSuite {
 		return true;
 	}
 
-	/**
-	 * logic to bubble sort the elements
-	 * 
-	 * @param testUnitObjWrapperList List of all test unit objects which requires sorting
-	 * @return
-	 */
-	private List<TestUnitObjectWrapper> bubble_srt_units(List<TestUnitObjectWrapper> testUnitWrapperList) {
-		return testUnitWrapperList.parallelStream().sorted(Comparator.comparing(m -> m.getTestsequence())).collect(Collectors.toList());
-	}
-
-	/**
-	 * Returns all scanned unit test cases wrapped with TestUnitObjWrapper components. if user has chosen to remove "SKIPPED" test cases then any test
-	 * units marked with "skip=true" will be omitted from the list. If user has chosen to sort by sequence number then test units will be sorted by
-	 * sequence number.
-	 * 
-	 * @param sortBySeqNum Enables sorting of the test cases
-	 * @param removeSkippedTests Enables removal of test cases which are marked 'skip=true'
-	 * @return List of {@code TestUnitObjectWrapper}
-	 */
-	private List<TestUnitObjectWrapper> getTestUnitObjectWrapperList(boolean sortBySeqNum, boolean removeSkippedTests) {
-		if (sortBySeqNum) {
-			return removeSkippedTests ? bubble_srt_units(testUnitWrapperList_WithoutSkipped) : bubble_srt_units(testUnitWrapperList_All);
-		}
-
-		// If sorting is not required
-		return removeSkippedTests ? testUnitWrapperList_WithoutSkipped : testUnitWrapperList_All;
-	}
 	// **********************************************************************
 	//
 	// Getters and Setters
@@ -550,6 +616,22 @@ public class ScanTestSuite {
 
 	public void setTestUnitWrapperList_WithoutSkipped(List<TestUnitObjectWrapper> testUnitWrapperList_WithoutSkipped) {
 		this.testUnitWrapperList_WithoutSkipped = testUnitWrapperList_WithoutSkipped;
+	}
+
+	public Method getBeforeTestSuite() {
+		return beforeTestSuite;
+	}
+
+	public Method getAfterTestSuite() {
+		return afterTestSuite;
+	}
+
+	public Method getBeforeTest() {
+		return beforeTest;
+	}
+
+	public Method getAfterTest() {
+		return afterTest;
 	}
 
 }

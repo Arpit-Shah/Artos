@@ -44,12 +44,11 @@ import com.artos.framework.FWStaticStore;
 import com.artos.framework.xml.FrameworkConfig;
 import com.artos.framework.xml.TestScriptParser;
 import com.artos.framework.xml.TestSuite;
-import com.artos.interfaces.PrePostRunnable;
 import com.artos.interfaces.TestExecutable;
 
 public class Runner {
 
-	Class<? extends PrePostRunnable> cls;
+	Class<?> cls;
 	// Default thread count should be 1
 	int threadCount = 1;
 
@@ -57,7 +56,7 @@ public class Runner {
 	 * @param cls Class which contains main() method
 	 * @see TestContext
 	 */
-	public Runner(Class<? extends PrePostRunnable> cls) {
+	public Runner(Class<?> cls) {
 		this.cls = cls;
 	}
 
