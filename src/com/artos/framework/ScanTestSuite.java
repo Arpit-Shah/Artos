@@ -243,9 +243,15 @@ public class ScanTestSuite {
 	public List<TestPlanWrapper> getTestPlan(TestContext context) {
 		List<TestPlanWrapper> testPlanList = new ArrayList<>();
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
-			testPlanList.add(new TestPlanWrapper(testObject.getTestClassObject().getName(), testObject.getTestPlanDescription(),
-					testObject.getTestPlanPreparedBy(), testObject.getTestPlanPreparationDate(), testObject.getTestreviewedBy(),
-					testObject.getTestReviewDate(), testObject.getTestPlanBDD()));
+			TestPlanWrapper testPlan = new TestPlanWrapper();
+			testPlan.setTestPlan(testObject.getTestClassObject().getName(), testObject.getTestPlanDescription(), testObject.getTestPlanPreparedBy(),
+					testObject.getTestPlanPreparationDate(), testObject.getTestreviewedBy(), testObject.getTestReviewDate(),
+					testObject.getTestPlanBDD());
+			testPlan.setTestPlanGroup(testObject.getGroupList().toString());
+			testPlan.setTestPlanKTF(testObject.isKTF(), testObject.getBugTrackingNumber());
+			testPlan.setTestPlanSkip(testObject.getTestsequence(), testObject.isSkipTest(), testObject.getDataProviderName());
+
+			testPlanList.add(testPlan);
 		}
 		return testPlanList;
 	}
