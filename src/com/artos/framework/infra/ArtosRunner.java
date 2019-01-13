@@ -237,14 +237,14 @@ public class ArtosRunner {
 		notifyTestSuiteExecutionStarted(context.getPrePostRunnableObj().getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 		ScanTestSuite scan = new ScanTestSuite();
-		scan.scanForPrePostMethods(context.getPrePostRunnableObj());
+		scan.scanForBeforeAfterMethods(context);
 
 		try {
 
 			// Run prior to each test suite
-			if (null != scan.getBeforeTestSuite()) {
+			if (null != context.getBeforeTestSuite()) {
 				notifyBeforeTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
-				scan.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -261,9 +261,9 @@ public class ArtosRunner {
 					}
 
 					// Run Pre Method prior to any test Execution
-					if (null != scan.getBeforeTest()) {
+					if (null != context.getBeforeTest()) {
 						notifyBeforeTestMethodStarted(t);
-						scan.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+						context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
 						notifyBeforeTestMethodFinished(t);
 					}
 
@@ -277,9 +277,9 @@ public class ArtosRunner {
 					notifyTestExecutionFinished(t);
 
 					// Run Post Method prior to any test Execution
-					if (null != scan.getAfterTest()) {
+					if (null != context.getAfterTest()) {
 						notifyAfterTestMethodStarted(t);
-						scan.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+						context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
 						notifyAfterTestMethodFinished(t);
 					}
 
@@ -288,9 +288,9 @@ public class ArtosRunner {
 			}
 
 			// Run at the end of each test suit
-			if (null != scan.getAfterTestSuite()) {
+			if (null != context.getAfterTestSuite()) {
 				notifyAfterTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
-				scan.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -567,12 +567,12 @@ public class ArtosRunner {
 		notifyTestSuiteExecutionStarted(context.getPrePostRunnableObj().getName());
 		context.setTestSuiteStartTime(System.currentTimeMillis());
 		ScanTestSuite scan = new ScanTestSuite();
-		scan.scanForPrePostMethods(context.getPrePostRunnableObj());
+		scan.scanForBeforeAfterMethods(context);
 
 		// Run prior to each test suite
-		if (null != scan.getBeforeTestSuite()) {
+		if (null != context.getBeforeTestSuite()) {
 			notifyBeforeTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
-			scan.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
 
@@ -600,9 +600,9 @@ public class ArtosRunner {
 		}
 
 		// Run at the end of each test suit
-		if (null != scan.getAfterTestSuite()) {
+		if (null != context.getAfterTestSuite()) {
 			notifyAfterTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
-			scan.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 			notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
 		// ********************************************************************************************
@@ -764,12 +764,12 @@ class runTestInParallel implements Runnable {
 		try {
 			// notifyTestExecutionStarted(t);
 			// Run Pre Method prior to any test Execution
-			scan.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
 
 			runIndividualTest(t);
 
 			// Run Post Method prior to any test Execution
-			scan.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 			// notifyTestExecutionFinished(t);
 		} catch (Exception e) {
 			e.printStackTrace();

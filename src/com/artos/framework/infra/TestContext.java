@@ -21,6 +21,7 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,20 +57,28 @@ public class TestContext {
 	private long currentKTFCount = 0;
 	private TestSuite testSuite = null;
 	private int totalLoopCount = 1;
-	private Class<?> prePostRunnableObj = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
-	Map<String, TestDataProvider> dataProviderMap;
+	
+	// Objects required for running test cases
+	private Map<String, TestDataProvider> dataProviderMap;
+	private Class<?> prePostRunnableObj = null;
+	private Method beforeTestSuite = null;
+	private Method afterTestSuite = null;
+	private Method beforeTest = null;
+	private Method afterTest = null;
+	private Method beforeTestUnit = null;
+	private Method afterTestUnit = null;
 
 	// Test suite start time
 	private long testSuiteStartTime = 0;
 	// Test suite finish time
 	private long testSuiteFinishTime = 0;
 
-	Map<String, Object> globalObject = new HashMap<String, Object>();
-	Map<String, String> globalString = new HashMap<String, String>();
-	Object parameterisedObject1 = null;
-	Object parameterisedObject2 = null;
+	private Map<String, Object> globalObject = new HashMap<String, Object>();
+	private Map<String, String> globalString = new HashMap<String, String>();
+	private Object parameterisedObject1 = null;
+	private Object parameterisedObject2 = null;
 
 	/**
 	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
@@ -646,6 +655,54 @@ public class TestContext {
 
 	public void setCurrentUnitTestStatus(TestStatus currentUnitTestStatus) {
 		this.currentUnitTestStatus = currentUnitTestStatus;
+	}
+
+	public Method getBeforeTestSuite() {
+		return beforeTestSuite;
+	}
+
+	public void setBeforeTestSuite(Method beforeTestSuite) {
+		this.beforeTestSuite = beforeTestSuite;
+	}
+
+	public Method getAfterTestSuite() {
+		return afterTestSuite;
+	}
+
+	public void setAfterTestSuite(Method afterTestSuite) {
+		this.afterTestSuite = afterTestSuite;
+	}
+
+	public Method getBeforeTest() {
+		return beforeTest;
+	}
+
+	public void setBeforeTest(Method beforeTest) {
+		this.beforeTest = beforeTest;
+	}
+
+	public Method getAfterTest() {
+		return afterTest;
+	}
+
+	public void setAfterTest(Method afterTest) {
+		this.afterTest = afterTest;
+	}
+
+	public Method getBeforeTestUnit() {
+		return beforeTestUnit;
+	}
+
+	public void setBeforeTestUnit(Method beforeTestUnit) {
+		this.beforeTestUnit = beforeTestUnit;
+	}
+
+	public Method getAfterTestUnit() {
+		return afterTestUnit;
+	}
+
+	public void setAfterTestUnit(Method afterTestUnit) {
+		this.afterTestUnit = afterTestUnit;
 	}
 
 }

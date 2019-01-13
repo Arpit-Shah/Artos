@@ -69,10 +69,6 @@ public class ScanTestSuite {
 	List<TestUnitObjectWrapper> testUnitWrapperList_WithoutSkipped = new ArrayList<>();
 	List<String> FQCNList = new ArrayList<>();
 	Map<String, TestDataProvider> dataProviderMap = new HashMap<>();
-	Method beforeTestSuite = null;
-	Method afterTestSuite = null;
-	Method beforeTest = null;
-	Method afterTest = null;
 
 	/**
 	 * Default constructor
@@ -111,11 +107,6 @@ public class ScanTestSuite {
 			}
 			dataProviderMap.put(dataProviderName, testDataProvider);
 		});
-
-		// getAnnotatedMethod(BeforeTestSuite.class);
-		// getAnnotatedMethod(AfterTestSuite.class);
-		// getAnnotatedMethod(BeforeTest.class);
-		// getAnnotatedMethod(AfterTest.class);
 
 		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
 
@@ -217,12 +208,6 @@ public class ScanTestSuite {
 			}
 		}
 	}
-
-	// private void getAnnotatedMethod(Class<? extends Annotation> annotation) {
-	// reflection.getMethodsAnnotatedWith(annotation).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
-	// System.out.println(m.getDeclaringClass().getName());
-	// });
-	// }
 
 	/**
 	 * logic to bubble sort the elements
@@ -411,6 +396,8 @@ public class ScanTestSuite {
 			 */
 			final List<Method> allMethods = new ArrayList<Method>(Arrays.asList(klass.getDeclaredMethods()));
 			for (final Method method : allMethods) {
+
+				// If method is unit test then can not be pre post
 				if (isValidMethod(method, Unit.class)) {
 					methods.add(method);
 					continue;
@@ -504,11 +491,11 @@ public class ScanTestSuite {
 	/**
 	 * Scans for Test units within provided test class
 	 * 
-	 * @param testObj current test case object
+	 * @param context current test context
 	 */
-	public void scanForPrePostMethods(Class<?> cl) {
+	public void scanForBeforeAfterMethods(TestContext context) {
 
-		Class<?> klass = cl;
+		Class<?> klass = context.getPrePostRunnableObj();
 
 		// Scan method within all classes and super classes
 		while (klass != Object.class) {
@@ -518,20 +505,35 @@ public class ScanTestSuite {
 			 */
 			final List<Method> allMethods = new ArrayList<Method>(Arrays.asList(klass.getDeclaredMethods()));
 			for (final Method method : allMethods) {
-				if (isValidMethod(method, BeforeTestSuite.class)) {
-					beforeTestSuite = method;
+
+				// If one method is found then do not accept any other
+				if (null == context.getBeforeTestSuite() && isValidMethod(method, BeforeTestSuite.class)) {
+					context.setBeforeTestSuite(method);
 				}
 
-				if (isValidMethod(method, AfterTestSuite.class)) {
-					afterTestSuite = method;
+				// If one method is found then do not accept any other
+				if (null == context.getAfterTestSuite() && isValidMethod(method, AfterTestSuite.class)) {
+					context.setAfterTestSuite(method);
 				}
 
-				if (isValidMethod(method, BeforeTest.class)) {
-					beforeTest = method;
+				// If one method is found then do not accept any other
+				if (null == context.getBeforeTest() && isValidMethod(method, BeforeTest.class)) {
+					context.setBeforeTest(method);
 				}
 
-				if (isValidMethod(method, AfterTest.class)) {
-					afterTest = method;
+				// If one method is found then do not accept any other
+				if (null == context.getAfterTest() && isValidMethod(method, AfterTest.class)) {
+					context.setAfterTest(method);
+				}
+
+				// If one method is found then do not accept any other
+				if (null == context.getBeforeTestUnit() && isValidMethod(method, BeforeTestUnit.class)) {
+					context.setBeforeTestUnit(method);
+				}
+
+				// If one method is found then do not accept any other
+				if (null == context.getAfterTestUnit() && isValidMethod(method, AfterTestUnit.class)) {
+					context.setAfterTestUnit(method);
 				}
 			}
 			// move to the upper class in the hierarchy in search for more methods
@@ -622,22 +624,6 @@ public class ScanTestSuite {
 
 	public void setTestUnitWrapperList_WithoutSkipped(List<TestUnitObjectWrapper> testUnitWrapperList_WithoutSkipped) {
 		this.testUnitWrapperList_WithoutSkipped = testUnitWrapperList_WithoutSkipped;
-	}
-
-	public Method getBeforeTestSuite() {
-		return beforeTestSuite;
-	}
-
-	public Method getAfterTestSuite() {
-		return afterTestSuite;
-	}
-
-	public Method getBeforeTest() {
-		return beforeTest;
-	}
-
-	public Method getAfterTest() {
-		return afterTest;
 	}
 
 }

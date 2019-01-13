@@ -77,10 +77,12 @@ public class RunnerTestUnits {
 					}
 				}
 
-				// Print Method name
-				// context.getLogger().info("\n<" + unit.getTestUnitMethod().getName() + "()>\n");
+				// Run global before method prior to each test unit execution
+				if (null != context.getBeforeTestUnit()) {
+					context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				}
 
-				// Run Pre Method prior to any test unit Execution
+				// Run custom before method prior to each test unit execution
 				if (null != t.getMethodBeforeTestUnit()) {
 					t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
 				}
@@ -92,9 +94,14 @@ public class RunnerTestUnits {
 					runParameterizedUnitTest(unit);
 				}
 
-				// Run Post Method prior to any test unit Execution
+				// Run custom after method post each test unit execution
 				if (null != t.getMethodAfterTestUnit()) {
 					t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				}
+				
+				// Run global after method post each test unit execution
+				if (null != context.getAfterTestUnit()) {
+					context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				}
 
 //				// long testUnitDuration = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
