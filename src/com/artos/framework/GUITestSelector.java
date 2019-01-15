@@ -248,7 +248,7 @@ public class GUITestSelector {
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
 			// set column widths, we know we only have 2 columns for now
 			col = testTableView.getColumnModel().getColumn(1);
-			col.setPreferredWidth(35);
+			col.setPreferredWidth(45);
 
 			// set column1 text to centre align
 			renderer = new DefaultTableCellRenderer();
@@ -256,7 +256,7 @@ public class GUITestSelector {
 			col.setCellRenderer(renderer);
 
 			col = testTableView.getColumnModel().getColumn(2);
-			col.setPreferredWidth(420);
+			col.setPreferredWidth(410);
 		} else {
 			col = testTableView.getColumnModel().getColumn(1);
 			col.setPreferredWidth(465);
