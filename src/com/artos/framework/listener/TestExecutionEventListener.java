@@ -73,9 +73,8 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestMethodStarted(TestObjectWrapper t) {
-		logger.trace("\n---------------- BeforeTest Method Started -------------------");
-
+	public void printTestPlan(TestObjectWrapper t) {
+		logger.trace("\n---------------- printTestPlan Method Started -------------------");
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("*************************************************************************");
@@ -111,6 +110,11 @@ public class TestExecutionEventListener implements TestProgress {
 		strBDD = strBDD.replaceAll("\\b([Tt][Hh][Ee][Nn])\\b", "\nTHEN");
 		strBDD = strBDD.replaceAll("\\b([Bb][Uu][Tt])\\b", "\nBUT");
 		return strBDD;
+	}
+
+	@Override
+	public void beforeTestMethodStarted(TestObjectWrapper t) {
+		logger.trace("\n---------------- BeforeTest Method Started -------------------");
 	}
 
 	@Override

@@ -84,6 +84,14 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
+	public void printTestPlan(TestObjectWrapper t);
+
+	/**
+	 * Method is called before {@code BeforeTest} method execution starts
+	 * 
+	 * @param t test object wrapper
+	 * @see TestObjectWrapper
+	 */
 	public void beforeTestMethodStarted(TestObjectWrapper t);
 
 	/**

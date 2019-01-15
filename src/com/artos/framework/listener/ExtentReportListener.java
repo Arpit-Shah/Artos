@@ -165,6 +165,12 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void printTestPlan(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void beforeTestMethodStarted(TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
