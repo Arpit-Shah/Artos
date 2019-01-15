@@ -28,10 +28,12 @@ public class TestSuite {
 
 	String suiteName;
 	int loopCount = 1; // default 1
-	List<String> groupList;
+	List<String> testGroupList;
+	List<String> testUnitGroupList;
 	List<String> testFQCNList;
 	Map<String, String> testSuiteParameters;
 	String threadName;
+	String version;
 
 	// *****************************************************************
 	// Getters and setters
@@ -68,20 +70,36 @@ public class TestSuite {
 		this.suiteName = suiteName;
 	}
 
-	public List<String> getGroupList() {
-		return groupList;
-	}
-
-	public void setGroupList(List<String> groupList) {
-		this.groupList = groupList;
-	}
-
 	public int getLoopCount() {
 		return loopCount;
 	}
 
 	public void setLoopCount(int loopCount) {
 		this.loopCount = loopCount;
+	}
+
+	public List<String> getTestGroupList() {
+		return testGroupList;
+	}
+
+	public void setTestGroupList(List<String> testGroupList) {
+		this.testGroupList = testGroupList;
+	}
+
+	public List<String> getTestUnitGroupList() {
+		return testUnitGroupList;
+	}
+
+	public void setTestUnitGroupList(List<String> testUnitGroupList) {
+		this.testUnitGroupList = testUnitGroupList;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 }

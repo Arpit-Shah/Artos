@@ -85,14 +85,18 @@ public class TestScriptParser {
 	 */
 	private List<TestSuite> readTestScript(Document doc) throws InvalidDataException {
 
+		String version = "0";
 		List<TestSuite> testSuiteList = new ArrayList<>();
 
-		// System.out.println("Root element :" +
-		// doc.getDocumentElement().getNodeName());
+		Element rootElement = doc.getDocumentElement();
+		if (!"".equals(rootElement.getAttribute("version"))) {
+			version = rootElement.getAttribute("version");
+		}
 		NodeList suiteNodeList = doc.getElementsByTagName("suite");
 
 		for (int temp = 0; temp < suiteNodeList.getLength(); temp++) {
 			TestSuite _suite = new TestSuite();
+			_suite.setVersion(version);
 
 			Node suiteNode = suiteNodeList.item(temp);
 			parseSuite(_suite, suiteNode);
@@ -112,7 +116,7 @@ public class TestScriptParser {
 			if ("suite".equals(eElement.getNodeName())) {
 				_suite.setSuiteName(eElement.getAttribute("name").trim());
 
-				// If loopcount attribute is not provided then assume 1, if
+				// If loop count attribute is not provided then assume 1, if
 				// provided then check if it is valid
 				String loopCount = eElement.getAttribute("loopcount").trim();
 
@@ -153,16 +157,28 @@ public class TestScriptParser {
 				_suite.setTestSuiteParameters(new HashMap<>());
 			}
 
-			NodeList groupsNodeList = eElement.getElementsByTagName("groups");
-			if (groupsNodeList.getLength() > 0) {
-				for (int temp = 0; temp < groupsNodeList.getLength(); temp++) {
-					Node groupsNode = groupsNodeList.item(temp);
-					parseGroups(_suite, groupsNode);
+			NodeList testGroupsNodeList = eElement.getElementsByTagName("testcasegroups");
+			if (testGroupsNodeList.getLength() > 0) {
+				for (int temp = 0; temp < testGroupsNodeList.getLength(); temp++) {
+					Node groupsNode = testGroupsNodeList.item(temp);
+					parseTestGroups(_suite, groupsNode);
 				}
 			} else {
 				// create list with "*" so all test can be run
-				_suite.setGroupList(new ArrayList<>());
-				_suite.getGroupList().add("*");
+				_suite.setTestGroupList(new ArrayList<>());
+				_suite.getTestGroupList().add("*");
+			}
+
+			NodeList unitGroupsNodeList = eElement.getElementsByTagName("testunitgroups");
+			if (unitGroupsNodeList.getLength() > 0) {
+				for (int temp = 0; temp < unitGroupsNodeList.getLength(); temp++) {
+					Node groupsNode = unitGroupsNodeList.item(temp);
+					parseTestUnitGroups(_suite, groupsNode);
+				}
+			} else {
+				// create list with "*" so all test units can be run
+				_suite.setTestUnitGroupList(new ArrayList<>());
+				_suite.getTestUnitGroupList().add("*");
 			}
 		}
 	}
@@ -197,7 +213,7 @@ public class TestScriptParser {
 		_suite.setTestFQCNList(testFQCNList);
 	}
 
-	private void parseGroups(TestSuite _suite, Node groupsNode) {
+	private void parseTestGroups(TestSuite _suite, Node groupsNode) {
 		List<String> groupList = new ArrayList<>();
 		NodeList nChildList = groupsNode.getChildNodes();
 		for (int i = 0; i < nChildList.getLength(); i++) {
@@ -205,17 +221,42 @@ public class TestScriptParser {
 			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nChildNode;
 				if ("group".equals(eElement.getNodeName())) {
+					// Store only Upper case group names to avoid case sensitiveness
 					groupList.add(eElement.getAttribute("name").trim().toUpperCase());
 				}
 			}
 		}
 
-		// If group list is empty then atleast add * which will run all test
+		// If group list is empty then at least add * which will run all test
 		// cases
 		if (groupList.isEmpty()) {
 			groupList.add("*");
 		}
-		_suite.setGroupList(groupList);
+
+		_suite.setTestGroupList(groupList);
+	}
+
+	private void parseTestUnitGroups(TestSuite _suite, Node groupsNode) {
+		List<String> groupList = new ArrayList<>();
+		NodeList nChildList = groupsNode.getChildNodes();
+		for (int i = 0; i < nChildList.getLength(); i++) {
+			Node nChildNode = nChildList.item(i);
+			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nChildNode;
+				if ("group".equals(eElement.getNodeName())) {
+					// Store only Upper case group names to avoid case sensitiveness
+					groupList.add(eElement.getAttribute("name").trim().toUpperCase());
+				}
+			}
+		}
+
+		// If group list is empty then at least add * which will run all test
+		// cases
+		if (groupList.isEmpty()) {
+			groupList.add("*");
+		}
+
+		_suite.setTestUnitGroupList(groupList);
 	}
 
 	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList) throws Exception {
@@ -248,6 +289,10 @@ public class TestScriptParser {
 		Element rootElement = doc.createElement("configuration");
 		doc.appendChild(rootElement);
 
+		Attr verAttr = doc.createAttribute("version");
+		verAttr.setValue("1");
+		rootElement.setAttributeNode(verAttr);
+
 		// Organisation Info elements
 		Element suite = doc.createElement("suite");
 		rootElement.appendChild(suite);
@@ -266,7 +311,8 @@ public class TestScriptParser {
 
 		createTestList(testList, doc, suite);
 		createSuiteParameters(doc, suite);
-		createSuiteGroups(doc, suite);
+		createTestCaseGroups(doc, suite);
+		createTestUnitGroups(doc, suite);
 
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -314,9 +360,24 @@ public class TestScriptParser {
 		}
 	}
 
-	private void createSuiteGroups(Document doc, Element suite) {
+	private void createTestCaseGroups(Document doc, Element suite) {
 		// Organisation Info elements
-		Element groups = doc.createElement("groups");
+		Element groups = doc.createElement("testcasegroups");
+		suite.appendChild(groups);
+
+		// add test cases
+		Element property = doc.createElement("group");
+		property.appendChild(doc.createTextNode(""));
+		groups.appendChild(property);
+
+		Attr attr1 = doc.createAttribute("name");
+		attr1.setValue("*");
+		property.setAttributeNode(attr1);
+	}
+
+	private void createTestUnitGroups(Document doc, Element suite) {
+		// Organisation Info elements
+		Element groups = doc.createElement("testunitgroups");
 		suite.appendChild(groups);
 
 		// add test cases
