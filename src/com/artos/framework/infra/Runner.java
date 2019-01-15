@@ -82,7 +82,7 @@ public class Runner {
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount, null);
+		run(args, new ArrayList<>(), loopCount, null, null);
 	}
 
 	/**
@@ -95,7 +95,8 @@ public class Runner {
 	 * 
 	 * @param args command line arguments
 	 * @param loopCount test loop count
-	 * @param groupList group list required to filter test cases
+	 * @param testGroupList group list required to filter test cases
+	 * @param testUnitGroupList group list required to filter test units
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
 	 * @throws InvalidDataException if user provides invalid data
@@ -103,11 +104,11 @@ public class Runner {
 	 * @throws SAXException If any parse errors occur.
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
-	public void run(String[] args, int loopCount, List<String> groupList)
+	public void run(String[] args, int loopCount, List<String> testGroupList, List<String> testUnitGroupList)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount, groupList);
+		run(args, new ArrayList<>(), loopCount, testGroupList, testUnitGroupList);
 	}
 
 	/**
@@ -133,7 +134,7 @@ public class Runner {
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		// pass empty array list so reflection will be used
-		run(args, testList, loopCount, null);
+		run(args, testList, loopCount, null, null);
 	}
 
 	/**
@@ -148,7 +149,8 @@ public class Runner {
 	 * @param args command line arguments
 	 * @param testList testList provided by user
 	 * @param loopCount test loop count
-	 * @param groupList group list required to filter test cases
+	 * @param testGroupList group list required to filter test cases
+	 * @param testUnitGroupList group list required to filter test units
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
 	 * @throws InvalidDataException if user provides invalid data
@@ -157,14 +159,24 @@ public class Runner {
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	@SuppressWarnings("unchecked")
-	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> groupList)
+	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> testGroupList, List<String> testUnitGroupList)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
-		if (null == groupList || groupList.isEmpty()) {
+		if (null == testGroupList || testGroupList.isEmpty()) {
 			// Add a default group if user does not pass a group parameter
-			groupList = new ArrayList<>();
-			groupList.add("*");
+			testGroupList = new ArrayList<>();
+			testGroupList.add("*");
 		}
+		// Store only Upper case group names to avoid case sensitiveness
+		testGroupList.replaceAll(String::toUpperCase);
+		
+		if (null == testUnitGroupList || testUnitGroupList.isEmpty()) {
+			// Add a default group if user does not pass a group parameter
+			testUnitGroupList = new ArrayList<>();
+			testUnitGroupList.add("*");
+		}
+		// Store only Upper case group names to avoid case sensitiveness
+		testUnitGroupList.replaceAll(String::toUpperCase);
 
 		// if loop count is set to 0 or negative then set to at least 1
 		if (loopCount < 1) {
@@ -209,6 +221,9 @@ public class Runner {
 				// store logger
 				context.setOrganisedLogger(logWrapper);
 
+				context.setTestListPassedByMainMethod(testList);
+				context.setTestGroupListPassedByMainMethod(testGroupList);
+				context.setTestUnitGroupListPassedByMainMethod(testUnitGroupList);
 				if (null != testSuiteList && !testSuiteList.isEmpty()) {
 					// store test suite
 					context.setTestSuite(testSuiteList.get(i));
@@ -221,7 +236,7 @@ public class Runner {
 				}
 
 				// Launch a thread with runnable
-				Future<?> f = service.submit(new SuiteTask(context, testList, groupList));
+				Future<?> f = service.submit(new SuiteTask(context));
 				futures.add((Future<Runnable>) f);
 
 			}
@@ -406,28 +421,22 @@ public class Runner {
 class SuiteTask implements Runnable {
 
 	TestContext context;
-	List<TestExecutable> testList;
-	List<String> groupList;
 	CountDownLatch latch;
 
 	/**
 	 * Constructor for Runnable
 	 *
 	 * @param context test context
-	 * @param testList list of TestExecutable (provided by user)
 	 */
-	public SuiteTask(TestContext context, List<TestExecutable> testList, List<String> groupList) {
+	public SuiteTask(TestContext context) {
 		this.context = context;
-		this.testList = testList;
-		this.groupList = groupList;
 	}
 
 	@Override
 	public void run() {
 		try {
 			// Create ArtosRunner per thread
-			ArtosRunner artos = new ArtosRunner(context);
-			artos.run(testList, groupList);
+			new ArtosRunner(context).run();
 		} catch (Exception e) {
 			e.printStackTrace();
 			context.getLogger().error(e);

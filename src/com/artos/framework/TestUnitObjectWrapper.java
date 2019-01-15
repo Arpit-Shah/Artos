@@ -44,6 +44,9 @@ public class TestUnitObjectWrapper {
 	int testsequence = 0;
 	String dataProviderName = "";
 	long testTimeout = 0;
+	
+	// Group
+	List<String> groupList = new ArrayList<>();
 
 	// KnowToFail
 	boolean KTF = false;
@@ -173,6 +176,14 @@ public class TestUnitObjectWrapper {
 
 	public void setTestUnitOutcomeList(List<TestStatus> testUnitOutcomeList) {
 		this.testUnitOutcomeList = testUnitOutcomeList;
+	}
+
+	public List<String> getGroupList() {
+		return groupList;
+	}
+
+	public void setGroupList(List<String> groupList) {
+		this.groupList = groupList;
 	}
 
 }

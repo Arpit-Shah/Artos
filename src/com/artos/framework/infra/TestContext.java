@@ -36,6 +36,7 @@ import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.xml.TestSuite;
+import com.artos.interfaces.TestExecutable;
 import com.artos.interfaces.TestProgress;
 
 /**
@@ -55,7 +56,12 @@ public class TestContext {
 	private long currentFailCount = 0;
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
+	
+	
 	private TestSuite testSuite = null;
+	private List<String> testGroupListPassedByMainMethod = null;
+	private List<String> testUnitGroupListPassedByMainMethod = null;
+	private List<TestExecutable> testListPassedByMainMethod = null;
 	private int totalLoopCount = 1;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
@@ -703,6 +709,30 @@ public class TestContext {
 
 	public void setAfterTestUnit(Method afterTestUnit) {
 		this.afterTestUnit = afterTestUnit;
+	}
+
+	public List<TestExecutable> getTestListPassedByMainMethod() {
+		return testListPassedByMainMethod;
+	}
+
+	public void setTestListPassedByMainMethod(List<TestExecutable> testListPassedByMainMethod) {
+		this.testListPassedByMainMethod = testListPassedByMainMethod;
+	}
+
+	public List<String> getTestGroupListPassedByMainMethod() {
+		return testGroupListPassedByMainMethod;
+	}
+
+	public void setTestGroupListPassedByMainMethod(List<String> testGroupListPassedByMainMethod) {
+		this.testGroupListPassedByMainMethod = testGroupListPassedByMainMethod;
+	}
+
+	public List<String> getTestUnitGroupListPassedByMainMethod() {
+		return testUnitGroupListPassedByMainMethod;
+	}
+
+	public void setTestUnitGroupListPassedByMainMethod(List<String> testUnitGroupListPassedByMainMethod) {
+		this.testUnitGroupListPassedByMainMethod = testUnitGroupListPassedByMainMethod;
 	}
 
 }

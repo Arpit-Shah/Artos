@@ -93,12 +93,11 @@ public class ArtosRunner {
 	 * Runner for the framework
 	 * 
 	 * @param testList List of tests to run. All test must be {@code TestExecutable} type
-	 * @param groupList Group list which is required for test case filtering
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
-	public void run(List<TestExecutable> testList, List<String> groupList) throws Exception {
+	public void run() throws Exception {
 		// Transform TestList into TestObjectWrapper Object list
-		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context, testList, groupList).getListOfTransformedTestCases();
+		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context).getListOfTransformedTestCases();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
 			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
@@ -259,6 +258,8 @@ public class ArtosRunner {
 							break;
 						}
 					}
+					
+					notifyPrintTestPlan(t);
 
 					// Run Pre Method prior to any test Execution
 					if (null != context.getBeforeTest()) {
@@ -659,6 +660,12 @@ public class ArtosRunner {
 	void notifyTestSuiteExecutionFinished(String testSuiteName) {
 		for (TestProgress listener : listenerList) {
 			listener.testSuiteExecutionFinished(testSuiteName);
+		}
+	}
+	
+	void notifyPrintTestPlan(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.printTestPlan(t);
 		}
 	}
 

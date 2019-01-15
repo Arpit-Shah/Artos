@@ -42,14 +42,12 @@ public class TransformToTestObjectWrapper {
 	 * method can not transform test cases outside current package, so those test cases will be omitted from the list
 	 * 
 	 * @param context {@code TestContext}
-	 * @param listOfTestCases list of test cases required to be transformed
-	 * @param groupList user specified groupList
 	 * @throws Exception in case any requirement of test cases are not met
 	 */
-	public TransformToTestObjectWrapper(TestContext context, List<TestExecutable> listOfTestCases, List<String> groupList) throws Exception {
+	public TransformToTestObjectWrapper(TestContext context) throws Exception {
 		listOfTransformedTestCases = new ArrayList<>();
 
-		if (null == groupList || groupList.isEmpty()) {
+		if (null == context.getTestGroupListPassedByMainMethod() || context.getTestGroupListPassedByMainMethod().isEmpty()) {
 			new Exception("Group must be specified");
 		}
 
@@ -58,11 +56,13 @@ public class TransformToTestObjectWrapper {
 		if (null != context.getPrePostRunnableObj().getPackage()) {
 			packageName = context.getPrePostRunnableObj().getPackage().getName();
 		}
-		ScanTestSuite reflection = new ScanTestSuite(packageName);
-		guardDataProviderPresence(reflection.getDataProviderMap(), reflection.getTestObjWrapperList_WithoutSkipped());
+		ScanTestSuite reflection = new ScanTestSuite(context, packageName);
 
 		// Store test dataProviders in context
-		context.setDataProviderMap(reflection.getDataProviderMap());
+		{
+			guardDataProviderPresence(reflection.getDataProviderMap(), reflection.getTestObjWrapperList_WithoutSkipped());
+			context.setDataProviderMap(reflection.getDataProviderMap());
+		}
 
 		/*
 		 * @formatter:off
@@ -73,10 +73,10 @@ public class TransformToTestObjectWrapper {
 		 */
 		if (null != context.getTestSuite()) {
 			testListProvidedViaXMLTestScript(context, context.getTestSuite(), reflection);
-		} else if (null != listOfTestCases) {
-			testListProvidedByUserUsingMainMethod(context, listOfTestCases, groupList, reflection);
+		} else if (null != context.getTestListPassedByMainMethod()) {
+			testListProvidedByUserUsingMainMethod(context, reflection);
 		} else {
-			testListIsNotProvided(groupList, reflection);
+			testListIsNotProvided(context.getTestGroupListPassedByMainMethod(), reflection);
 		}
 	}
 
@@ -97,27 +97,23 @@ public class TransformToTestObjectWrapper {
 	 * Get all test case objects provided via main() method. Any test cases with \"skip = true\" will be skipped. Test cases will be ordered as
 	 * provided in the list
 	 */
-	private void testListProvidedByUserUsingMainMethod(TestContext context, List<TestExecutable> listOfTestCases, List<String> groupList,
-			ScanTestSuite reflection) {
-		
-		// Capitalise all group name to avoid case-sensitivity
-		groupList.replaceAll(String::toUpperCase);
+	private void testListProvidedByUserUsingMainMethod(TestContext context, ScanTestSuite reflection) {
 
 		// empty test list = assume all test cases
-		if (listOfTestCases.isEmpty()) {
-			testListIsNotProvided(groupList, reflection);
+		if (context.getTestListPassedByMainMethod().isEmpty()) {
+			testListIsNotProvided(context.getTestGroupListPassedByMainMethod(), reflection);
 		} else {
 			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
 			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
 
-			for (TestExecutable t : listOfTestCases) {
+			for (TestExecutable t : context.getTestListPassedByMainMethod()) {
 				TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
 
 				if (null == testObjWrapper) {
 					// This can happen if test is marked skipped or actually not present
 					System.err.println(t.getClass().getName() + " not present in given test suite");
 				} else {
-					if (belongsToApprovedGroup(groupList, testObjWrapper.getGroupList())) {
+					if (belongsToApprovedGroup(context.getTestGroupListPassedByMainMethod(), testObjWrapper.getGroupList())) {
 						listOfTransformedTestCases.add(testObjWrapper);
 					}
 				}
@@ -133,8 +129,7 @@ public class TransformToTestObjectWrapper {
 		TestSuite suite = (TestSuite) testSuiteObject;
 
 		// Capitalise all group name to avoid case-sensitivity
-		List<String> groupList = suite.getGroupList();
-		groupList.replaceAll(String::toUpperCase);
+		List<String> groupList = suite.getTestGroupList();
 
 		// populate all global parameters to context
 		Map<String, String> parameterMap = suite.getTestSuiteParameters();
@@ -192,14 +187,14 @@ public class TransformToTestObjectWrapper {
 	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
 	 */
 	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
-		
+
 		return refGroupList.stream().anyMatch(num -> testGroupList.contains(num));
-//		for (String group : refGroupList) {
-//			if (testGroupList.contains(group)) {
-//				return true;
-//			}
-//		}
-//		return false;
+		// for (String group : refGroupList) {
+		// if (testGroupList.contains(group)) {
+		// return true;
+		// }
+		// }
+		// return false;
 	}
 
 	public List<TestObjectWrapper> getListOfTransformedTestCases() {
