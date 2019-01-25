@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 /**
  * 
  * Annotation {@code ExpectedException} can be used to define expected exception during test case execution. Specified exception will remain in scope
- * of test case where annotation {@code ExpectedException} is defined. User can optionally provide regular expression which can be used to match
+ * of test unit where annotation {@code ExpectedException} is defined. User can optionally provide regular expression which can be used to match
  * exception message.
  * 
  * <p>
@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
 // Make the annotation available at runtime:
 @Retention(RetentionPolicy.RUNTIME)
 // Allow to use only on types:
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.METHOD })
 public @interface ExpectedException {
 
 	/**

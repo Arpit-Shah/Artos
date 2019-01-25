@@ -246,29 +246,29 @@ public class RunnerTestUnits {
 	 * expected throwable/exception and received throwable/exception does not match any of the defined throwable(s)/Exception(s) then test will be
 	 * marked as FAIL.
 	 * 
-	 * @param t test case in format {@code TestObjectWrapper}
+	 * @param unit test case in format {@code TestObjectWrapper}
 	 * @param e {@code Throwable} or {@code Exception}
 	 */
-	private void processTestUnitException(TestUnitObjectWrapper t, Throwable e) {
+	private void processTestUnitException(TestUnitObjectWrapper unit, Throwable e) {
 		// If user has not specified expected exception then fail the test
-		if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty()) {
+		if (null != unit.getExpectedExceptionList() && !unit.getExpectedExceptionList().isEmpty()) {
 
 			boolean exceptionMatchFound = false;
-			for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
+			for (Class<? extends Throwable> exceptionClass : unit.getExpectedExceptionList()) {
 				if (e.getClass() == exceptionClass) {
 					/* Exception matches as specified by user */
 					context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
 
 					/* If regular expression then validate exception message with regular expression */
 					/* If regular expression does not match then do string compare */
-					if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
-						if (e.getMessage().matches(t.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
-						} else if (e.getMessage().equals(t.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches string : " + t.getExceptionContains());
+					if (null != unit.getExceptionContains() && !"".equals(unit.getExceptionContains())) {
+						if (e.getMessage().matches(unit.getExceptionContains())) {
+							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + unit.getExceptionContains());
+						} else if (e.getMessage().equals(unit.getExceptionContains())) {
+							context.setTestStatus(TestStatus.PASS, "Exception message matches string : " + unit.getExceptionContains());
 						} else {
 							context.setTestStatus(TestStatus.FAIL, "Exception message does not match regex : \nRegularExpression : "
-									+ t.getExceptionContains() + "\nException Message : " + e.getMessage());
+									+ unit.getExceptionContains() + "\nException Message : " + e.getMessage());
 						}
 					}
 
@@ -278,7 +278,7 @@ public class RunnerTestUnits {
 			}
 			if (!exceptionMatchFound) {
 				String expectedExceptions = "";
-				for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
+				for (Class<? extends Throwable> exceptionClass : unit.getExpectedExceptionList()) {
 					expectedExceptions += exceptionClass.getName() + " ";
 				}
 				context.setTestStatus(TestStatus.FAIL,

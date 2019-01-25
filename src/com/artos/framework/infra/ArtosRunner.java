@@ -92,7 +92,6 @@ public class ArtosRunner {
 	/**
 	 * Runner for the framework
 	 * 
-	 * @param testList List of tests to run. All test must be {@code TestExecutable} type
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
 	public void run() throws Exception {
