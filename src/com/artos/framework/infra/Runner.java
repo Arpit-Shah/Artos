@@ -51,6 +51,10 @@ public class Runner {
 	Class<?> cls;
 	// Default thread count should be 1
 	int threadCount = 1;
+	int loopCount = 1;
+	List<TestExecutable> testList = null;
+	List<String> testGroupList = null;
+	List<String> testUnitGroupList = null;
 
 	/**
 	 * @param cls Class which contains main() method
@@ -65,92 +69,11 @@ public class Runner {
 	 * 
 	 * <PRE>
 	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
-	 * - Test script is not provided then test list will be prepared using reflection.
-	 * </PRE>
-	 * 
-	 * @param args command line arguments
-	 * @param loopCount test loop count
-	 * 
-	 * @throws ExecutionException if the computation threw an exception
-	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidDataException if user provides invalid data
-	 * @throws IOException if io operation error occurs
-	 * @throws SAXException If any parse errors occur.
-	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
-	 */
-	public void run(String[] args, int loopCount)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
-
-		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount, null, null);
-	}
-
-	/**
-	 * Responsible for executing test cases.
-	 * 
-	 * <PRE>
-	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
-	 * - Test script is not provided then test list will be prepared using reflection. supplied group list will be applied.
-	 * </PRE>
-	 * 
-	 * @param args command line arguments
-	 * @param loopCount test loop count
-	 * @param testGroupList group list required to filter test cases
-	 * @param testUnitGroupList group list required to filter test units
-	 * @throws ExecutionException if the computation threw an exception
-	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidDataException if user provides invalid data
-	 * @throws IOException if io operation error occurs
-	 * @throws SAXException If any parse errors occur.
-	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
-	 */
-	public void run(String[] args, int loopCount, List<String> testGroupList, List<String> testUnitGroupList)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
-
-		// pass empty array list so reflection will be used
-		run(args, new ArrayList<>(), loopCount, testGroupList, testUnitGroupList);
-	}
-
-	/**
-	 * Responsible for executing test cases.
-	 * 
-	 * <PRE>
-	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
 	 * - In absence of test script, ArrayList() provided by user will be used to generate test list. 
 	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
 	 * </PRE>
 	 * 
 	 * @param args command line arguments
-	 * @param testList testList provided by user
-	 * @param loopCount test loop count
-	 * @throws ExecutionException if the computation threw an exception
-	 * @throws InterruptedException if the current thread was interrupted while waiting
-	 * @throws InvalidDataException if user provides invalid data
-	 * @throws IOException if io operation error occurs
-	 * @throws SAXException If any parse errors occur.
-	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
-	 */
-	public void run(String[] args, List<TestExecutable> testList, int loopCount)
-			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
-
-		// pass empty array list so reflection will be used
-		run(args, testList, loopCount, null, null);
-	}
-
-	/**
-	 * Responsible for executing test cases.
-	 * 
-	 * <PRE>
-	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
-	 * - In absence of test script, ArrayList() provided by user will be used to generate test list. 
-	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
-	 * </PRE>
-	 * 
-	 * @param args command line arguments
-	 * @param testList testList provided by user
-	 * @param loopCount test loop count
-	 * @param testGroupList group list required to filter test cases
-	 * @param testUnitGroupList group list required to filter test units
 	 * @throws ExecutionException if the computation threw an exception
 	 * @throws InterruptedException if the current thread was interrupted while waiting
 	 * @throws InvalidDataException if user provides invalid data
@@ -159,7 +82,7 @@ public class Runner {
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	@SuppressWarnings("unchecked")
-	public void run(String[] args, List<TestExecutable> testList, int loopCount, List<String> testGroupList, List<String> testUnitGroupList)
+	public void run(String[] args)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
 		if (null == testGroupList || testGroupList.isEmpty()) {
@@ -169,7 +92,7 @@ public class Runner {
 		}
 		// Store only Upper case group names to avoid case sensitiveness
 		testGroupList.replaceAll(String::toUpperCase);
-		
+
 		if (null == testUnitGroupList || testUnitGroupList.isEmpty()) {
 			// Add a default group if user does not pass a group parameter
 			testUnitGroupList = new ArrayList<>();
@@ -412,6 +335,42 @@ public class Runner {
 		// Create loggerContext
 		OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList);
 		return organisedLog.getLoggerContext();
+	}
+
+	/**
+	 * Sets Test List Provided by the user
+	 * 
+	 * @param testList testList provided by user
+	 */
+	public void setTestList(List<TestExecutable> testList) {
+		this.testList = testList;
+	}
+
+	/**
+	 * Sets loop count for test suite execution. If not set then suite will be run once.
+	 * 
+	 * @param loopCount test loop count
+	 */
+	public void setLoopCount(int loopCount) {
+		this.loopCount = loopCount;
+	}
+
+	/**
+	 * Sets the group list for test cases. If not set then all test cases will be run
+	 * 
+	 * @param testGroupList group list required to filter test cases
+	 */
+	public void setTestGroupList(List<String> testGroupList) {
+		this.testGroupList = testGroupList;
+	}
+
+	/**
+	 * Sets the group list for test units. If not set then all test units will be run
+	 * 
+	 * @param testUnitGroupList group list required to filter test units
+	 */
+	public void setTestUnitGroupList(List<String> testUnitGroupList) {
+		this.testUnitGroupList = testUnitGroupList;
 	}
 }
 

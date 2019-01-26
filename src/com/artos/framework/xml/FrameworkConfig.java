@@ -77,7 +77,6 @@ public class FrameworkConfig {
 	// Logger
 	private String logLevel = "debug";
 	private String logRootDir = FWStaticStore.LOG_BASE_DIR;
-	private String logSubDir = "SN-123";
 	private boolean enableLogDecoration = false;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
@@ -399,15 +398,6 @@ public class FrameworkConfig {
 		}
 		{
 			Element property = doc.createElement("property");
-			property.appendChild(doc.createTextNode(getLogSubDir()));
-			logger.appendChild(property);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("logSubDir");
-			property.setAttributeNode(attr);
-		}
-		{
-			Element property = doc.createElement("property");
 			property.appendChild(doc.createTextNode(Boolean.toString(isEnableLogDecoration())));
 			logger.appendChild(property);
 
@@ -539,14 +529,6 @@ public class FrameworkConfig {
 							setLogRootDir(rootDir);
 						} else {
 							setLogRootDir(rootDir + File.separator);
-						}
-					}
-					if ("logSubDir".equals(eElement.getAttribute("name"))) {
-						String subDir = eElement.getTextContent();
-						if (subDir.endsWith("/") || subDir.endsWith("\\")) {
-							setLogSubDir(subDir);
-						} else {
-							setLogSubDir(subDir + File.separator);
 						}
 					}
 					if ("enableLogDecoration".equals(eElement.getAttribute("name"))) {
@@ -893,14 +875,6 @@ public class FrameworkConfig {
 
 	public void setEnableGUITestSelector(boolean enableGUITestSelector) {
 		this.enableGUITestSelector = enableGUITestSelector;
-	}
-
-	public String getLogSubDir() {
-		return logSubDir;
-	}
-
-	public void setLogSubDir(String logSubDir) {
-		this.logSubDir = logSubDir;
 	}
 
 	public boolean isEnableBanner() {
