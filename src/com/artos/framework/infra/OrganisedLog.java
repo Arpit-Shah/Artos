@@ -154,9 +154,9 @@ class OrganisedLog {
 		*/
 		{
 			if (enableLogDecoration) {
-				logFileLayout.addAttribute("pattern", "%highlight{[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable}");
+				logFileLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t][%F][%M][%c{1}] - %msg%n%throwable");
 			} else {
-				logFileLayout.addAttribute("pattern", "%highlight{%msg%n%throwable}");
+				logFileLayout.addAttribute("pattern", "%msg%n%throwable");
 			}
 
 			realTimeLogLayout.addAttribute("pattern", "[%-5level][%d{yyyy-MM-dd_HH:mm:ss.SSS}][%t] - %msg%n%throwable");
