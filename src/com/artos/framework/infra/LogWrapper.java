@@ -1781,7 +1781,7 @@ public class LogWrapper {
 		return generalLogger;
 	}
 
-	public void setGeneralLogger(Logger generalLogger) {
+	private void setGeneralLogger(Logger generalLogger) {
 		this.generalLogger = generalLogger;
 	}
 
@@ -1789,7 +1789,7 @@ public class LogWrapper {
 		return summaryLogger;
 	}
 
-	public void setSummaryLogger(Logger summaryLogger) {
+	private void setSummaryLogger(Logger summaryLogger) {
 		this.summaryLogger = summaryLogger;
 	}
 
@@ -1797,7 +1797,7 @@ public class LogWrapper {
 		return realTimeLogger;
 	}
 
-	public void setRealTimeLogger(Logger realTimeLogger) {
+	private void setRealTimeLogger(Logger realTimeLogger) {
 		this.realTimeLogger = realTimeLogger;
 	}
 
@@ -1805,7 +1805,7 @@ public class LogWrapper {
 		return threadNumber;
 	}
 
-	public void setThreadNumber(int threadNumber) {
+	protected void setThreadNumber(int threadNumber) {
 		this.threadNumber = threadNumber;
 	}
 
@@ -1813,7 +1813,7 @@ public class LogWrapper {
 		return extent;
 	}
 
-	public void setExtent(ExtentReports extent) {
+	protected void setExtent(ExtentReports extent) {
 		this.extent = extent;
 	}
 }

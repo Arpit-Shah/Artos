@@ -358,7 +358,7 @@ class OrganisedLog {
 	}
 
 	/** Sets Log Files Base Directory */
-	public void setLogBaseDir(String logBaseDir) {
+	protected void setLogBaseDir(String logBaseDir) {
 		this.logBaseDir = logBaseDir;
 	}
 
@@ -366,7 +366,7 @@ class OrganisedLog {
 		return loggerContext;
 	}
 
-	public void setLoggerContext(LoggerContext loggerContext) {
+	protected void setLoggerContext(LoggerContext loggerContext) {
 		this.loggerContext = loggerContext;
 	}
 }

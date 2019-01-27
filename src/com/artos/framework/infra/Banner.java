@@ -26,14 +26,10 @@ import com.artos.framework.FWStaticStore;
 /** Prints Framework Banner */
 class Banner {
 
-	public static void main(String[] args) {
-		System.out.println(getBanner());
-	}
-
 	/**
 	 * Returns Banner in String format
 	 */
-	public static String getBanner() {
+	protected static String getBanner() {
 
 	// @formatter:off
 	String banner = "\n"

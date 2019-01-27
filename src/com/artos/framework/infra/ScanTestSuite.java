@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.framework.infra;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -50,7 +50,10 @@ import com.artos.annotation.KnownToFail;
 import com.artos.annotation.TestCase;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
-import com.artos.framework.infra.TestContext;
+import com.artos.framework.FWStaticStore;
+import com.artos.framework.TestDataProvider;
+import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.TestPlanWrapper;
 import com.artos.interfaces.TestExecutable;
 
 import javassist.Modifier;

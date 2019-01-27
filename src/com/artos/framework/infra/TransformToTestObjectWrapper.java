@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.ScanTestSuite;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.xml.TestSuite;
@@ -44,7 +43,7 @@ public class TransformToTestObjectWrapper {
 	 * @param context {@code TestContext}
 	 * @throws Exception in case any requirement of test cases are not met
 	 */
-	public TransformToTestObjectWrapper(TestContext context) throws Exception {
+	protected TransformToTestObjectWrapper(TestContext context) throws Exception {
 		listOfTransformedTestCases = new ArrayList<>();
 
 		if (null == context.getTestGroupListPassedByMainMethod() || context.getTestGroupListPassedByMainMethod().isEmpty()) {
@@ -197,7 +196,7 @@ public class TransformToTestObjectWrapper {
 		// return false;
 	}
 
-	public List<TestObjectWrapper> getListOfTransformedTestCases() {
+	protected List<TestObjectWrapper> getListOfTransformedTestCases() {
 		return listOfTransformedTestCases;
 	}
 }

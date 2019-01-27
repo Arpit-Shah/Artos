@@ -34,8 +34,6 @@ import java.util.concurrent.TimeoutException;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.GUITestSelector;
-import com.artos.framework.ScanTestSuite;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
@@ -68,7 +66,7 @@ public class ArtosRunner {
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 */
-	public ArtosRunner(TestContext context) {
+	protected ArtosRunner(TestContext context) {
 		this.context = context;
 
 		// Register default listener
@@ -94,7 +92,7 @@ public class ArtosRunner {
 	 * 
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
-	public void run() throws Exception {
+	protected void run() throws Exception {
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context).getListOfTransformedTestCases();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
@@ -614,15 +612,15 @@ public class ArtosRunner {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
-	public void registerListener(TestProgress listener) {
+	protected void registerListener(TestProgress listener) {
 		listenerList.add(listener);
 	}
 
-	public void deRegisterListener(TestProgress listener) {
+	protected void deRegisterListener(TestProgress listener) {
 		listenerList.remove(listener);
 	}
 
-	public void deRegisterAllListener() {
+	protected void deRegisterAllListener() {
 		listenerList.clear();
 	}
 

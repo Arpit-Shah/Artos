@@ -45,7 +45,7 @@ public class CliProcessor {
 	 * 
 	 * @param args Command line arguments
 	 */
-	public static void proessCommandLine(String[] args) {
+	protected static void proessCommandLine(String[] args) {
 
 		if (args.length <= 0) {
 			return;

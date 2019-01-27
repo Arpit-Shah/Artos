@@ -42,7 +42,7 @@ public class RunnerTestUnits {
 	TestContext context;
 	TestObjectWrapper t;
 
-	public RunnerTestUnits(TestContext context) {
+	protected RunnerTestUnits(TestContext context) {
 		this.context = context;
 	}
 
@@ -51,7 +51,7 @@ public class RunnerTestUnits {
 	 * 
 	 * @param t test case
 	 */
-	public void runSingleThreadUnits(TestObjectWrapper t) {
+	protected void runSingleThreadUnits(TestObjectWrapper t) {
 		this.t = t;
 		// ********************************************************************************************
 		// TestUnits Execution Start

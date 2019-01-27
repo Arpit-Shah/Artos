@@ -56,8 +56,7 @@ public class TestContext {
 	private long currentFailCount = 0;
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
-	
-	
+
 	private TestSuite testSuite = null;
 	private List<String> testGroupListPassedByMainMethod = null;
 	private List<String> testUnitGroupListPassedByMainMethod = null;
@@ -65,7 +64,7 @@ public class TestContext {
 	private int totalLoopCount = 1;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
-	
+
 	// Objects required for running test cases
 	private Map<String, TestDataProvider> dataProviderMap;
 	private Class<?> prePostRunnableObj = null;
@@ -149,7 +148,7 @@ public class TestContext {
 	 * 
 	 * @param t {@link TestObjectWrapper}
 	 */
-	public void generateTestSummary(TestObjectWrapper t) {
+	protected void generateTestSummary(TestObjectWrapper t) {
 
 		String strTestFQCN = t.getTestClassObject().getName();
 
@@ -203,7 +202,7 @@ public class TestContext {
 	 * 
 	 * @param unit {@link TestUnitObjectWrapper}
 	 */
-	public void generateUnitTestSummary(TestUnitObjectWrapper unit) {
+	protected void generateUnitTestSummary(TestUnitObjectWrapper unit) {
 		// Test is marked as known to fail and for some reason it pass then
 		// consider that test Fail so user can look in to it
 		if (unit.isKTF()) {
@@ -294,7 +293,7 @@ public class TestContext {
 	/**
 	 * Print selected System Info to log file
 	 */
-	public void printUsefulInfo() {
+	private void printUsefulInfo() {
 
 		SystemProperties sysProp = FWStaticStore.systemProperties;
 		LogWrapper logger = getLogger();
@@ -364,13 +363,13 @@ public class TestContext {
 		listenerList.clear();
 	}
 
-	void notifyTestStatusUpdate(TestStatus testStatus, String Msg) {
+	private void notifyTestStatusUpdate(TestStatus testStatus, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testStatusUpdate(testStatus, Msg);
 		}
 	}
 
-	void notifyTestResult(TestStatus testStatus, String Msg) {
+	private void notifyTestResult(TestStatus testStatus, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testResult(testStatus, Msg);
 		}
@@ -380,35 +379,35 @@ public class TestContext {
 	// Getter and Setters
 	// *******************************************************************
 
-	public TestSuite getTestSuite() {
+	protected TestSuite getTestSuite() {
 		return testSuite;
 	}
 
-	public void setTestSuite(TestSuite testSuite) {
+	protected void setTestSuite(TestSuite testSuite) {
 		this.testSuite = testSuite;
 	}
 
-	public int getTotalLoopCount() {
+	protected int getTotalLoopCount() {
 		return totalLoopCount;
 	}
 
-	public void setTotalLoopCount(int totalLoopCount) {
+	protected void setTotalLoopCount(int totalLoopCount) {
 		this.totalLoopCount = totalLoopCount;
 	}
 
-	public Class<?> getPrePostRunnableObj() {
+	protected Class<?> getPrePostRunnableObj() {
 		return prePostRunnableObj;
 	}
 
-	public void setPrePostRunnableObj(Class<?> prePostRunnableObj) {
+	protected void setPrePostRunnableObj(Class<?> prePostRunnableObj) {
 		this.prePostRunnableObj = prePostRunnableObj;
 	}
 
-	public CountDownLatch getThreadLatch() {
+	protected CountDownLatch getThreadLatch() {
 		return threadLatch;
 	}
 
-	public void setThreadLatch(CountDownLatch threadLatch) {
+	protected void setThreadLatch(CountDownLatch threadLatch) {
 		this.threadLatch = threadLatch;
 	}
 
@@ -448,7 +447,7 @@ public class TestContext {
 	 * @param knownToFail true|false
 	 * @param strBugTrackingReference Bug Tracking reference (Example : JIRA number)
 	 */
-	public void setKnownToFail(boolean knownToFail, String strBugTrackingReference) {
+	protected void setKnownToFail(boolean knownToFail, String strBugTrackingReference) {
 		KnownToFail = knownToFail;
 		setStrBugTrackingReference(strBugTrackingReference);
 	}
@@ -466,7 +465,7 @@ public class TestContext {
 	 * 
 	 * @return Test duration in milliseconds
 	 */
-	public long getTestSuiteTimeDuration() {
+	protected long getTestSuiteTimeDuration() {
 		return getTestSuiteFinishTime() - getTestSuiteStartTime();
 	}
 
@@ -589,7 +588,7 @@ public class TestContext {
 	 * 
 	 * @param logWrapper logWrapper Object
 	 */
-	public void setOrganisedLogger(LogWrapper logWrapper) {
+	protected void setOrganisedLogger(LogWrapper logWrapper) {
 		this.logWrapper = logWrapper;
 		printMendatoryInfo();
 		printUsefulInfo();
@@ -604,7 +603,7 @@ public class TestContext {
 		return testSuiteStartTime;
 	}
 
-	public void setTestSuiteStartTime(long testSuiteStartTime) {
+	protected void setTestSuiteStartTime(long testSuiteStartTime) {
 		this.testSuiteStartTime = testSuiteStartTime;
 	}
 
@@ -617,7 +616,7 @@ public class TestContext {
 		return testSuiteFinishTime;
 	}
 
-	public void setTestSuiteFinishTime(long testSuiteFinishTime) {
+	protected void setTestSuiteFinishTime(long testSuiteFinishTime) {
 		this.testSuiteFinishTime = testSuiteFinishTime;
 	}
 
@@ -625,7 +624,7 @@ public class TestContext {
 		return dataProviderMap;
 	}
 
-	public void setDataProviderMap(Map<String, TestDataProvider> dataProviderMap) {
+	protected void setDataProviderMap(Map<String, TestDataProvider> dataProviderMap) {
 		this.dataProviderMap = dataProviderMap;
 	}
 
@@ -638,7 +637,7 @@ public class TestContext {
 		return parameterisedObject1;
 	}
 
-	public void setParameterisedObject1(Object parameterisedObject1) {
+	protected void setParameterisedObject1(Object parameterisedObject1) {
 		this.parameterisedObject1 = parameterisedObject1;
 	}
 
@@ -651,7 +650,7 @@ public class TestContext {
 		return parameterisedObject2;
 	}
 
-	public void setParameterisedObject2(Object parameterisedObject2) {
+	protected void setParameterisedObject2(Object parameterisedObject2) {
 		this.parameterisedObject2 = parameterisedObject2;
 	}
 
@@ -659,7 +658,7 @@ public class TestContext {
 		return currentUnitTestStatus;
 	}
 
-	public void setCurrentUnitTestStatus(TestStatus currentUnitTestStatus) {
+	protected void setCurrentUnitTestStatus(TestStatus currentUnitTestStatus) {
 		this.currentUnitTestStatus = currentUnitTestStatus;
 	}
 
@@ -667,7 +666,7 @@ public class TestContext {
 		return beforeTestSuite;
 	}
 
-	public void setBeforeTestSuite(Method beforeTestSuite) {
+	protected void setBeforeTestSuite(Method beforeTestSuite) {
 		this.beforeTestSuite = beforeTestSuite;
 	}
 
@@ -675,7 +674,7 @@ public class TestContext {
 		return afterTestSuite;
 	}
 
-	public void setAfterTestSuite(Method afterTestSuite) {
+	protected void setAfterTestSuite(Method afterTestSuite) {
 		this.afterTestSuite = afterTestSuite;
 	}
 
@@ -683,7 +682,7 @@ public class TestContext {
 		return beforeTest;
 	}
 
-	public void setBeforeTest(Method beforeTest) {
+	protected void setBeforeTest(Method beforeTest) {
 		this.beforeTest = beforeTest;
 	}
 
@@ -691,7 +690,7 @@ public class TestContext {
 		return afterTest;
 	}
 
-	public void setAfterTest(Method afterTest) {
+	protected void setAfterTest(Method afterTest) {
 		this.afterTest = afterTest;
 	}
 
@@ -699,7 +698,7 @@ public class TestContext {
 		return beforeTestUnit;
 	}
 
-	public void setBeforeTestUnit(Method beforeTestUnit) {
+	protected void setBeforeTestUnit(Method beforeTestUnit) {
 		this.beforeTestUnit = beforeTestUnit;
 	}
 
@@ -707,7 +706,7 @@ public class TestContext {
 		return afterTestUnit;
 	}
 
-	public void setAfterTestUnit(Method afterTestUnit) {
+	protected void setAfterTestUnit(Method afterTestUnit) {
 		this.afterTestUnit = afterTestUnit;
 	}
 
@@ -715,7 +714,7 @@ public class TestContext {
 		return testListPassedByMainMethod;
 	}
 
-	public void setTestListPassedByMainMethod(List<TestExecutable> testListPassedByMainMethod) {
+	protected void setTestListPassedByMainMethod(List<TestExecutable> testListPassedByMainMethod) {
 		this.testListPassedByMainMethod = testListPassedByMainMethod;
 	}
 
@@ -723,7 +722,7 @@ public class TestContext {
 		return testGroupListPassedByMainMethod;
 	}
 
-	public void setTestGroupListPassedByMainMethod(List<String> testGroupListPassedByMainMethod) {
+	protected void setTestGroupListPassedByMainMethod(List<String> testGroupListPassedByMainMethod) {
 		this.testGroupListPassedByMainMethod = testGroupListPassedByMainMethod;
 	}
 
@@ -731,7 +730,7 @@ public class TestContext {
 		return testUnitGroupListPassedByMainMethod;
 	}
 
-	public void setTestUnitGroupListPassedByMainMethod(List<String> testUnitGroupListPassedByMainMethod) {
+	protected void setTestUnitGroupListPassedByMainMethod(List<String> testUnitGroupListPassedByMainMethod) {
 		this.testUnitGroupListPassedByMainMethod = testUnitGroupListPassedByMainMethod;
 	}
 

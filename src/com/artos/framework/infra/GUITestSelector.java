@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.framework.infra;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -51,7 +51,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import com.artos.framework.infra.TestContext;
+import com.artos.framework.FWStaticStore;
+import com.artos.framework.TestObjectWrapper;
 import com.artos.interfaces.TestRunnable;
 
 public class GUITestSelector {
