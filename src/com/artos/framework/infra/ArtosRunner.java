@@ -22,6 +22,7 @@
 package com.artos.framework.infra;
 
 import java.io.InvalidObjectException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -255,7 +256,7 @@ public class ArtosRunner {
 							break;
 						}
 					}
-					
+
 					notifyPrintTestPlan(t);
 
 					// Run Pre Method prior to any test Execution
@@ -363,11 +364,22 @@ public class ArtosRunner {
 				throw new InvalidObjectException("DataProvider not found (or private) : " + (t.getDataProviderName()));
 			}
 
-			if (dataProviderObj.isStaticMethod()) {
-				data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
-			} else {
-				/* NonStatic data provider method needs an instance */
-				data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
+			// Handle it because this executes method
+			try {
+				if (dataProviderObj.isStaticMethod()) {
+					data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
+				} else {
+					/* NonStatic data provider method needs an instance */
+					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
+				}
+			} catch (InvocationTargetException e) {
+				// Catch InvocationTargetException and return cause
+				if (null == e.getCause()) {
+					throw e;
+				} else {
+					// Cast cause into Exception because Executor service can not handle throwable
+					throw (Exception) e.getCause();
+				}
 			}
 
 			// If data provider method returns null or empty object then execute test with
@@ -659,7 +671,7 @@ public class ArtosRunner {
 			listener.testSuiteExecutionFinished(testSuiteName);
 		}
 	}
-	
+
 	void notifyPrintTestPlan(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
 			listener.printTestPlan(t);

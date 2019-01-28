@@ -98,13 +98,13 @@ public class RunnerTestUnits {
 				if (null != t.getMethodAfterTestUnit()) {
 					t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
 				}
-				
+
 				// Run global after method post each test unit execution
 				if (null != context.getAfterTestUnit()) {
 					context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				}
 
-//				// long testUnitDuration = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
+				// // long testUnitDuration = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
 //				// @formatter:off
 //				context.getLogger().info(""
 //					+ "\n[" 
@@ -257,18 +257,18 @@ public class RunnerTestUnits {
 			for (Class<? extends Throwable> exceptionClass : unit.getExpectedExceptionList()) {
 				if (e.getClass() == exceptionClass) {
 					/* Exception matches as specified by user */
-					context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
+					context.setTestStatus(TestStatus.PASS, "Exception class is as expected : " + e.getClass().getName());
 
 					/* If regular expression then validate exception message with regular expression */
 					/* If regular expression does not match then do string compare */
 					if (null != unit.getExceptionContains() && !"".equals(unit.getExceptionContains())) {
-						if (e.getMessage().matches(unit.getExceptionContains())) {
+						if (e.getMessage().equals(unit.getExceptionContains())) {
+							context.setTestStatus(TestStatus.PASS, "Exception message matches : " + unit.getExceptionContains());
+						} else if (e.getMessage().matches(unit.getExceptionContains())) {
 							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + unit.getExceptionContains());
-						} else if (e.getMessage().equals(unit.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches string : " + unit.getExceptionContains());
 						} else {
-							context.setTestStatus(TestStatus.FAIL, "Exception message does not match regex : \nRegularExpression : "
-									+ unit.getExceptionContains() + "\nException Message : " + e.getMessage());
+							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : "
+									+ unit.getExceptionContains() + "\nReceived : " + e.getMessage());
 						}
 					}
 
