@@ -114,7 +114,14 @@ public class TestScriptParser {
 		if (suiteNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element eElement = (Element) suiteNode;
 			if ("suite".equals(eElement.getNodeName())) {
-				_suite.setSuiteName(eElement.getAttribute("name").trim());
+				// Only allow A-Z or a-Z or 0-9 or - to be part of the name
+				String suiteName = eElement.getAttribute("name").trim().replaceAll("[^A-Za-z0-9-_]", "");
+				// Only allow maximum of 10 digit
+				if(suiteName.length() > 10){
+					System.err.println("Warning: TestSuite name >10 char. It will be trimmed");
+					suiteName = suiteName.substring(0, 10);
+				}
+				_suite.setSuiteName(suiteName);
 
 				// If loop count attribute is not provided then assume 1, if
 				// provided then check if it is valid
@@ -298,7 +305,7 @@ public class TestScriptParser {
 		rootElement.appendChild(suite);
 
 		Attr attr = doc.createAttribute("name");
-		attr.setValue(packageName);
+		attr.setValue("UniqueName");
 		suite.setAttributeNode(attr);
 
 		Attr attr2 = doc.createAttribute("loopcount");
