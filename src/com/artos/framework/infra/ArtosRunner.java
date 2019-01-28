@@ -373,6 +373,9 @@ public class ArtosRunner {
 					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
 				}
 			} catch (InvocationTargetException e) {
+				context.getLogger().debug("=================================================");
+				context.getLogger().debug("=== DataProvider Method failed to return data ===");
+				context.getLogger().debug("=================================================");
 				// Catch InvocationTargetException and return cause
 				if (null == e.getCause()) {
 					throw e;
