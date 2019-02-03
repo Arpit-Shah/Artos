@@ -187,13 +187,20 @@ public class TransformToTestObjectWrapper {
 	 */
 	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
 
-		return refGroupList.stream().anyMatch(num -> testGroupList.contains(num));
-		// for (String group : refGroupList) {
-		// if (testGroupList.contains(group)) {
-		// return true;
-		// }
-		// }
-		// return false;
+        if (null != refGroupList && null != testGroupList) {
+            if (refGroupList.stream().anyMatch(num -> testGroupList.contains(num))) {
+                return true;
+            } else {
+                for (String i : refGroupList) {
+                    for (String j : testGroupList) {
+                        if (j.matches(i)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
 	}
 
 	protected List<TestObjectWrapper> getListOfTransformedTestCases() {
