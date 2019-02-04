@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.5-beta-2</version>
+	<version>0.0.6</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -238,7 +238,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Due to but in JDK 8u181 build 2 CircleCI builds were failing, https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=911925, 
+			<!-- Due to bug in JDK 8u181 build 2 CircleCI builds were failing, https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=911925, 
 				This plugin was added as work around for that -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
