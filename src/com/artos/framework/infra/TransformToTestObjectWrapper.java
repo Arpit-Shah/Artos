@@ -181,19 +181,22 @@ public class TransformToTestObjectWrapper {
 	/**
 	 * Validate if test case belongs to any user defined group(s)
 	 * 
-	 * @param refGroupList list of user defined group (via test script or via main class)
+	 * @param refGroupList list of user defined group (list is made up of group name or regular expression)
 	 * @param testGroupList list of group test case belong to
 	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
 	 */
 	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
 
         if (null != refGroupList && null != testGroupList) {
+        	
+        	// Check if string matches
             if (refGroupList.stream().anyMatch(num -> testGroupList.contains(num))) {
                 return true;
             } else {
-                for (String i : refGroupList) {
-                    for (String j : testGroupList) {
-                        if (j.matches(i)) {
+            	// Check if group matches regular expression
+                for (String refGroup : refGroupList) {
+                    for (String testcaseGroup : testGroupList) {
+                        if (testcaseGroup.matches(refGroup)) {
                             return true;
                         }
                     }

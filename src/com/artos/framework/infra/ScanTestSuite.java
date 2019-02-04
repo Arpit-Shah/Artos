@@ -118,6 +118,21 @@ public class ScanTestSuite {
 
 		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
 
+			/*
+			 * Reflection constructor takes package name as an argument, It will find all packages which starts with package name, thus as a side
+			 * effect it will also pick up packages which starts with similar name. as an example: In search of "com.group" package, reflection will
+			 * also scan "com.groups" package. To avoid such a side effect, below check has been added.
+			 */
+			if (null != cl.getPackage()) {
+				// If package is root then do not apply filter
+				if (!"".equals(packageName)) {
+					String currentClassPackageName = cl.getPackage().getName();
+					if (!(currentClassPackageName.equals(packageName) || currentClassPackageName.startsWith(packageName + "."))) {
+						continue;
+					}
+				}
+			}
+
 			TestCase testcase = cl.getAnnotation(TestCase.class);
 			TestPlan testplan = cl.getAnnotation(TestPlan.class);
 			Group group = cl.getAnnotation(Group.class);

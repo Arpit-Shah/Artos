@@ -163,9 +163,10 @@ public class ScanTestCase {
 		/*
 		 * @formatter:off
 		 * 1. If XML testScript is provided then use it
-		 * 3. If all of the above is not provided then use reflection to find test cases
+		 * 2. If all of the above is not provided then use reflection to find test cases
+		 * @formatter:on
 		 */
-		
+
 		if (null != context.getTestSuite()) {
 			List<String> groupList = context.getTestSuite().getTestUnitGroupList();
 			groupBasedFiltering(groupList);
@@ -179,7 +180,8 @@ public class ScanTestCase {
 	}
 
 	/**
-	 * Get all test unit objects from test case. Any test units with \"skip = true\" will be skipped. Test units will be ordered as per sequence number
+	 * Get all test unit objects from test case. Any test units with \"skip = true\" will be skipped. Test units will be ordered as per sequence
+	 * number
 	 */
 	private void groupBasedFiltering(List<String> refGroup) {
 		List<TestUnitObjectWrapper> listOfTestUnitObj = getTestUnitObjectWrapperList(true, true);
@@ -221,12 +223,30 @@ public class ScanTestCase {
 	/**
 	 * Validate if test case belongs to any user defined group(s)
 	 * 
-	 * @param refGroupList list of user defined group (via test script or via main class)
+	 * @param refGroupList list of user defined group (list is made up of group name or regular expression)
 	 * @param testGroupList list of group test case belong to
 	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
 	 */
 	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
-		return refGroupList.stream().anyMatch(num -> testGroupList.contains(num));
+
+		if (null != refGroupList && null != testGroupList) {
+
+			// Check if string matches
+			if (refGroupList.stream().anyMatch(num -> testGroupList.contains(num))) {
+				return true;
+			} else {
+				// Check if group matches regular expression
+				for (String refGroup : refGroupList) {
+					for (String testcaseGroup : testGroupList) {
+						if (testcaseGroup.matches(refGroup)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+		
 	}
 
 	/**

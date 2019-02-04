@@ -55,7 +55,7 @@ public class CliProcessor {
 		CommandLineParser parser = new DefaultParser();
 
 		// Create Option
-		Option testScript = Option.builder("ts").required(false).longOpt("testscript")
+		Option testScript = Option.builder("t").required(false).longOpt("testscript")
 				.desc("use test script to drive test : --testscript=\"./scripts/sampletest.xml\"").hasArg().build();
 		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos").build();
 		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.theartos.com for more info")
@@ -98,7 +98,9 @@ public class CliProcessor {
 			// Store test script path if provided
 			if (line.hasOption("testscript")) {
 				PrintWriter pw = new PrintWriter(System.out);
-				File tscriptFile = new File(line.getOptionValue("testscript"));
+				// TestScript path should be "./script/testscript.xml"
+				String testScriptPath = "." + File.separator + "script" + File.separator + line.getOptionValue("testscript");
+				File tscriptFile = new File(testScriptPath);
 				if (tscriptFile.exists() && tscriptFile.isFile()) {
 					testScriptFile = tscriptFile;
 					System.err.println("TestScript found : " + tscriptFile.getAbsolutePath());
