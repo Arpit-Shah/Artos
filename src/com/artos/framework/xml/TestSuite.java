@@ -33,7 +33,8 @@ public class TestSuite {
 	List<String> testFQCNList;
 	Map<String, String> testSuiteParameters;
 	String threadName;
-	String version;
+	String version = "1";
+	boolean enable = true;
 
 	// *****************************************************************
 	// Getters and setters
@@ -100,6 +101,14 @@ public class TestSuite {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public boolean isEnable() {
+		return enable;
+	}
+
+	public void setEnable(boolean enable) {
+		this.enable = enable;
 	}
 
 }

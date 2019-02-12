@@ -130,13 +130,21 @@ public class GUITestSelector {
 	 * @param packageName The package that TestRunnerHelper will run
 	 */
 	private void initMainFrame(String packageName) {
-		container = new JFrame("Test Selector"/* - packageName : " + packageName */);
+		if (null != context.getTestSuite()) {
+			container = new JFrame("Test Selector" + " (" + context.getTestSuite().getSuiteName() + ")");
+		} else {
+			container = new JFrame("Test Selector" + " (" + context.getMainMethodParam().getTestSuiteName() + ")");
+		}
 		container.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		// This is to ensure that thread lock is released and framework naturally exits
 		container.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
-				System.out.println("User Closed GUI Test Selector Window");
+				if (null != context.getTestSuite()) {
+					System.out.println("User Closed GUI Test Selector Window " + context.getTestSuite().getSuiteName());
+				} else {
+					System.out.println("User Closed GUI Test Selector Window " + context.getMainMethodParam().getTestSuiteName());
+				}
 				// to release a thread lock
 				context.getThreadLatch().countDown();
 			}
@@ -181,7 +189,12 @@ public class GUITestSelector {
 
 		// loop count panel
 		JLabel loopLabel = new JLabel("Loop count:");
-		loopCountField = new JTextField(Integer.toString(context.getTotalLoopCount()), 5);
+		if (context.isTestScriptProvided()) {
+			loopCountField = new JTextField(Integer.toString(context.getTestSuite().getLoopCount()), 5);
+		} else {
+			loopCountField = new JTextField(Integer.toString(context.getMainMethodParam().getLoopCount()), 5);
+		}
+
 		JPanel loopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		loopPanel.add(loopLabel);
 		loopPanel.add(loopCountField);
@@ -270,9 +283,14 @@ public class GUITestSelector {
 	 * @param selectedOnly True if we want to run the selected tests only
 	 */
 	private void execTest(final boolean selectedOnly) {
+		// Override loop count using what is passed by GUI
 		// fail silently if loopCountField value is not a valid integer
 		try {
-			context.setTotalLoopCount(Integer.valueOf(loopCountField.getText()));
+			if (context.isTestScriptProvided()) {
+				context.getTestSuite().setLoopCount(Integer.valueOf(loopCountField.getText()));
+			} else {
+				context.getMainMethodParam().setLoopCount(Integer.valueOf(loopCountField.getText()));
+			}
 		} catch (Exception e) {
 			// use default value
 		}
@@ -327,7 +345,7 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 			// column0 - test number
 			displayData[index][0] = String.valueOf(index);
-			
+
 			if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
 				// column1 - test seq
 				displayData[index][1] = Integer.toString(testList.get(index).getTestsequence());

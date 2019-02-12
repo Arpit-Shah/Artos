@@ -245,7 +245,14 @@ public class ArtosRunner {
 				notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
 
-			for (int index = 0; index < context.getTotalLoopCount(); index++) {
+			// Take main method loop count by default
+			int loopCount = context.getMainMethodParam().getLoopCount();
+			// Take loop count from test script if provided
+			if (context.isTestScriptProvided()) {
+				loopCount = context.getTestSuite().getLoopCount();
+			}
+
+			for (int index = 0; index < loopCount; index++) {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
 				for (TestObjectWrapper t : testList) {
@@ -589,7 +596,13 @@ public class ArtosRunner {
 			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
 
-		for (int index = 0; index < context.getTotalLoopCount(); index++) {
+		// Take main method loop count by default
+		int loopCount = context.getMainMethodParam().getLoopCount();
+		// Take loop count from test script if provided
+		if (context.isTestScriptProvided()) {
+			loopCount = context.getTestSuite().getLoopCount();
+		}
+		for (int index = 0; index < loopCount; index++) {
 			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
 			ExecutorService service = Executors.newFixedThreadPool(1000);

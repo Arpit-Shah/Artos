@@ -171,7 +171,7 @@ public class ScanTestCase {
 			List<String> groupList = context.getTestSuite().getTestUnitGroupList();
 			groupBasedFiltering(groupList);
 		} else {
-			groupBasedFiltering(context.getTestUnitGroupListPassedByMainMethod());
+			groupBasedFiltering(context.getMainMethodParam().getTestUnitGroupList());
 		}
 
 		// Clear list otherwise wrong methods will be added against wrong class

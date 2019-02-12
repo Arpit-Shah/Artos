@@ -36,7 +36,6 @@ import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.xml.TestSuite;
-import com.artos.interfaces.TestExecutable;
 import com.artos.interfaces.TestProgress;
 
 /**
@@ -58,10 +57,7 @@ public class TestContext {
 	private long currentKTFCount = 0;
 
 	private TestSuite testSuite = null;
-	private List<String> testGroupListPassedByMainMethod = null;
-	private List<String> testUnitGroupListPassedByMainMethod = null;
-	private List<TestExecutable> testListPassedByMainMethod = null;
-	private int totalLoopCount = 1;
+	private MainMethodParameterWrapper mainMethodParam = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
 
@@ -387,14 +383,6 @@ public class TestContext {
 		this.testSuite = testSuite;
 	}
 
-	protected int getTotalLoopCount() {
-		return totalLoopCount;
-	}
-
-	protected void setTotalLoopCount(int totalLoopCount) {
-		this.totalLoopCount = totalLoopCount;
-	}
-
 	protected Class<?> getPrePostRunnableObj() {
 		return prePostRunnableObj;
 	}
@@ -662,7 +650,7 @@ public class TestContext {
 		this.currentUnitTestStatus = currentUnitTestStatus;
 	}
 
-	public Method getBeforeTestSuite() {
+	protected Method getBeforeTestSuite() {
 		return beforeTestSuite;
 	}
 
@@ -670,7 +658,7 @@ public class TestContext {
 		this.beforeTestSuite = beforeTestSuite;
 	}
 
-	public Method getAfterTestSuite() {
+	protected Method getAfterTestSuite() {
 		return afterTestSuite;
 	}
 
@@ -678,7 +666,7 @@ public class TestContext {
 		this.afterTestSuite = afterTestSuite;
 	}
 
-	public Method getBeforeTest() {
+	protected Method getBeforeTest() {
 		return beforeTest;
 	}
 
@@ -686,7 +674,7 @@ public class TestContext {
 		this.beforeTest = beforeTest;
 	}
 
-	public Method getAfterTest() {
+	protected Method getAfterTest() {
 		return afterTest;
 	}
 
@@ -694,7 +682,7 @@ public class TestContext {
 		this.afterTest = afterTest;
 	}
 
-	public Method getBeforeTestUnit() {
+	protected Method getBeforeTestUnit() {
 		return beforeTestUnit;
 	}
 
@@ -702,7 +690,7 @@ public class TestContext {
 		this.beforeTestUnit = beforeTestUnit;
 	}
 
-	public Method getAfterTestUnit() {
+	protected Method getAfterTestUnit() {
 		return afterTestUnit;
 	}
 
@@ -710,28 +698,16 @@ public class TestContext {
 		this.afterTestUnit = afterTestUnit;
 	}
 
-	public List<TestExecutable> getTestListPassedByMainMethod() {
-		return testListPassedByMainMethod;
+	protected MainMethodParameterWrapper getMainMethodParam() {
+		return mainMethodParam;
 	}
 
-	protected void setTestListPassedByMainMethod(List<TestExecutable> testListPassedByMainMethod) {
-		this.testListPassedByMainMethod = testListPassedByMainMethod;
+	protected void setMainMethodParam(MainMethodParameterWrapper mainMethodParam) {
+		this.mainMethodParam = mainMethodParam;
 	}
 
-	public List<String> getTestGroupListPassedByMainMethod() {
-		return testGroupListPassedByMainMethod;
-	}
-
-	protected void setTestGroupListPassedByMainMethod(List<String> testGroupListPassedByMainMethod) {
-		this.testGroupListPassedByMainMethod = testGroupListPassedByMainMethod;
-	}
-
-	public List<String> getTestUnitGroupListPassedByMainMethod() {
-		return testUnitGroupListPassedByMainMethod;
-	}
-
-	protected void setTestUnitGroupListPassedByMainMethod(List<String> testUnitGroupListPassedByMainMethod) {
-		this.testUnitGroupListPassedByMainMethod = testUnitGroupListPassedByMainMethod;
+	public boolean isTestScriptProvided() {
+		return null == getTestSuite() ? false : true;
 	}
 
 }

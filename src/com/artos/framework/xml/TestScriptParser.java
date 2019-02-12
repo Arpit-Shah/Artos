@@ -102,7 +102,7 @@ public class TestScriptParser {
 			parseSuite(_suite, suiteNode);
 
 			// add test suite in the list even no test list is provided
-			if (null != _suite.getTestFQCNList()) {
+			if (null != _suite.getTestFQCNList() && _suite.isEnable()) {
 				testSuiteList.add(_suite);
 			}
 		}
@@ -114,10 +114,19 @@ public class TestScriptParser {
 		if (suiteNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element eElement = (Element) suiteNode;
 			if ("suite".equals(eElement.getNodeName())) {
+
+				// if set correctly then process it or set to true by default
+				String enable = eElement.getAttribute("enable").trim();
+				if (enable.toLowerCase().equals("false")) {
+					_suite.setEnable(false);
+				} else {
+					_suite.setEnable(true);
+				}
+
 				// Only allow A-Z or a-Z or 0-9 or - to be part of the name
 				String suiteName = eElement.getAttribute("name").trim().replaceAll("[^A-Za-z0-9-_]", "");
 				// Only allow maximum of 10 digit
-				if(suiteName.length() > 10){
+				if (suiteName.length() > 10) {
 					System.err.println("Warning: TestSuite name >10 char. It will be trimmed");
 					suiteName = suiteName.substring(0, 10);
 				}
@@ -133,7 +142,8 @@ public class TestScriptParser {
 					try {
 						int nLoopCount = Integer.parseInt(loopCount);
 						if (nLoopCount <= 0) {
-							throw new InvalidDataException("Invalid Loop Count : " + loopCount);
+							// If invalid then set to 1
+							nLoopCount = 1;
 						}
 						_suite.setLoopCount(nLoopCount);
 					} catch (NumberFormatException e) {
@@ -304,13 +314,17 @@ public class TestScriptParser {
 		Element suite = doc.createElement("suite");
 		rootElement.appendChild(suite);
 
-		Attr attr = doc.createAttribute("name");
-		attr.setValue("UniqueName");
-		suite.setAttributeNode(attr);
+		Attr attr1 = doc.createAttribute("enable");
+		attr1.setValue("true");
+		suite.setAttributeNode(attr1);
 
-		Attr attr2 = doc.createAttribute("loopcount");
-		attr2.setValue("1");
+		Attr attr2 = doc.createAttribute("name");
+		attr2.setValue("UniqueName");
 		suite.setAttributeNode(attr2);
+
+		Attr attr3 = doc.createAttribute("loopcount");
+		attr3.setValue("1");
+		suite.setAttributeNode(attr3);
 
 		Comment comment = doc
 				.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\" + packageName + ".xml\"");
