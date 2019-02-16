@@ -373,7 +373,7 @@ public class Runner {
 	/**
 	 * Set Framework configuration profile name, Test script takes higher priority so if test script is provided then this will be ignored
 	 * 
-	 * @param frameworkProfile framework config profile name
+	 * @param frameworkConfigProfile framework config profile name
 	 */
 	public void setFrameworkConfigProfile(String frameworkConfigProfile) {
 		mainMethodParam.setFrameworkConfigProfile(frameworkConfigProfile);
@@ -382,7 +382,7 @@ public class Runner {
 	/**
 	 * allows to set test suite name, Test script takes higher priority so if test script is provided then this will be ignored
 	 * 
-	 * @param testSuiteName
+	 * @param testSuiteName test suite name
 	 */
 	public void setTestSuiteName(String testSuiteName) {
 		mainMethodParam.setTestSuiteName(testSuiteName);

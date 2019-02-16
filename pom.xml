@@ -3,7 +3,7 @@
 
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
-	<url>https://bitbucket.org/ShahArpit/arpitos_fork</url>
+	<url>https://github.com/Arpit-Shah/Artos</url>
 	<description>The Artos "ART OF SYSTEM TESTING" is a framework designed for regression, functional, integration, end to end and/or unit testing.</description>
 	<inceptionYear>2018</inceptionYear>
 
@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.7</version>
 
 	<!-- Organisation Info -->
 	<organization>

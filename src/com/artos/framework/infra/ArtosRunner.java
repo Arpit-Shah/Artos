@@ -60,12 +60,16 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Constructor responsible for storing TestContext and class which contains main() method. Upon initialisation TestExecutionEventListener is
-	 * registered so test decoration can be printed.
+	 * <PRE>
+	 * Constructor responsible for initialising and registering required listeners. 
+	 * TestExecutionEventListener is responsible for printing information during test execution
+	 * ExtentReportListener is responsible for Extent report generation
+	 * </PRE>
 	 * 
 	 * @param context TestContext object
 	 * @see TestContext
 	 * @see TestExecutionEventListener
+	 * @see ExtentReportListener
 	 */
 	protected ArtosRunner(TestContext context) {
 		this.context = context;
@@ -89,7 +93,8 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Runner for the framework
+	 * Runner for the framework. Responsible for generating test list after scanning a test suite, generate test script if required, show GUI test
+	 * selector if enabled
 	 * 
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
@@ -100,6 +105,7 @@ public class ArtosRunner {
 			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
 
+		// If GUI test selector is enabled then show it or else execute test cases
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
@@ -168,6 +174,11 @@ public class ArtosRunner {
 		context.getThreadLatch().countDown();
 	}
 
+	/**
+	 * Highlight failed test cases at the end of test execution
+	 * 
+	 * @param transformedTestList list of test cases
+	 */
 	private void highlightFailure(List<TestObjectWrapper> transformedTestList) {
 		notifyTestSuiteFailureHighlight("");
 
@@ -200,11 +211,13 @@ public class ArtosRunner {
 
 						// If test case is without date provider
 						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
-							System.err.println(String.format("      |-- %s", unit.getTestUnitMethod().getName() + "(context)"));
+							System.err.println(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
+
+							// If test case with data provider then go through each status of the list
 						} else if (!"".equals(unit.getDataProviderName())) {
 							for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 								if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
-									System.err.println(String.format("      |-- %s",
+									System.err.println(String.format("\t|-- %s",
 											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
 								}
 							}
@@ -244,25 +257,28 @@ public class ArtosRunner {
 				loopCount = context.getTestSuite().getLoopCount();
 			}
 
+			// Run as many loop set via test script or main method
 			for (int index = 0; index < loopCount; index++) {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
+				// Go through each test case and execute it
 				for (TestObjectWrapper t : testList) {
 
-					// If stop on fail is selected then stop test execution
+					// If "stop on fail" is enabled then stop test execution
 					if (FWStaticStore.frameworkConfig.isStopOnFail()) {
 						if (context.getCurrentFailCount() > 0) {
 							break;
 						}
 					}
 
+					// Print test case header and test plan in the log file
 					notifyPrintTestPlan(t);
 
 					notifyTestExecutionStarted(t);
-					// if data provider name is not specified then only execute test once
+					// if data provider is not specified
 					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
 						runIndividualTest(t);
-					} else {
+					} else { // if data provider is specified
 						runParameterizedTest(t);
 					}
 					notifyTestExecutionFinished(t);

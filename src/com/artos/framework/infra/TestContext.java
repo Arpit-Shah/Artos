@@ -186,14 +186,17 @@ public class TestContext {
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
+		// Go through test unit of each log and print status of each test units into report
 		for (int i = 0; i < t.getTestUnitList().size(); i++) {
 			TestUnitObjectWrapper unit = t.getTestUnitList().get(i);
 			long totalTestUnitTime = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
+
+			// go through outcome list of test unit and print them all
 			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 				if (unit.getDataProviderName().equals("")) {
 					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
 							unit.getBugTrackingNumber(), totalTestUnitTime);
-				} else {
+				} else { // if data provider then append data provider number
 					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j),
 							unit.getTestUnitMethod().getName() + "(context)" + "data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
 				}
@@ -229,9 +232,11 @@ public class TestContext {
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
+		// print test unit outcome on the console and log file
 		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
 				+ unit.getTestUnitMethod().getName() + "(context)\n" + ".........................................................................");
 
+		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "] : " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
