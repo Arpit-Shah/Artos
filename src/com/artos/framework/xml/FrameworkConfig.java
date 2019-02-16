@@ -84,7 +84,7 @@ public class FrameworkConfig {
 
 	// Features
 	private boolean enableGUITestSelector = true;
-	private boolean enableGUITestSelectorSeqNumber = false;
+	private boolean enableGUITestSelectorSeqNumber = true;
 	private boolean enableOrganisationInfo = true;
 	private boolean enableBanner = true;
 	private boolean enableEmailClient = false;

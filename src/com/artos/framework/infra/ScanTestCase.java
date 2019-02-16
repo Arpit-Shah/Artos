@@ -107,7 +107,7 @@ public class ScanTestCase {
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 			Group group = method.getAnnotation(Group.class);
 
-			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.testtimeout());
+			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(), unit.testtimeout());
 
 			/*
 				 * Store group list for each test cases.

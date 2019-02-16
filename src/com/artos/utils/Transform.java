@@ -787,6 +787,7 @@ public class Transform {
 	 * @param length Byte array length
 	 * @return random value byte array
 	 */
+	@Deprecated
 	public byte[] randBytes(int length) {
 		byte[] b = new byte[length];
 		SecureRandom r = new SecureRandom();

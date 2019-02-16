@@ -65,12 +65,13 @@ public class TestUnitObjectWrapper {
 	 * @param testsequence test sequence as specified in annotation
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 */
-	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, long testTimeout) {
+	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout) {
 		super();
 
 		this.testUnitMethod = method;
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
+		this.dataProviderName = dataProviderName;
 		this.testTimeout = testTimeout;
 	}
 

@@ -176,7 +176,7 @@ public class ArtosRunner {
 			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
 			System.err.println("\n********************************************************");
 
-			int errorcount = 0;
+			int testErrorcount = 0;
 			for (TestObjectWrapper t : transformedTestList) {
 
 				/*
@@ -186,43 +186,35 @@ public class ArtosRunner {
 					continue;
 				}
 
-				// If test case is without date provider
-				if ("".equals(t.getDataProviderName()) && t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
-					errorcount++;
-					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
-					highlightTestUnitFailure(t, 0);
+				if (t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
+					testErrorcount++;
+					System.err.println(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
 
-					// If test case is with data provider
-				} else if (!"".equals(t.getDataProviderName())) {
-					for (int j = 0; j < t.getTestOutcomeList().size(); j++) {
-						if (t.getTestOutcomeList().get(j) == TestStatus.FAIL) {
-							errorcount++;
-							System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()) + " : DataProvider[" + j + "]");
-							highlightTestUnitFailure(t, j);
+					for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
+						/*
+						 * If stopOnFail=true then test unit after first failure will not be executed which means TestUnitOutcomeList will be empty
+						 */
+						if (unit.getTestUnitOutcomeList().isEmpty()) {
+							continue;
 						}
+
+						// If test case is without date provider
+						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
+							System.err.println(String.format("      |-- %s", unit.getTestUnitMethod().getName() + "(context)"));
+						} else if (!"".equals(unit.getDataProviderName())) {
+							for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
+								if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
+									System.err.println(String.format("      |-- %s",
+											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
+								}
+							}
+						}
+
 					}
 				}
 			}
 
-			System.err.println("********************************************************\n********************************************************");
-		}
-	}
-
-	/**
-	 * This method iterate through each unit test case and prints failed unit test case name. Each unit test case maintains test status list. If no
-	 * data provider is used then list should have only one component, if dataprovider is used then list could have same number of component as
-	 * executed data provider.
-	 * 
-	 * @param t TestObjectWrapper object
-	 * @param index test status index which is relevant for current test
-	 */
-	private void highlightTestUnitFailure(TestObjectWrapper t, int index) {
-		for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
-			// int unitErrorCount = 0;
-			if (unit.getTestUnitOutcomeList().get(index) == TestStatus.FAIL) {
-				// unitErrorCount++;
-				System.err.println(String.format("    |- %s"/* %-4s%s", unitErrorCount */, unit.getTestUnitMethod().getName() + "()"));
-			}
+			System.err.println("********************************************************");
 		}
 	}
 
@@ -266,13 +258,6 @@ public class ArtosRunner {
 
 					notifyPrintTestPlan(t);
 
-					// Run Pre Method prior to any test Execution
-					if (null != context.getBeforeTest()) {
-						notifyBeforeTestMethodStarted(t);
-						context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-						notifyBeforeTestMethodFinished(t);
-					}
-
 					notifyTestExecutionStarted(t);
 					// if data provider name is not specified then only execute test once
 					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
@@ -281,13 +266,6 @@ public class ArtosRunner {
 						runParameterizedTest(t);
 					}
 					notifyTestExecutionFinished(t);
-
-					// Run Post Method prior to any test Execution
-					if (null != context.getAfterTest()) {
-						notifyAfterTestMethodStarted(t);
-						context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-						notifyAfterTestMethodFinished(t);
-					}
 
 				}
 				// --------------------------------------------------------------------------------------------
@@ -301,9 +279,16 @@ public class ArtosRunner {
 			}
 
 		} catch (Throwable e) {
-			// Handle if any exception in pre-post runnable
-			UtilsFramework.writePrintStackTrace(context, e);
-			notifyTestSuiteException(e.getMessage());
+			// Catch InvocationTargetException and return cause
+			if (null == e.getCause()) {
+				// Handle if any exception in pre-post runnable
+				UtilsFramework.writePrintStackTrace(context, e);
+				notifyTestSuiteException(e.getMessage());
+			} else {
+				// Handle if any exception in pre-post runnable
+				UtilsFramework.writePrintStackTrace(context, e.getCause());
+				notifyTestSuiteException(e.getCause().getMessage());
+			}
 		}
 
 		// Set Test Finish Time
@@ -420,10 +405,35 @@ public class ArtosRunner {
 	 */
 	private void runSimpleTest(TestObjectWrapper t) throws Exception {
 		// --------------------------------------------------------------------------------------------
-		// Run execute Method (This is if test suite is designed as single test per test cases)
-		// ((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
-		// Run Unit tests (This is if test suite have unit tests)
-		new RunnerTestUnits(context).runSingleThreadUnits(t);
+		try {
+
+			// Run Pre Method prior to any test Execution
+			if (null != context.getBeforeTest()) {
+				notifyBeforeTestMethodStarted(t);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyBeforeTestMethodFinished(t);
+			}
+
+			// Run Unit tests (This is if test suite have unit tests)
+			new RunnerTestUnits(context, listenerList).runSingleThreadUnits(t);
+
+			// Run Post Method prior to any test Execution
+			if (null != context.getAfterTest()) {
+				notifyAfterTestMethodStarted(t);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyAfterTestMethodFinished(t);
+			}
+
+			// When method fails via reflection, it throws InvocationTargetExcetion
+		} catch (InvocationTargetException e) {
+			// Catch InvocationTargetException and return cause
+			if (null == e.getCause()) {
+				throw e;
+			} else {
+				// Cast cause into Exception because Executor service can not handle throwable
+				throw (Exception) e.getCause();
+			}
+		}
 		// --------------------------------------------------------------------------------------------
 	}
 

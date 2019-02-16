@@ -186,6 +186,20 @@ public class TestContext {
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
+		for (int i = 0; i < t.getTestUnitList().size(); i++) {
+			TestUnitObjectWrapper unit = t.getTestUnitList().get(i);
+			long totalTestUnitTime = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
+			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
+				if (unit.getDataProviderName().equals("")) {
+					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
+							unit.getBugTrackingNumber(), totalTestUnitTime);
+				} else {
+					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j),
+							unit.getTestUnitMethod().getName() + "(context)" + "data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
+				}
+			}
+		}
+
 		// reset status for next test
 		resetUnitTestStatus();
 		resetTestStatus();
@@ -216,9 +230,11 @@ public class TestContext {
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
-				+ unit.getTestUnitMethod().getName() + "()\n" + ".........................................................................");
+				+ unit.getTestUnitMethod().getName() + "(context)\n" + ".........................................................................");
+
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "] : " + unit.getTestUnitMethod().getName() + "() =>" + unit.getBugTrackingNumber());
+				+ "] : " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 
 		// reset status for next test
 		resetUnitTestStatus();
@@ -255,6 +271,34 @@ public class TestContext {
 
 		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:"
 				+ KTFCount + " " + testTime + " " + JiraRef);
+	}
+
+	/**
+	 * Append test unit summary to summary report
+	 * 
+	 * @param status Test status
+	 * @param testUnitName Test unit name
+	 * @param bugTrackingNumber BugTracking Number
+	 * @param testDuration Test duration
+	 */
+	private void appendUnitSummaryReport(TestStatus status, String testUnitName, String bugTrackingNumber, long testDuration) {
+
+		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+
+		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testName = String.format("%-" + 95 + "s", testUnitName);
+		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String PassCount = String.format("%-" + 4 + "s", "");
+		String FailCount = String.format("%-" + 4 + "s", "");
+		String SkipCount = String.format("%-" + 4 + "s", "");
+		String KTFCount = String.format("%-" + 4 + "s", "");
+
+		getLogger().getSummaryLogger().info("  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount
+				+ "  :" + KTFCount + " " + testTime + " " + JiraRef);
 	}
 
 	/**

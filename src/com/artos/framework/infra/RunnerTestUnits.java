@@ -21,6 +21,7 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
+import java.io.InvalidObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -32,7 +33,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.artos.framework.Enums.TestStatus;
+import com.artos.interfaces.TestProgress;
 import com.artos.framework.FWStaticStore;
+import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.utils.UtilsFramework;
@@ -41,9 +44,11 @@ public class RunnerTestUnits {
 
 	TestContext context;
 	TestObjectWrapper t;
+	List<TestProgress> listenerList;
 
-	protected RunnerTestUnits(TestContext context) {
+	protected RunnerTestUnits(TestContext context, List<TestProgress> listenerList) {
 		this.context = context;
+		this.listenerList = listenerList;
 	}
 
 	/**
@@ -77,15 +82,7 @@ public class RunnerTestUnits {
 					}
 				}
 
-				// Run global before method prior to each test unit execution
-				if (null != context.getBeforeTestUnit()) {
-					context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				}
-
-				// Run custom before method prior to each test unit execution
-				if (null != t.getMethodBeforeTestUnit()) {
-					t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				}
+				// notifyPrintTestUnitPlan(unit);
 
 				// if data provider name is not specified then only execute test once
 				if (null == unit.getDataProviderName() || "".equals(unit.getDataProviderName())) {
@@ -93,31 +90,6 @@ public class RunnerTestUnits {
 				} else {
 					runParameterizedUnitTest(unit);
 				}
-
-				// Run custom after method post each test unit execution
-				if (null != t.getMethodAfterTestUnit()) {
-					t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				}
-
-				// Run global after method post each test unit execution
-				if (null != context.getAfterTestUnit()) {
-					context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				}
-
-				// // long testUnitDuration = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
-//				// @formatter:off
-//				context.getLogger().info(""
-//					+ "\n[" 
-//					+ context.getCurrentUnitTestStatus() 
-//					+ "] : " + unit.getTestUnitMethod().getName() + "()" 
-//					+ "\n"
-//					/*+ "[Duration : "
-//					+ String.format("%d min, %d sec", 
-//							TimeUnit.MILLISECONDS.toMinutes(testUnitDuration),
-//							TimeUnit.MILLISECONDS.toSeconds(testUnitDuration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(testUnitDuration)))
-//					+ "]\n"*/
-//				);
-//				// @formatter:on
 			}
 			// --------------------------------------------------------------------------------------------
 
@@ -172,7 +144,59 @@ public class RunnerTestUnits {
 	 * @param unit TestCase in format {@code TestUnitObjectWrapper}
 	 */
 	private void runParameterizedUnitTest(TestUnitObjectWrapper unit) {
-		// Implement later if needed
+		Object[][] data;
+		TestDataProvider dataProviderObj;
+
+		try {
+			// get dataProvider specified for this test case (data provider name is always
+			// stored in upper case)
+			dataProviderObj = context.getDataProviderMap().get(unit.getDataProviderName().toUpperCase());
+
+			// If specified data provider is not found in the list then throw exception
+			// (Remember : Data provider name is case in-sensitive)
+			if (null == dataProviderObj) {
+				throw new InvalidObjectException("DataProvider not found (or private) : " + (unit.getDataProviderName()));
+			}
+
+			// Handle it because this executes method
+			try {
+				if (dataProviderObj.isStaticMethod()) {
+					data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
+				} else {
+					/* NonStatic data provider method needs an instance */
+					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
+				}
+			} catch (InvocationTargetException e) {
+				context.getLogger().debug("=================================================");
+				context.getLogger().debug("=== DataProvider Method failed to return data ===");
+				context.getLogger().debug("=================================================");
+				// Catch InvocationTargetException and return cause
+				if (null == e.getCause()) {
+					throw e;
+				} else {
+					// Cast cause into Exception because Executor service can not handle throwable
+					throw (Exception) e.getCause();
+				}
+			}
+
+			// If data provider method returns null or empty object then execute test with
+			// null parameter
+			if (null == data || data.length == 0) {
+				executeChildTest(unit, new String[][] { {} }, 0);
+			} else {
+				for (int i = 0; i < data.length; i++) {
+					executeChildTest(unit, data, i);
+				}
+			}
+		} catch (Exception e) {
+			// Print Exception
+			UtilsFramework.writePrintStackTrace(context, e);
+			// notifyTestSuiteException(e.getMessage());
+
+			// Mark current test as fail due to exception during data provider processing
+			context.setTestStatus(TestStatus.FAIL, e.getMessage());
+			context.generateUnitTestSummary(unit);
+		}
 	}
 
 	/**
@@ -184,8 +208,40 @@ public class RunnerTestUnits {
 	private void runSimpleUnitTest(TestUnitObjectWrapper unit) throws Exception {
 		// --------------------------------------------------------------------------------------------
 		try {
+			// Run global before method prior to each test unit execution
+			if (null != context.getBeforeTestUnit()) {
+				notifyGlobalBeforeTestUnitMethodStarted(context.getBeforeTestUnit().getName(), unit);
+				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyGlobalBeforeTestUnitMethodFinished(unit);
+			}
+
+			// Run custom before method prior to each test unit execution
+			if (null != t.getMethodBeforeTestUnit()) {
+				notifyLocalBeforeTestUnitMethodStarted(t, unit);
+				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				notifyLocalBeforeTestUnitMethodFinished(unit);
+			}
+
+			notifyTestUnitExecutionStarted(unit);
+
 			// Run single unit
 			unit.getTestUnitMethod().invoke(t.getTestClassObject().newInstance(), context);
+
+			notifyTestUnitExecutionFinished(unit);
+
+			// Run custom after method post each test unit execution
+			if (null != t.getMethodAfterTestUnit()) {
+				notifyLocalAfterTestUnitMethodStarted(t, unit);
+				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				notifyLocalAfterTestUnitMethodFinished(unit);
+			}
+
+			// Run global after method post each test unit execution
+			if (null != context.getAfterTestUnit()) {
+				notifyGlobalAfterTestUnitMethodStarted(context.getAfterTestUnit().getName(), unit);
+				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyGlobalAfterTestUnitMethodFinished(unit);
+			}
 
 			// When method fails via reflection, it throws InvocationTargetExcetion
 		} catch (InvocationTargetException e) {
@@ -242,6 +298,50 @@ public class RunnerTestUnits {
 	}
 
 	/**
+	 * Responsible for execution of test units (Considered as child test units) with given parameter. Parameterised object array index and value(s)
+	 * class type(s) will be printed prior to test execution for user's benefit.
+	 * 
+	 * @param unit TestCase in format {@code TestUnitObjectWrapper}
+	 * @param data Array of parameters
+	 * @param arrayIndex Parameter array index
+	 */
+	private void executeChildTest(TestUnitObjectWrapper unit, Object[][] data, int arrayIndex) {
+		String userInfo = "DataProvider(" + arrayIndex + ")  : ";
+		if (data[arrayIndex].length == 2) {
+			context.setParameterisedObject1(null == data[arrayIndex][0] ? null : data[arrayIndex][0]);
+			context.setParameterisedObject2(null == data[arrayIndex][1] ? null : data[arrayIndex][1]);
+			String firstType = (context.getParameterisedObject1().getClass().getSimpleName());
+			String secondType = (context.getParameterisedObject2().getClass().getSimpleName());
+			userInfo += "[" + firstType + "][" + secondType + "]";
+
+		} else if (data[arrayIndex].length == 1) {
+			context.setParameterisedObject1(null == data[arrayIndex][0] ? null : data[arrayIndex][0]);
+			context.setParameterisedObject2(null);
+			String firstType = (context.getParameterisedObject1().getClass().getSimpleName());
+			userInfo += "[" + firstType + "][]";
+		} else {
+			context.setParameterisedObject1(null);
+			context.setParameterisedObject2(null);
+			userInfo += "[][]";
+		}
+		context.getLogger().info(userInfo);
+
+		// ********************************************************************************************
+		// Parameterised Child TestCase Start
+		// ********************************************************************************************
+
+		notifyChildTestUnitExecutionStarted(t, unit, userInfo);
+
+		runIndividualUnitTest(unit);
+
+		notifyChildTestUnitExecutionFinished(unit);
+
+		// ********************************************************************************************
+		// Parameterised Child TestCase Finish
+		// ********************************************************************************************
+	}
+
+	/**
 	 * Responsible for processing throwable/exception thrown by test cases during execution time. If {@code ExpectedException} annotation defines
 	 * expected throwable/exception and received throwable/exception does not match any of the defined throwable(s)/Exception(s) then test will be
 	 * marked as FAIL.
@@ -267,8 +367,8 @@ public class RunnerTestUnits {
 						} else if (e.getMessage().matches(unit.getExceptionContains())) {
 							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + unit.getExceptionContains());
 						} else {
-							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : "
-									+ unit.getExceptionContains() + "\nReceived : " + e.getMessage());
+							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : " + unit.getExceptionContains()
+									+ "\nReceived : " + e.getMessage());
 						}
 					}
 
@@ -312,4 +412,81 @@ public class RunnerTestUnits {
 			}
 		}
 	}
+
+	// ==================================================================================
+	// Register, deRegister and Notify Event Listeners
+	// ==================================================================================
+
+	void notifyGlobalBeforeTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeGlobalTestUnitMethodStarted(methodName, unit);
+		}
+	}
+
+	void notifyGlobalBeforeTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeGlobalTestUnitMethodFinished(unit);
+		}
+	}
+
+	void notifyGlobalAfterTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.afterGlobalTestUnitMethodStarted(methodName, unit);
+		}
+	}
+
+	void notifyGlobalAfterTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.afterGlobalTestUnitMethodFinished(unit);
+		}
+	}
+
+	void notifyLocalBeforeTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeLocalTestUnitMethodStarted(t, unit);
+		}
+	}
+
+	void notifyLocalBeforeTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.beforeLocalTestUnitMethodFinished(unit);
+		}
+	}
+
+	void notifyLocalAfterTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.afterLocalTestUnitMethodStarted(t, unit);
+		}
+	}
+
+	void notifyLocalAfterTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.afterLocalTestUnitMethodFinished(unit);
+		}
+	}
+
+	void notifyTestUnitExecutionStarted(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitExecutionStarted(unit);
+		}
+	}
+
+	void notifyTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitExecutionFinished(unit);
+		}
+	}
+
+	private void notifyChildTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String userInfo) {
+		for (TestProgress listener : listenerList) {
+			listener.childTestUnitExecutionStarted(t, unit, userInfo);
+		}
+	}
+
+	private void notifyChildTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.childTestUnitExecutionFinished(unit);
+		}
+	}
+
 }
