@@ -140,32 +140,34 @@ public class ArtosRunner {
 		}
 
 		// Print Test results
-		notifyTestSuiteSummaryPrinting("");
-
-		// @formatter:off
-		logger.info(
-				"PASS:" + context.getCurrentPassCount() + 
-				" FAIL:" + context.getCurrentFailCount() + 
-				" SKIP:" + context.getCurrentSkipCount() + 
-				" KTF:" + context.getCurrentKTFCount() + 
-				" EXECUTED:" + context.getTotalTestCount() 
-				// Total does not make sense because parameterised test cases are considered as a test case
-				/*+ " TOTAL:" + transformedTestList.size()*/
-				);
-		// @formatter:on
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+		sb.append("\n");
+		sb.append("PASS:" + context.getCurrentPassCount());
+		sb.append(" FAIL:" + context.getCurrentFailCount());
+		sb.append(" SKIP:" + context.getCurrentSkipCount());
+		sb.append(" KTF:" + context.getCurrentKTFCount());
+		sb.append(" EXECUTED:" + context.getTotalTestCount());
+		// Total does not make sense because parameterised test cases are considered as a test case
+		// sb.append(" TOTAL:" + transformedTestList.size());
 
 		// Print Test suite Start and Finish time
-		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		context.getLogger().getGeneralLogger().info("\nTest start time : {}", timeStamp);
-		context.getLogger().getSummaryLogger().info("\nTest start time : {}", timeStamp);
-		timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
-		context.getLogger().getGeneralLogger().info("Test finish time : {}", timeStamp);
-		context.getLogger().getSummaryLogger().info("Test finish time : {}", timeStamp);
-
-		// Print Test suite summary
-		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
+		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
+		String finishTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
+		sb.append("\n\n");
+		sb.append("Test start time : " + startTimeStamp);
+		sb.append("\n");
+		sb.append("Test finish time : " + finishTimeStamp);
+		sb.append("\n");
+		sb.append("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
 				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
+
+		// Print Test suite summary
+		logger.info(sb.toString());
+		context.getLogger().getSummaryLogger().info(sb.toString());
+		notifyTestSuiteSummaryPrinting(sb.toString());
 
 		// HighLight Failed Test Cases
 		highlightFailure(transformedTestList);
@@ -180,12 +182,14 @@ public class ArtosRunner {
 	 * @param transformedTestList list of test cases
 	 */
 	private void highlightFailure(List<TestObjectWrapper> transformedTestList) {
-		notifyTestSuiteFailureHighlight("");
 
 		if (context.getCurrentFailCount() > 0) {
-			System.err.println("********************************************************");
-			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
-			System.err.println("\n********************************************************");
+			StringBuilder sb = new StringBuilder();
+			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+			sb.append("\n");
+			sb.append("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
+			sb.append("\n\n");
+			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 			int testErrorcount = 0;
 			for (TestObjectWrapper t : transformedTestList) {
@@ -199,7 +203,8 @@ public class ArtosRunner {
 
 				if (t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
 					testErrorcount++;
-					System.err.println(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
+					sb.append("\n");
+					sb.append(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
 
 					for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
 						/*
@@ -211,13 +216,15 @@ public class ArtosRunner {
 
 						// If test case is without date provider
 						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
-							System.err.println(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
+							sb.append(String.format("\n"));
+							sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
 
 							// If test case with data provider then go through each status of the list
 						} else if (!"".equals(unit.getDataProviderName())) {
 							for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 								if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
-									System.err.println(String.format("\t|-- %s",
+									sb.append(String.format("\n"));
+									sb.append(String.format("\t|-- %s",
 											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
 								}
 							}
@@ -227,7 +234,10 @@ public class ArtosRunner {
 				}
 			}
 
-			System.err.println("********************************************************");
+			sb.append(String.format("\n"));
+			sb.append(String.format(FWStaticStore.ARTOS_LINE_BREAK_1));
+			System.err.println(sb.toString());
+			notifyTestSuiteFailureHighlight(sb.toString());
 		}
 	}
 
@@ -381,9 +391,7 @@ public class ArtosRunner {
 					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
 				}
 			} catch (InvocationTargetException e) {
-				context.getLogger().debug("=================================================");
-				context.getLogger().debug("=== DataProvider Method failed to return data ===");
-				context.getLogger().debug("=================================================");
+				context.getLogger().info(FWStaticStore.ARTOS_DATAPROVIDER_FAIL_STAMP);
 				// Catch InvocationTargetException and return cause
 				if (null == e.getCause()) {
 					throw e;

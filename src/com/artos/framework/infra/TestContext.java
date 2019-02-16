@@ -131,9 +131,7 @@ public class TestContext {
 			// Append Warning in the log so user can pin point where test failed
 			if (testStatus == TestStatus.FAIL) {
 				//@formatter:off
-				getLogger().info("**********************************"
-								+"\n*********** FAIL HERE ************"
-								+"\n**********************************");
+				getLogger().info(FWStaticStore.ARTOS_TEST_FAIL_STAMP);
 				//@formatter:on
 			}
 		}
@@ -153,9 +151,7 @@ public class TestContext {
 		if (isKnownToFail()) {
 			if (getCurrentTestStatus() == TestStatus.PASS) {
 				//@formatter:off
-				getLogger().warn("\n**********************************"
-								+"\n******** KTF TEST PASSED *********"
-								+"\n**********************************");
+				getLogger().info(FWStaticStore.ARTOS_KTF_TEST_PASSED_STAMP);
 				//@formatter:on
 				setTestStatus(TestStatus.FAIL, "KTF Test passed, which is not as expected");
 			}
@@ -221,9 +217,7 @@ public class TestContext {
 		if (unit.isKTF()) {
 			if (getCurrentUnitTestStatus() == TestStatus.PASS) {
 				//@formatter:off
-				getLogger().warn("\n**********************************"
-								+"\n***** KTF TEST UNIT PASSED *******"
-								+"\n**********************************");
+				getLogger().info(FWStaticStore.ARTOS_KTF_TESTUNIT_PASSED_STAMP);
 				//@formatter:on
 				setTestStatus(TestStatus.FAIL, "KTF Test unit passed, which is not as expected");
 			}
@@ -234,7 +228,7 @@ public class TestContext {
 
 		// print test unit outcome on the console and log file
 		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
-				+ unit.getTestUnitMethod().getName() + "(context)\n" + ".........................................................................");
+				+ unit.getTestUnitMethod().getName() + "(context)\n" + FWStaticStore.ARTOS_LINE_BREAK_2);
 
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
@@ -341,27 +335,41 @@ public class TestContext {
 	private void printUsefulInfo() {
 
 		SystemProperties sysProp = FWStaticStore.systemProperties;
-		LogWrapper logger = getLogger();
 
-		// @formatter:off
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		sb.append("Test FrameWork Info");
+		sb.append("\n");
+		sb.append("* Artos version => " + FWStaticStore.ARTOS_BUILD_VERSION);
+		sb.append("\n");
+		sb.append("* Artos build date => " + FWStaticStore.ARTOS_BUILD_DATE);
+		sb.append("\n");
+		sb.append("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion());
+		sb.append("\n");
+		sb.append("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
+		sb.append("\n");
+		sb.append("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
+		sb.append("\n");
+		sb.append("* Java class path => " + sysProp.getJavaClassPath());
+		sb.append("\n");
+		sb.append("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
+		sb.append("\n");
+		sb.append("* Operating system name => " + sysProp.getOperatingSystemName());
+		sb.append("\n");
+		sb.append("* Operating system architecture => " + sysProp.getOperatingSystemArchitecture());
+		sb.append("\n");
+		sb.append("* Operating system version => " + sysProp.getOperatingSystemVersion());
+		sb.append("\n");
+		sb.append("* File separator (\"/\" on UNIX) => " + sysProp.getFileSeparator());
+		sb.append("\n");
+		sb.append("* Path separator (\":\" on UNIX) => " + sysProp.getPathSeparator());
+		sb.append("\n");
+		sb.append("* User's account name => " + sysProp.getUserAccountName());
+		sb.append("\n");
+		sb.append("* User's home directory => " + sysProp.getUserHomeDir());
+		sb.append("\n");
 		
-		logger.debug("\nTest FrameWork Info");
-		logger.debug("* Artos version => " + FWStaticStore.ARTOS_BUILD_VERSION);
-		logger.debug("* Artos build date => " + FWStaticStore.ARTOS_BUILD_DATE);
-		logger.debug("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion()); 
-		logger.debug("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
-		logger.debug("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
-		logger.debug("* Java class path => " + sysProp.getJavaClassPath());
-		logger.debug("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
-		logger.debug("* Operating system name => " + sysProp.getOperatingSystemName());
-		logger.debug("* Operating system architecture => " + sysProp.getOperatingSystemArchitecture());
-		logger.debug("* Operating system version => " + sysProp.getOperatingSystemVersion());
-		logger.debug("* File separator (\"/\" on UNIX) => " + sysProp.getFileSeparator());
-		logger.debug("* Path separator (\":\" on UNIX) => " + sysProp.getPathSeparator());
-		logger.debug("* User's account name => " + sysProp.getUserAccountName());
-		logger.debug("* User's home directory => " + sysProp.getUserHomeDir());
-		
-		// @formatter:on
+		getLogger().debug(sb.toString());
 	}
 
 	private void resetTestStatus() {

@@ -115,47 +115,47 @@ public class TestExecutionEventListener implements TestProgress {
 
 	@Override
 	public void beforeTestMethodStarted(TestObjectWrapper t) {
-		logger.trace("\n---------------- BeforeTest Method Started -------------------");
+		// logger.trace("\n---------------- BeforeTest Method Started -------------------");
 	}
 
 	@Override
 	public void beforeTestMethodFinished(TestObjectWrapper t) {
-		logger.trace("\n---------------- BeforeTest Method Finished -------------------");
+		// logger.trace("\n---------------- BeforeTest Method Finished -------------------");
 	}
 
 	@Override
 	public void testExecutionStarted(TestObjectWrapper t) {
-		logger.trace("\n---------------- Test Starts -------------------");
+		// logger.trace("\n---------------- Test Starts -------------------");
 	}
 
 	@Override
 	public void testExecutionFinished(TestObjectWrapper t) {
-		logger.trace("\n---------------- Test Finish -------------------");
+		// logger.trace("\n---------------- Test Finish -------------------");
 	}
 
 	@Override
 	public void childTestExecutionStarted(TestObjectWrapper t, String paramInfo) {
-		logger.trace("\n---------------- Child Test Starts -------------------");
+		// logger.trace("\n---------------- Child Test Starts -------------------");
 	}
 
 	@Override
 	public void childTestExecutionFinished(TestObjectWrapper t) {
-		logger.trace("\n---------------- Child Test Finish -------------------");
+		// logger.trace("\n---------------- Child Test Finish -------------------");
 	}
 
 	@Override
 	public void afterTestMethodStarted(TestObjectWrapper t) {
-		logger.trace("\n---------------- AfterTest Method Execution Started -------------------");
+		// logger.trace("\n---------------- AfterTest Method Execution Started -------------------");
 	}
 
 	@Override
 	public void afterTestMethodFinished(TestObjectWrapper t) {
-		logger.trace("\n---------------- AfterTest Method Execution Finished -------------------");
+		// logger.trace("\n---------------- AfterTest Method Execution Finished -------------------");
 	}
 
 	@Override
 	public void testExecutionSkipped(TestObjectWrapper t) {
-		logger.debug("\n---------------- Skipped Test : {} -------------------", t.getTestClassObject().getName());
+		logger.info("\n---------------- Skipped Test : {} -------------------", t.getTestClassObject().getName());
 	}
 
 	@Override
@@ -165,108 +165,93 @@ public class TestExecutionEventListener implements TestProgress {
 
 	@Override
 	public void testSuiteException(String description) {
-		logger.trace("\n---------------- Test Suite Exception -------------------");
+		// logger.trace("\n---------------- Test Suite Exception -------------------");
 	}
 
 	@Override
 	public void testException(String description) {
-		logger.trace("\n---------------- Test Case Exception -------------------");
+		// logger.trace("\n---------------- Test Case Exception -------------------");
 	}
 
 	@Override
 	public void testStatusUpdate(TestStatus testStatus, String msg) {
-		logger.trace("\n---------------- Test Status Update -------------------");
+		// logger.trace("\n---------------- Test Status Update -------------------");
 	}
 
 	@Override
 	public void testResult(TestStatus testStatus, String description) {
-		logger.trace("\n---------------- Test Result -------------------");
+		// logger.trace("\n---------------- Test Result -------------------");
 	}
 
 	@Override
 	public void testSuiteSummaryPrinting(String description) {
-		logger.trace("\n---------------- Test Suite Summary -------------------");
-		logger.info("*************************************************************************");
+		// logger.trace("\n---------------- Test Suite Summary -------------------");
+		// logger.info("*************************************************************************");
 	}
 
 	@Override
 	public void testSuiteFailureHighlight(String description) {
-		logger.trace("\n---------------- Test Faliure Highlight -------------------");
-		logger.info("*************************************************************************");
+		// logger.trace("\n---------------- Test Faliure Highlight -------------------");
+		// logger.info("*************************************************************************");
 	}
 
 	@Override
 	public void beforeGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
-		// logger.info("*************************************************************************");
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
 	public void beforeGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
-		logger.trace("\n---------------- Global Before Test Unit Method Finished -------------------");
-		logger.trace("*************************************************************************");
-
+		// logger.trace("\n---------------- Global Before Test Unit Method Finished -------------------");
 	}
 
 	@Override
 	public void beforeLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
-		// logger.info("*************************************************************************");
 		logger.info("\n=> " + t.getMethodBeforeTestUnit().getName() + "(context)");
 	}
 
 	@Override
 	public void beforeLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
-		logger.trace("*************************************************************************");
+		// logger.trace("*************************************************************************");
 	}
 
 	@Override
 	public void afterGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
-		// logger.info("*************************************************************************");
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
 	public void afterGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
-		logger.trace("\n---------------- Global After Test Unit Method Finished -------------------");
-		logger.trace("*************************************************************************");
-
+		// logger.trace("\n---------------- Global After Test Unit Method Finished -------------------");
 	}
 
 	@Override
 	public void afterLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
-		// logger.info("*************************************************************************");
 		logger.info("\n=> " + t.getMethodAfterTestUnit().getName() + "(context)");
-
 	}
 
 	@Override
 	public void afterLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
-		logger.trace("\n---------------- Local After Test Unit Method Finished -------------------");
-		logger.trace("*************************************************************************");
-
+		// logger.trace("\n---------------- Local After Test Unit Method Finished -------------------");
 	}
 
 	@Override
 	public void testUnitExecutionStarted(TestUnitObjectWrapper unit) {
 		logger.info("\n=> " + unit.getTestUnitMethod().getName() + "(context)");
-		// logger.trace("*************************************************************************");
 	}
 
 	@Override
 	public void testUnitExecutionFinished(TestUnitObjectWrapper unit) {
-		logger.trace("\n---------------- Test Unit Excution finished -------------------");
-		logger.trace("*************************************************************************");
+		// logger.trace("\n---------------- Test Unit Execution finished -------------------");
 	}
 
 	@Override
 	public void childTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String paramInfo) {
-		logger.trace("\n---------------- Child Test Unit Excution started -------------------");
-		logger.trace("*************************************************************************");
+		// logger.trace("\n---------------- Child Test Unit Execution started -------------------");
 	}
 
 	@Override
 	public void childTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
-		logger.trace("\n---------------- Child Test Unit Excution finished -------------------");
-		logger.trace("*************************************************************************");
+		// logger.trace("\n---------------- Child Test Unit Execution finished -------------------");
 	}
 }
