@@ -36,7 +36,6 @@ import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.xml.TestSuite;
-import com.artos.interfaces.TestExecutable;
 import com.artos.interfaces.TestProgress;
 
 /**
@@ -58,10 +57,7 @@ public class TestContext {
 	private long currentKTFCount = 0;
 
 	private TestSuite testSuite = null;
-	private List<String> testGroupListPassedByMainMethod = null;
-	private List<String> testUnitGroupListPassedByMainMethod = null;
-	private List<TestExecutable> testListPassedByMainMethod = null;
-	private int totalLoopCount = 1;
+	private MainMethodParameterWrapper mainMethodParam = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
 
@@ -135,9 +131,7 @@ public class TestContext {
 			// Append Warning in the log so user can pin point where test failed
 			if (testStatus == TestStatus.FAIL) {
 				//@formatter:off
-				getLogger().info("**********************************"
-								+"\n*********** FAIL HERE ************"
-								+"\n**********************************");
+				getLogger().info(FWStaticStore.ARTOS_TEST_FAIL_STAMP);
 				//@formatter:on
 			}
 		}
@@ -157,9 +151,7 @@ public class TestContext {
 		if (isKnownToFail()) {
 			if (getCurrentTestStatus() == TestStatus.PASS) {
 				//@formatter:off
-				getLogger().warn("\n**********************************"
-								+"\n******** KTF TEST PASSED *********"
-								+"\n**********************************");
+				getLogger().info(FWStaticStore.ARTOS_KTF_TEST_PASSED_STAMP);
 				//@formatter:on
 				setTestStatus(TestStatus.FAIL, "KTF Test passed, which is not as expected");
 			}
@@ -190,6 +182,23 @@ public class TestContext {
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
+		// Go through test unit of each log and print status of each test units into report
+		for (int i = 0; i < t.getTestUnitList().size(); i++) {
+			TestUnitObjectWrapper unit = t.getTestUnitList().get(i);
+			long totalTestUnitTime = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
+
+			// go through outcome list of test unit and print them all
+			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
+				if (unit.getDataProviderName().equals("")) {
+					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
+							unit.getBugTrackingNumber(), totalTestUnitTime);
+				} else { // if data provider then append data provider number
+					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j),
+							unit.getTestUnitMethod().getName() + "(context)" + "data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
+				}
+			}
+		}
+
 		// reset status for next test
 		resetUnitTestStatus();
 		resetTestStatus();
@@ -208,9 +217,7 @@ public class TestContext {
 		if (unit.isKTF()) {
 			if (getCurrentUnitTestStatus() == TestStatus.PASS) {
 				//@formatter:off
-				getLogger().warn("\n**********************************"
-								+"\n***** KTF TEST UNIT PASSED *******"
-								+"\n**********************************");
+				getLogger().info(FWStaticStore.ARTOS_KTF_TESTUNIT_PASSED_STAMP);
 				//@formatter:on
 				setTestStatus(TestStatus.FAIL, "KTF Test unit passed, which is not as expected");
 			}
@@ -219,10 +226,14 @@ public class TestContext {
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
+		// print test unit outcome on the console and log file
 		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
-				+ unit.getTestUnitMethod().getName() + "()\n" + ".........................................................................");
+				+ unit.getTestUnitMethod().getName() + "(context)\n" + FWStaticStore.ARTOS_LINE_BREAK_2);
+
+		// Log test unit summary into extent report
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "] : " + unit.getTestUnitMethod().getName() + "() =>" + unit.getBugTrackingNumber());
+				+ "] : " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 
 		// reset status for next test
 		resetUnitTestStatus();
@@ -262,6 +273,34 @@ public class TestContext {
 	}
 
 	/**
+	 * Append test unit summary to summary report
+	 * 
+	 * @param status Test status
+	 * @param testUnitName Test unit name
+	 * @param bugTrackingNumber BugTracking Number
+	 * @param testDuration Test duration
+	 */
+	private void appendUnitSummaryReport(TestStatus status, String testUnitName, String bugTrackingNumber, long testDuration) {
+
+		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+
+		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testName = String.format("%-" + 95 + "s", testUnitName);
+		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String PassCount = String.format("%-" + 4 + "s", "");
+		String FailCount = String.format("%-" + 4 + "s", "");
+		String SkipCount = String.format("%-" + 4 + "s", "");
+		String KTFCount = String.format("%-" + 4 + "s", "");
+
+		getLogger().getSummaryLogger().info("  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount
+				+ "  :" + KTFCount + " " + testTime + " " + JiraRef);
+	}
+
+	/**
 	 * Prints Organisation details to each log files
 	 */
 	private void printMendatoryInfo() {
@@ -296,27 +335,41 @@ public class TestContext {
 	private void printUsefulInfo() {
 
 		SystemProperties sysProp = FWStaticStore.systemProperties;
-		LogWrapper logger = getLogger();
 
-		// @formatter:off
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		sb.append("Test FrameWork Info");
+		sb.append("\n");
+		sb.append("* Artos version => " + FWStaticStore.ARTOS_BUILD_VERSION);
+		sb.append("\n");
+		sb.append("* Artos build date => " + FWStaticStore.ARTOS_BUILD_DATE);
+		sb.append("\n");
+		sb.append("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion());
+		sb.append("\n");
+		sb.append("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
+		sb.append("\n");
+		sb.append("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
+		sb.append("\n");
+		sb.append("* Java class path => " + sysProp.getJavaClassPath());
+		sb.append("\n");
+		sb.append("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
+		sb.append("\n");
+		sb.append("* Operating system name => " + sysProp.getOperatingSystemName());
+		sb.append("\n");
+		sb.append("* Operating system architecture => " + sysProp.getOperatingSystemArchitecture());
+		sb.append("\n");
+		sb.append("* Operating system version => " + sysProp.getOperatingSystemVersion());
+		sb.append("\n");
+		sb.append("* File separator (\"/\" on UNIX) => " + sysProp.getFileSeparator());
+		sb.append("\n");
+		sb.append("* Path separator (\":\" on UNIX) => " + sysProp.getPathSeparator());
+		sb.append("\n");
+		sb.append("* User's account name => " + sysProp.getUserAccountName());
+		sb.append("\n");
+		sb.append("* User's home directory => " + sysProp.getUserHomeDir());
+		sb.append("\n");
 		
-		logger.debug("\nTest FrameWork Info");
-		logger.debug("* Artos version => " + FWStaticStore.ARTOS_BUILD_VERSION);
-		logger.debug("* Artos build date => " + FWStaticStore.ARTOS_BUILD_DATE);
-		logger.debug("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion()); 
-		logger.debug("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
-		logger.debug("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
-		logger.debug("* Java class path => " + sysProp.getJavaClassPath());
-		logger.debug("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
-		logger.debug("* Operating system name => " + sysProp.getOperatingSystemName());
-		logger.debug("* Operating system architecture => " + sysProp.getOperatingSystemArchitecture());
-		logger.debug("* Operating system version => " + sysProp.getOperatingSystemVersion());
-		logger.debug("* File separator (\"/\" on UNIX) => " + sysProp.getFileSeparator());
-		logger.debug("* Path separator (\":\" on UNIX) => " + sysProp.getPathSeparator());
-		logger.debug("* User's account name => " + sysProp.getUserAccountName());
-		logger.debug("* User's home directory => " + sysProp.getUserHomeDir());
-		
-		// @formatter:on
+		getLogger().debug(sb.toString());
 	}
 
 	private void resetTestStatus() {
@@ -385,14 +438,6 @@ public class TestContext {
 
 	protected void setTestSuite(TestSuite testSuite) {
 		this.testSuite = testSuite;
-	}
-
-	protected int getTotalLoopCount() {
-		return totalLoopCount;
-	}
-
-	protected void setTotalLoopCount(int totalLoopCount) {
-		this.totalLoopCount = totalLoopCount;
 	}
 
 	protected Class<?> getPrePostRunnableObj() {
@@ -662,7 +707,7 @@ public class TestContext {
 		this.currentUnitTestStatus = currentUnitTestStatus;
 	}
 
-	public Method getBeforeTestSuite() {
+	protected Method getBeforeTestSuite() {
 		return beforeTestSuite;
 	}
 
@@ -670,7 +715,7 @@ public class TestContext {
 		this.beforeTestSuite = beforeTestSuite;
 	}
 
-	public Method getAfterTestSuite() {
+	protected Method getAfterTestSuite() {
 		return afterTestSuite;
 	}
 
@@ -678,7 +723,7 @@ public class TestContext {
 		this.afterTestSuite = afterTestSuite;
 	}
 
-	public Method getBeforeTest() {
+	protected Method getBeforeTest() {
 		return beforeTest;
 	}
 
@@ -686,7 +731,7 @@ public class TestContext {
 		this.beforeTest = beforeTest;
 	}
 
-	public Method getAfterTest() {
+	protected Method getAfterTest() {
 		return afterTest;
 	}
 
@@ -694,7 +739,7 @@ public class TestContext {
 		this.afterTest = afterTest;
 	}
 
-	public Method getBeforeTestUnit() {
+	protected Method getBeforeTestUnit() {
 		return beforeTestUnit;
 	}
 
@@ -702,7 +747,7 @@ public class TestContext {
 		this.beforeTestUnit = beforeTestUnit;
 	}
 
-	public Method getAfterTestUnit() {
+	protected Method getAfterTestUnit() {
 		return afterTestUnit;
 	}
 
@@ -710,28 +755,16 @@ public class TestContext {
 		this.afterTestUnit = afterTestUnit;
 	}
 
-	public List<TestExecutable> getTestListPassedByMainMethod() {
-		return testListPassedByMainMethod;
+	protected MainMethodParameterWrapper getMainMethodParam() {
+		return mainMethodParam;
 	}
 
-	protected void setTestListPassedByMainMethod(List<TestExecutable> testListPassedByMainMethod) {
-		this.testListPassedByMainMethod = testListPassedByMainMethod;
+	protected void setMainMethodParam(MainMethodParameterWrapper mainMethodParam) {
+		this.mainMethodParam = mainMethodParam;
 	}
 
-	public List<String> getTestGroupListPassedByMainMethod() {
-		return testGroupListPassedByMainMethod;
-	}
-
-	protected void setTestGroupListPassedByMainMethod(List<String> testGroupListPassedByMainMethod) {
-		this.testGroupListPassedByMainMethod = testGroupListPassedByMainMethod;
-	}
-
-	public List<String> getTestUnitGroupListPassedByMainMethod() {
-		return testUnitGroupListPassedByMainMethod;
-	}
-
-	protected void setTestUnitGroupListPassedByMainMethod(List<String> testUnitGroupListPassedByMainMethod) {
-		this.testUnitGroupListPassedByMainMethod = testUnitGroupListPassedByMainMethod;
+	public boolean isTestScriptProvided() {
+		return null == getTestSuite() ? false : true;
 	}
 
 }

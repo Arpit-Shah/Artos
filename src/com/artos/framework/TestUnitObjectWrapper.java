@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.artos.annotation.DataProvider;
 import com.artos.framework.Enums.TestStatus;
 
 public class TestUnitObjectWrapper {
@@ -63,14 +64,16 @@ public class TestUnitObjectWrapper {
 	 * @param method test method object
 	 * @param skipTest skip property as specified in annotation
 	 * @param testsequence test sequence as specified in annotation
+	 * @param dataProviderName dataProvider name provided in {@code DataProvider} annotation
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 */
-	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, long testTimeout) {
+	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout) {
 		super();
 
 		this.testUnitMethod = method;
 		this.skipTest = skipTest;
 		this.testsequence = testsequence;
+		this.dataProviderName = dataProviderName;
 		this.testTimeout = testTimeout;
 	}
 

@@ -70,7 +70,7 @@ public @interface TestCase {
 	 * 
 	 * @return data provider method name
 	 */
-	String dataprovider() default "";
+	// String dataprovider() default "";
 
 	/**
 	 * Test Timeout, If test execution did not finish within this time then test will be marked as fail

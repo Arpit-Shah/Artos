@@ -19,64 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework.xml;
+package com.artos.framework.infra;
 
 import java.util.List;
-import java.util.Map;
 
-public class TestSuite {
+import com.artos.interfaces.TestExecutable;
 
-	String suiteName;
-	int loopCount = 1; // default 1
-	List<String> testGroupList;
-	List<String> testUnitGroupList;
-	List<String> testFQCNList;
-	Map<String, String> testSuiteParameters;
-	String threadName;
-	String version = "1";
-	boolean enable = true;
+public class MainMethodParameterWrapper {
 
-	// *****************************************************************
-	// Getters and setters
-	// *****************************************************************
-	public List<String> getTestFQCNList() {
-		return testFQCNList;
+	int loopCount = 1;
+	List<TestExecutable> testList = null;
+	List<String> testGroupList = null;
+	List<String> testUnitGroupList = null;
+	String frameworkConfigProfile = null;
+	String testSuiteName = "SuiteName";
+
+	public List<TestExecutable> getTestList() {
+		return testList;
 	}
 
-	public void setTestFQCNList(List<String> testFQCNList) {
-		this.testFQCNList = testFQCNList;
-	}
-
-	public Map<String, String> getTestSuiteParameters() {
-		return testSuiteParameters;
-	}
-
-	public void setTestSuiteParameters(Map<String, String> testSuiteParameters) {
-		this.testSuiteParameters = testSuiteParameters;
-	}
-
-	public String getThreadName() {
-		return threadName;
-	}
-
-	public void setThreadName(String threadName) {
-		this.threadName = threadName;
-	}
-
-	public String getSuiteName() {
-		return suiteName;
-	}
-
-	public void setSuiteName(String suiteName) {
-		this.suiteName = suiteName;
-	}
-
-	public int getLoopCount() {
-		return loopCount;
-	}
-
-	public void setLoopCount(int loopCount) {
-		this.loopCount = loopCount;
+	public void setTestList(List<TestExecutable> testList) {
+		this.testList = testList;
 	}
 
 	public List<String> getTestGroupList() {
@@ -95,20 +58,28 @@ public class TestSuite {
 		this.testUnitGroupList = testUnitGroupList;
 	}
 
-	public String getVersion() {
-		return version;
+	public String getFrameworkConfigProfile() {
+		return frameworkConfigProfile;
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
+	public void setFrameworkConfigProfile(String frameworkConfigProfile) {
+		this.frameworkConfigProfile = frameworkConfigProfile;
 	}
 
-	public boolean isEnable() {
-		return enable;
+	public String getTestSuiteName() {
+		return testSuiteName;
 	}
 
-	public void setEnable(boolean enable) {
-		this.enable = enable;
+	public void setTestSuiteName(String testSuiteName) {
+		this.testSuiteName = testSuiteName;
+	}
+
+	public int getLoopCount() {
+		return loopCount;
+	}
+
+	public void setLoopCount(int loopCount) {
+		this.loopCount = loopCount;
 	}
 
 }

@@ -51,10 +51,8 @@ public class Runner {
 	Class<?> cls;
 	// Default thread count should be 1
 	int threadCount = 1;
-	int loopCount = 1;
-	List<TestExecutable> testList = null;
-	List<String> testGroupList = null;
-	List<String> testUnitGroupList = null;
+
+	MainMethodParameterWrapper mainMethodParam;
 
 	/**
 	 * @param cls Class which contains main() method
@@ -62,6 +60,7 @@ public class Runner {
 	 */
 	public Runner(Class<?> cls) {
 		this.cls = cls;
+		mainMethodParam = new MainMethodParameterWrapper();
 	}
 
 	/**
@@ -85,25 +84,27 @@ public class Runner {
 	public void run(String[] args)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
-		if (null == testGroupList || testGroupList.isEmpty()) {
+		if (null == mainMethodParam.getTestGroupList() || mainMethodParam.getTestGroupList().isEmpty()) {
 			// Add a default group if user does not pass a group parameter
-			testGroupList = new ArrayList<>();
+			List<String> testGroupList = new ArrayList<>();
 			testGroupList.add("*");
+			mainMethodParam.setTestGroupList(testGroupList);
 		}
 		// Store only Upper case group names to avoid case sensitiveness
-		testGroupList.replaceAll(String::toUpperCase);
+		mainMethodParam.getTestGroupList().replaceAll(String::toUpperCase);
 
-		if (null == testUnitGroupList || testUnitGroupList.isEmpty()) {
+		if (null == mainMethodParam.getTestUnitGroupList() || mainMethodParam.getTestUnitGroupList().isEmpty()) {
 			// Add a default group if user does not pass a group parameter
-			testUnitGroupList = new ArrayList<>();
+			List<String> testUnitGroupList = new ArrayList<>();
 			testUnitGroupList.add("*");
+			mainMethodParam.setTestUnitGroupList(testUnitGroupList);
 		}
 		// Store only Upper case group names to avoid case sensitiveness
-		testUnitGroupList.replaceAll(String::toUpperCase);
+		mainMethodParam.getTestUnitGroupList().replaceAll(String::toUpperCase);
 
 		// if loop count is set to 0 or negative then set to at least 1
-		if (loopCount < 1) {
-			loopCount = 1;
+		if (mainMethodParam.getLoopCount() < 1) {
+			mainMethodParam.setLoopCount(1);
 		}
 
 		// Process command line arguments
@@ -114,6 +115,10 @@ public class Runner {
 
 		// process test suites
 		List<TestSuite> testSuiteList = createTestSuiteList();
+		if (null != CliProcessor.testScriptFile && (null == testSuiteList || testSuiteList.isEmpty())) {
+			System.err.println("Test Suite is missing");
+			System.exit(1);
+		}
 		if (null != testSuiteList && !testSuiteList.isEmpty()) {
 			// Thread count should be same as number of test suites
 			threadCount = testSuiteList.size();
@@ -144,18 +149,10 @@ public class Runner {
 				// store logger
 				context.setOrganisedLogger(logWrapper);
 
-				context.setTestListPassedByMainMethod(testList);
-				context.setTestGroupListPassedByMainMethod(testGroupList);
-				context.setTestUnitGroupListPassedByMainMethod(testUnitGroupList);
+				context.setMainMethodParam(mainMethodParam);
 				if (null != testSuiteList && !testSuiteList.isEmpty()) {
 					// store test suite
 					context.setTestSuite(testSuiteList.get(i));
-					// store loopCount from test suite
-					context.setTotalLoopCount(testSuiteList.get(i).getLoopCount());
-				} else {
-					// if testSuite is not provided then take loopCount from
-					// main() method
-					context.setTotalLoopCount(loopCount);
 				}
 
 				// Launch a thread with runnable
@@ -343,7 +340,7 @@ public class Runner {
 	 * @param testList testList provided by user
 	 */
 	public void setTestList(List<TestExecutable> testList) {
-		this.testList = testList;
+		mainMethodParam.setTestList(testList);
 	}
 
 	/**
@@ -352,7 +349,7 @@ public class Runner {
 	 * @param loopCount test loop count
 	 */
 	public void setLoopCount(int loopCount) {
-		this.loopCount = loopCount;
+		mainMethodParam.setLoopCount(loopCount);
 	}
 
 	/**
@@ -361,7 +358,7 @@ public class Runner {
 	 * @param testGroupList group list required to filter test cases
 	 */
 	public void setTestGroupList(List<String> testGroupList) {
-		this.testGroupList = testGroupList;
+		mainMethodParam.setTestGroupList(testGroupList);
 	}
 
 	/**
@@ -370,8 +367,27 @@ public class Runner {
 	 * @param testUnitGroupList group list required to filter test units
 	 */
 	public void setTestUnitGroupList(List<String> testUnitGroupList) {
-		this.testUnitGroupList = testUnitGroupList;
+		mainMethodParam.setTestUnitGroupList(testUnitGroupList);
 	}
+
+	/**
+	 * Set Framework configuration profile name, Test script takes higher priority so if test script is provided then this will be ignored
+	 * 
+	 * @param frameworkConfigProfile framework config profile name
+	 */
+	public void setFrameworkConfigProfile(String frameworkConfigProfile) {
+		mainMethodParam.setFrameworkConfigProfile(frameworkConfigProfile);
+	}
+
+	/**
+	 * allows to set test suite name, Test script takes higher priority so if test script is provided then this will be ignored
+	 * 
+	 * @param testSuiteName test suite name
+	 */
+	public void setTestSuiteName(String testSuiteName) {
+		mainMethodParam.setTestSuiteName(testSuiteName);
+	}
+
 }
 
 /**

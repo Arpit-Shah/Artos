@@ -23,6 +23,7 @@ package com.artos.framework.listener;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.Version;
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
@@ -216,5 +217,79 @@ public class ExtentReportListener implements TestProgress {
 	public void testSuiteFailureHighlight(String description) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void beforeGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void beforeGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void beforeLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void beforeLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void afterLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void testUnitExecutionStarted(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void testUnitExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void childTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String paramInfo) {
+		testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
+		testChild.assignAuthor(t.getTestPlanPreparedBy());
+	}
+
+	@Override
+	public void childTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
+		// add child to parent
+		testParent.appendChild(testChild);
+		extent.endTest(testChild);
+		testChild = null;
 	}
 }

@@ -107,7 +107,7 @@ public class ScanTestCase {
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 			Group group = method.getAnnotation(Group.class);
 
-			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.testtimeout());
+			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(), unit.testtimeout());
 
 			/*
 				 * Store group list for each test cases.
@@ -171,7 +171,7 @@ public class ScanTestCase {
 			List<String> groupList = context.getTestSuite().getTestUnitGroupList();
 			groupBasedFiltering(groupList);
 		} else {
-			groupBasedFiltering(context.getTestUnitGroupListPassedByMainMethod());
+			groupBasedFiltering(context.getMainMethodParam().getTestUnitGroupList());
 		}
 
 		// Clear list otherwise wrong methods will be added against wrong class

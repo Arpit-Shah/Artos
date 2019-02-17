@@ -60,12 +60,16 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Constructor responsible for storing TestContext and class which contains main() method. Upon initialisation TestExecutionEventListener is
-	 * registered so test decoration can be printed.
+	 * <PRE>
+	 * Constructor responsible for initialising and registering required listeners. 
+	 * TestExecutionEventListener is responsible for printing information during test execution
+	 * ExtentReportListener is responsible for Extent report generation
+	 * </PRE>
 	 * 
 	 * @param context TestContext object
 	 * @see TestContext
 	 * @see TestExecutionEventListener
+	 * @see ExtentReportListener
 	 */
 	protected ArtosRunner(TestContext context) {
 		this.context = context;
@@ -89,7 +93,8 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Runner for the framework
+	 * Runner for the framework. Responsible for generating test list after scanning a test suite, generate test script if required, show GUI test
+	 * selector if enabled
 	 * 
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
@@ -100,6 +105,7 @@ public class ArtosRunner {
 			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
 		}
 
+		// If GUI test selector is enabled then show it or else execute test cases
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
@@ -134,32 +140,34 @@ public class ArtosRunner {
 		}
 
 		// Print Test results
-		notifyTestSuiteSummaryPrinting("");
-
-		// @formatter:off
-		logger.info(
-				"PASS:" + context.getCurrentPassCount() + 
-				" FAIL:" + context.getCurrentFailCount() + 
-				" SKIP:" + context.getCurrentSkipCount() + 
-				" KTF:" + context.getCurrentKTFCount() + 
-				" EXECUTED:" + context.getTotalTestCount() 
-				// Total does not make sense because parameterised test cases are considered as a test case
-				/*+ " TOTAL:" + transformedTestList.size()*/
-				);
-		// @formatter:on
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+		sb.append("\n");
+		sb.append("PASS:" + context.getCurrentPassCount());
+		sb.append(" FAIL:" + context.getCurrentFailCount());
+		sb.append(" SKIP:" + context.getCurrentSkipCount());
+		sb.append(" KTF:" + context.getCurrentKTFCount());
+		sb.append(" EXECUTED:" + context.getTotalTestCount());
+		// Total does not make sense because parameterised test cases are considered as a test case
+		// sb.append(" TOTAL:" + transformedTestList.size());
 
 		// Print Test suite Start and Finish time
-		String timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		context.getLogger().getGeneralLogger().info("\nTest start time : {}", timeStamp);
-		context.getLogger().getSummaryLogger().info("\nTest start time : {}", timeStamp);
-		timeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
-		context.getLogger().getGeneralLogger().info("Test finish time : {}", timeStamp);
-		context.getLogger().getSummaryLogger().info("Test finish time : {}", timeStamp);
-
-		// Print Test suite summary
-		logger.info("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
+		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
+		String finishTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
+		sb.append("\n\n");
+		sb.append("Test start time : " + startTimeStamp);
+		sb.append("\n");
+		sb.append("Test finish time : " + finishTimeStamp);
+		sb.append("\n");
+		sb.append("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
 				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
 						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
+
+		// Print Test suite summary
+		logger.info(sb.toString());
+		context.getLogger().getSummaryLogger().info(sb.toString());
+		notifyTestSuiteSummaryPrinting(sb.toString());
 
 		// HighLight Failed Test Cases
 		highlightFailure(transformedTestList);
@@ -168,15 +176,22 @@ public class ArtosRunner {
 		context.getThreadLatch().countDown();
 	}
 
+	/**
+	 * Highlight failed test cases at the end of test execution
+	 * 
+	 * @param transformedTestList list of test cases
+	 */
 	private void highlightFailure(List<TestObjectWrapper> transformedTestList) {
-		notifyTestSuiteFailureHighlight("");
 
 		if (context.getCurrentFailCount() > 0) {
-			System.err.println("********************************************************");
-			System.err.println("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
-			System.err.println("\n********************************************************");
+			StringBuilder sb = new StringBuilder();
+			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+			sb.append("\n");
+			sb.append("                 FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
+			sb.append("\n\n");
+			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
-			int errorcount = 0;
+			int testErrorcount = 0;
 			for (TestObjectWrapper t : transformedTestList) {
 
 				/*
@@ -186,43 +201,43 @@ public class ArtosRunner {
 					continue;
 				}
 
-				// If test case is without date provider
-				if ("".equals(t.getDataProviderName()) && t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
-					errorcount++;
-					System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()));
-					highlightTestUnitFailure(t, 0);
+				if (t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
+					testErrorcount++;
+					sb.append("\n");
+					sb.append(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
 
-					// If test case is with data provider
-				} else if (!"".equals(t.getDataProviderName())) {
-					for (int j = 0; j < t.getTestOutcomeList().size(); j++) {
-						if (t.getTestOutcomeList().get(j) == TestStatus.FAIL) {
-							errorcount++;
-							System.err.println(String.format("%-4s%s", errorcount, t.getTestClassObject().getName()) + " : DataProvider[" + j + "]");
-							highlightTestUnitFailure(t, j);
+					for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
+						/*
+						 * If stopOnFail=true then test unit after first failure will not be executed which means TestUnitOutcomeList will be empty
+						 */
+						if (unit.getTestUnitOutcomeList().isEmpty()) {
+							continue;
 						}
+
+						// If test case is without date provider
+						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
+							sb.append(String.format("\n"));
+							sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
+
+							// If test case with data provider then go through each status of the list
+						} else if (!"".equals(unit.getDataProviderName())) {
+							for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
+								if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
+									sb.append(String.format("\n"));
+									sb.append(String.format("\t|-- %s",
+											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
+								}
+							}
+						}
+
 					}
 				}
 			}
 
-			System.err.println("********************************************************\n********************************************************");
-		}
-	}
-
-	/**
-	 * This method iterate through each unit test case and prints failed unit test case name. Each unit test case maintains test status list. If no
-	 * data provider is used then list should have only one component, if dataprovider is used then list could have same number of component as
-	 * executed data provider.
-	 * 
-	 * @param t TestObjectWrapper object
-	 * @param index test status index which is relevant for current test
-	 */
-	private void highlightTestUnitFailure(TestObjectWrapper t, int index) {
-		for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
-			// int unitErrorCount = 0;
-			if (unit.getTestUnitOutcomeList().get(index) == TestStatus.FAIL) {
-				// unitErrorCount++;
-				System.err.println(String.format("    |- %s"/* %-4s%s", unitErrorCount */, unit.getTestUnitMethod().getName() + "()"));
-			}
+			sb.append(String.format("\n"));
+			sb.append(String.format(FWStaticStore.ARTOS_LINE_BREAK_1));
+			System.err.println(sb.toString());
+			notifyTestSuiteFailureHighlight(sb.toString());
 		}
 	}
 
@@ -245,42 +260,38 @@ public class ArtosRunner {
 				notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
 
-			for (int index = 0; index < context.getTotalLoopCount(); index++) {
+			// Take main method loop count by default
+			int loopCount = context.getMainMethodParam().getLoopCount();
+			// Take loop count from test script if provided
+			if (context.isTestScriptProvided()) {
+				loopCount = context.getTestSuite().getLoopCount();
+			}
+
+			// Run as many loop set via test script or main method
+			for (int index = 0; index < loopCount; index++) {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
+				// Go through each test case and execute it
 				for (TestObjectWrapper t : testList) {
 
-					// If stop on fail is selected then stop test execution
+					// If "stop on fail" is enabled then stop test execution
 					if (FWStaticStore.frameworkConfig.isStopOnFail()) {
 						if (context.getCurrentFailCount() > 0) {
 							break;
 						}
 					}
 
+					// Print test case header and test plan in the log file
 					notifyPrintTestPlan(t);
 
-					// Run Pre Method prior to any test Execution
-					if (null != context.getBeforeTest()) {
-						notifyBeforeTestMethodStarted(t);
-						context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-						notifyBeforeTestMethodFinished(t);
-					}
-
 					notifyTestExecutionStarted(t);
-					// if data provider name is not specified then only execute test once
+					// if data provider is not specified
 					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
 						runIndividualTest(t);
-					} else {
+					} else { // if data provider is specified
 						runParameterizedTest(t);
 					}
 					notifyTestExecutionFinished(t);
-
-					// Run Post Method prior to any test Execution
-					if (null != context.getAfterTest()) {
-						notifyAfterTestMethodStarted(t);
-						context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-						notifyAfterTestMethodFinished(t);
-					}
 
 				}
 				// --------------------------------------------------------------------------------------------
@@ -294,9 +305,16 @@ public class ArtosRunner {
 			}
 
 		} catch (Throwable e) {
-			// Handle if any exception in pre-post runnable
-			UtilsFramework.writePrintStackTrace(context, e);
-			notifyTestSuiteException(e.getMessage());
+			// Catch InvocationTargetException and return cause
+			if (null == e.getCause()) {
+				// Handle if any exception in pre-post runnable
+				UtilsFramework.writePrintStackTrace(context, e);
+				notifyTestSuiteException(e.getMessage());
+			} else {
+				// Handle if any exception in pre-post runnable
+				UtilsFramework.writePrintStackTrace(context, e.getCause());
+				notifyTestSuiteException(e.getCause().getMessage());
+			}
 		}
 
 		// Set Test Finish Time
@@ -373,9 +391,7 @@ public class ArtosRunner {
 					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
 				}
 			} catch (InvocationTargetException e) {
-				context.getLogger().debug("=================================================");
-				context.getLogger().debug("=== DataProvider Method failed to return data ===");
-				context.getLogger().debug("=================================================");
+				context.getLogger().info(FWStaticStore.ARTOS_DATAPROVIDER_FAIL_STAMP);
 				// Catch InvocationTargetException and return cause
 				if (null == e.getCause()) {
 					throw e;
@@ -413,10 +429,35 @@ public class ArtosRunner {
 	 */
 	private void runSimpleTest(TestObjectWrapper t) throws Exception {
 		// --------------------------------------------------------------------------------------------
-		// Run execute Method (This is if test suite is designed as single test per test cases)
-		// ((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
-		// Run Unit tests (This is if test suite have unit tests)
-		new RunnerTestUnits(context).runSingleThreadUnits(t);
+		try {
+
+			// Run Pre Method prior to any test Execution
+			if (null != context.getBeforeTest()) {
+				notifyBeforeTestMethodStarted(t);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyBeforeTestMethodFinished(t);
+			}
+
+			// Run Unit tests (This is if test suite have unit tests)
+			new RunnerTestUnits(context, listenerList).runSingleThreadUnits(t);
+
+			// Run Post Method prior to any test Execution
+			if (null != context.getAfterTest()) {
+				notifyAfterTestMethodStarted(t);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyAfterTestMethodFinished(t);
+			}
+
+			// When method fails via reflection, it throws InvocationTargetExcetion
+		} catch (InvocationTargetException e) {
+			// Catch InvocationTargetException and return cause
+			if (null == e.getCause()) {
+				throw e;
+			} else {
+				// Cast cause into Exception because Executor service can not handle throwable
+				throw (Exception) e.getCause();
+			}
+		}
 		// --------------------------------------------------------------------------------------------
 	}
 
@@ -589,7 +630,13 @@ public class ArtosRunner {
 			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
 
-		for (int index = 0; index < context.getTotalLoopCount(); index++) {
+		// Take main method loop count by default
+		int loopCount = context.getMainMethodParam().getLoopCount();
+		// Take loop count from test script if provided
+		if (context.isTestScriptProvided()) {
+			loopCount = context.getTestSuite().getLoopCount();
+		}
+		for (int index = 0; index < loopCount; index++) {
 			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------
 			ExecutorService service = Executors.newFixedThreadPool(1000);

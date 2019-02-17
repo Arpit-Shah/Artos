@@ -105,8 +105,7 @@ public class ScanTestSuite {
 		// Find all annotation
 		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
 
-		// GetAllDataProviderMethods => Filter Public methods => Get UpperCase
-		// DataProviderName => Store it
+		// GetAllDataProviderMethods => Filter Public methods => Get UpperCase DataProviderName => Store it
 		reflection.getMethodsAnnotatedWith(DataProvider.class).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {
 			String dataProviderName = m.getAnnotation(DataProvider.class).name().toUpperCase();
 			TestDataProvider testDataProvider = new TestDataProvider(m, dataProviderName, m.getDeclaringClass(), Modifier.isStatic(m.getModifiers()));
@@ -146,8 +145,7 @@ public class ScanTestSuite {
 				FQCNList.add(cl.getPackage().getName());
 			}
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), testcase.dataprovider(),
-					testcase.testtimeout());
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", testcase.testtimeout());
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {

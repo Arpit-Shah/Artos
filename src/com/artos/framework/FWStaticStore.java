@@ -32,6 +32,23 @@ public class FWStaticStore {
 
 	public static final String TOOL_NAME = "Artos";
 
+	// default decoration
+	// used for encapsulating headers or separate sections
+	public static final String ARTOS_LINE_BREAK_1 = "*************************************************************************";
+	// used to lightly separate sections within same test cases (Example: test units)
+	public static final String ARTOS_LINE_BREAK_2 = ".........................................................................";
+	// Warning/Highlights
+	public static final String ARTOS_LINE_BREAK_3 = "=========================================================================";
+	// Fail Stamp
+	public static final String ARTOS_TEST_FAIL_STAMP = ARTOS_LINE_BREAK_3 + "\n=============================== FAIL HERE ===============================\n" + ARTOS_LINE_BREAK_3;
+	// KTF TEST PASSED Stamp
+	public static final String ARTOS_KTF_TEST_PASSED_STAMP = ARTOS_LINE_BREAK_3 + "\n============================ KTF TEST PASSED ============================\n" + ARTOS_LINE_BREAK_3;
+	// KTF TEST UNIT PASSED Stamp
+	public static final String ARTOS_KTF_TESTUNIT_PASSED_STAMP = ARTOS_LINE_BREAK_3 + "\n========================== KTF TEST UNIT PASSED =========================\n" + ARTOS_LINE_BREAK_3;
+	// DataProvider Fail Stamp
+	public static final String ARTOS_DATAPROVIDER_FAIL_STAMP = ARTOS_LINE_BREAK_3 + "\n=== DataProvider Method failed to return data ===\n"
+			+ ARTOS_LINE_BREAK_3;
+
 	// default paths
 	public static final String TESTSCRIPT_BASE_DIR = "." + File.separator + "script" + File.separator;
 	public static final String CONFIG_BASE_DIR = "." + File.separator + "conf" + File.separator;

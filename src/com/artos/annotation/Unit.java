@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Unit {
-	
+
 	/**
 	 * Responsible for marking test to be skipped if set true. Ignored if test list is provided via test script or using main() class.
 	 * 
@@ -62,5 +62,12 @@ public @interface Unit {
 	 * @return test timeout in milliseconds
 	 */
 	long testtimeout() default 0;
+
+	/**
+	 * Data provider name set insider {@code DataProvider} annotation
+	 * 
+	 * @return data provider method name
+	 */
+	String dataprovider() default "";
 
 }
