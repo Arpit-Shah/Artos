@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.artos.annotation.DataProvider;
 import com.artos.framework.Enums.TestStatus;
 
 public class TestUnitObjectWrapper {

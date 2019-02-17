@@ -21,7 +21,6 @@
  ******************************************************************************/
 package com.artos.interfaces;
 
-import com.artos.annotation.BeforeTestUnit;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
