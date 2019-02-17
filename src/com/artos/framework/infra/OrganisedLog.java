@@ -197,7 +197,9 @@ class OrganisedLog {
 		}
 
 		for (int i = 0; i < numberOfAppenders; i++) {
-			String logFileName = testFQCN + "_" + i + "_" + System.currentTimeMillis();
+			// retrieve file prefix
+			String logFilePrefix = (testSuiteList != null ) ? testSuiteList.get(i).getSuiteName() + "_" : ""; 
+			String logFileName = testFQCN + "_" + i + "_" + logFilePrefix + System.currentTimeMillis();
 
 			// create a rolling file appender for general logs
 			{
