@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
 
 public class TestUnitObjectWrapper {
@@ -44,6 +45,9 @@ public class TestUnitObjectWrapper {
 	int testsequence = 0;
 	String dataProviderName = "";
 	long testTimeout = 0;
+	
+	// testImportance
+	Importance testImportance = Importance.UNDEFINED;
 	
 	// Group
 	List<String> groupList = new ArrayList<>();
@@ -186,6 +190,14 @@ public class TestUnitObjectWrapper {
 
 	public void setGroupList(List<String> groupList) {
 		this.groupList = groupList;
+	}
+
+	public Importance getTestImportance() {
+		return testImportance;
+	}
+
+	public void setTestImportance(Importance testImportance) {
+		this.testImportance = testImportance;
 	}
 
 }

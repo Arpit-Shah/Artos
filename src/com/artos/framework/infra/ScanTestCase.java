@@ -34,6 +34,7 @@ import com.artos.annotation.BeforeTestUnit;
 import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
 import com.artos.annotation.KnownToFail;
+import com.artos.annotation.TestImportance;
 import com.artos.annotation.Unit;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestObjectWrapper;
@@ -106,8 +107,10 @@ public class ScanTestCase {
 			KnownToFail ktf = method.getAnnotation(KnownToFail.class);
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 			Group group = method.getAnnotation(Group.class);
+			TestImportance testImportance = method.getAnnotation(TestImportance.class);
 
-			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(), unit.testtimeout());
+			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(),
+					unit.testtimeout());
 
 			/*
 				 * Store group list for each test cases.
@@ -144,12 +147,17 @@ public class ScanTestCase {
 				testUnitObj.setBugTrackingNumber(ktf.bugref());
 			}
 
-			// expectedException is optional annotation
+			// expectedException is an optional annotation
 			if (null != expectedException) {
 				List<Class<? extends Throwable>> expectedExceptionsList = Arrays.asList(expectedException.expectedExceptions());
 				testUnitObj.setExpectedExceptionList(expectedExceptionsList);
 				testUnitObj.setExceptionContains(expectedException.contains());
 				testUnitObj.setEnforce(expectedException.enforce());
+			}
+
+			// TestImportance is an optional annotation
+			if (null != testImportance) {
+				testUnitObj.setTestImportance(testImportance.value());
 			}
 
 			testUnitWrapperList_All.add(testUnitObj);
@@ -246,7 +254,7 @@ public class ScanTestCase {
 			}
 		}
 		return false;
-		
+
 	}
 
 	/**

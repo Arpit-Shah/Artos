@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
@@ -176,7 +177,7 @@ public class TestContext {
 		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n");
 
 		// Finalise and add test summary to Summary report
-		appendSummaryReport(getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
+		appendSummaryReport(t, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
@@ -190,11 +191,11 @@ public class TestContext {
 			// go through outcome list of test unit and print them all
 			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 				if (unit.getDataProviderName().equals("")) {
-					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
+					appendUnitSummaryReport(unit, unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
 							unit.getBugTrackingNumber(), totalTestUnitTime);
 				} else { // if data provider then append data provider number
-					appendUnitSummaryReport(unit.getTestUnitOutcomeList().get(j),
-							unit.getTestUnitMethod().getName() + "(context)" + "data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
+					appendUnitSummaryReport(unit, unit.getTestUnitOutcomeList().get(j),
+							unit.getTestUnitMethod().getName() + "(context)" + " : data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
 				}
 			}
 		}
@@ -242,6 +243,7 @@ public class TestContext {
 	/**
 	 * Append test summary to summary report
 	 * 
+	 * @param t {@link TestObjectWrapper} object
 	 * @param status Test status
 	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
 	 * @param bugTrackingNumber BugTracking Number
@@ -251,8 +253,8 @@ public class TestContext {
 	 * @param ktfCount Current known to fail test count
 	 * @param testDuration Test duration
 	 */
-	private void appendSummaryReport(TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount, long failCount, long skipCount,
-			long ktfCount, long testDuration) {
+	private void appendSummaryReport(TestObjectWrapper t, TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount,
+			long failCount, long skipCount, long ktfCount, long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
@@ -267,20 +269,23 @@ public class TestContext {
 		String FailCount = String.format("%-" + 4 + "s", failCount);
 		String SkipCount = String.format("%-" + 4 + "s", skipCount);
 		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
+		String TestImportance = String.format("%-" + 10 + "s", (t.getTestImportance() == Importance.UNDEFINED ? "" : t.getTestImportance().name()));
 
 		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:"
-				+ KTFCount + " " + testTime + " " + JiraRef);
+				+ KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
 	}
 
 	/**
 	 * Append test unit summary to summary report
 	 * 
+	 * @param unit {@link TestUnitObjectWrapper} object
 	 * @param status Test status
 	 * @param testUnitName Test unit name
 	 * @param bugTrackingNumber BugTracking Number
 	 * @param testDuration Test duration
 	 */
-	private void appendUnitSummaryReport(TestStatus status, String testUnitName, String bugTrackingNumber, long testDuration) {
+	private void appendUnitSummaryReport(TestUnitObjectWrapper unit, TestStatus status, String testUnitName, String bugTrackingNumber,
+			long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
@@ -295,9 +300,11 @@ public class TestContext {
 		String FailCount = String.format("%-" + 4 + "s", "");
 		String SkipCount = String.format("%-" + 4 + "s", "");
 		String KTFCount = String.format("%-" + 4 + "s", "");
+		String TestImportance = String.format("%-" + 10 + "s",
+				(unit.getTestImportance() == Importance.UNDEFINED ? "" : unit.getTestImportance().name()));
 
 		getLogger().getSummaryLogger().info("  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount
-				+ "  :" + KTFCount + " " + testTime + " " + JiraRef);
+				+ "  :" + KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
 	}
 
 	/**
@@ -368,7 +375,7 @@ public class TestContext {
 		sb.append("\n");
 		sb.append("* User's home directory => " + sysProp.getUserHomeDir());
 		sb.append("\n");
-		
+
 		getLogger().debug(sb.toString());
 	}
 

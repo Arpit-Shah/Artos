@@ -33,6 +33,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestDataProvider;
@@ -205,6 +206,7 @@ public class ArtosRunner {
 					testErrorcount++;
 					sb.append("\n");
 					sb.append(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
+					sb.append(t.getTestImportance() == Importance.UNDEFINED ? "" : " [" + t.getTestImportance().name() + "]");
 
 					for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
 						/*
@@ -218,6 +220,7 @@ public class ArtosRunner {
 						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
 							sb.append(String.format("\n"));
 							sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
+							sb.append(unit.getTestImportance() == Importance.UNDEFINED ? "" : " [" + unit.getTestImportance().name() + "]");
 
 							// If test case with data provider then go through each status of the list
 						} else if (!"".equals(unit.getDataProviderName())) {
@@ -226,6 +229,7 @@ public class ArtosRunner {
 									sb.append(String.format("\n"));
 									sb.append(String.format("\t|-- %s",
 											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
+									sb.append(unit.getTestImportance() == Importance.UNDEFINED ? "" : " [" + unit.getTestImportance().name() + "]");
 								}
 							}
 						}

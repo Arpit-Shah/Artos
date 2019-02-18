@@ -103,4 +103,37 @@ public class Enums {
 		}
 	}
 
+	public enum Importance {
+
+		// @formatter:off
+		FATAL(0),
+		CRITICAL(1),
+		HIGH(2), 
+		MEDIUM(3),
+		LOW(4),
+		VERYLOW(5),
+		UNDEFINED(6);
+		// @formatter:on
+
+		private final int status;
+
+		Importance(int status) {
+			this.status = status;
+		}
+
+		public int getValue() {
+			return status;
+		}
+
+		public String getEnumName(int status) {
+			for (TestStatus e : TestStatus.values()) {
+				if (status == e.getValue()) {
+					return e.name();
+				}
+			}
+			return null;
+		}
+
+	}
+
 }
