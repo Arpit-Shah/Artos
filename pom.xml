@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.7</version>
+	<version>0.0.8</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -49,7 +49,7 @@
 			<organization>Artos</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
 			<roles>
-				<role>developer</role>
+				<role>contributor</role>
 			</roles>
 		</developer>
 		<developer>
@@ -60,7 +60,18 @@
 			<organization>Artos</organization>
 			<organizationUrl>http://www.theartos.com</organizationUrl>
 			<roles>
-				<role>developer</role>
+				<role>contributor</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Dulani Kumarage</name>
+			<id>DKu</id>
+			<email>artos.framework@gmail.com</email>
+			<url>https://www.theartos.com</url>
+			<organization>Artos</organization>
+			<organizationUrl>http://www.theartos.com</organizationUrl>
+			<roles>
+				<role>contributor</role>
 			</roles>
 		</developer>
 	</developers>
