@@ -77,5 +77,5 @@ public @interface TestCase {
 	 * 
 	 * @return test timeout in milliseconds
 	 */
-	long testtimeout() default 0;
+	//long testtimeout() default 0;
 }

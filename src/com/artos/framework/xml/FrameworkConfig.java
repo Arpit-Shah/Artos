@@ -89,7 +89,7 @@ public class FrameworkConfig {
 	private boolean enableBanner = true;
 	private boolean enableEmailClient = false;
 	private boolean enableArtosDebug = false;
-	private boolean generateEclipseTemplate = false;
+	private boolean generateEclipseTemplate = true;
 	private boolean generateTestScript = true;
 	private boolean stopOnFail = false;
 

@@ -147,7 +147,7 @@ public class ScanTestSuite {
 				FQCNList.add(cl.getPackage().getName());
 			}
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", testcase.testtimeout());
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", 0);
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {

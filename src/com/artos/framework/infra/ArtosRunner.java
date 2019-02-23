@@ -587,13 +587,13 @@ public class ArtosRunner {
 					/* If regular expression then validate exception message with regular expression */
 					/* If regular expression does not match then do string compare */
 					if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
-						if (e.getMessage().matches(t.getExceptionContains())) {
+						if (e.getMessage().contains(t.getExceptionContains())) {
+							context.setTestStatus(TestStatus.PASS, "Exception message contains : " + t.getExceptionContains());
+						} else if (e.getMessage().matches(t.getExceptionContains())) {
 							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
-						} else if (e.getMessage().equals(t.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches string : " + t.getExceptionContains());
 						} else {
-							context.setTestStatus(TestStatus.FAIL, "Exception message does not match regex : \nRegularExpression : "
-									+ t.getExceptionContains() + "\nException Message : " + e.getMessage());
+							context.setTestStatus(TestStatus.FAIL,
+									"Exception message does not match : \nExpected : " + t.getExceptionContains() + "\nReceived : " + e.getMessage());
 						}
 					}
 

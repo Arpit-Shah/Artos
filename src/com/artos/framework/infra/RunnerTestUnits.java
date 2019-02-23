@@ -362,8 +362,8 @@ public class RunnerTestUnits {
 					/* If regular expression then validate exception message with regular expression */
 					/* If regular expression does not match then do string compare */
 					if (null != unit.getExceptionContains() && !"".equals(unit.getExceptionContains())) {
-						if (e.getMessage().equals(unit.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches : " + unit.getExceptionContains());
+						if (e.getMessage().contains(unit.getExceptionContains())) {
+							context.setTestStatus(TestStatus.PASS, "Exception message contains : " + unit.getExceptionContains());
 						} else if (e.getMessage().matches(unit.getExceptionContains())) {
 							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + unit.getExceptionContains());
 						} else {
