@@ -90,6 +90,7 @@ public class FrameworkConfig {
 	private boolean enableEmailClient = false;
 	private boolean enableArtosDebug = false;
 	private boolean generateEclipseTemplate = true;
+	private boolean generateIntelliJTemplate = false;
 	private boolean generateTestScript = true;
 	private boolean stopOnFail = false;
 
@@ -249,6 +250,15 @@ public class FrameworkConfig {
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("generateEclipseTemplate");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateIntelliJTemplate())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("generateIntelliJTemplate");
 			property.setAttributeNode(attr);
 		}
 		{
@@ -602,6 +612,9 @@ public class FrameworkConfig {
 					}
 					if ("generateEclipseTemplate".equals(eElement.getAttribute("name"))) {
 						setGenerateEclipseTemplate(Boolean.parseBoolean(eElement.getTextContent()));
+					}
+					if ("generateIntelliJTemplate".equals(eElement.getAttribute("name"))) {
+						setGenerateIntelliJTemplate(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 					if ("generateTestScript".equals(eElement.getAttribute("name"))) {
 						setGenerateTestScript(Boolean.parseBoolean(eElement.getTextContent()));
@@ -1027,5 +1040,13 @@ public class FrameworkConfig {
 
 	public void setEnableArtosDebug(boolean enableArtosDebug) {
 		this.enableArtosDebug = enableArtosDebug;
+	}
+
+	public boolean isGenerateIntelliJTemplate() {
+		return generateIntelliJTemplate;
+	}
+
+	public void setGenerateIntelliJTemplate(boolean generateIntelliJTemplate) {
+		this.generateIntelliJTemplate = generateIntelliJTemplate;
 	}
 }

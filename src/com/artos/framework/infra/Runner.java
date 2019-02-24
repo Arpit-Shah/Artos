@@ -207,6 +207,7 @@ public class Runner {
 	private void generateRequiredFiles() throws IOException {
 
 		if (FWStaticStore.frameworkConfig.isGenerateEclipseTemplate()) {
+			// transfer eclipse templates
 			// only create template file if not present already
 			File targetFile = new File(FWStaticStore.TEMPLATE_BASE_DIR + File.separator + "template.xml");
 			if (!targetFile.exists() || !targetFile.isFile()) {
@@ -228,8 +229,33 @@ public class Runner {
 				ins.close();
 			}
 		}
+
+		if (FWStaticStore.frameworkConfig.isGenerateIntelliJTemplate()) {
+			// transfer IntelliJ templates
+			// only create template file if not present already
+			File targetFile = new File(FWStaticStore.TEMPLATE_BASE_DIR + File.separator + "IntelliJ_template.zip");
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.TEMPLATE_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/IntelliJ_template.zip");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
+		}
+		
 		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
-			// only create Extent config file if not present already
+			// only create Extent configuration file if not present already
 			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "extent_configuration.xml");
 
 			if (!targetFile.exists() || !targetFile.isFile()) {
