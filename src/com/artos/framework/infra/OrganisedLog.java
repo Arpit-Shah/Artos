@@ -120,8 +120,6 @@ class OrganisedLog {
 			baseDir = baseDir + File.separator;
 		}
 
-		// If test script is not passed from command line then testSuite can be
-		// null
 		if (null != testSuiteList && !testSuiteList.isEmpty()) {
 			numberOfAppenders = testSuiteList.size();
 		}

@@ -4,7 +4,7 @@
 		<theme>dark</theme>
 		<encoding>UTF-8</encoding>
 		<protocol>https</protocol>
-		<documentTitle>Extent</documentTitle>
+		<documentTitle>ARTOS</documentTitle>
 		<reportName>Automation Report</reportName>
 		<testViewChartLocation>bottom</testViewChartLocation>
 		<!-- custom javascript -->
@@ -12,7 +12,7 @@
             <![CDATA[
                 $(document).ready(function() {
                     $('#enableDashboard').click();
-                });
+                }); 
             ]]>
 		</scripts>
 

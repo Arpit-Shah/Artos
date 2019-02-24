@@ -48,6 +48,9 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testSuiteExecutionStarted(String description) {
 		extent = logger.getExtent();
+		// extent.config().insertJs("$('.test.warning').each(function() { $(this).addClass('pass').removeClass('warning'); });
+		// $('.test-status.warning').each(function() { $(this).addClass('pass').removeClass('warning').text('pass'); });$('.tests-quick-view
+		// .status.warning').each(function() { $(this).addClass('pass').removeClass('warning').text('PASS'); }); testSetChart(); ");
 		extent.addSystemInfo("Artos Version", new Version().getBuildVersion());
 	}
 
@@ -97,7 +100,8 @@ public class ExtentReportListener implements TestProgress {
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
-				testChild.log(LogStatus.PASS, description);
+				// Extent do not have KTF status so add it to warning
+				testChild.log(LogStatus.WARNING, description);
 			} else if (TestStatus.SKIP == testStatus) {
 				testChild.log(LogStatus.SKIP, description);
 			} else if (TestStatus.PASS == testStatus) {
@@ -107,7 +111,8 @@ public class ExtentReportListener implements TestProgress {
 			if (TestStatus.FAIL == testStatus) {
 				testParent.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
-				testParent.log(LogStatus.PASS, description);
+				// Extent do not have KTF status so add it to warning
+				testParent.log(LogStatus.WARNING, description);
 			} else if (TestStatus.SKIP == testStatus) {
 				testParent.log(LogStatus.SKIP, description);
 			} else if (TestStatus.PASS == testStatus) {
@@ -122,7 +127,8 @@ public class ExtentReportListener implements TestProgress {
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
-				testChild.log(LogStatus.PASS, description);
+				// Extent do not have KTF status so add it to warning
+				testChild.log(LogStatus.WARNING, description);
 			} else if (TestStatus.SKIP == testStatus) {
 				testChild.log(LogStatus.SKIP, description);
 			} else if (TestStatus.PASS == testStatus) {
@@ -132,7 +138,8 @@ public class ExtentReportListener implements TestProgress {
 			if (TestStatus.FAIL == testStatus) {
 				testParent.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
-				testParent.log(LogStatus.PASS, description);
+				// Extent do not have KTF status so add it to warning
+				testParent.log(LogStatus.WARNING, description);
 			} else if (TestStatus.SKIP == testStatus) {
 				testParent.log(LogStatus.SKIP, description);
 			} else if (TestStatus.PASS == testStatus) {
