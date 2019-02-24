@@ -168,19 +168,8 @@ public class ScanTestCase {
 			}
 		}
 
-		/*
-		 * @formatter:off
-		 * 1. If XML testScript is provided then use it
-		 * 2. If all of the above is not provided then use reflection to find test cases
-		 * @formatter:on
-		 */
-
-		if (null != context.getTestSuite()) {
-			List<String> groupList = context.getTestSuite().getTestUnitGroupList();
-			groupBasedFiltering(groupList);
-		} else {
-			groupBasedFiltering(context.getMainMethodParam().getTestUnitGroupList());
-		}
+		List<String> groupList = context.getTestSuite().getTestUnitGroupList();
+		groupBasedFiltering(groupList);
 
 		// Clear list otherwise wrong methods will be added against wrong class
 		testUnitWrapperList_All.clear();

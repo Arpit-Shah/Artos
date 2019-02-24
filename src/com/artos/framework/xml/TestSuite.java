@@ -21,20 +21,23 @@
  ******************************************************************************/
 package com.artos.framework.xml;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TestSuite {
 
-	String suiteName;
-	int loopCount = 1; // default 1
-	List<String> testGroupList;
-	List<String> testUnitGroupList;
-	List<String> testFQCNList;
-	Map<String, String> testSuiteParameters;
-	String threadName;
-	String version = "1";
-	boolean enable = true;
+	private String suiteName = "SuiteName";
+	private int loopCount = 1; // default 1
+	private List<String> testGroupList = new ArrayList<>();
+	private List<String> testUnitGroupList = new ArrayList<>();
+	private List<String> testFQCNList = new ArrayList<>();
+	private Map<String, String> testSuiteParameters = new HashMap<>();
+	private String threadName = "ThreadN";
+	private String version = "1";
+	private boolean enable = true;
+	private boolean testScriptProvided = false;
 
 	// *****************************************************************
 	// Getters and setters
@@ -109,6 +112,14 @@ public class TestSuite {
 
 	public void setEnable(boolean enable) {
 		this.enable = enable;
+	}
+
+	public boolean isTestScriptProvided() {
+		return testScriptProvided;
+	}
+
+	public void setTestScriptProvided(boolean testScriptProvided) {
+		this.testScriptProvided = testScriptProvided;
 	}
 
 }

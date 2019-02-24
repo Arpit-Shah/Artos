@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -45,31 +46,34 @@ import com.artos.framework.xml.FrameworkConfig;
 import com.artos.framework.xml.TestScriptParser;
 import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.TestExecutable;
+import com.google.common.collect.Lists;
 
 public class Runner {
 
 	Class<?> cls;
 	// Default thread count should be 1
 	int threadCount = 1;
-
-	MainMethodParameterWrapper mainMethodParam;
+	String profile = null;
+	TestSuite runnerTestSuite;
 
 	/**
-	 * @param cls Class which contains main() method
+	 * @param cls Runner for the test Suite
 	 * @see TestContext
 	 */
 	public Runner(Class<?> cls) {
 		this.cls = cls;
-		mainMethodParam = new MainMethodParameterWrapper();
+		runnerTestSuite = new TestSuite();
+		// This is false if object is created using main method information
+		runnerTestSuite.setTestScriptProvided(false);
+		runnerTestSuite.setEnable(true);
 	}
 
 	/**
 	 * Responsible for executing test cases.
 	 * 
 	 * <PRE>
-	 * - Test script is provided in command line argument then test script will be used to generate test list and execute from that
-	 * - In absence of test script, ArrayList() provided by user will be used to generate test list. 
-	 * - In absence of test script and ArrayList() is null or empty, reflection will be used to generate test list.
+	 * - Test script is provided in command line argument then test script will be used to generate test suite. If more than one test suite is provided then they will run in parallel with unique TestContext object per test suite
+	 * - In absence of test script, information provided via Runner class will be utilised to generate test suite.
 	 * </PRE>
 	 * 
 	 * @param args command line arguments
@@ -84,44 +88,68 @@ public class Runner {
 	public void run(String[] args)
 			throws InterruptedException, ExecutionException, ParserConfigurationException, SAXException, IOException, InvalidDataException {
 
-		if (null == mainMethodParam.getTestGroupList() || mainMethodParam.getTestGroupList().isEmpty()) {
+		// Bad path protections for parameters passed using Runner class
+		{
 			// Add a default group if user does not pass a group parameter
-			List<String> testGroupList = new ArrayList<>();
-			testGroupList.add("*");
-			mainMethodParam.setTestGroupList(testGroupList);
-		}
-		// Store only Upper case group names to avoid case sensitiveness
-		mainMethodParam.getTestGroupList().replaceAll(String::toUpperCase);
+			if (null == runnerTestSuite.getTestGroupList() || runnerTestSuite.getTestGroupList().isEmpty()) {
+				runnerTestSuite.setTestGroupList(Lists.newArrayList("*"));
+			}
+			// Store only Upper case group names to avoid case sensitiveness
+			runnerTestSuite.getTestGroupList().replaceAll(String::toUpperCase);
 
-		if (null == mainMethodParam.getTestUnitGroupList() || mainMethodParam.getTestUnitGroupList().isEmpty()) {
 			// Add a default group if user does not pass a group parameter
-			List<String> testUnitGroupList = new ArrayList<>();
-			testUnitGroupList.add("*");
-			mainMethodParam.setTestUnitGroupList(testUnitGroupList);
-		}
-		// Store only Upper case group names to avoid case sensitiveness
-		mainMethodParam.getTestUnitGroupList().replaceAll(String::toUpperCase);
+			if (null == runnerTestSuite.getTestUnitGroupList() || runnerTestSuite.getTestUnitGroupList().isEmpty()) {
+				runnerTestSuite.setTestUnitGroupList(Lists.newArrayList("*"));
+			}
+			// Store only Upper case group names to avoid case sensitiveness
+			runnerTestSuite.getTestUnitGroupList().replaceAll(String::toUpperCase);
 
-		// if loop count is set to 0 or negative then set to at least 1
-		if (mainMethodParam.getLoopCount() < 1) {
-			mainMethodParam.setLoopCount(1);
+			// if loop count is set to 0 or negative then set to at least 1
+			if (runnerTestSuite.getLoopCount() < 1) {
+				System.err.println("[WARNING] Loop count <1. Default to 1");
+				runnerTestSuite.setLoopCount(1);
+			}
+
+			// Trim TestSuite name to 10 char
+			if (null != runnerTestSuite.getSuiteName()) {
+				// Only allow A-Z or a-Z or 0-9 or - to be part of the name
+				String suiteName = runnerTestSuite.getSuiteName().trim().replaceAll("[^A-Za-z0-9-_]", "");
+				// Only allow maximum of 10 digit
+				if (suiteName.length() > 10) {
+					System.err.println("[WARNING] TestSuite name >10 char. It will be trimmed");
+					suiteName = suiteName.substring(0, 10);
+				}
+				runnerTestSuite.setSuiteName(suiteName);
+			}
 		}
 
 		// Process command line arguments
 		CliProcessor.proessCommandLine(args);
 		provideSchema();
-		FWStaticStore.frameworkConfig = new FrameworkConfig(true);
+
+		// Take profile name from the command line parameters, if not available then take it from the Runner class parameters
+		FWStaticStore.frameworkConfig = new FrameworkConfig(true, null == CliProcessor.testScriptFile ? CliProcessor.profile : profile);
+		
+		// Generate files/configurations required for ARTOS
 		generateRequiredFiles();
 
-		// process test suites
+		// Read test script file to read all test suites
 		List<TestSuite> testSuiteList = createTestSuiteList();
+
+		// If test script is provided via command line and test suites are empty then stop execution
 		if (null != CliProcessor.testScriptFile && (null == testSuiteList || testSuiteList.isEmpty())) {
 			System.err.println("Test Suite is missing");
 			System.exit(1);
 		}
+
+		// If test script is provided via command line and suites are present then set thread number
 		if (null != testSuiteList && !testSuiteList.isEmpty()) {
-			// Thread count should be same as number of test suites
 			threadCount = testSuiteList.size();
+		}
+
+		// If test script is not provided via command line then add testSuite constructed using Runner class parameters
+		if (null == CliProcessor.testScriptFile) {
+			testSuiteList = Lists.newArrayList(runnerTestSuite);
 		}
 
 		// generate logger context
@@ -149,7 +177,6 @@ public class Runner {
 				// store logger
 				context.setOrganisedLogger(logWrapper);
 
-				context.setMainMethodParam(mainMethodParam);
 				if (null != testSuiteList && !testSuiteList.isEmpty()) {
 					// store test suite
 					context.setTestSuite(testSuiteList.get(i));
@@ -253,7 +280,7 @@ public class Runner {
 				ins.close();
 			}
 		}
-		
+
 		if (FWStaticStore.frameworkConfig.isEnableExtentReport()) {
 			// only create Extent configuration file if not present already
 			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "extent_configuration.xml");
@@ -366,7 +393,11 @@ public class Runner {
 	 * @param testList testList provided by user
 	 */
 	public void setTestList(List<TestExecutable> testList) {
-		mainMethodParam.setTestList(testList);
+		List<String> testFQCNList = new ArrayList<>();
+		for (TestExecutable testE : testList) {
+			testFQCNList.add(testE.getClass().getCanonicalName());
+		}
+		runnerTestSuite.setTestFQCNList(testFQCNList);
 	}
 
 	/**
@@ -375,7 +406,7 @@ public class Runner {
 	 * @param loopCount test loop count
 	 */
 	public void setLoopCount(int loopCount) {
-		mainMethodParam.setLoopCount(loopCount);
+		runnerTestSuite.setLoopCount(loopCount);
 	}
 
 	/**
@@ -384,7 +415,7 @@ public class Runner {
 	 * @param testGroupList group list required to filter test cases
 	 */
 	public void setTestGroupList(List<String> testGroupList) {
-		mainMethodParam.setTestGroupList(testGroupList);
+		runnerTestSuite.setTestGroupList(testGroupList);
 	}
 
 	/**
@@ -393,16 +424,7 @@ public class Runner {
 	 * @param testUnitGroupList group list required to filter test units
 	 */
 	public void setTestUnitGroupList(List<String> testUnitGroupList) {
-		mainMethodParam.setTestUnitGroupList(testUnitGroupList);
-	}
-
-	/**
-	 * Set Framework configuration profile name, Test script takes higher priority so if test script is provided then this will be ignored
-	 * 
-	 * @param frameworkConfigProfile framework config profile name
-	 */
-	public void setFrameworkConfigProfile(String frameworkConfigProfile) {
-		mainMethodParam.setFrameworkConfigProfile(frameworkConfigProfile);
+		runnerTestSuite.setTestUnitGroupList(testUnitGroupList);
 	}
 
 	/**
@@ -411,7 +433,25 @@ public class Runner {
 	 * @param testSuiteName test suite name
 	 */
 	public void setTestSuiteName(String testSuiteName) {
-		mainMethodParam.setTestSuiteName(testSuiteName);
+		runnerTestSuite.setSuiteName(testSuiteName);
+	}
+
+	/**
+	 * allows to set test suite global parameters
+	 * 
+	 * @param globalParameter global parameters
+	 */
+	public void setGlobalParameters(HashMap<String, String> globalParameter) {
+		runnerTestSuite.setTestSuiteParameters(globalParameter);
+	}
+
+	/**
+	 * Set Framework configuration profile name, Test script takes higher priority so if test script is provided then this will be ignored
+	 * 
+	 * @param profile framework configuration profile name
+	 */
+	public void setProfile(String profile) {
+		this.profile = profile;
 	}
 
 }

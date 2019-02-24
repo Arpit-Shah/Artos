@@ -45,7 +45,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.infra.CliProcessor;
 
 /**
  * This class is responsible for storing framework Configuration. During test suit execution XML file will be searched at location ./conf
@@ -53,6 +52,7 @@ import com.artos.framework.infra.CliProcessor;
 public class FrameworkConfig {
 
 	final File fXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "framework_configuration.xml");
+	String profileName = "Dev";
 
 	// Organisation Info
 	private String Organisation_Name = "<Organisation> PTY LTD";
@@ -99,7 +99,15 @@ public class FrameworkConfig {
 	 * 
 	 * @param createIfNotPresent enables creation of default configuration file if not present
 	 */
-	public FrameworkConfig(boolean createIfNotPresent) {
+	public FrameworkConfig(boolean createIfNotPresent, String profileName) {
+		this.profileName = profileName;
+
+		// If profile name is not provided then apply default settings
+		// if (null == profileName || "".equals(profileName)) {
+		// System.err.println("Profile Name is not provided. Default Framework Config is applied");
+		// return;
+		// }
+
 		readXMLConfig(createIfNotPresent);
 	}
 
@@ -242,7 +250,7 @@ public class FrameworkConfig {
 			attr.setValue("enableArtosDebug");
 			property.setAttributeNode(attr);
 		}
-		
+
 		{
 			Element property = doc.createElement("property");
 			property.appendChild(doc.createTextNode(Boolean.toString(isGenerateEclipseTemplate())));
@@ -532,42 +540,37 @@ public class FrameworkConfig {
 
 					if ("logLevel".equals(eElement.getAttribute("name"))) {
 						setLogLevel(eElement.getTextContent());
-					}
-					if ("logRootDir".equals(eElement.getAttribute("name"))) {
+					} else if ("logRootDir".equals(eElement.getAttribute("name"))) {
 						String rootDir = eElement.getTextContent();
 						if (rootDir.endsWith("/") || rootDir.endsWith("\\")) {
 							setLogRootDir(rootDir);
 						} else {
 							setLogRootDir(rootDir + File.separator);
 						}
-					}
-					if ("enableLogDecoration".equals(eElement.getAttribute("name"))) {
+					} else if ("enableLogDecoration".equals(eElement.getAttribute("name"))) {
 						setEnableLogDecoration(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableTextLog".equals(eElement.getAttribute("name"))) {
+					} else if ("enableTextLog".equals(eElement.getAttribute("name"))) {
 						setEnableTextLog(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableHTMLLog".equals(eElement.getAttribute("name"))) {
+					} else if ("enableHTMLLog".equals(eElement.getAttribute("name"))) {
 						setEnableHTMLLog(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableExtentReport".equals(eElement.getAttribute("name"))) {
+					} else if ("enableExtentReport".equals(eElement.getAttribute("name"))) {
 						setEnableExtentReport(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
 
 			// process profile set by user
-			if (CliProcessor.profile == null) {
+			if (profileName == null) {
 				// If profile is not set then read first configuration in the path
 				break;
-			} else if (CliProcessor.profile != null) {
+			} else if (profileName != null) {
 				Element element = (Element) nNode;
 
 				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
 					break;
 				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("Logger configuration with profile \"" + CliProcessor.profile + "\" is missing");
+					System.err.println("Logger configuration with profile \"" + profileName + "\" is missing");
 				}
 			}
 		}
@@ -594,49 +597,40 @@ public class FrameworkConfig {
 
 					if ("enableGUITestSelector".equals(eElement.getAttribute("name"))) {
 						setEnableGUITestSelector(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableGUITestSelectorSeqNumber".equals(eElement.getAttribute("name"))) {
+					} else if ("enableGUITestSelectorSeqNumber".equals(eElement.getAttribute("name"))) {
 						setEnableGUITestSelectorSeqNumber(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableBanner".equals(eElement.getAttribute("name"))) {
+					} else if ("enableBanner".equals(eElement.getAttribute("name"))) {
 						setEnableBanner(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableOrganisationInfo".equals(eElement.getAttribute("name"))) {
+					} else if ("enableOrganisationInfo".equals(eElement.getAttribute("name"))) {
 						setEnableOrganisationInfo(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableEmailClient".equals(eElement.getAttribute("name"))) {
+					} else if ("enableEmailClient".equals(eElement.getAttribute("name"))) {
 						setEnableEmailClient(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("enableArtosDebug".equals(eElement.getAttribute("name"))) {
+					} else if ("enableArtosDebug".equals(eElement.getAttribute("name"))) {
 						setEnableArtosDebug(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("generateEclipseTemplate".equals(eElement.getAttribute("name"))) {
+					} else if ("generateEclipseTemplate".equals(eElement.getAttribute("name"))) {
 						setGenerateEclipseTemplate(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("generateIntelliJTemplate".equals(eElement.getAttribute("name"))) {
+					} else if ("generateIntelliJTemplate".equals(eElement.getAttribute("name"))) {
 						setGenerateIntelliJTemplate(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("generateTestScript".equals(eElement.getAttribute("name"))) {
+					} else if ("generateTestScript".equals(eElement.getAttribute("name"))) {
 						setGenerateTestScript(Boolean.parseBoolean(eElement.getTextContent()));
-					}
-					if ("stopOnFail".equals(eElement.getAttribute("name"))) {
+					} else if ("stopOnFail".equals(eElement.getAttribute("name"))) {
 						setStopOnFail(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
 
 			// process profile set by user
-			if (CliProcessor.profile == null) {
+			if (profileName == null) {
 				// If profile is not set then read first configuration in the path
 				break;
-			} else if (CliProcessor.profile != null) {
+			} else if (profileName != null) {
 				Element element = (Element) nNode;
 
 				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
 					break;
 				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("Features configuration with profile \"" + CliProcessor.profile + "\" is missing");
+					System.err.println("Features configuration with profile \"" + profileName + "\" is missing");
 				}
 			}
 		}
@@ -667,37 +661,32 @@ public class FrameworkConfig {
 					// eElement.getTextContent());
 					if ("Name".equals(eElement.getAttribute("name"))) {
 						setOrganisation_Name(eElement.getTextContent());
-					}
-					if ("Address".equals(eElement.getAttribute("name"))) {
+					} else if ("Address".equals(eElement.getAttribute("name"))) {
 						setOrganisation_Address(eElement.getTextContent());
-					}
-					if ("Country".equals(eElement.getAttribute("name"))) {
+					} else if ("Country".equals(eElement.getAttribute("name"))) {
 						setOrganisation_Country(eElement.getTextContent());
-					}
-					if ("Contact_Number".equals(eElement.getAttribute("name"))) {
+					} else if ("Contact_Number".equals(eElement.getAttribute("name"))) {
 						setOrganisation_Contact_Number(eElement.getTextContent());
-					}
-					if ("Email".equals(eElement.getAttribute("name"))) {
+					} else if ("Email".equals(eElement.getAttribute("name"))) {
 						setOrganisation_Email(eElement.getTextContent());
-					}
-					if ("Website".equals(eElement.getAttribute("name"))) {
+					} else if ("Website".equals(eElement.getAttribute("name"))) {
 						setOrganisation_Website(eElement.getTextContent());
 					}
 				}
 			}
 
 			// process profile set by user
-			if (CliProcessor.profile == null) {
+			if (profileName == null) {
 				// If profile is not set then read first configuration in the path
 				break;
-			} else if (CliProcessor.profile != null) {
+			} else if (profileName != null) {
 				Element element = (Element) nNode;
 
 				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
 					break;
 				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("OrganisationInfo configuration with profile \"" + CliProcessor.profile + "\" is missing");
+					System.err.println("OrganisationInfo configuration with profile \"" + profileName + "\" is missing");
 				}
 			}
 		}
@@ -715,49 +704,40 @@ public class FrameworkConfig {
 					Element eElement = (Element) nChildNode;
 					if ("ServerAddress".equals(eElement.getAttribute("name"))) {
 						setEmailSMTPServer(eElement.getTextContent());
-					}
-					if ("SSLPort".equals(eElement.getAttribute("name"))) {
+					} else if ("SSLPort".equals(eElement.getAttribute("name"))) {
 						setEmailSMTPSSLPort(eElement.getTextContent());
-					}
-					if ("SMTPAuth".equals(eElement.getAttribute("name"))) {
+					} else if ("SMTPAuth".equals(eElement.getAttribute("name"))) {
 						setEmailSMTPAuthRequired(eElement.getTextContent());
-					}
-					if ("SendersEmail".equals(eElement.getAttribute("name"))) {
+					} else if ("SendersEmail".equals(eElement.getAttribute("name"))) {
 						setEmailSendersEmail(eElement.getTextContent());
-					}
-					if ("SendersName".equals(eElement.getAttribute("name"))) {
+					} else if ("SendersName".equals(eElement.getAttribute("name"))) {
 						setEmailSendersName(eElement.getTextContent());
-					}
-					if ("emailAuthSettingsFilePath".equals(eElement.getAttribute("name"))) {
+					} else if ("emailAuthSettingsFilePath".equals(eElement.getAttribute("name"))) {
 						setEmailAuthSettingsFilePath(eElement.getTextContent());
-					}
-					if ("ReceiversEmail".equals(eElement.getAttribute("name"))) {
+					} else if ("ReceiversEmail".equals(eElement.getAttribute("name"))) {
 						setEmailReceiversEmail(eElement.getTextContent());
-					}
-					if ("ReceiversName".equals(eElement.getAttribute("name"))) {
+					} else if ("ReceiversName".equals(eElement.getAttribute("name"))) {
 						setEmailReceiversName(eElement.getTextContent());
-					}
-					if ("EmailSubject".equals(eElement.getAttribute("name"))) {
+					} else if ("EmailSubject".equals(eElement.getAttribute("name"))) {
 						setEmailSubject(eElement.getTextContent());
-					}
-					if ("EmailMessage".equals(eElement.getAttribute("name"))) {
+					} else if ("EmailMessage".equals(eElement.getAttribute("name"))) {
 						setEmailBody(eElement.getTextContent());
 					}
 				}
 			}
 
 			// process profile set by user
-			if (CliProcessor.profile == null) {
+			if (profileName == null) {
 				// If profile is not set then read first configuration in the path
 				break;
-			} else if (CliProcessor.profile != null) {
+			} else if (profileName != null) {
 				Element element = (Element) nNode;
 
 				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && CliProcessor.profile.equals(element.getAttribute("profile").toString().trim())) {
+				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
 					break;
 				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("Email configuration with profile \"" + CliProcessor.profile + "\" is missing");
+					System.err.println("Email configuration with profile \"" + profileName + "\" is missing");
 				}
 			}
 		}

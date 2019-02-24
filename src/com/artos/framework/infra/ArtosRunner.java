@@ -145,13 +145,16 @@ public class ArtosRunner {
 		sb.append("\n");
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 		sb.append("\n");
-		sb.append("PASS:" + context.getCurrentPassCount());
-		sb.append(" FAIL:" + context.getCurrentFailCount());
-		sb.append(" SKIP:" + context.getCurrentSkipCount());
-		sb.append(" KTF:" + context.getCurrentKTFCount());
-		sb.append(" EXECUTED:" + context.getTotalTestCount());
+		sb.append("[TestCases] ");
+		sb.append("PASS:" + String.format("%-" + 4 + "s", context.getCurrentPassCount()));
+		sb.append(" FAIL:" + String.format("%-" + 4 + "s", context.getCurrentFailCount()));
+		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentSkipCount()));
+		sb.append(" KTF:" + String.format("%-" + 4 + "s", context.getCurrentKTFCount()));
+		sb.append(" EXECUTED:" + String.format("%-" + 4 + "s", context.getTotalTestCount()));
 		// Total does not make sense because parameterised test cases are considered as a test case
 		// sb.append(" TOTAL:" + transformedTestList.size());
+
+		PrintTotalUnitResult(transformedTestList, sb);
 
 		// Print Test suite Start and Finish time
 		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
@@ -175,6 +178,44 @@ public class ArtosRunner {
 
 		// to release a thread lock
 		context.getThreadLatch().countDown();
+	}
+
+	private void PrintTotalUnitResult(List<TestObjectWrapper> transformedTestList, StringBuilder sb) {
+		int totalUnitPassCount = 0;
+		int totalUnitFailCount = 0;
+		int totalSkipCount = 0;
+		int totalKTFCount = 0;
+		int totalExecuted = 0;
+		for (TestObjectWrapper t : transformedTestList) {
+			for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
+				if (unit.getTestUnitOutcomeList().isEmpty()) {
+					continue;
+				}
+				for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
+					totalExecuted++;
+					if (unit.getTestUnitOutcomeList().get(j) == TestStatus.PASS) {
+						totalUnitPassCount++;
+					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
+						totalUnitFailCount++;
+					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.SKIP) {
+						totalSkipCount++;
+					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.KTF) {
+						totalKTFCount++;
+					}
+				}
+			}
+		}
+
+		// Print Test results
+		sb.append("\n");
+		sb.append("[TestUnits] ");
+		sb.append("PASS:" + String.format("%-" + 4 + "s", totalUnitPassCount));
+		sb.append(" FAIL:" + String.format("%-" + 4 + "s", totalUnitFailCount));
+		sb.append(" SKIP:" + String.format("%-" + 4 + "s", totalSkipCount));
+		sb.append(" KTF:" + String.format("%-" + 4 + "s", totalKTFCount));
+		sb.append(" EXECUTED:" + String.format("%-" + 4 + "s", totalExecuted));
+		// Total does not make sense because parameterised test cases are considered as a test case
+		// sb.append(" TOTAL:" + transformedTestList.size());
 	}
 
 	/**
@@ -264,12 +305,7 @@ public class ArtosRunner {
 				notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
 
-			// Take main method loop count by default
-			int loopCount = context.getMainMethodParam().getLoopCount();
-			// Take loop count from test script if provided
-			if (context.isTestScriptProvided()) {
-				loopCount = context.getTestSuite().getLoopCount();
-			}
+			int loopCount = context.getTestSuite().getLoopCount();
 
 			// Run as many loop set via test script or main method
 			for (int index = 0; index < loopCount; index++) {
@@ -634,12 +670,9 @@ public class ArtosRunner {
 			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
 
-		// Take main method loop count by default
-		int loopCount = context.getMainMethodParam().getLoopCount();
-		// Take loop count from test script if provided
-		if (context.isTestScriptProvided()) {
-			loopCount = context.getTestSuite().getLoopCount();
-		}
+		// get loop count from testSuite
+		int loopCount = context.getTestSuite().getLoopCount();
+
 		for (int index = 0; index < loopCount; index++) {
 			notifyTestExecutionLoopCount(index);
 			// --------------------------------------------------------------------------------------------

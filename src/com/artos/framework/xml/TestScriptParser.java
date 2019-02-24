@@ -53,7 +53,7 @@ import com.artos.framework.TestObjectWrapper;
 public class TestScriptParser {
 
 	/**
-	 * Reads test script and provides list of test cases name back to user.
+	 * Reads test script and provides testSuite list back to user.
 	 * 
 	 * @param testScriptFile testScript formatted with XML
 	 * @return list of test cases name
@@ -78,7 +78,7 @@ public class TestScriptParser {
 	}
 
 	/**
-	 * Reads logger info from config file
+	 * Reads test script
 	 * 
 	 * @param doc Document object of XML file
 	 * @throws InvalidDataException thrown when invalid data is provided by user
@@ -96,6 +96,8 @@ public class TestScriptParser {
 
 		for (int temp = 0; temp < suiteNodeList.getLength(); temp++) {
 			TestSuite _suite = new TestSuite();
+			// This is true if object is constructed using test script
+			_suite.setTestScriptProvided(true);
 			_suite.setVersion(version);
 
 			Node suiteNode = suiteNodeList.item(temp);

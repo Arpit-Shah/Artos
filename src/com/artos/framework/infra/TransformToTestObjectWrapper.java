@@ -30,7 +30,6 @@ import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.xml.TestSuite;
-import com.artos.interfaces.TestExecutable;
 
 public class TransformToTestObjectWrapper {
 
@@ -46,7 +45,7 @@ public class TransformToTestObjectWrapper {
 	protected TransformToTestObjectWrapper(TestContext context) throws Exception {
 		listOfTransformedTestCases = new ArrayList<>();
 
-		if (null == context.getMainMethodParam().getTestGroupList() || context.getMainMethodParam().getTestGroupList().isEmpty()) {
+		if (null == context.getTestSuite().getTestGroupList() || context.getTestSuite().getTestGroupList().isEmpty()) {
 			new Exception("Group must be specified");
 		}
 
@@ -65,17 +64,16 @@ public class TransformToTestObjectWrapper {
 
 		/*
 		 * @formatter:off
-		 * 1. If XML testScript is provided then use it
-		 * 2. If user has provided testList using main() method then use it
-		 * 3. If all of the above is not provided then use reflection to find test cases
+		 * 1. If testSuite is provided then use it
+		 * 2. If testSuite is not provided then use reflection to find all test cases
 		 * @formatter:on
 		 */
 		if (null != context.getTestSuite()) {
 			testListProvidedViaXMLTestScript(context, context.getTestSuite(), reflection);
-		} else if (null != context.getMainMethodParam().getTestList()) {
-			testListProvidedByUserUsingMainMethod(context, reflection);
 		} else {
-			testListIsNotProvided(context.getMainMethodParam().getTestGroupList(), reflection);
+			// Stop execution if test suite is not present
+			System.err.println("[WARNING] TestSuite is not found");
+			System.exit(1);
 		}
 	}
 
@@ -93,41 +91,10 @@ public class TransformToTestObjectWrapper {
 	}
 
 	/**
-	 * Get all test case objects provided via main() method. Any test cases with \"skip = true\" will be skipped. Test cases will be ordered as
-	 * provided in the list
-	 */
-	private void testListProvidedByUserUsingMainMethod(TestContext context, ScanTestSuite reflection) {
-
-		// empty test list = assume all test cases
-		if (context.getMainMethodParam().getTestList().isEmpty()) {
-			testListIsNotProvided(context.getMainMethodParam().getTestGroupList(), reflection);
-		} else {
-			Map<String, TestObjectWrapper> testCaseMap = reflection.getTestObjWrapperMap(true);
-			context.setGlobalObject(FWStaticStore.GLOBAL_ANNOTATED_TEST_MAP, testCaseMap);
-
-			for (TestExecutable t : context.getMainMethodParam().getTestList()) {
-				TestObjectWrapper testObjWrapper = testCaseMap.get(t.getClass().getName());
-
-				if (null == testObjWrapper) {
-					// This can happen if test is marked skipped or actually not present
-					System.err.println(t.getClass().getName() + " not present in given test suite");
-				} else {
-					if (belongsToApprovedGroup(context.getMainMethodParam().getTestGroupList(), testObjWrapper.getGroupList())) {
-						listOfTransformedTestCases.add(testObjWrapper);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Get all test case objects listed in XML Test Script. Any test cases with \"skip = true\" will be skipped.Test cases will be ordered as provided
 	 * in the xml test script.
 	 */
-	private void testListProvidedViaXMLTestScript(TestContext context, Object testSuiteObject, ScanTestSuite reflection) {
-		TestSuite suite = (TestSuite) testSuiteObject;
-
-		// Capitalise all group name to avoid case-sensitivity
+	private void testListProvidedViaXMLTestScript(TestContext context, TestSuite suite, ScanTestSuite reflection) {
 		List<String> groupList = suite.getTestGroupList();
 
 		// populate all global parameters to context
@@ -138,7 +105,7 @@ public class TransformToTestObjectWrapper {
 			}
 		}
 
-		// empty test list = assume all test cases
+		// empty test list = assume user wants to run all test cases
 		if (suite.getTestFQCNList().isEmpty()) {
 			testListIsNotProvided(groupList, reflection);
 		} else {
@@ -149,9 +116,10 @@ public class TransformToTestObjectWrapper {
 			for (String t : suite.getTestFQCNList()) {
 				TestObjectWrapper testObjWrapper = testCaseMap.get(t);
 
+				// Group based filtering
 				if (null == testObjWrapper) {
-					// This can happen if test is marked skipped or actually not present
-					System.err.println("WARNING (not found): " + t);
+					// This can happen if test is marked skipped or actually not present within a scan scope
+					System.err.println("[WARNING] (not found): " + t + " [HINT: skip=true is set OR out of Runner's scan scope]");
 				} else {
 					if (belongsToApprovedGroup(groupList, testObjWrapper.getGroupList())) {
 						listOfTransformedTestCases.add(testObjWrapper);

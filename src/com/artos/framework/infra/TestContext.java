@@ -58,7 +58,6 @@ public class TestContext {
 	private long currentKTFCount = 0;
 
 	private TestSuite testSuite = null;
-	private MainMethodParameterWrapper mainMethodParam = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
 
@@ -760,18 +759,6 @@ public class TestContext {
 
 	protected void setAfterTestUnit(Method afterTestUnit) {
 		this.afterTestUnit = afterTestUnit;
-	}
-
-	protected MainMethodParameterWrapper getMainMethodParam() {
-		return mainMethodParam;
-	}
-
-	protected void setMainMethodParam(MainMethodParameterWrapper mainMethodParam) {
-		this.mainMethodParam = mainMethodParam;
-	}
-
-	public boolean isTestScriptProvided() {
-		return null == getTestSuite() ? false : true;
 	}
 
 }
