@@ -98,6 +98,7 @@ public class FrameworkConfig {
 	 * Constructor
 	 * 
 	 * @param createIfNotPresent enables creation of default configuration file if not present
+	 * @param profileName profile name for choosing correct framework configuration
 	 */
 	public FrameworkConfig(boolean createIfNotPresent, String profileName) {
 		this.profileName = profileName;

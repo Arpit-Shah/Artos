@@ -149,7 +149,7 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestSuiteMethodStarted(String description) {
+	public void beforeTestSuiteMethodStarted(String methodName, String description) {
 		// TODO Auto-generated method stub
 
 	}
@@ -161,7 +161,7 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void afterTestSuiteMethodStarted(String description) {
+	public void afterTestSuiteMethodStarted(String methodName, String description) {
 		// TODO Auto-generated method stub
 
 	}
@@ -179,7 +179,7 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestMethodStarted(TestObjectWrapper t) {
+	public void beforeTestMethodStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}
@@ -191,7 +191,7 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void afterTestMethodStarted(TestObjectWrapper t) {
+	public void afterTestMethodStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}

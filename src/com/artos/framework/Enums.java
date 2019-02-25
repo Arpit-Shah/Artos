@@ -111,8 +111,7 @@ public class Enums {
 		HIGH(2), 
 		MEDIUM(3),
 		LOW(4),
-		VERYLOW(5),
-		UNDEFINED(6);
+		UNDEFINED(5);
 		// @formatter:on
 
 		private final int status;

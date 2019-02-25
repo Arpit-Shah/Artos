@@ -48,9 +48,10 @@ public interface TestProgress {
 	/**
 	 * Method is called before {@code BeforeTestSuite} method execution starts
 	 * 
+	 * @param methodName method name
 	 * @param description description/name of the test suite
 	 */
-	public void beforeTestSuiteMethodStarted(String description);
+	public void beforeTestSuiteMethodStarted(String methodName, String description);
 
 	/**
 	 * Method is called after {@code BeforeTestSuite} method execution finished
@@ -76,9 +77,10 @@ public interface TestProgress {
 	/**
 	 * Method is called before {@code AfterTestSuite} method execution starts
 	 * 
+	 * @param methodName method name
 	 * @param description description/name of the test suite
 	 */
-	public void afterTestSuiteMethodStarted(String description);
+	public void afterTestSuiteMethodStarted(String methodName, String description);
 
 	/**
 	 * Method is called after {@code AfterTestSuite} method execution finishes
@@ -176,10 +178,11 @@ public interface TestProgress {
 	/**
 	 * Method is called before {@code BeforeTest} method execution starts
 	 * 
+	 * @param methodName method name
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void beforeTestMethodStarted(TestObjectWrapper t);
+	public void beforeTestMethodStarted(String methodName, TestObjectWrapper t);
 
 	/**
 	 * Method is called after {@code BeforeTest} method execution finishes
@@ -192,10 +195,11 @@ public interface TestProgress {
 	/**
 	 * Method is called before {@code AfterTest} method execution started
 	 * 
+	 * @param methodName method name
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void afterTestMethodStarted(TestObjectWrapper t);
+	public void afterTestMethodStarted(String methodName, TestObjectWrapper t);
 
 	/**
 	 * Method is called after {@code AfterTest} method execution finishes

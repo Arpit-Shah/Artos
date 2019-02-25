@@ -57,6 +57,14 @@ public class TestContext {
 	private long currentSkipCount = 0;
 	private long currentKTFCount = 0;
 
+	// Test Importance for failed test cases
+	private int totalFatalCount = 0;
+	private int totalCriticalCount = 0;
+	private int totalHighCount = 0;
+	private int totalMediumCount = 0;
+	private int totalLowCount = 0;
+	private int totalUndefinedCount = 0;
+
 	private TestSuite testSuite = null;
 	private CountDownLatch threadLatch;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
@@ -165,6 +173,21 @@ public class TestContext {
 			setCurrentPassCount(getCurrentPassCount() + 1);
 		} else if (getCurrentTestStatus() == TestStatus.FAIL) {
 			setCurrentFailCount(getCurrentFailCount() + 1);
+
+			// Record test importance count in case of failure
+			if (t.getTestImportance() == Importance.FATAL) {
+				setTotalFatalCount(getTotalFatalCount() + 1);
+			} else if (t.getTestImportance() == Importance.CRITICAL) {
+				setTotalCriticalCount(getTotalCriticalCount() + 1);
+			} else if (t.getTestImportance() == Importance.HIGH) {
+				setTotalHighCount(getTotalHighCount() + 1);
+			} else if (t.getTestImportance() == Importance.MEDIUM) {
+				setTotalMediumCount(getTotalMediumCount() + 1);
+			} else if (t.getTestImportance() == Importance.LOW) {
+				setTotalLowCount(getTotalLowCount() + 1);
+			} else if (t.getTestImportance() == Importance.UNDEFINED) {
+				setTotalUndefinedCount(getTotalUndefinedCount() + 1);
+			}
 		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
 			setCurrentSkipCount(getCurrentSkipCount() + 1);
 		} else if (getCurrentTestStatus() == TestStatus.KTF) {
@@ -173,7 +196,7 @@ public class TestContext {
 
 		long totalTestTime = t.getTestFinishTime() - t.getTestStartTime();
 		// Finalise and add test result in log file
-		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n");
+		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n" + FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(t, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
@@ -227,8 +250,8 @@ public class TestContext {
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
-				+ unit.getTestUnitMethod().getName() + "(context)\n" + FWStaticStore.ARTOS_LINE_BREAK_2);
+		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
+				+ unit.getTestUnitMethod().getName() + "(context)");
 
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
@@ -265,13 +288,13 @@ public class TestContext {
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".");
 		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
 		String PassCount = String.format("%-" + 4 + "s", passCount);
-		String FailCount = String.format("%-" + 4 + "s", failCount);
 		String SkipCount = String.format("%-" + 4 + "s", skipCount);
 		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
+		String FailCount = String.format("%-" + 4 + "s", failCount);
 		String TestImportance = String.format("%-" + 10 + "s", (t.getTestImportance() == Importance.UNDEFINED ? "" : t.getTestImportance().name()));
 
-		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " F:" + FailCount + " S:" + SkipCount + " K:"
-				+ KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:"
+				+ KTFCount + " F:" + FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
 	}
 
 	/**
@@ -759,6 +782,54 @@ public class TestContext {
 
 	protected void setAfterTestUnit(Method afterTestUnit) {
 		this.afterTestUnit = afterTestUnit;
+	}
+
+	public int getTotalFatalCount() {
+		return totalFatalCount;
+	}
+
+	protected void setTotalFatalCount(int totalFatalCount) {
+		this.totalFatalCount = totalFatalCount;
+	}
+
+	public int getTotalCriticalCount() {
+		return totalCriticalCount;
+	}
+
+	protected void setTotalCriticalCount(int totalCriticalCount) {
+		this.totalCriticalCount = totalCriticalCount;
+	}
+
+	public int getTotalHighCount() {
+		return totalHighCount;
+	}
+
+	protected void setTotalHighCount(int totalHighCount) {
+		this.totalHighCount = totalHighCount;
+	}
+
+	public int getTotalMediumCount() {
+		return totalMediumCount;
+	}
+
+	protected void setTotalMediumCount(int totalMediumCount) {
+		this.totalMediumCount = totalMediumCount;
+	}
+
+	public int getTotalLowCount() {
+		return totalLowCount;
+	}
+
+	protected void setTotalLowCount(int totalLowCount) {
+		this.totalLowCount = totalLowCount;
+	}
+
+	public int getTotalUndefinedCount() {
+		return totalUndefinedCount;
+	}
+
+	protected void setTotalUndefinedCount(int totalUndefinedCount) {
+		this.totalUndefinedCount = totalUndefinedCount;
 	}
 
 }

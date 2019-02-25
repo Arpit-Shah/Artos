@@ -33,11 +33,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.artos.framework.Enums.TestStatus;
-import com.artos.interfaces.TestProgress;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestDataProvider;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
+import com.artos.interfaces.TestProgress;
 import com.artos.utils.UtilsFramework;
 
 public class RunnerTestUnits {
@@ -108,14 +108,34 @@ public class RunnerTestUnits {
 	 * @param unit TestUnit in format {@code TestUnitObjectWrapper}
 	 */
 	private void runIndividualUnitTest(TestUnitObjectWrapper unit) {
+		try {
+			// Run global before method prior to each test unit execution
+			if (null != context.getBeforeTestUnit()) {
+				notifyGlobalBeforeTestUnitMethodStarted(context.getBeforeTestUnit().getName(), unit);
+				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyGlobalBeforeTestUnitMethodFinished(unit);
+			}
+
+			// Run custom before method prior to each test unit execution
+			if (null != t.getMethodBeforeTestUnit()) {
+				notifyLocalBeforeTestUnitMethodStarted(t, unit);
+				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				notifyLocalBeforeTestUnitMethodFinished(unit);
+			}
+		} catch (Throwable e) {
+			if (e.getClass() == InvocationTargetException.class) {
+				// Catch InvocationTargetException and return cause
+				UtilsFramework.writePrintStackTrace(context, e.getCause());
+			} else {
+				UtilsFramework.writePrintStackTrace(context, e);
+			}
+		}
+
 		// ********************************************************************************************
 		// TestUnit Start
 		// ********************************************************************************************
 		try {
 			unit.setTestUnitStartTime(System.currentTimeMillis());
-
-			// Set Default Known to fail information
-			// context.setKnownToFail(unit.isKTF(), unit.getBugTrackingNumber());
 
 			// If test timeout is defined then monitor thread for timeout
 			if (0 != unit.getTestTimeout()) {
@@ -129,11 +149,40 @@ public class RunnerTestUnits {
 			processTestUnitException(unit, e);
 		} finally {
 			unit.setTestUnitFinishTime(System.currentTimeMillis());
-			context.generateUnitTestSummary(unit);
 		}
 		// ********************************************************************************************
 		// TestUnit Finish
 		// ********************************************************************************************
+
+		try {
+			// Run custom after method post each test unit execution
+			if (null != t.getMethodAfterTestUnit()) {
+				notifyLocalAfterTestUnitMethodStarted(t, unit);
+				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				notifyLocalAfterTestUnitMethodFinished(unit);
+			}
+
+			// Run global after method post each test unit execution
+			if (null != context.getAfterTestUnit()) {
+				notifyGlobalAfterTestUnitMethodStarted(context.getAfterTestUnit().getName(), unit);
+				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyGlobalAfterTestUnitMethodFinished(unit);
+			}
+		} catch (Throwable e) {
+			if (e.getClass() == InvocationTargetException.class) {
+				// Catch InvocationTargetException and return cause
+				UtilsFramework.writePrintStackTrace(context, e.getCause());
+			} else {
+				UtilsFramework.writePrintStackTrace(context, e);
+			}
+		}
+
+		// ********************************************************************************************
+		// Generate Summary
+		// ********************************************************************************************
+		context.generateUnitTestSummary(unit);
+		context.getLogger().info(FWStaticStore.ARTOS_LINE_BREAK_2);
+
 	}
 
 	/**
@@ -208,40 +257,12 @@ public class RunnerTestUnits {
 	private void runSimpleUnitTest(TestUnitObjectWrapper unit) throws Exception {
 		// --------------------------------------------------------------------------------------------
 		try {
-			// Run global before method prior to each test unit execution
-			if (null != context.getBeforeTestUnit()) {
-				notifyGlobalBeforeTestUnitMethodStarted(context.getBeforeTestUnit().getName(), unit);
-				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalBeforeTestUnitMethodFinished(unit);
-			}
-
-			// Run custom before method prior to each test unit execution
-			if (null != t.getMethodBeforeTestUnit()) {
-				notifyLocalBeforeTestUnitMethodStarted(t, unit);
-				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalBeforeTestUnitMethodFinished(unit);
-			}
-
 			notifyTestUnitExecutionStarted(unit);
 
 			// Run single unit
 			unit.getTestUnitMethod().invoke(t.getTestClassObject().newInstance(), context);
 
 			notifyTestUnitExecutionFinished(unit);
-
-			// Run custom after method post each test unit execution
-			if (null != t.getMethodAfterTestUnit()) {
-				notifyLocalAfterTestUnitMethodStarted(t, unit);
-				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalAfterTestUnitMethodFinished(unit);
-			}
-
-			// Run global after method post each test unit execution
-			if (null != context.getAfterTestUnit()) {
-				notifyGlobalAfterTestUnitMethodStarted(context.getAfterTestUnit().getName(), unit);
-				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalAfterTestUnitMethodFinished(unit);
-			}
 
 			// When method fails via reflection, it throws InvocationTargetExcetion
 		} catch (InvocationTargetException e) {

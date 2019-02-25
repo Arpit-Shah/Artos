@@ -44,38 +44,38 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestSuiteMethodStarted(String description) {
-		logger.trace("\n---------------- BeforeTestSuite Method Started -------------------");
+	public void beforeTestSuiteMethodStarted(String methodName, String description) {
+		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
 	public void beforeTestSuiteMethodFinished(String description) {
-		logger.trace("\n---------------- BeforeTestSuite Method Finished -------------------");
+		// logger.trace("\n---------------- BeforeTestSuite Method Finished -------------------");
 	}
 
 	@Override
-	public void afterTestSuiteMethodStarted(String description) {
-		logger.trace("\n---------------- AfterTestSuite Method Started -------------------");
+	public void afterTestSuiteMethodStarted(String methodName, String description) {
+		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
 	public void afterTestSuiteMethodFinished(String description) {
-		logger.trace("\n---------------- AfterTestSuite Method Finished -------------------");
+		// logger.trace("\n---------------- AfterTestSuite Method Finished -------------------");
 	}
 
 	@Override
 	public void testSuiteExecutionStarted(String description) {
-		logger.trace("\n---------------- Test Suite Start -------------------");
+		// logger.trace("\n---------------- Test Suite Start -------------------");
 	}
 
 	@Override
 	public void testSuiteExecutionFinished(String description) {
-		logger.trace("\n---------------- Test Suite Finished -------------------");
+		// logger.trace("\n---------------- Test Suite Finished -------------------");
 	}
 
 	@Override
 	public void printTestPlan(TestObjectWrapper t) {
-		logger.trace("\n---------------- printTestPlan Method Started -------------------");
+		// logger.trace("\n---------------- printTestPlan Method Started -------------------");
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("*************************************************************************");
@@ -114,8 +114,8 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestMethodStarted(TestObjectWrapper t) {
-		// logger.trace("\n---------------- BeforeTest Method Started -------------------");
+	public void beforeTestMethodStarted(String methodName, TestObjectWrapper t) {
+		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
@@ -144,8 +144,8 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void afterTestMethodStarted(TestObjectWrapper t) {
-		// logger.trace("\n---------------- AfterTest Method Execution Started -------------------");
+	public void afterTestMethodStarted(String methodName, TestObjectWrapper t) {
+		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override

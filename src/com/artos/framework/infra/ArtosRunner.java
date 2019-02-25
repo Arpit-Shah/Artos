@@ -142,17 +142,25 @@ public class ArtosRunner {
 
 		// Print Test results
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
+		// sb.append("\n");
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 		sb.append("\n");
 		sb.append("[TestCases] ");
-		sb.append("PASS:" + String.format("%-" + 4 + "s", context.getCurrentPassCount()));
-		sb.append(" FAIL:" + String.format("%-" + 4 + "s", context.getCurrentFailCount()));
+		sb.append("EXECUTED:" + String.format("%-" + 4 + "s", context.getTotalTestCount()));
+		sb.append(" PASS:" + String.format("%-" + 4 + "s", context.getCurrentPassCount()));
 		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentSkipCount()));
 		sb.append(" KTF:" + String.format("%-" + 4 + "s", context.getCurrentKTFCount()));
-		sb.append(" EXECUTED:" + String.format("%-" + 4 + "s", context.getTotalTestCount()));
+		sb.append(" FAIL:" + String.format("%-" + 4 + "s", context.getCurrentFailCount()));
 		// Total does not make sense because parameterised test cases are considered as a test case
 		// sb.append(" TOTAL:" + transformedTestList.size());
+		sb.append(" [");
+		sb.append("FATAL:" + String.format("%-" + 4 + "s", context.getTotalFatalCount()));
+		sb.append(" CRITICAL:" + String.format("%-" + 4 + "s", context.getTotalCriticalCount()));
+		sb.append(" HIGH:" + String.format("%-" + 4 + "s", context.getTotalHighCount()));
+		sb.append(" MEDIUM:" + String.format("%-" + 4 + "s", context.getTotalMediumCount()));
+		sb.append(" LOW:" + String.format("%-" + 4 + "s", context.getTotalLowCount()));
+		sb.append(" UNDEFINED:" + String.format("%-" + 4 + "s", context.getTotalUndefinedCount()));
+		sb.append("]");
 
 		PrintTotalUnitResult(transformedTestList, sb);
 
@@ -186,6 +194,13 @@ public class ArtosRunner {
 		int totalSkipCount = 0;
 		int totalKTFCount = 0;
 		int totalExecuted = 0;
+
+		int totalFatal = 0;
+		int totalCritical = 0;
+		int totalHigh = 0;
+		int totalMedium = 0;
+		int totalLow = 0;
+		int totalUndefined = 0;
 		for (TestObjectWrapper t : transformedTestList) {
 			for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
 				if (unit.getTestUnitOutcomeList().isEmpty()) {
@@ -197,11 +212,26 @@ public class ArtosRunner {
 						totalUnitPassCount++;
 					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
 						totalUnitFailCount++;
+
+						if (unit.getTestImportance() == Importance.FATAL) {
+							totalFatal++;
+						} else if (unit.getTestImportance() == Importance.CRITICAL) {
+							totalCritical++;
+						} else if (unit.getTestImportance() == Importance.HIGH) {
+							totalHigh++;
+						} else if (unit.getTestImportance() == Importance.MEDIUM) {
+							totalMedium++;
+						} else if (unit.getTestImportance() == Importance.LOW) {
+							totalLow++;
+						} else if (unit.getTestImportance() == Importance.UNDEFINED) {
+							totalUndefined++;
+						}
 					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.SKIP) {
 						totalSkipCount++;
 					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.KTF) {
 						totalKTFCount++;
 					}
+
 				}
 			}
 		}
@@ -209,13 +239,19 @@ public class ArtosRunner {
 		// Print Test results
 		sb.append("\n");
 		sb.append("[TestUnits] ");
-		sb.append("PASS:" + String.format("%-" + 4 + "s", totalUnitPassCount));
-		sb.append(" FAIL:" + String.format("%-" + 4 + "s", totalUnitFailCount));
+		sb.append("EXECUTED:" + String.format("%-" + 4 + "s", totalExecuted));
+		sb.append(" PASS:" + String.format("%-" + 4 + "s", totalUnitPassCount));
 		sb.append(" SKIP:" + String.format("%-" + 4 + "s", totalSkipCount));
 		sb.append(" KTF:" + String.format("%-" + 4 + "s", totalKTFCount));
-		sb.append(" EXECUTED:" + String.format("%-" + 4 + "s", totalExecuted));
-		// Total does not make sense because parameterised test cases are considered as a test case
-		// sb.append(" TOTAL:" + transformedTestList.size());
+		sb.append(" FAIL:" + String.format("%-" + 4 + "s", totalUnitFailCount));
+		sb.append(" [");
+		sb.append("FATAL:" + String.format("%-" + 4 + "s", totalFatal));
+		sb.append(" CRITICAL:" + String.format("%-" + 4 + "s", totalCritical));
+		sb.append(" HIGH:" + String.format("%-" + 4 + "s", totalHigh));
+		sb.append(" MEDIUM:" + String.format("%-" + 4 + "s", totalMedium));
+		sb.append(" LOW:" + String.format("%-" + 4 + "s", totalLow));
+		sb.append(" UNDEFINED:" + String.format("%-" + 4 + "s", totalUndefined));
+		sb.append("]");
 	}
 
 	/**
@@ -300,7 +336,7 @@ public class ArtosRunner {
 
 			// Run prior to each test suite
 			if (null != context.getBeforeTestSuite()) {
-				notifyBeforeTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
+				notifyBeforeTestSuiteMethodStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
 				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
@@ -324,14 +360,12 @@ public class ArtosRunner {
 					// Print test case header and test plan in the log file
 					notifyPrintTestPlan(t);
 
-					notifyTestExecutionStarted(t);
 					// if data provider is not specified
 					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
 						runIndividualTest(t);
 					} else { // if data provider is specified
 						runParameterizedTest(t);
 					}
-					notifyTestExecutionFinished(t);
 
 				}
 				// --------------------------------------------------------------------------------------------
@@ -339,7 +373,7 @@ public class ArtosRunner {
 
 			// Run at the end of each test suit
 			if (null != context.getAfterTestSuite()) {
-				notifyAfterTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
+				notifyAfterTestSuiteMethodStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
 				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 			}
@@ -371,6 +405,23 @@ public class ArtosRunner {
 	 * @param t TestCase in format {@code TestObjectWrapper}
 	 */
 	private void runIndividualTest(TestObjectWrapper t) {
+
+		try {
+			// Run Pre Method prior to any test Execution
+			if (null != context.getBeforeTest()) {
+				notifyBeforeTestMethodStarted(context.getBeforeTest().getName(), t);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyBeforeTestMethodFinished(t);
+			}
+		} catch (Throwable e) {
+			if (e.getClass() == InvocationTargetException.class) {
+				// Catch InvocationTargetException and return cause
+				UtilsFramework.writePrintStackTrace(context, e.getCause());
+			} else {
+				UtilsFramework.writePrintStackTrace(context, e);
+			}
+		}
+
 		// ********************************************************************************************
 		// TestCase Start
 		// ********************************************************************************************
@@ -393,11 +444,31 @@ public class ArtosRunner {
 			notifyTestException(e.getMessage());
 		} finally {
 			t.setTestFinishTime(System.currentTimeMillis());
-			context.generateTestSummary(t);
 		}
 		// ********************************************************************************************
 		// TestCase Finish
 		// ********************************************************************************************
+
+		try {
+			// Run Post Method prior to any test Execution
+			if (null != context.getAfterTest()) {
+				notifyAfterTestMethodStarted(context.getAfterTest().getName(), t);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyAfterTestMethodFinished(t);
+			}
+		} catch (Throwable e) {
+			if (e.getClass() == InvocationTargetException.class) {
+				// Catch InvocationTargetException and return cause
+				UtilsFramework.writePrintStackTrace(context, e.getCause());
+			} else {
+				UtilsFramework.writePrintStackTrace(context, e);
+			}
+		}
+
+		// ********************************************************************************************
+		// Generate Summary
+		// ********************************************************************************************
+		context.generateTestSummary(t);
 	}
 
 	/**
@@ -469,35 +540,12 @@ public class ArtosRunner {
 	 */
 	private void runSimpleTest(TestObjectWrapper t) throws Exception {
 		// --------------------------------------------------------------------------------------------
-		try {
+		notifyTestExecutionStarted(t);
 
-			// Run Pre Method prior to any test Execution
-			if (null != context.getBeforeTest()) {
-				notifyBeforeTestMethodStarted(t);
-				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyBeforeTestMethodFinished(t);
-			}
+		// Run Unit tests (This is if test suite have unit tests)
+		new RunnerTestUnits(context, listenerList).runSingleThreadUnits(t);
 
-			// Run Unit tests (This is if test suite have unit tests)
-			new RunnerTestUnits(context, listenerList).runSingleThreadUnits(t);
-
-			// Run Post Method prior to any test Execution
-			if (null != context.getAfterTest()) {
-				notifyAfterTestMethodStarted(t);
-				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyAfterTestMethodFinished(t);
-			}
-
-			// When method fails via reflection, it throws InvocationTargetExcetion
-		} catch (InvocationTargetException e) {
-			// Catch InvocationTargetException and return cause
-			if (null == e.getCause()) {
-				throw e;
-			} else {
-				// Cast cause into Exception because Executor service can not handle throwable
-				throw (Exception) e.getCause();
-			}
-		}
+		notifyTestExecutionFinished(t);
 		// --------------------------------------------------------------------------------------------
 	}
 
@@ -665,7 +713,7 @@ public class ArtosRunner {
 
 		// Run prior to each test suite
 		if (null != context.getBeforeTestSuite()) {
-			notifyBeforeTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
+			notifyBeforeTestSuiteMethodStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
 			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
@@ -698,7 +746,7 @@ public class ArtosRunner {
 
 		// Run at the end of each test suit
 		if (null != context.getAfterTestSuite()) {
-			notifyAfterTestSuiteMethodStarted(context.getPrePostRunnableObj().getName());
+			notifyAfterTestSuiteMethodStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
 			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
 			notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
 		}
@@ -723,9 +771,9 @@ public class ArtosRunner {
 		listenerList.clear();
 	}
 
-	void notifyBeforeTestSuiteMethodStarted(String testSuiteName) {
+	void notifyBeforeTestSuiteMethodStarted(String methodName, String testSuiteName) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeTestSuiteMethodStarted(testSuiteName);
+			listener.beforeTestSuiteMethodStarted(methodName, testSuiteName);
 		}
 	}
 
@@ -735,9 +783,9 @@ public class ArtosRunner {
 		}
 	}
 
-	void notifyAfterTestSuiteMethodStarted(String testSuiteName) {
+	void notifyAfterTestSuiteMethodStarted(String methodName, String testSuiteName) {
 		for (TestProgress listener : listenerList) {
-			listener.afterTestSuiteMethodStarted(testSuiteName);
+			listener.afterTestSuiteMethodStarted(methodName, testSuiteName);
 		}
 	}
 
@@ -765,9 +813,9 @@ public class ArtosRunner {
 		}
 	}
 
-	void notifyBeforeTestMethodStarted(TestObjectWrapper t) {
+	void notifyBeforeTestMethodStarted(String methodName, TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeTestMethodStarted(t);
+			listener.beforeTestMethodStarted(methodName, t);
 		}
 	}
 
@@ -777,9 +825,9 @@ public class ArtosRunner {
 		}
 	}
 
-	void notifyAfterTestMethodStarted(TestObjectWrapper t) {
+	void notifyAfterTestMethodStarted(String methodName, TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.afterTestMethodStarted(t);
+			listener.afterTestMethodStarted(methodName, t);
 		}
 	}
 
