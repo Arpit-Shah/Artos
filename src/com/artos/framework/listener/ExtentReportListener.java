@@ -61,25 +61,25 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testExecutionStarted(TestObjectWrapper t) {
+	public void testCaseExecutionStarted(TestObjectWrapper t) {
 		testParent = extent.startTest(t.getTestClassObject().getName(), t.getTestPlanDescription());
 		testParent.assignAuthor(t.getTestPlanPreparedBy());
 	}
 
 	@Override
-	public void childTestExecutionStarted(TestObjectWrapper t, String paramInfo) {
+	public void childTestCaseExecutionStarted(TestObjectWrapper t, String paramInfo) {
 		testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
 		testChild.assignAuthor(t.getTestPlanPreparedBy());
 	}
 
 	@Override
-	public void testExecutionFinished(TestObjectWrapper t) {
+	public void testCaseExecutionFinished(TestObjectWrapper t) {
 		extent.endTest(testParent);
 		testParent = null;
 	}
 
 	@Override
-	public void childTestExecutionFinished(TestObjectWrapper t) {
+	public void childTestCaseExecutionFinished(TestObjectWrapper t) {
 		// add child to parent
 		testParent.appendChild(testChild);
 		extent.endTest(testChild);
@@ -87,7 +87,7 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testExecutionSkipped(TestObjectWrapper t) {
+	public void testCaseExecutionSkipped(TestObjectWrapper t) {
 		testParent.log(LogStatus.SKIP, "Skipped Test Case: " + t.getTestClassObject().getName());
 	}
 
@@ -95,7 +95,7 @@ public class ExtentReportListener implements TestProgress {
 	public void testExecutionLoopCount(int count) {
 	}
 
-	public void testStatusUpdate(TestStatus testStatus, String description) {
+	public void testCaseStatusUpdate(TestStatus testStatus, String description) {
 		if (null != testChild) {
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
@@ -149,25 +149,25 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestSuiteMethodStarted(String methodName, String description) {
+	public void beforeTestSuiteMethodExecutionStarted(String methodName, String description) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void beforeTestSuiteMethodFinished(String description) {
+	public void beforeTestSuiteMethodExecutionFinished(String description) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterTestSuiteMethodStarted(String methodName, String description) {
+	public void afterTestSuiteMethodExecutionStarted(String methodName, String description) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterTestSuiteMethodFinished(String description) {
+	public void afterTestSuiteMethodExecutionFinished(String description) {
 		// TODO Auto-generated method stub
 
 	}
@@ -177,27 +177,51 @@ public class ExtentReportListener implements TestProgress {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public void localBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
-	public void beforeTestMethodStarted(String methodName, TestObjectWrapper t) {
+	public void localBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void localAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void localAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void beforeTestMethodFinished(TestObjectWrapper t) {
+	public void globalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterTestMethodStarted(String methodName, TestObjectWrapper t) {
+	public void globalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterTestMethodFinished(TestObjectWrapper t) {
+	public void globalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}
@@ -227,49 +251,49 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+	public void globalBeforeTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void beforeGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void globalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void beforeLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	public void localBeforeTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void beforeLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void localBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+	public void globalAfterTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	public void localAfterTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void afterLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void localAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
 
 	}
@@ -299,4 +323,5 @@ public class ExtentReportListener implements TestProgress {
 		extent.endTest(testChild);
 		testChild = null;
 	}
+
 }

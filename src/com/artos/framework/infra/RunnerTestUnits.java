@@ -68,6 +68,17 @@ public class RunnerTestUnits {
 			if (null == unitTests || unitTests.isEmpty()) {
 				return;
 			}
+			
+			try {
+				// Run local before Method prior to any test Execution
+				if (null != t.getMethodBeforeTestCase()) {
+					notifyLocalBeforeTestCaseMethodExecutionStarted(t.getMethodBeforeTestCase().getName(), t);
+					t.getMethodBeforeTestCase().invoke(t.getTestClassObject().newInstance(), context);
+					notifyLocalBeforeTestCaseMethodExecutionFinished(t);
+				}
+			} catch (Throwable e) {
+				printException(e);
+			}
 
 			// --------------------------------------------------------------------------------------------
 			for (TestUnitObjectWrapper unit : unitTests) {
@@ -92,6 +103,17 @@ public class RunnerTestUnits {
 				}
 			}
 			// --------------------------------------------------------------------------------------------
+			
+			try {
+				// Run local after Method prior to any test Execution
+				if (null != t.getMethodAfterTestCase()) {
+					notifyLocalAfterTestCaseMethodExecutionStarted(t.getMethodAfterTestCase().getName(), t);
+					t.getMethodAfterTestCase().invoke(t.getTestClassObject().newInstance(), context);
+					notifyLocalAfterTestCaseMethodExecutionFinished(t);
+				}
+			} catch (Throwable e) {
+				printException(e);
+			}
 
 		} catch (Throwable e) {
 			// Handle if any exception in pre-post runnable
@@ -100,6 +122,15 @@ public class RunnerTestUnits {
 		// ********************************************************************************************
 		// TestUnits Execution Finish
 		// ********************************************************************************************
+	}
+
+	private void printException(Throwable e) {
+		if (e.getClass() == InvocationTargetException.class) {
+			// Catch InvocationTargetException and return cause
+			UtilsFramework.writePrintStackTrace(context, e.getCause());
+		} else {
+			UtilsFramework.writePrintStackTrace(context, e);
+		}
 	}
 
 	/**
@@ -111,24 +142,19 @@ public class RunnerTestUnits {
 		try {
 			// Run global before method prior to each test unit execution
 			if (null != context.getBeforeTestUnit()) {
-				notifyGlobalBeforeTestUnitMethodStarted(context.getBeforeTestUnit().getName(), unit);
+				notifyGlobalBeforeTestUnitMethodExecutionStarted(context.getBeforeTestUnit().getName(), unit);
 				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalBeforeTestUnitMethodFinished(unit);
+				notifyGlobalBeforeTestUnitMethodExecutionFinished(unit);
 			}
 
 			// Run custom before method prior to each test unit execution
 			if (null != t.getMethodBeforeTestUnit()) {
-				notifyLocalBeforeTestUnitMethodStarted(t, unit);
+				notifyLocalBeforeTestUnitMethodExecutionStarted(t, unit);
 				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalBeforeTestUnitMethodFinished(unit);
+				notifyLocalBeforeTestUnitMethodExecutionFinished(unit);
 			}
 		} catch (Throwable e) {
-			if (e.getClass() == InvocationTargetException.class) {
-				// Catch InvocationTargetException and return cause
-				UtilsFramework.writePrintStackTrace(context, e.getCause());
-			} else {
-				UtilsFramework.writePrintStackTrace(context, e);
-			}
+			printException(e);
 		}
 
 		// ********************************************************************************************
@@ -157,24 +183,19 @@ public class RunnerTestUnits {
 		try {
 			// Run custom after method post each test unit execution
 			if (null != t.getMethodAfterTestUnit()) {
-				notifyLocalAfterTestUnitMethodStarted(t, unit);
+				notifyLocalAfterTestUnitMethodExecutionStarted(t, unit);
 				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalAfterTestUnitMethodFinished(unit);
+				notifyLocalAfterTestUnitMethodExecutionFinished(unit);
 			}
 
 			// Run global after method post each test unit execution
 			if (null != context.getAfterTestUnit()) {
-				notifyGlobalAfterTestUnitMethodStarted(context.getAfterTestUnit().getName(), unit);
+				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), unit);
 				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalAfterTestUnitMethodFinished(unit);
+				notifyGlobalAfterTestUnitMethodExecutionFinished(unit);
 			}
 		} catch (Throwable e) {
-			if (e.getClass() == InvocationTargetException.class) {
-				// Catch InvocationTargetException and return cause
-				UtilsFramework.writePrintStackTrace(context, e.getCause());
-			} else {
-				UtilsFramework.writePrintStackTrace(context, e);
-			}
+			printException(e);
 		}
 
 		// ********************************************************************************************
@@ -193,7 +214,7 @@ public class RunnerTestUnits {
 	 * @param unit TestCase in format {@code TestUnitObjectWrapper}
 	 */
 	private void runParameterizedUnitTest(TestUnitObjectWrapper unit) {
-		Object[][] data;
+		Object[][] data = null;
 		TestDataProvider dataProviderObj;
 
 		try {
@@ -219,13 +240,7 @@ public class RunnerTestUnits {
 				context.getLogger().debug("=================================================");
 				context.getLogger().debug("=== DataProvider Method failed to return data ===");
 				context.getLogger().debug("=================================================");
-				// Catch InvocationTargetException and return cause
-				if (null == e.getCause()) {
-					throw e;
-				} else {
-					// Cast cause into Exception because Executor service can not handle throwable
-					throw (Exception) e.getCause();
-				}
+				processInvocationTargetException(e);
 			}
 
 			// If data provider method returns null or empty object then execute test with
@@ -266,16 +281,20 @@ public class RunnerTestUnits {
 
 			// When method fails via reflection, it throws InvocationTargetExcetion
 		} catch (InvocationTargetException e) {
-			// Catch InvocationTargetException and return cause
-			if (null == e.getCause()) {
-				throw e;
-			} else {
-				// Cast cause into Exception because Executor service can not handle throwable
-				throw (Exception) e.getCause();
-			}
+			processInvocationTargetException(e);
 		}
 
 		// --------------------------------------------------------------------------------------------
+	}
+
+	private void processInvocationTargetException(InvocationTargetException e) throws InvocationTargetException, Exception {
+		// Catch InvocationTargetException and return cause
+		if (null == e.getCause()) {
+			throw e;
+		} else {
+			// Cast cause into Exception because Executor service can not handle throwable
+			throw (Exception) e.getCause();
+		}
 	}
 
 	/**
@@ -438,51 +457,51 @@ public class RunnerTestUnits {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
-	void notifyGlobalBeforeTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+	void notifyGlobalBeforeTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeGlobalTestUnitMethodStarted(methodName, unit);
+			listener.globalBeforeTestUnitMethodExecutionStarted(methodName, unit);
 		}
 	}
 
-	void notifyGlobalBeforeTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	void notifyGlobalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeGlobalTestUnitMethodFinished(unit);
+			listener.globalBeforeTestUnitMethodExecutionFinished(unit);
 		}
 	}
 
-	void notifyGlobalAfterTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+	void notifyGlobalAfterTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.afterGlobalTestUnitMethodStarted(methodName, unit);
+			listener.globalAfterTestUnitMethodExecutionStarted(methodName, unit);
 		}
 	}
 
-	void notifyGlobalAfterTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	void notifyGlobalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.afterGlobalTestUnitMethodFinished(unit);
+			listener.globalAfterTestUnitMethodExecutionFinished(unit);
 		}
 	}
 
-	void notifyLocalBeforeTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	void notifyLocalBeforeTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeLocalTestUnitMethodStarted(t, unit);
+			listener.localBeforeTestUnitMethodExecutionStarted(t, unit);
 		}
 	}
 
-	void notifyLocalBeforeTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	void notifyLocalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeLocalTestUnitMethodFinished(unit);
+			listener.localBeforeTestUnitMethodExecutionFinished(unit);
 		}
 	}
 
-	void notifyLocalAfterTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	void notifyLocalAfterTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.afterLocalTestUnitMethodStarted(t, unit);
+			listener.localAfterTestUnitMethodExecutionStarted(t, unit);
 		}
 	}
 
-	void notifyLocalAfterTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	void notifyLocalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
-			listener.afterLocalTestUnitMethodFinished(unit);
+			listener.localAfterTestUnitMethodExecutionFinished(unit);
 		}
 	}
 
@@ -507,6 +526,31 @@ public class RunnerTestUnits {
 	private void notifyChildTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
 			listener.childTestUnitExecutionFinished(unit);
+		}
+	}
+	
+	
+	void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.localBeforeTestCaseMethodExecutionStarted(methodName, t);
+		}
+	}
+
+	void notifyLocalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.localBeforeTestCaseMethodExecutionFinished(t);
+		}
+	}
+
+	void notifyLocalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.localAfterTestCaseMethodExecutionStarted(methodName, t);
+		}
+	}
+
+	void notifyLocalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		for (TestProgress listener : listenerList) {
+			listener.localAfterTestCaseMethodExecutionFinished(t);
 		}
 	}
 

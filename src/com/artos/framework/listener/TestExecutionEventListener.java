@@ -44,22 +44,22 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeTestSuiteMethodStarted(String methodName, String description) {
+	public void beforeTestSuiteMethodExecutionStarted(String methodName, String description) {
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
-	public void beforeTestSuiteMethodFinished(String description) {
+	public void beforeTestSuiteMethodExecutionFinished(String description) {
 		// logger.trace("\n---------------- BeforeTestSuite Method Finished -------------------");
 	}
 
 	@Override
-	public void afterTestSuiteMethodStarted(String methodName, String description) {
+	public void afterTestSuiteMethodExecutionStarted(String methodName, String description) {
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
-	public void afterTestSuiteMethodFinished(String description) {
+	public void afterTestSuiteMethodExecutionFinished(String description) {
 		// logger.trace("\n---------------- AfterTestSuite Method Finished -------------------");
 	}
 
@@ -112,49 +112,72 @@ public class TestExecutionEventListener implements TestProgress {
 		strBDD = strBDD.replaceAll("\\b([Bb][Uu][Tt])\\b", "\nBUT");
 		return strBDD;
 	}
+	
 
 	@Override
-	public void beforeTestMethodStarted(String methodName, TestObjectWrapper t) {
+	public void localBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
-	public void beforeTestMethodFinished(TestObjectWrapper t) {
+	public void localBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void localAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		logger.info("\n=> " + methodName + "(context)");
+	}
+
+	@Override
+	public void localAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		logger.info("\n=> " + methodName + "(context)");
+	}
+
+	@Override
+	public void globalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		// logger.trace("\n---------------- BeforeTest Method Finished -------------------");
 	}
 
 	@Override
-	public void testExecutionStarted(TestObjectWrapper t) {
+	public void testCaseExecutionStarted(TestObjectWrapper t) {
 		// logger.trace("\n---------------- Test Starts -------------------");
 	}
 
 	@Override
-	public void testExecutionFinished(TestObjectWrapper t) {
+	public void testCaseExecutionFinished(TestObjectWrapper t) {
 		// logger.trace("\n---------------- Test Finish -------------------");
 	}
 
 	@Override
-	public void childTestExecutionStarted(TestObjectWrapper t, String paramInfo) {
+	public void childTestCaseExecutionStarted(TestObjectWrapper t, String paramInfo) {
 		// logger.trace("\n---------------- Child Test Starts -------------------");
 	}
 
 	@Override
-	public void childTestExecutionFinished(TestObjectWrapper t) {
+	public void childTestCaseExecutionFinished(TestObjectWrapper t) {
 		// logger.trace("\n---------------- Child Test Finish -------------------");
 	}
 
 	@Override
-	public void afterTestMethodStarted(String methodName, TestObjectWrapper t) {
+	public void globalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
-	public void afterTestMethodFinished(TestObjectWrapper t) {
+	public void globalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		// logger.trace("\n---------------- AfterTest Method Execution Finished -------------------");
 	}
 
 	@Override
-	public void testExecutionSkipped(TestObjectWrapper t) {
+	public void testCaseExecutionSkipped(TestObjectWrapper t) {
 		logger.info("\n---------------- Skipped Test : {} -------------------", t.getTestClassObject().getName());
 	}
 
@@ -174,7 +197,7 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void testStatusUpdate(TestStatus testStatus, String msg) {
+	public void testCaseStatusUpdate(TestStatus testStatus, String msg) {
 		// logger.trace("\n---------------- Test Status Update -------------------");
 	}
 
@@ -196,42 +219,42 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void beforeGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+	public void globalBeforeTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
-	public void beforeGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void globalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("\n---------------- Global Before Test Unit Method Finished -------------------");
 	}
 
 	@Override
-	public void beforeLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	public void localBeforeTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
 		logger.info("\n=> " + t.getMethodBeforeTestUnit().getName() + "(context)");
 	}
 
 	@Override
-	public void beforeLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void localBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("*************************************************************************");
 	}
 
 	@Override
-	public void afterGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit) {
+	public void globalAfterTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		logger.info("\n=> " + methodName + "(context)");
 	}
 
 	@Override
-	public void afterGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("\n---------------- Global After Test Unit Method Finished -------------------");
 	}
 
 	@Override
-	public void afterLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	public void localAfterTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
 		logger.info("\n=> " + t.getMethodAfterTestUnit().getName() + "(context)");
 	}
 
 	@Override
-	public void afterLocalTestUnitMethodFinished(TestUnitObjectWrapper unit) {
+	public void localAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("\n---------------- Local After Test Unit Method Finished -------------------");
 	}
 
@@ -254,4 +277,5 @@ public class TestExecutionEventListener implements TestProgress {
 	public void childTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("\n---------------- Child Test Unit Execution finished -------------------");
 	}
+
 }

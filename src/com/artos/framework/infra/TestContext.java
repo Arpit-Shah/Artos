@@ -447,7 +447,7 @@ public class TestContext {
 
 	private void notifyTestStatusUpdate(TestStatus testStatus, String Msg) {
 		for (TestProgress listener : listenerList) {
-			listener.testStatusUpdate(testStatus, Msg);
+			listener.testCaseStatusUpdate(testStatus, Msg);
 		}
 	}
 

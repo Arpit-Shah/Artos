@@ -336,9 +336,9 @@ public class ArtosRunner {
 
 			// Run prior to each test suite
 			if (null != context.getBeforeTestSuite()) {
-				notifyBeforeTestSuiteMethodStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
+				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
 				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
+				notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
 			int loopCount = context.getTestSuite().getLoopCount();
@@ -373,9 +373,9 @@ public class ArtosRunner {
 
 			// Run at the end of each test suit
 			if (null != context.getAfterTestSuite()) {
-				notifyAfterTestSuiteMethodStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
+				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
 				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
+				notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
 		} catch (Throwable e) {
@@ -409,9 +409,9 @@ public class ArtosRunner {
 		try {
 			// Run Pre Method prior to any test Execution
 			if (null != context.getBeforeTest()) {
-				notifyBeforeTestMethodStarted(context.getBeforeTest().getName(), t);
+				notifyGlobalBeforeTestCaseMethodExecutionStarted(context.getBeforeTest().getName(), t);
 				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyBeforeTestMethodFinished(t);
+				notifyGlobalBeforeTestCaseMethodExecutionFinished(t);
 			}
 		} catch (Throwable e) {
 			if (e.getClass() == InvocationTargetException.class) {
@@ -452,9 +452,9 @@ public class ArtosRunner {
 		try {
 			// Run Post Method prior to any test Execution
 			if (null != context.getAfterTest()) {
-				notifyAfterTestMethodStarted(context.getAfterTest().getName(), t);
+				notifyGlobalAfterTestCaseMethodExecutionStarted(context.getAfterTest().getName(), t);
 				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyAfterTestMethodFinished(t);
+				notifyGlobalAfterTestCaseMethodExecutionFinished(t);
 			}
 		} catch (Throwable e) {
 			if (e.getClass() == InvocationTargetException.class) {
@@ -540,12 +540,12 @@ public class ArtosRunner {
 	 */
 	private void runSimpleTest(TestObjectWrapper t) throws Exception {
 		// --------------------------------------------------------------------------------------------
-		notifyTestExecutionStarted(t);
+		notifyTestCaseExecutionStarted(t);
 
 		// Run Unit tests (This is if test suite have unit tests)
 		new RunnerTestUnits(context, listenerList).runSingleThreadUnits(t);
 
-		notifyTestExecutionFinished(t);
+		notifyTestCaseExecutionFinished(t);
 		// --------------------------------------------------------------------------------------------
 	}
 
@@ -617,11 +617,11 @@ public class ArtosRunner {
 		// Parameterised Child TestCase Start
 		// ********************************************************************************************
 
-		notifyChildTestExecutionStarted(t, userInfo);
+		notifyChildTestCaseExecutionStarted(t, userInfo);
 
 		runIndividualTest(t);
 
-		notifyChildTestExecutionFinished(t);
+		notifyChildTestCaseExecutionFinished(t);
 
 		// ********************************************************************************************
 		// Parameterised Child TestCase Finish
@@ -713,9 +713,9 @@ public class ArtosRunner {
 
 		// Run prior to each test suite
 		if (null != context.getBeforeTestSuite()) {
-			notifyBeforeTestSuiteMethodStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
+			notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
 			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
-			notifyBeforeTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
+			notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 		}
 
 		// get loop count from testSuite
@@ -746,9 +746,9 @@ public class ArtosRunner {
 
 		// Run at the end of each test suit
 		if (null != context.getAfterTestSuite()) {
-			notifyAfterTestSuiteMethodStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
+			notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
 			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
-			notifyAfterTestSuiteMethodFinished(context.getPrePostRunnableObj().getName());
+			notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 		}
 		// ********************************************************************************************
 		// Test Finish
@@ -771,27 +771,27 @@ public class ArtosRunner {
 		listenerList.clear();
 	}
 
-	void notifyBeforeTestSuiteMethodStarted(String methodName, String testSuiteName) {
+	void notifyBeforeTestSuiteMethodExecutionStarted(String methodName, String testSuiteName) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeTestSuiteMethodStarted(methodName, testSuiteName);
+			listener.beforeTestSuiteMethodExecutionStarted(methodName, testSuiteName);
 		}
 	}
 
-	void notifyBeforeTestSuiteMethodFinished(String testSuiteName) {
+	void notifyBeforeTestSuiteMethodExecutionFinished(String testSuiteName) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeTestSuiteMethodFinished(testSuiteName);
+			listener.beforeTestSuiteMethodExecutionFinished(testSuiteName);
 		}
 	}
 
-	void notifyAfterTestSuiteMethodStarted(String methodName, String testSuiteName) {
+	void notifyAfterTestSuiteMethodExecutionStarted(String methodName, String testSuiteName) {
 		for (TestProgress listener : listenerList) {
-			listener.afterTestSuiteMethodStarted(methodName, testSuiteName);
+			listener.afterTestSuiteMethodExecutionStarted(methodName, testSuiteName);
 		}
 	}
 
-	void notifyAfterTestSuiteMethodFinished(String testSuiteName) {
+	void notifyAfterTestSuiteMethodExecutionFinished(String testSuiteName) {
 		for (TestProgress listener : listenerList) {
-			listener.afterTestSuiteMethodFinished(testSuiteName);
+			listener.afterTestSuiteMethodExecutionFinished(testSuiteName);
 		}
 	}
 
@@ -813,57 +813,57 @@ public class ArtosRunner {
 		}
 	}
 
-	void notifyBeforeTestMethodStarted(String methodName, TestObjectWrapper t) {
+	void notifyGlobalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeTestMethodStarted(methodName, t);
+			listener.globalBeforeTestCaseMethodExecutionStarted(methodName, t);
 		}
 	}
 
-	void notifyBeforeTestMethodFinished(TestObjectWrapper t) {
+	void notifyGlobalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.beforeTestMethodFinished(t);
+			listener.globalBeforeTestCaseMethodExecutionFinished(t);
 		}
 	}
 
-	void notifyAfterTestMethodStarted(String methodName, TestObjectWrapper t) {
+	void notifyGlobalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.afterTestMethodStarted(methodName, t);
+			listener.globalAfterTestCaseMethodExecutionStarted(methodName, t);
 		}
 	}
 
-	void notifyAfterTestMethodFinished(TestObjectWrapper t) {
+	void notifyGlobalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.afterTestMethodFinished(t);
+			listener.globalAfterTestCaseMethodExecutionFinished(t);
 		}
 	}
 
-	void notifyTestExecutionStarted(TestObjectWrapper t) {
+	void notifyTestCaseExecutionStarted(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.testExecutionStarted(t);
+			listener.testCaseExecutionStarted(t);
 		}
 	}
 
-	void notifyTestExecutionFinished(TestObjectWrapper t) {
+	void notifyTestCaseExecutionFinished(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.testExecutionFinished(t);
+			listener.testCaseExecutionFinished(t);
 		}
 	}
 
-	void notifyChildTestExecutionStarted(TestObjectWrapper t, String userInfo) {
+	void notifyChildTestCaseExecutionStarted(TestObjectWrapper t, String userInfo) {
 		for (TestProgress listener : listenerList) {
-			listener.childTestExecutionStarted(t, userInfo);
+			listener.childTestCaseExecutionStarted(t, userInfo);
 		}
 	}
 
-	void notifyChildTestExecutionFinished(TestObjectWrapper t) {
+	void notifyChildTestCaseExecutionFinished(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.childTestExecutionFinished(t);
+			listener.childTestCaseExecutionFinished(t);
 		}
 	}
 
-	void notifyTestExecutionSkipped(TestObjectWrapper t) {
+	void notifyTestCaseExecutionSkipped(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
-			listener.testExecutionSkipped(t);
+			listener.testCaseExecutionSkipped(t);
 		}
 	}
 

@@ -51,14 +51,14 @@ public interface TestProgress {
 	 * @param methodName method name
 	 * @param description description/name of the test suite
 	 */
-	public void beforeTestSuiteMethodStarted(String methodName, String description);
+	public void beforeTestSuiteMethodExecutionStarted(String methodName, String description);
 
 	/**
 	 * Method is called after {@code BeforeTestSuite} method execution finished
 	 * 
 	 * @param description description/name of the test suite
 	 */
-	public void beforeTestSuiteMethodFinished(String description);
+	public void beforeTestSuiteMethodExecutionFinished(String description);
 
 	/**
 	 * Method is called when test suite execution starts
@@ -80,14 +80,14 @@ public interface TestProgress {
 	 * @param methodName method name
 	 * @param description description/name of the test suite
 	 */
-	public void afterTestSuiteMethodStarted(String methodName, String description);
+	public void afterTestSuiteMethodExecutionStarted(String methodName, String description);
 
 	/**
 	 * Method is called after {@code AfterTestSuite} method execution finishes
 	 * 
 	 * @param description description/name of the test suite
 	 */
-	public void afterTestSuiteMethodFinished(String description);
+	public void afterTestSuiteMethodExecutionFinished(String description);
 
 	// ==========================================================
 	// Test Plan
@@ -111,7 +111,7 @@ public interface TestProgress {
 	 * @param unit test unit object wrapper
 	 * @see TestUnitObjectWrapper
 	 */
-	public void beforeGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit);
+	public void globalBeforeTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit);
 
 	/**
 	 * Method is called after global {@code BeforeTestUnit} method execution starts
@@ -119,24 +119,7 @@ public interface TestProgress {
 	 * @param unit test unit object wrapper
 	 * @see TestUnitObjectWrapper
 	 */
-	public void beforeGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit);
-
-	/**
-	 * Method is called before local {@code BeforeTestUnit} method execution starts
-	 * 
-	 * @param t test object wrapper
-	 * @param unit test unit object wrapper
-	 * @see TestUnitObjectWrapper
-	 */
-	public void beforeLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit);
-
-	/**
-	 * Method is called after local {@code BeforeTestUnit} method execution starts
-	 * 
-	 * @param unit test unit object wrapper
-	 * @see TestUnitObjectWrapper
-	 */
-	public void beforeLocalTestUnitMethodFinished(TestUnitObjectWrapper unit);
+	public void globalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
 
 	/**
 	 * Method is called after global {@code AfterTestUnit} method execution starts
@@ -145,7 +128,7 @@ public interface TestProgress {
 	 * @param unit test unit object wrapper
 	 * @see TestUnitObjectWrapper
 	 */
-	public void afterGlobalTestUnitMethodStarted(String methodName, TestUnitObjectWrapper unit);
+	public void globalAfterTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit);
 
 	/**
 	 * Method is called after global {@code AfterTestUnit} method execution starts
@@ -153,7 +136,24 @@ public interface TestProgress {
 	 * @param unit test unit object wrapper
 	 * @see TestUnitObjectWrapper
 	 */
-	public void afterGlobalTestUnitMethodFinished(TestUnitObjectWrapper unit);
+	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
+
+	/**
+	 * Method is called before local {@code BeforeTestUnit} method execution starts
+	 * 
+	 * @param t test object wrapper
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void localBeforeTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit);
+
+	/**
+	 * Method is called after local {@code BeforeTestUnit} method execution starts
+	 * 
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void localBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
 
 	/**
 	 * Method is called after local {@code AfterTestUnit} method execution starts
@@ -162,7 +162,7 @@ public interface TestProgress {
 	 * @param unit test unit object wrapper
 	 * @see TestUnitObjectWrapper
 	 */
-	public void afterLocalTestUnitMethodStarted(TestObjectWrapper t, TestUnitObjectWrapper unit);
+	public void localAfterTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit);
 
 	/**
 	 * Method is called after local {@code AfterTestUnit} method execution starts
@@ -170,7 +170,7 @@ public interface TestProgress {
 	 * @param unit test unit object wrapper
 	 * @see TestUnitObjectWrapper
 	 */
-	public void afterLocalTestUnitMethodFinished(TestUnitObjectWrapper unit);
+	public void localAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
 
 	// ==========================================================
 	// Test Case Before and After
@@ -182,7 +182,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void beforeTestMethodStarted(String methodName, TestObjectWrapper t);
+	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t);
 
 	/**
 	 * Method is called after {@code BeforeTest} method execution finishes
@@ -190,7 +190,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void beforeTestMethodFinished(TestObjectWrapper t);
+	public void globalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t);
 
 	/**
 	 * Method is called before {@code AfterTest} method execution started
@@ -199,7 +199,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void afterTestMethodStarted(String methodName, TestObjectWrapper t);
+	public void globalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t);
 
 	/**
 	 * Method is called after {@code AfterTest} method execution finishes
@@ -207,7 +207,41 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void afterTestMethodFinished(TestObjectWrapper t);
+	public void globalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t);
+
+	/**
+	 * Method is called before {@code BeforeTest} method execution starts
+	 * 
+	 * @param methodName method name
+	 * @param t test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void localBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t);
+
+	/**
+	 * Method is called after {@code BeforeTest} method execution finishes
+	 * 
+	 * @param t test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void localBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t);
+
+	/**
+	 * Method is called before {@code AfterTest} method execution started
+	 * 
+	 * @param methodName method name
+	 * @param t test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void localAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t);
+
+	/**
+	 * Method is called after {@code AfterTest} method execution finishes
+	 * 
+	 * @param t test object wrapper
+	 * @see TestObjectWrapper
+	 */
+	public void localAfterTestCaseMethodExecutionFinished(TestObjectWrapper t);
 
 	// ==========================================================
 	// Test Case Execution
@@ -218,7 +252,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void testExecutionStarted(TestObjectWrapper t);
+	public void testCaseExecutionStarted(TestObjectWrapper t);
 
 	/**
 	 * Method is called when test execution finishes
@@ -226,7 +260,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void testExecutionFinished(TestObjectWrapper t);
+	public void testCaseExecutionFinished(TestObjectWrapper t);
 
 	/**
 	 * Method is called when test unit execution starts
@@ -253,7 +287,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void testExecutionSkipped(TestObjectWrapper t);
+	public void testCaseExecutionSkipped(TestObjectWrapper t);
 
 	// ==========================================================
 	// Child test case
@@ -265,7 +299,7 @@ public interface TestProgress {
 	 * @param paramInfo parameterInfo
 	 * @see TestObjectWrapper
 	 */
-	public void childTestExecutionStarted(TestObjectWrapper t, String paramInfo);
+	public void childTestCaseExecutionStarted(TestObjectWrapper t, String paramInfo);
 
 	/**
 	 * Method is called when child test execution finishes
@@ -273,7 +307,7 @@ public interface TestProgress {
 	 * @param t test object wrapper
 	 * @see TestObjectWrapper
 	 */
-	public void childTestExecutionFinished(TestObjectWrapper t);
+	public void childTestCaseExecutionFinished(TestObjectWrapper t);
 
 	/**
 	 * Method is called when unit child test execution starts
@@ -303,7 +337,7 @@ public interface TestProgress {
 	 * @param msg description/reason provided by user
 	 * @see TestStatus
 	 */
-	public void testStatusUpdate(TestStatus testStatus, String msg);
+	public void testCaseStatusUpdate(TestStatus testStatus, String msg);
 
 	// ==========================================================
 	// Test Outcome

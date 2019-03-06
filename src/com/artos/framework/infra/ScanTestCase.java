@@ -29,7 +29,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.artos.annotation.AfterTest;
 import com.artos.annotation.AfterTestUnit;
+import com.artos.annotation.BeforeTest;
 import com.artos.annotation.BeforeTestUnit;
 import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
@@ -94,6 +96,17 @@ public class ScanTestCase {
 				// Do not explore in super classes if AfterTestUnit method is found in existing class
 				if (null == testObj.getMethodAfterTestUnit() && isValidMethod(method, AfterTestUnit.class)) {
 					testObj.setMethodAfterTestUnit(method);
+					continue;
+				}
+
+				// Do not explore in super classes if BeforeTest method is found in existing class
+				if (null == testObj.getMethodBeforeTestCase() && isValidMethod(method, BeforeTest.class)) {
+					testObj.setMethodBeforeTestCase(method);
+					continue;
+				}
+				// Do not explore in super classes if AfterTest method is found in existing class
+				if (null == testObj.getMethodAfterTestCase() && isValidMethod(method, AfterTest.class)) {
+					testObj.setMethodAfterTestCase(method);
 					continue;
 				}
 			}
@@ -254,7 +267,6 @@ public class ScanTestCase {
 	 * @return true | false
 	 */
 	private boolean isValidMethod(Method method, Class<? extends Annotation> annotationClass) {
-		// Only method with @Unit annotation is allowed
 		if (!method.isAnnotationPresent(annotationClass)) {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method is missing annotation " + annotationClass.getName());
 			return false;
@@ -284,6 +296,29 @@ public class ScanTestCase {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method parameter type is not " + TestContext.class.getName());
 			return false;
 		}
+
+		// Group filtering for before/after methods can create confusion so disabling it
+		// If group annotation is present than check if it belongs to provided group
+		//@formatter:off
+		/*
+		if (method.isAnnotationPresent(Group.class)) {
+			Group group = method.getAnnotation(Group.class);
+			List<String> groupList = new ArrayList<>();
+			if (null != group) {
+				List<String> tempList = Arrays.asList(group.group());
+				groupList = tempList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "")
+						.replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList());
+			}
+
+			// each group must have * by default (which represents all
+			if (!groupList.contains("*")) {
+				groupList.add("*");
+			}
+
+			return belongsToApprovedGroup(context.getTestSuite().getTestUnitGroupList(), groupList);
+		}
+		*/
+		//@formatter:on
 		return true;
 	}
 

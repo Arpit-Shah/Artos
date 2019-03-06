@@ -59,6 +59,8 @@ public class TestObjectWrapper {
 	// TestUnits
 	Method methodBeforeTestUnit = null;
 	Method methodAfterTestUnit = null;
+	Method methodBeforeTestCase = null;
+	Method methodAfterTestCase = null;
 	List<TestUnitObjectWrapper> testUnitList = null;
 
 	// TestPlan
@@ -304,6 +306,22 @@ public class TestObjectWrapper {
 
 	public void setTestImportance(Importance testImportance) {
 		this.testImportance = testImportance;
+	}
+
+	public Method getMethodBeforeTestCase() {
+		return methodBeforeTestCase;
+	}
+
+	public void setMethodBeforeTestCase(Method methodBeforeTestCase) {
+		this.methodBeforeTestCase = methodBeforeTestCase;
+	}
+
+	public Method getMethodAfterTestCase() {
+		return methodAfterTestCase;
+	}
+
+	public void setMethodAfterTestCase(Method methodAfterTestCase) {
+		this.methodAfterTestCase = methodAfterTestCase;
 	}
 
 }
