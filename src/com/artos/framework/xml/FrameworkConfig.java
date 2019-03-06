@@ -533,6 +533,18 @@ public class FrameworkConfig {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 
+			Element element = (Element) nNode;
+
+			// If profile is provided then look for configuration with given profile or else take default
+			if (element.hasAttributes()) {
+				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
+					if (profileName == null || temp == nList.getLength() - 1) {
+						System.err.println("[WARNING] : logger profile with name " + profileName + " does not exist. Applying default");
+					}
+					continue;
+				}
+			}
+
 			NodeList nChildList = nNode.getChildNodes();
 			for (int i = 0; i < nChildList.getLength(); i++) {
 				Node nChildNode = nChildList.item(i);
@@ -560,20 +572,7 @@ public class FrameworkConfig {
 				}
 			}
 
-			// process profile set by user
-			if (profileName == null) {
-				// If profile is not set then read first configuration in the path
-				break;
-			} else if (profileName != null) {
-				Element element = (Element) nNode;
-
-				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
-					break;
-				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("Logger configuration with profile \"" + profileName + "\" is missing");
-				}
-			}
+			break;
 		}
 	}
 
@@ -589,6 +588,18 @@ public class FrameworkConfig {
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
+
+			Element element = (Element) nNode;
+
+			// If profile is provided then look for configuration with given profile or else take default
+			if (element.hasAttributes()) {
+				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
+					if (profileName == null || temp == nList.getLength() - 1) {
+						System.err.println("[WARNING] : features profile with name " + profileName + " does not exist. Applying default");
+					}
+					continue;
+				}
+			}
 
 			NodeList nChildList = nNode.getChildNodes();
 			for (int i = 0; i < nChildList.getLength(); i++) {
@@ -620,20 +631,7 @@ public class FrameworkConfig {
 				}
 			}
 
-			// process profile set by user
-			if (profileName == null) {
-				// If profile is not set then read first configuration in the path
-				break;
-			} else if (profileName != null) {
-				Element element = (Element) nNode;
-
-				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
-					break;
-				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("Features configuration with profile \"" + profileName + "\" is missing");
-				}
-			}
+			break;
 		}
 	}
 
@@ -649,6 +647,18 @@ public class FrameworkConfig {
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
+			
+			Element element = (Element) nNode;
+
+			// If profile is provided then look for configuration with given profile or else take default
+			if (element.hasAttributes()) {
+				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
+					if (profileName == null || temp == nList.getLength() - 1) {
+						System.err.println("[WARNING] : organization_info profile with name " + profileName + " does not exist. Applying default");
+					}
+					continue;
+				}
+			}
 
 			NodeList nChildList = nNode.getChildNodes();
 			for (int i = 0; i < nChildList.getLength(); i++) {
@@ -676,27 +686,27 @@ public class FrameworkConfig {
 				}
 			}
 
-			// process profile set by user
-			if (profileName == null) {
-				// If profile is not set then read first configuration in the path
-				break;
-			} else if (profileName != null) {
-				Element element = (Element) nNode;
-
-				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
-					break;
-				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("OrganisationInfo configuration with profile \"" + profileName + "\" is missing");
-				}
-			}
+			break;
 		}
 	}
 
 	private void readEmailConfig(Document doc) {
 		NodeList nList = doc.getElementsByTagName("smtp_settings");
+		
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
+			
+			Element element = (Element) nNode;
+
+			// If profile is provided then look for configuration with given profile or else take default
+			if (element.hasAttributes()) {
+				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
+					if (profileName == null || temp == nList.getLength() - 1) {
+						System.err.println("[WARNING] : smtp_settings profile with name " + profileName + " does not exist. Applying default");
+					}
+					continue;
+				}
+			}
 
 			NodeList nChildList = nNode.getChildNodes();
 			for (int i = 0; i < nChildList.getLength(); i++) {
@@ -727,20 +737,7 @@ public class FrameworkConfig {
 				}
 			}
 
-			// process profile set by user
-			if (profileName == null) {
-				// If profile is not set then read first configuration in the path
-				break;
-			} else if (profileName != null) {
-				Element element = (Element) nNode;
-
-				// If profile is provided then look for configuration with given profile
-				if (element.hasAttributes() && profileName.equals(element.getAttribute("profile").toString().trim())) {
-					break;
-				} else if (temp == (nList.getLength() - 1)) {
-					System.err.println("Email configuration with profile \"" + profileName + "\" is missing");
-				}
-			}
+			break;
 		}
 	}
 
