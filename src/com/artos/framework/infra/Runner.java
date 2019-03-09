@@ -128,7 +128,7 @@ public class Runner {
 		provideSchema();
 
 		// Take profile name from the command line parameters, if not available then take it from the Runner class parameters
-		FWStaticStore.frameworkConfig = new FrameworkConfig(true, null == CliProcessor.testScriptFile ? profile : CliProcessor.profile);
+		FWStaticStore.frameworkConfig = new FrameworkConfig(true, null == CliProcessor.profile ? profile : CliProcessor.profile);
 		
 		// Generate files/configurations required for ARTOS
 		generateRequiredFiles();
