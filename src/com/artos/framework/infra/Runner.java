@@ -128,7 +128,7 @@ public class Runner {
 		provideSchema();
 
 		// Take profile name from the command line parameters, if not available then take it from the Runner class parameters
-		FWStaticStore.frameworkConfig = new FrameworkConfig(true, null == CliProcessor.profile ? profile : CliProcessor.profile);
+		FWStaticStore.frameworkConfig = new FrameworkConfig(true, null == CliProcessor.getProfile() ? profile : CliProcessor.getProfile());
 		
 		// Generate files/configurations required for ARTOS
 		generateRequiredFiles();
@@ -137,7 +137,7 @@ public class Runner {
 		List<TestSuite> testSuiteList = createTestSuiteList();
 
 		// If test script is provided via command line and test suites are empty then stop execution
-		if (null != CliProcessor.testScriptFile && (null == testSuiteList || testSuiteList.isEmpty())) {
+		if (null != CliProcessor.getTestScriptFile() && (null == testSuiteList || testSuiteList.isEmpty())) {
 			System.err.println("Test Suite is missing");
 			System.exit(1);
 		}
@@ -148,7 +148,7 @@ public class Runner {
 		}
 
 		// If test script is not provided via command line then add testSuite constructed using Runner class parameters
-		if (null == CliProcessor.testScriptFile) {
+		if (null == CliProcessor.getTestScriptFile()) {
 			testSuiteList = Lists.newArrayList(runnerTestSuite);
 		}
 
@@ -348,12 +348,12 @@ public class Runner {
 	 * @throws ParserConfigurationException if a DocumentBuildercannot be created which satisfies the configuration requested.
 	 */
 	private List<TestSuite> createTestSuiteList() throws ParserConfigurationException, SAXException, IOException, InvalidDataException {
-		if (null == CliProcessor.testScriptFile) {
+		if (null == CliProcessor.getTestScriptFile()) {
 			return null;
 		}
 
 		TestScriptParser xml = new TestScriptParser();
-		List<TestSuite> testSuiteList = xml.readTestScript(CliProcessor.testScriptFile);
+		List<TestSuite> testSuiteList = xml.readTestScript(CliProcessor.getTestScriptFile());
 
 		return testSuiteList;
 	}

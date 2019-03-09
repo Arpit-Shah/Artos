@@ -37,8 +37,8 @@ import com.artos.framework.FWStaticStore;
 /** Process Command Line arguments */
 public class CliProcessor {
 
-	public static File testScriptFile = null;
-	public static String profile = null;
+	private static File testScriptFile = null;
+	private static String profile = null;
 
 	/**
 	 * Processes command line arguments
@@ -116,6 +116,22 @@ public class CliProcessor {
 			// Do not do anything, just continue
 			System.out.println(exp.getMessage());
 		}
+	}
+
+	public static File getTestScriptFile() {
+		return testScriptFile;
+	}
+
+	protected static void setTestScriptFile(File testScriptFile) {
+		CliProcessor.testScriptFile = testScriptFile;
+	}
+
+	public static String getProfile() {
+		return profile;
+	}
+
+	protected static void setProfile(String profile) {
+		CliProcessor.profile = profile;
 	}
 
 }

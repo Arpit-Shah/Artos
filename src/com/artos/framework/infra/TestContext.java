@@ -831,5 +831,9 @@ public class TestContext {
 	protected void setTotalUndefinedCount(int totalUndefinedCount) {
 		this.totalUndefinedCount = totalUndefinedCount;
 	}
+	
+	public boolean isRunningFromScript(){
+		return CliProcessor.getTestScriptFile() == null ? false : true;
+	}
 
 }
