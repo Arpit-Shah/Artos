@@ -21,61 +21,28 @@
  ******************************************************************************/
 package com.artos.annotation;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * 
- * 
- *
- */
-// Make the annotation available at runtime:
-@Retention(RetentionPolicy.RUNTIME)
-// Allow to use only on types:
-@Target({ ElementType.TYPE, ElementType.METHOD })
-public @interface TestPlan {
+import com.artos.framework.Enums.Gherkin;
+
+@Retention(RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface StepDefinition {
+	/**
+	 * Accepts Enum which defines test steps Gherkin way
+	 * 
+	 * @return Gherkin step type
+	 */
+	public Gherkin gherkin();
 
 	/**
-	 * Test Description
+	 * Accepts String step definition
 	 * 
-	 * @return test short description
+	 * @return Gherkin step definition
 	 */
-	String description() default "";
-
-	/**
-	 * Name of the person who prepared the test
-	 * 
-	 * @return test engineer name
-	 */
-	String preparedBy() default "";
-
-	/**
-	 * Date of the test preparation
-	 * 
-	 * @return test case preparation date
-	 */
-	String preparationDate() default "";
-
-	/**
-	 * Test reviewer name
-	 * 
-	 * @return test case reviewer name
-	 */
-	String reviewedBy() default "";
-
-	/**
-	 * Test review date
-	 * 
-	 * @return test case review date
-	 */
-	String reviewDate() default "";
-
-	/**
-	 * Behaviour driven test plan, prefer to write it in Gherkin language
-	 * 
-	 * @return test plan in Gherkin format
-	 */
-	String bdd() default "";
+	String stepDef();
 }

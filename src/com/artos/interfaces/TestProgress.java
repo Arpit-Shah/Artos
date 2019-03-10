@@ -100,6 +100,14 @@ public interface TestProgress {
 	 * @see TestObjectWrapper
 	 */
 	public void printTestPlan(TestObjectWrapper t);
+	
+	/**
+	 * Method is called before {@code BeforeTestUnit} method execution starts
+	 * 
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void printTestUnitPlan(TestUnitObjectWrapper unit);
 
 	// ==========================================================
 	// Test Unit Before and After

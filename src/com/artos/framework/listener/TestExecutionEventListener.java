@@ -22,6 +22,7 @@
 package com.artos.framework.listener;
 
 import com.artos.framework.Enums.TestStatus;
+import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.infra.LogWrapper;
@@ -75,10 +76,9 @@ public class TestExecutionEventListener implements TestProgress {
 
 	@Override
 	public void printTestPlan(TestObjectWrapper t) {
-		// logger.trace("\n---------------- printTestPlan Method Started -------------------");
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("*************************************************************************");
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 		sb.append("\n");
 		sb.append("Test Name	: " + t.getTestClassObject().getName());
 		sb.append("\n");
@@ -99,7 +99,41 @@ public class TestExecutionEventListener implements TestProgress {
 			sb.append("BDD Test Plan	: " + BDD);
 			sb.append("\n");
 		}
-		sb.append("*************************************************************************");
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+
+		context.getLogger().info(sb.toString());
+	}
+	
+	@Override
+	public void printTestUnitPlan(TestUnitObjectWrapper unit) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+		sb.append("\n");
+		sb.append("Unit Name	: " + unit.getTestUnitMethod().getName());
+		sb.append("\n");
+		if (!"".equals(unit.getTestPlanPreparedBy())) {
+			sb.append("Written BY	: " + unit.getTestPlanPreparedBy());
+			sb.append("\n");
+		}
+		if (!"".equals(unit.getTestPlanPreparationDate())) {
+			sb.append("Date		: " + unit.getTestPlanPreparationDate());
+			sb.append("\n");
+		}
+		if (!"".equals(unit.getTestPlanDescription())) {
+			sb.append("Short Desc	: " + unit.getTestPlanDescription());
+			sb.append("\n");
+		}
+		if (!"".equals(unit.getTestPlanBDD())) {
+			String BDD = processBDD(unit.getTestPlanBDD());
+			sb.append("BDD Test Plan	: " + BDD);
+			sb.append("\n");
+		}
+		if (null != unit.getStepKeyword()) {
+			sb.append("Step Definition	: " + unit.getStepKeyword().getValue() + " " + unit.getStepDefinition());
+			sb.append("\n");
+		}
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
 	}

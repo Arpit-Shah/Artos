@@ -68,7 +68,7 @@ public class RunnerTestUnits {
 			if (null == unitTests || unitTests.isEmpty()) {
 				return;
 			}
-			
+
 			try {
 				// Run local before Method prior to any test Execution
 				if (null != t.getMethodBeforeTestCase()) {
@@ -93,7 +93,7 @@ public class RunnerTestUnits {
 					}
 				}
 
-				// notifyPrintTestUnitPlan(unit);
+				notifyPrintTestUnitPlan(unit);
 
 				// if data provider name is not specified then only execute test once
 				if (null == unit.getDataProviderName() || "".equals(unit.getDataProviderName())) {
@@ -103,7 +103,7 @@ public class RunnerTestUnits {
 				}
 			}
 			// --------------------------------------------------------------------------------------------
-			
+
 			try {
 				// Run local after Method prior to any test Execution
 				if (null != t.getMethodAfterTestCase()) {
@@ -202,7 +202,7 @@ public class RunnerTestUnits {
 		// Generate Summary
 		// ********************************************************************************************
 		context.generateUnitTestSummary(unit);
-		context.getLogger().info(FWStaticStore.ARTOS_LINE_BREAK_2);
+		// context.getLogger().info(FWStaticStore.ARTOS_LINE_BREAK_2);
 
 	}
 
@@ -528,8 +528,7 @@ public class RunnerTestUnits {
 			listener.childTestUnitExecutionFinished(unit);
 		}
 	}
-	
-	
+
 	void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
 			listener.localBeforeTestCaseMethodExecutionStarted(methodName, t);
@@ -551,6 +550,12 @@ public class RunnerTestUnits {
 	void notifyLocalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		for (TestProgress listener : listenerList) {
 			listener.localAfterTestCaseMethodExecutionFinished(t);
+		}
+	}
+
+	void notifyPrintTestUnitPlan(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.printTestUnitPlan(unit);
 		}
 	}
 

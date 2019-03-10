@@ -324,4 +324,10 @@ public class ExtentReportListener implements TestProgress {
 		testChild = null;
 	}
 
+	@Override
+	public void printTestUnitPlan(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

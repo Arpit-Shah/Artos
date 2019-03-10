@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.artos.framework.Enums.Gherkin;
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
 
@@ -39,16 +40,28 @@ public class TestUnitObjectWrapper {
 	 */
 	List<TestStatus> testUnitOutcomeList = new ArrayList<>();
 
-	// TestCase
+	// TestUnit
 	Method testUnitMethod = null;
 	boolean skipTest = false;
 	int testsequence = 0;
 	String dataProviderName = "";
 	long testTimeout = 0;
+
+	// TestPlan
+	String testPlanDescription = "";
+	String testPlanPreparedBy = "";
+	String testPlanPreparationDate = "";
+	String testreviewedBy = "";
+	String testReviewDate = "";
+	String testPlanBDD = "";
 	
+	// StepDefinition
+	Gherkin stepKeyword = null;
+	String stepDefinition = "";
+
 	// testImportance
 	Importance testImportance = Importance.UNDEFINED;
-	
+
 	// Group
 	List<String> groupList = new ArrayList<>();
 
@@ -198,6 +211,70 @@ public class TestUnitObjectWrapper {
 
 	public void setTestImportance(Importance testImportance) {
 		this.testImportance = testImportance;
+	}
+
+	public String getTestPlanDescription() {
+		return testPlanDescription;
+	}
+
+	public void setTestPlanDescription(String testPlanDescription) {
+		this.testPlanDescription = testPlanDescription;
+	}
+
+	public String getTestPlanPreparedBy() {
+		return testPlanPreparedBy;
+	}
+
+	public void setTestPlanPreparedBy(String testPlanPreparedBy) {
+		this.testPlanPreparedBy = testPlanPreparedBy;
+	}
+
+	public String getTestPlanPreparationDate() {
+		return testPlanPreparationDate;
+	}
+
+	public void setTestPlanPreparationDate(String testPlanPreparationDate) {
+		this.testPlanPreparationDate = testPlanPreparationDate;
+	}
+
+	public String getTestreviewedBy() {
+		return testreviewedBy;
+	}
+
+	public void setTestreviewedBy(String testreviewedBy) {
+		this.testreviewedBy = testreviewedBy;
+	}
+
+	public String getTestReviewDate() {
+		return testReviewDate;
+	}
+
+	public void setTestReviewDate(String testReviewDate) {
+		this.testReviewDate = testReviewDate;
+	}
+
+	public String getTestPlanBDD() {
+		return testPlanBDD;
+	}
+
+	public void setTestPlanBDD(String testPlanBDD) {
+		this.testPlanBDD = testPlanBDD;
+	}
+
+	public Gherkin getStepKeyword() {
+		return stepKeyword;
+	}
+
+	public void setStepKeyword(Gherkin stepKeyword) {
+		this.stepKeyword = stepKeyword;
+	}
+
+	public String getStepDefinition() {
+		return stepDefinition;
+	}
+
+	public void setStepDefinition(String stepDefinition) {
+		this.stepDefinition = stepDefinition;
 	}
 
 }

@@ -135,4 +135,37 @@ public class Enums {
 
 	}
 
+	public enum Gherkin {
+
+		// @formatter:off
+		
+		GIVEN("GIVEN"),
+		AND("AND"),
+		BUT("BUT"), 
+		WHEN("WHEN"),
+		THEN("THEN");
+		
+		// @formatter:on
+
+		private final String step;
+
+		Gherkin(String status) {
+			this.step = status;
+		}
+
+		public String getValue() {
+			return step;
+		}
+
+		public String getEnumName(String step) {
+			for (ExceptionValue e : ExceptionValue.values()) {
+				if (step.equals(e.getValue())) {
+					return e.name();
+				}
+			}
+			return null;
+		}
+
+	}
+
 }
