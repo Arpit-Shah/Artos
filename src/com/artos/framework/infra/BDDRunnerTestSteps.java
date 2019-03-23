@@ -21,29 +21,24 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
-import java.io.InvalidObjectException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.interfaces.TestProgress;
 import com.artos.utils.UtilsFramework;
 
-public class RunnerTestUnits {
+public class BDDRunnerTestSteps {
 
 	TestContext context;
-	TestObjectWrapper t;
+	BDDScenario scenario;
 	List<TestProgress> listenerList;
 
-	protected RunnerTestUnits(TestContext context, List<TestProgress> listenerList) {
+	protected BDDRunnerTestSteps(TestContext context, List<TestProgress> listenerList) {
 		this.context = context;
 		this.listenerList = listenerList;
 	}
@@ -51,37 +46,34 @@ public class RunnerTestUnits {
 	/**
 	 * Run unit tests
 	 * 
-	 * @param t test case
+	 * @param scenario test scenario
 	 */
-	protected void runSingleThreadUnits(TestObjectWrapper t) {
-		this.t = t;
+	protected void runSingleThreadSteps(BDDScenario scenario) {
+		this.scenario = scenario;
 		// ********************************************************************************************
 		// TestUnits Execution Start
 		// ********************************************************************************************
 		try {
 			// get test unit list
-			List<TestUnitObjectWrapper> unitTests = t.getTestUnitList();
+			List<BDDStep> testSteps = scenario.getSteplist();
 
-			if (null == unitTests || unitTests.isEmpty()) {
+			// If there are no steps to execute then move on
+			if (null == testSteps || testSteps.isEmpty()) {
 				return;
 			}
 
-			try {
-				// Run local before Method prior to any test Execution
-				if (null != t.getMethodBeforeTestCase()) {
-					notifyLocalBeforeTestCaseMethodExecutionStarted(t.getMethodBeforeTestCase().getName(), t);
-					t.getMethodBeforeTestCase().invoke(t.getTestClassObject().newInstance(), context);
-					notifyLocalBeforeTestCaseMethodExecutionFinished(t);
-				}
-			} catch (Throwable e) {
-				printException(e);
-			}
-
 			// --------------------------------------------------------------------------------------------
-			for (TestUnitObjectWrapper unit : unitTests) {
+			for (BDDStep step : testSteps) {
 
 				// Reset test status for next execution
 				context.setCurrentUnitTestStatus(TestStatus.PASS);
+
+				// reset parameterised test index count
+				context.setTestUnitParameterIndex(0);
+
+				// Clean parameter HashMap
+				context.setStepParameter(new HashMap<>());
+				// }
 
 				// If stop on fail is selected then stop test execution
 				if (FWStaticStore.frameworkConfig.isStopOnFail()) {
@@ -90,27 +82,16 @@ public class RunnerTestUnits {
 					}
 				}
 
-				notifyPrintTestUnitPlan(unit);
+				notifyPrintTestUnitPlan(step);
 
 				// if data provider name is not specified then only execute test once
-				if (null == unit.getDataProviderName() || "".equals(unit.getDataProviderName())) {
-					runIndividualUnitTest(unit);
+				if ((null == step.getLocalDataTable() || step.getLocalDataTable().isEmpty())) {
+					runIndividualUnitTest(step);
 				} else {
-					runParameterizedUnitTest(unit);
+					runParameterizedUnitTest(step);
 				}
 			}
 			// --------------------------------------------------------------------------------------------
-
-			try {
-				// Run local after Method prior to any test Execution
-				if (null != t.getMethodAfterTestCase()) {
-					notifyLocalAfterTestCaseMethodExecutionStarted(t.getMethodAfterTestCase().getName(), t);
-					t.getMethodAfterTestCase().invoke(t.getTestClassObject().newInstance(), context);
-					notifyLocalAfterTestCaseMethodExecutionFinished(t);
-				}
-			} catch (Throwable e) {
-				printException(e);
-			}
 
 		} catch (Throwable e) {
 			// Handle if any exception in pre-post runnable
@@ -133,63 +114,48 @@ public class RunnerTestUnits {
 	/**
 	 * Responsible for execution individual test units
 	 * 
-	 * @param unit TestUnit in format {@code TestUnitObjectWrapper}
+	 * @param step TestUnit in format {@code TestStep}
 	 */
-	private void runIndividualUnitTest(TestUnitObjectWrapper unit) {
+	private void runIndividualUnitTest(BDDStep step) {
 		try {
 			// Run global before method prior to each test unit execution
 			if (null != context.getBeforeTestUnit()) {
-				notifyGlobalBeforeTestUnitMethodExecutionStarted(context.getBeforeTestUnit().getName(), unit);
+				notifyGlobalBeforeTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
 				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalBeforeTestUnitMethodExecutionFinished(unit);
-			}
-
-			// Run custom before method prior to each test unit execution
-			if (null != t.getMethodBeforeTestUnit()) {
-				notifyLocalBeforeTestUnitMethodExecutionStarted(t, unit);
-				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalBeforeTestUnitMethodExecutionFinished(unit);
+				notifyGlobalBeforeTestUnitMethodExecutionFinished(step);
 			}
 		} catch (Throwable e) {
 			printException(e);
 		}
 
 		// ********************************************************************************************
-		// TestUnit Start
+		// TestStep Start
 		// ********************************************************************************************
 		try {
-			unit.setTestUnitStartTime(System.currentTimeMillis());
 
-			// If test timeout is defined then monitor thread for timeout
-			if (0 != unit.getTestTimeout()) {
-				runUnitTestWithTimeout(unit);
-			} else {
-				runSimpleUnitTest(unit);
-			}
+			injectGlobalTableValues();
+			injectInlineTagValues(step);
 
-			postTestValidation(unit);
+			step.getUnit().setTestUnitStartTime(System.currentTimeMillis());
+
+			runSimpleStep(step);
+
+			postTestValidation(step.getUnit());
 		} catch (Throwable e) {
-			processTestUnitException(unit, e);
+			processTestUnitException(step.getUnit(), e);
 		} finally {
-			unit.setTestUnitFinishTime(System.currentTimeMillis());
+			step.getUnit().setTestUnitFinishTime(System.currentTimeMillis());
 		}
 		// ********************************************************************************************
-		// TestUnit Finish
+		// TestStep Finish
 		// ********************************************************************************************
 
 		try {
-			// Run custom after method post each test unit execution
-			if (null != t.getMethodAfterTestUnit()) {
-				notifyLocalAfterTestUnitMethodExecutionStarted(t, unit);
-				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalAfterTestUnitMethodExecutionFinished(unit);
-			}
-
 			// Run global after method post each test unit execution
 			if (null != context.getAfterTestUnit()) {
-				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), unit);
+				notifyGlobalAfterTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
 				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalAfterTestUnitMethodExecutionFinished(unit);
+				notifyGlobalAfterTestUnitMethodExecutionFinished(step);
 			}
 		} catch (Throwable e) {
 			printException(e);
@@ -198,7 +164,7 @@ public class RunnerTestUnits {
 		// ********************************************************************************************
 		// Generate Summary
 		// ********************************************************************************************
-		context.generateUnitTestSummary(unit);
+		context.generateStepTestSummary(step);
 		// context.getLogger().info(FWStaticStore.ARTOS_LINE_BREAK_2);
 
 	}
@@ -208,46 +174,27 @@ public class RunnerTestUnits {
 	 * all parameters available in the parameter array. If data provider method returns empty array or null then test case will be executed only once
 	 * with null arguments.
 	 * 
-	 * @param unit TestCase in format {@code TestUnitObjectWrapper}
+	 * @param step TestCase in format {@code TestUnitObjectWrapper}
 	 */
-	private void runParameterizedUnitTest(TestUnitObjectWrapper unit) {
-		Object[][] data = null;
-		TestDataProvider dataProviderObj;
-
+	private void runParameterizedUnitTest(BDDStep step) {
 		try {
-			// get dataProvider specified for this test case (data provider name is always
-			// stored in upper case)
-			dataProviderObj = context.getDataProviderMap().get(unit.getDataProviderName().toUpperCase());
 
-			// If specified data provider is not found in the list then throw exception
-			// (Remember : Data provider name is case in-sensitive)
-			if (null == dataProviderObj) {
-				throw new InvalidObjectException("DataProvider not found (or private) : " + (unit.getDataProviderName()));
-			}
-
-			// Handle it because this executes method
-			try {
-				if (dataProviderObj.isStaticMethod()) {
-					data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
-				} else {
-					/* NonStatic data provider method needs an instance */
-					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
-				}
-			} catch (InvocationTargetException e) {
-				context.getLogger().debug("=================================================");
-				context.getLogger().debug("=== DataProvider Method failed to return data ===");
-				context.getLogger().debug("=================================================");
-				processInvocationTargetException(e);
-			}
-
-			// If data provider method returns null or empty object then execute test with
-			// null parameter
-			if (null == data || data.length == 0) {
-				executeChildTest(unit, new String[][] { {} }, 0);
+			// Decide how many time step iteration is required
+			int childIterationSize = 1;
+			if (null == step.getLocalDataTable() || step.getLocalDataTable().isEmpty()) {
+				childIterationSize = 1;
 			} else {
-				for (int i = 0; i < data.length; i++) {
-					executeChildTest(unit, data, i);
-				}
+				// Find the length of dataList, which will tell us how many time to iterate child test cases
+				List<String> firstSet = step.getLocalDataTable().values().iterator().next();
+				childIterationSize = firstSet.size();
+			}
+
+			for (int i = 0; i < childIterationSize; i++) {
+				// Reset HashMap
+				context.setStepParameter(new HashMap<>());
+				// Reset Index count
+				context.setTestUnitParameterIndex(i);
+				executeChildTest(step);
 			}
 		} catch (Exception e) {
 			// Print Exception
@@ -256,25 +203,26 @@ public class RunnerTestUnits {
 
 			// Mark current test as fail due to exception during data provider processing
 			context.setTestStatus(TestStatus.FAIL, e.getMessage());
-			context.generateUnitTestSummary(unit);
+			context.generateStepTestSummary(step);
 		}
 	}
 
 	/**
 	 * Responsible for execution of a test unit.
 	 * 
-	 * @param unit TestCase in format {@code TestUnitObjectWrapper}
+	 * @param step TestCase in format {@code TestUnitObjectWrapper}
 	 * @throws Exception Exception during test execution
 	 */
-	private void runSimpleUnitTest(TestUnitObjectWrapper unit) throws Exception {
+	private void runSimpleStep(BDDStep step) throws Exception {
 		// --------------------------------------------------------------------------------------------
 		try {
-			notifyTestUnitExecutionStarted(unit);
+			notifyTestUnitExecutionStarted(step);
 
 			// Run single unit
-			unit.getTestUnitMethod().invoke(t.getTestClassObject().newInstance(), context);
+			TestUnitObjectWrapper unit = step.getUnit();
+			unit.getTestUnitMethod().invoke(unit.getTestUnitMethod().getDeclaringClass().newInstance(), context);
 
-			notifyTestUnitExecutionFinished(unit);
+			notifyTestUnitExecutionFinished(step);
 
 			// When method fails via reflection, it throws InvocationTargetExcetion
 		} catch (InvocationTargetException e) {
@@ -295,87 +243,100 @@ public class RunnerTestUnits {
 	}
 
 	/**
-	 * Responsible for executing test unit with thread timeout. If test unit execution is not finished within expected time then test will be
-	 * considered failed.
-	 * 
-	 * @param unit Test unit in format {@code TestUnitObjectWrapper} object
-	 * @throws Throwable Exception during test execution
-	 */
-	private void runUnitTestWithTimeout(TestUnitObjectWrapper unit) throws Throwable {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<String> future = executor.submit(new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				runSimpleUnitTest(unit);
-				return "TEST UNIT FINISHED WITHIN TIME";
-			}
-		});
-
-		try {
-			// System.out.println(future.get(t.getTestTimeout(), TimeUnit.MILLISECONDS));
-			future.get(unit.getTestTimeout(), TimeUnit.MILLISECONDS);
-		} catch (TimeoutException e) {
-			future.cancel(true);
-			context.setTestStatus(TestStatus.FAIL, "TEST UNIT TIMED OUT");
-		} catch (ExecutionException e) {
-			future.cancel(true);
-			if (null == e.getCause()) {
-				// If no cause is listed then process parent exception
-				throw e;
-			} else {
-				// If cause is listed then only process cause
-				throw e.getCause();
-			}
-		} catch (InterruptedException e) {
-			context.getLogger().warn("InterruptedException was supressed assuming thread was intentinally killed by a runner");
-			// This can happen if Unit future thread is cancelled/killed by Test case future while thread is busy/sleeping or occupied.
-			// One scenario : if test case time out before unit timeout then test case will force cancel future.
-		}
-
-	}
-
-	/**
 	 * Responsible for execution of test units (Considered as child test units) with given parameter. Parameterised object array index and value(s)
 	 * class type(s) will be printed prior to test execution for user's benefit.
 	 * 
-	 * @param unit TestCase in format {@code TestUnitObjectWrapper}
-	 * @param data Array of parameters
+	 * @param step TestCase in format {@code TestUnitObjectWrapper}
 	 * @param arrayIndex Parameter array index
 	 */
-	private void executeChildTest(TestUnitObjectWrapper unit, Object[][] data, int arrayIndex) {
-		String userInfo = "DataProvider(" + arrayIndex + ")  : ";
-		if (data[arrayIndex].length == 2) {
-			context.setParameterisedObject1(null == data[arrayIndex][0] ? null : data[arrayIndex][0]);
-			context.setParameterisedObject2(null == data[arrayIndex][1] ? null : data[arrayIndex][1]);
-			String firstType = (context.getParameterisedObject1().getClass().getSimpleName());
-			String secondType = (context.getParameterisedObject2().getClass().getSimpleName());
-			userInfo += "[" + firstType + "][" + secondType + "]";
-
-		} else if (data[arrayIndex].length == 1) {
-			context.setParameterisedObject1(null == data[arrayIndex][0] ? null : data[arrayIndex][0]);
-			context.setParameterisedObject2(null);
-			String firstType = (context.getParameterisedObject1().getClass().getSimpleName());
-			userInfo += "[" + firstType + "][]";
-		} else {
-			context.setParameterisedObject1(null);
-			context.setParameterisedObject2(null);
-			userInfo += "[][]";
-		}
+	private void executeChildTest(BDDStep step) {
+		String userInfo = "StepDataTable(" + context.getTestUnitParameterIndex() + ")";
 		context.getLogger().info(userInfo);
+
+		injectGlobalTableValues();
+		injectLocalTableValues(step);
+		injectInlineTagValues(step);
 
 		// ********************************************************************************************
 		// Parameterised Child TestCase Start
 		// ********************************************************************************************
+		// Disabled because it generates wrong extent flow when it runs as parameterised steps
+		// notifyChildTestUnitExecutionStarted(scenario, step, userInfo);
 
-		notifyChildTestUnitExecutionStarted(t, unit, userInfo);
+		runIndividualUnitTest(step);
 
-		runIndividualUnitTest(unit);
-
-		notifyChildTestUnitExecutionFinished(unit);
+		// Disabled because it generates wrong extent flow when it runs as parameterised steps
+		// notifyChildTestUnitExecutionFinished(step);
 
 		// ********************************************************************************************
 		// Parameterised Child TestCase Finish
 		// ********************************************************************************************
+	}
+
+	private void injectInlineTagValues(BDDStep step) {
+		// Get stepParameter Map, at this stage it should be empty
+		Map<String, String> stepParameter = context.getStepParameterMap();
+
+		// This is to look after in-line tag and in-line global tag
+		for (int i = 0; i < step.getInlineParameterList().size(); i++) {
+
+			// Get In-line tag
+			String value = step.getInlineParameterList().get(i);
+
+			if (value.startsWith("<") && value.endsWith(">")) {
+				String globalDataTableKey = value.replaceFirst("<", "").replaceAll(">", "").trim();
+				// get global data table value
+				List<String> globalValueList = scenario.getGlobalDataTable().get(globalDataTableKey);
+
+				// Ensure this is TestCase index and not the Test Unit
+				// System.out.println(context.getTestParameterIndex());
+				stepParameter.put("Param" + i, globalValueList.get(context.getTestParameterIndex()));
+			} else {
+				stepParameter.put("Param" + i, value);
+			}
+		}
+	}
+
+	private void injectLocalTableValues(BDDStep step) {
+
+		// Get stepParameter Map, at this stage it should be empty
+		Map<String, String> stepParameter = context.getStepParameterMap();
+
+		// This is to look after local table and local table with global tag
+		// [WARNING] : Any key name overlapping with global key will be overwritten
+		for (Entry<String, List<String>> entry : step.getLocalDataTable().entrySet()) {
+			String key = entry.getKey();
+			List<String> valueList = entry.getValue();
+
+			// if value refers to global table tag then populate value from global table column
+			String value = valueList.get(context.getTestUnitParameterIndex());
+			if (value.startsWith("<") && value.endsWith(">")) {
+				String globalDataTableKey = value.replaceFirst("<", "").replaceAll(">", "").trim();
+
+				// get global data table value
+				List<String> globalValueList = scenario.getGlobalDataTable().get(globalDataTableKey);
+
+				// Ensure this is TestCase index and not the Test Unit
+				stepParameter.put(key, globalValueList.get(context.getTestParameterIndex()));
+			} else {
+				stepParameter.put(key, value);
+			}
+		}
+	}
+
+	private void injectGlobalTableValues() {
+		// Get stepParameter Map, at this stage it should be empty
+		Map<String, String> stepParameter = context.getStepParameterMap();
+
+		// This is to look after global table
+		if (null != scenario.getGlobalDataTable() && !scenario.getGlobalDataTable().isEmpty()) {
+			// Add global table parameters to Map
+			for (Entry<String, List<String>> entry : scenario.getGlobalDataTable().entrySet()) {
+				String key = entry.getKey();
+				List<String> value = entry.getValue();
+				stepParameter.put(key, value.get(context.getTestParameterIndex()));
+			}
+		}
 	}
 
 	/**
@@ -454,105 +415,105 @@ public class RunnerTestUnits {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
-	void notifyGlobalBeforeTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
+	void notifyGlobalBeforeTestUnitMethodExecutionStarted(String methodName, BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.globalBeforeTestUnitMethodExecutionStarted(methodName, unit);
+			listener.globalBeforeTestUnitMethodExecutionStarted(methodName, step);
 		}
 	}
 
-	void notifyGlobalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+	void notifyGlobalBeforeTestUnitMethodExecutionFinished(BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.globalBeforeTestUnitMethodExecutionFinished(unit);
+			listener.globalBeforeTestUnitMethodExecutionFinished(step);
 		}
 	}
 
-	void notifyGlobalAfterTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
+	void notifyGlobalAfterTestUnitMethodExecutionStarted(String methodName, BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.globalAfterTestUnitMethodExecutionStarted(methodName, unit);
+			listener.globalAfterTestUnitMethodExecutionStarted(methodName, step);
 		}
 	}
 
-	void notifyGlobalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+	void notifyGlobalAfterTestUnitMethodExecutionFinished(BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.globalAfterTestUnitMethodExecutionFinished(unit);
+			listener.globalAfterTestUnitMethodExecutionFinished(step);
 		}
 	}
 
-	void notifyLocalBeforeTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+	// void notifyLocalBeforeTestUnitMethodExecutionStarted(TestScenario scenario, TestStep step) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localBeforeTestUnitMethodExecutionStarted(scenario, step);
+	// }
+	// }
+
+	// void notifyLocalBeforeTestUnitMethodExecutionFinished(TestStep step) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localBeforeTestUnitMethodExecutionFinished(step);
+	// }
+	// }
+
+	// void notifyLocalAfterTestUnitMethodExecutionStarted(TestScenario scenario, TestStep step) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localAfterTestUnitMethodExecutionStarted(scenario, step);
+	// }
+	// }
+
+	// void notifyLocalAfterTestUnitMethodExecutionFinished(TestStep step) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localAfterTestUnitMethodExecutionFinished(step);
+	// }
+	// }
+
+	void notifyTestUnitExecutionStarted(BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.localBeforeTestUnitMethodExecutionStarted(t, unit);
+			listener.testUnitExecutionStarted(step);
 		}
 	}
 
-	void notifyLocalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+	void notifyTestUnitExecutionFinished(BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.localBeforeTestUnitMethodExecutionFinished(unit);
+			listener.testUnitExecutionFinished(step);
 		}
 	}
 
-	void notifyLocalAfterTestUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
-		for (TestProgress listener : listenerList) {
-			listener.localAfterTestUnitMethodExecutionStarted(t, unit);
-		}
-	}
+	// private void notifyChildTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String userInfo) {
+	// for (TestProgress listener : listenerList) {
+	// listener.childTestUnitExecutionStarted(scenario, step, userInfo);
+	// }
+	// }
 
-	void notifyLocalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
-		for (TestProgress listener : listenerList) {
-			listener.localAfterTestUnitMethodExecutionFinished(unit);
-		}
-	}
+	// private void notifyChildTestUnitExecutionFinished(BDDStep step) {
+	// for (TestProgress listener : listenerList) {
+	// listener.childTestUnitExecutionFinished(step);
+	// }
+	// }
 
-	void notifyTestUnitExecutionStarted(TestUnitObjectWrapper unit) {
-		for (TestProgress listener : listenerList) {
-			listener.testUnitExecutionStarted(unit);
-		}
-	}
+	// void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName, TestScenario scenario) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localBeforeTestCaseMethodExecutionStarted(methodName, scenario);
+	// }
+	// }
 
-	void notifyTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
-		for (TestProgress listener : listenerList) {
-			listener.testUnitExecutionFinished(unit);
-		}
-	}
+	// void notifyLocalBeforeTestCaseMethodExecutionFinished(TestScenario scenario) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localBeforeTestCaseMethodExecutionFinished(scenario);
+	// }
+	// }
 
-	private void notifyChildTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String userInfo) {
-		for (TestProgress listener : listenerList) {
-			listener.childTestUnitExecutionStarted(t, unit, userInfo);
-		}
-	}
+	// void notifyLocalAfterTestCaseMethodExecutionStarted(String methodName, TestScenario scenario) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localAfterTestCaseMethodExecutionStarted(methodName, scenario);
+	// }
+	// }
 
-	private void notifyChildTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
-		for (TestProgress listener : listenerList) {
-			listener.childTestUnitExecutionFinished(unit);
-		}
-	}
+	// void notifyLocalAfterTestCaseMethodExecutionFinished(TestScenario scenario) {
+	// for (TestProgress listener : listenerList) {
+	// listener.localAfterTestCaseMethodExecutionFinished(scenario);
+	// }
+	// }
 
-	void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+	void notifyPrintTestUnitPlan(BDDStep step) {
 		for (TestProgress listener : listenerList) {
-			listener.localBeforeTestCaseMethodExecutionStarted(methodName, t);
-		}
-	}
-
-	void notifyLocalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
-		for (TestProgress listener : listenerList) {
-			listener.localBeforeTestCaseMethodExecutionFinished(t);
-		}
-	}
-
-	void notifyLocalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
-		for (TestProgress listener : listenerList) {
-			listener.localAfterTestCaseMethodExecutionStarted(methodName, t);
-		}
-	}
-
-	void notifyLocalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
-		for (TestProgress listener : listenerList) {
-			listener.localAfterTestCaseMethodExecutionFinished(t);
-		}
-	}
-
-	void notifyPrintTestUnitPlan(TestUnitObjectWrapper unit) {
-		for (TestProgress listener : listenerList) {
-			listener.printTestUnitPlan(unit);
+			listener.printTestUnitPlan(step);
 		}
 	}
 

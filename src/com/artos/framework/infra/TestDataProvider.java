@@ -19,63 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.annotation;
+package com.artos.framework.infra;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 
-/**
- * 
- * 
- *
- */
-// Make the annotation available at runtime:
-@Retention(RetentionPolicy.RUNTIME)
-// Allow to use only on types:
-@Target({ ElementType.TYPE, ElementType.METHOD })
-public @interface TestPlan {
+public class TestDataProvider {
+
+	String dataProviderName;
+	Class<?> classOfTheMethod;
+	Method method;
+	boolean staticMethod;
 
 	/**
-	 * Test Description
-	 * 
-	 * @return test short description
+	 * @param method method which has {@code DataProvider} annotation
+	 * @param dataProviderName name given to {@code DataProvider}
+	 * @param classOfTheMethod class object where method belongs to
+	 * @param staticMethod true if method is static
 	 */
-	String description() default "";
+	public TestDataProvider(Method method, String dataProviderName, Class<?> classOfTheMethod, boolean staticMethod) {
+		super();
+		this.method = method;
+		this.dataProviderName = dataProviderName;
+		this.classOfTheMethod = classOfTheMethod;
+		this.staticMethod = staticMethod;
+	}
 
-	/**
-	 * Name of the person who prepared the test
-	 * 
-	 * @return test engineer name
-	 */
-	String preparedBy() default "";
+	public String getDataProviderName() {
+		return dataProviderName;
+	}
 
-	/**
-	 * Date of the test preparation
-	 * 
-	 * @return test case preparation date
-	 */
-	String preparationDate() default "";
+	public Class<?> getClassOfTheMethod() {
+		return classOfTheMethod;
+	}
 
-	/**
-	 * Test reviewer name
-	 * 
-	 * @return test case reviewer name
-	 */
-	String reviewedBy() default "";
+	public Method getMethod() {
+		return method;
+	}
 
-	/**
-	 * Test review date
-	 * 
-	 * @return test case review date
-	 */
-	String reviewDate() default "";
-
-	/**
-	 * Behaviour driven test plan, prefer to write it in Gherkin language
-	 * 
-	 * @return test plan in Gherkin format
-	 */
-	String bdd() default "";
+	public boolean isStaticMethod() {
+		return staticMethod;
+	}
 }

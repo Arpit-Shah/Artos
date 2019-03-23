@@ -27,9 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestDataProvider;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.xml.TestSuite;
+import com.artos.framework.parser.TestSuite;
 
 public class TransformToTestObjectWrapper {
 

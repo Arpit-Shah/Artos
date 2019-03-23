@@ -23,8 +23,8 @@ package com.artos.interfaces;
 
 import java.util.List;
 
-import com.artos.framework.TestObjectWrapper;
 import com.artos.framework.infra.TestContext;
+import com.artos.framework.infra.TestObjectWrapper;
 
 /**
  * Used for GUI Test Selector

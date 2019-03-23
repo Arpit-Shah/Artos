@@ -51,49 +51,40 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import com.artos.framework.FWStaticStore;
-import com.artos.interfaces.TestRunnable;
+import com.artos.interfaces.TestScenarioRunnable;
 
-public class GUITestSelector {
+public class BDDGUITestSelector {
 
 	private TestContext context;
 	private JFrame container;
-	private TestRunnerDataModel testRunnerDataModel;
+	private TestBDDRunnerDataModel testRunnerDataModel;
 	private JTextField loopCountField;
-	private TestRunnable testRunner;
-	private ArrayList<TestObjectWrapper> selectedTests;
+	private TestScenarioRunnable testScenarioRunner;
+	private ArrayList<BDDScenario> selectedTests;
 
 	/**
 	 * TestRunnerGui constructor
 	 * 
 	 * @param context TestContext
-	 * @param testList List of Tests defined in Main class
-	 * @param testRunner A TestRunner implementation that will execute the tests
-	 * @throws Exception if gui could not launch
+	 * @param testSCList List of Tests defined in Main class
+	 * @param testScenarioRunner A TestRunner implementation that will execute the tests
+	 * @throws Exception if GUI could not launch
 	 */
-	public GUITestSelector(TestContext context, List<TestObjectWrapper> testList, TestRunnable testRunner) throws Exception {
+	public BDDGUITestSelector(TestContext context, List<BDDScenario> testScenarios, TestScenarioRunnable testScenarioRunner) throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		this.context = context;
-		testRunnerDataModel = new TestRunnerDataModel(testList);
-		this.testRunner = testRunner;
-		selectedTests = new ArrayList<TestObjectWrapper>();
+		testRunnerDataModel = new TestBDDRunnerDataModel(testScenarios);
+		this.testScenarioRunner = testScenarioRunner;
+		selectedTests = new ArrayList<BDDScenario>();
 
 		// If more than one test cases to select then only show GUI otherwise
 		// just run the suit
+		if (testScenarios.size() > 1) {
 
-		if (testList.size() > 1) {
-			String packageName = "ProjectRoot";
-			// get the package name from testList
-			if (null != testList.get(0).getTestClassObject().getPackage()) {
-				String fullPackageName = testList.get(0).getTestClassObject().getPackage().toString();
-				int last = fullPackageName.lastIndexOf(".") + 1;
-				packageName = fullPackageName.substring(last);
-			}
-
-			initMainFrame(packageName);
+			initMainFrame();
 			initMainViewComponents();
 
 			try {
@@ -116,7 +107,7 @@ public class GUITestSelector {
 			container.setVisible(true);
 		} else {
 			try {
-				testRunner.executeTest(context, testRunnerDataModel.getTestList());
+				testScenarioRunner.executeTest(context, testScenarios);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -126,9 +117,8 @@ public class GUITestSelector {
 	/**
 	 * Initialise the main container
 	 * 
-	 * @param packageName The package that TestRunnerHelper will run
 	 */
-	private void initMainFrame(String packageName) {
+	private void initMainFrame() {
 		if (null != context.getTestSuite()) {
 			container = new JFrame("Test Selector" + " (" + context.getTestSuite().getSuiteName() + ")");
 		}
@@ -145,7 +135,7 @@ public class GUITestSelector {
 			}
 		});
 
-		container.setSize(new Dimension(500, 550));
+		container.setSize(new Dimension(700, 550));
 		container.setResizable(false);
 		container.setLocation(new Point(100, 50));
 	}
@@ -220,7 +210,10 @@ public class GUITestSelector {
 		setTableStyle(testTableView);
 
 		// so we can scroll the table view if there are a lot of tests
+		testTableView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		JScrollPane scrollPane = new JScrollPane(testTableView);
+		Dimension preferredSize = new Dimension(650, 450);
+		scrollPane.setPreferredSize(preferredSize);
 
 		// basic layout, no constraints (any suggestions here?)
 		FlowLayout layout = new FlowLayout();
@@ -250,21 +243,11 @@ public class GUITestSelector {
 		renderer.setHorizontalAlignment(JLabel.CENTER);
 		col.setCellRenderer(renderer);
 
-		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
-			// set column widths, we know we only have 2 columns for now
-			col = testTableView.getColumnModel().getColumn(1);
-			col.setPreferredWidth(45);
-
-			// set column1 text to centre align
-			renderer = new DefaultTableCellRenderer();
-			renderer.setHorizontalAlignment(JLabel.CENTER);
-			col.setCellRenderer(renderer);
-
-			col = testTableView.getColumnModel().getColumn(2);
-			col.setPreferredWidth(410);
+		col = testTableView.getColumnModel().getColumn(1);
+		if (testRunnerDataModel.getTestList().size() > 25) {
+			col.setPreferredWidth(615 - 20);
 		} else {
-			col = testTableView.getColumnModel().getColumn(1);
-			col.setPreferredWidth(465);
+			col.setPreferredWidth(615 - 2);
 		}
 	}
 
@@ -288,9 +271,9 @@ public class GUITestSelector {
 			public void run() {
 				try {
 					if (selectedOnly) {
-						testRunner.executeTest(context, selectedTests);
+						testScenarioRunner.executeTest(context, selectedTests);
 					} else {
-						testRunner.executeTest(context, testRunnerDataModel.getTestList());
+						testScenarioRunner.executeTest(context, testRunnerDataModel.getTestList());
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -301,20 +284,15 @@ public class GUITestSelector {
 }
 
 @SuppressWarnings("serial")
-class TestRunnerDataModel extends AbstractTableModel {
-	private List<TestObjectWrapper> testList;
+class TestBDDRunnerDataModel extends AbstractTableModel {
+	private List<BDDScenario> testScenarioList;
 	private String[] columnNames;
 	private String[][] displayData;
 
-	public TestRunnerDataModel(List<TestObjectWrapper> testList) {
-		this.testList = testList;
+	public TestBDDRunnerDataModel(List<BDDScenario> testScenarioList) {
+		this.testScenarioList = testScenarioList;
 
-		// Enable if package name column is required
-		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
-			columnNames = new String[] { "#", "Seq", "Test Name" };
-		} else {
-			columnNames = new String[] { "#", "Test Name" };
-		}
+		columnNames = new String[] { "#", "Scenario" };
 		populateDisplayData();
 	}
 
@@ -322,32 +300,24 @@ class TestRunnerDataModel extends AbstractTableModel {
 	 * A 2d array to be used as display data
 	 */
 	private void populateDisplayData() {
-		displayData = new String[testList.size()][columnNames.length];
+		displayData = new String[testScenarioList.size()][columnNames.length];
 
-		for (int index = 0; index < testList.size(); ++index) {
+		for (int index = 0; index < testScenarioList.size(); ++index) {
 			// get only the actual test name
-			String fullTestName = testList.get(index).getTestClassObject().getName();
-			int last = fullTestName.lastIndexOf(".") + 1;
-			String testName = fullTestName.substring(last);
+			String fullTestName = testScenarioList.get(index).getScenarioDescription();
+			String testName = fullTestName.trim();
 
 			// column0 - test number
 			displayData[index][0] = String.valueOf(index);
 
-			if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
-				// column1 - test seq
-				displayData[index][1] = Integer.toString(testList.get(index).getTestsequence());
-				// column2 - test name
-				displayData[index][2] = testName;
-			} else {
-				// column1 - test name
-				displayData[index][1] = testName;
-			}
+			// column1 - test name
+			displayData[index][1] = testName;
 		}
 	}
 
 	@Override
 	public int getRowCount() {
-		return testList.size();
+		return testScenarioList.size();
 	}
 
 	@Override
@@ -366,11 +336,11 @@ class TestRunnerDataModel extends AbstractTableModel {
 		return displayData[rowIndex][columnIndex];
 	}
 
-	public List<TestObjectWrapper> getTestList() {
-		return testList;
+	public List<BDDScenario> getTestList() {
+		return testScenarioList;
 	}
 
-	public TestObjectWrapper getTestAt(int rowIndex) {
-		return testList.get(rowIndex);
+	public BDDScenario getTestAt(int rowIndex) {
+		return testScenarioList.get(rowIndex);
 	}
 }

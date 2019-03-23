@@ -36,11 +36,11 @@ import com.artos.annotation.BeforeTestUnit;
 import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
 import com.artos.annotation.KnownToFail;
+import com.artos.annotation.StepDefinition;
 import com.artos.annotation.TestImportance;
+import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestUnitObjectWrapper;
 
 import javassist.Modifier;
 
@@ -117,13 +117,25 @@ public class ScanTestCase {
 		// Iterate through all valid methods and construct a list of executable methods
 		for (Method method : methods) {
 			Unit unit = method.getAnnotation(Unit.class);
+			TestPlan testplan = method.getAnnotation(TestPlan.class);
 			KnownToFail ktf = method.getAnnotation(KnownToFail.class);
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 			Group group = method.getAnnotation(Group.class);
 			TestImportance testImportance = method.getAnnotation(TestImportance.class);
+			StepDefinition stepDef = method.getAnnotation(StepDefinition.class);
 
 			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(),
 					unit.testtimeout());
+
+			// Test Plan is an optional attribute so it can be null
+			if (null != testplan) {
+				testUnitObj.setTestPlanDescription(testplan.description());
+				testUnitObj.setTestPlanPreparedBy(testplan.preparedBy());
+				testUnitObj.setTestPlanPreparationDate(testplan.preparationDate());
+				testUnitObj.setTestreviewedBy(testplan.reviewedBy());
+				testUnitObj.setTestReviewDate(testplan.reviewDate());
+				testUnitObj.setTestPlanBDD(testplan.bdd());
+			}
 
 			/*
 				 * Store group list for each test cases.
@@ -173,6 +185,11 @@ public class ScanTestCase {
 				testUnitObj.setTestImportance(testImportance.value());
 			}
 
+			// Test Def is an optional attribute so it can be null
+			if (null != stepDef) {
+				testUnitObj.setStepDefinition(stepDef.value().trim());
+			}
+
 			testUnitWrapperList_All.add(testUnitObj);
 			if (!unit.skip()) {
 				testUnitWrapperList_WithoutSkipped.add(testUnitObj);
@@ -182,6 +199,7 @@ public class ScanTestCase {
 		}
 
 		List<String> groupList = context.getTestSuite().getTestUnitGroupList();
+
 		groupBasedFiltering(groupList);
 
 		// Clear list otherwise wrong methods will be added against wrong class

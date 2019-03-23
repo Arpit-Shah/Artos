@@ -19,63 +19,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.annotation;
+package com.artos.framework.infra;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.File;
 
-/**
- * 
- * 
- *
- */
-// Make the annotation available at runtime:
-@Retention(RetentionPolicy.RUNTIME)
-// Allow to use only on types:
-@Target({ ElementType.TYPE, ElementType.METHOD })
-public @interface TestPlan {
+public class BDDFeatureObjectWrapper {
 
-	/**
-	 * Test Description
-	 * 
-	 * @return test short description
-	 */
-	String description() default "";
+	File featureFile;
+	String glue;
 
-	/**
-	 * Name of the person who prepared the test
-	 * 
-	 * @return test engineer name
-	 */
-	String preparedBy() default "";
+	public BDDFeatureObjectWrapper(File featureFile, String glue) {
+		this.featureFile = featureFile;
+		this.glue = glue;
+	}
 
-	/**
-	 * Date of the test preparation
-	 * 
-	 * @return test case preparation date
-	 */
-	String preparationDate() default "";
+	public File getFeatureFile() {
+		return featureFile;
+	}
 
-	/**
-	 * Test reviewer name
-	 * 
-	 * @return test case reviewer name
-	 */
-	String reviewedBy() default "";
+	public void setFeatureFile(File featureFile) {
+		this.featureFile = featureFile;
+	}
 
-	/**
-	 * Test review date
-	 * 
-	 * @return test case review date
-	 */
-	String reviewDate() default "";
+	public String getGlue() {
+		return glue;
+	}
 
-	/**
-	 * Behaviour driven test plan, prefer to write it in Gherkin language
-	 * 
-	 * @return test plan in Gherkin format
-	 */
-	String bdd() default "";
+	public void setGlue(String glue) {
+		this.glue = glue;
+	}
+
 }

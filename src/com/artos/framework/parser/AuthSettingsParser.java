@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework.xml;
+package com.artos.framework.parser;
 
 import java.io.File;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import org.w3c.dom.NodeList;
 public class AuthSettingsParser {
 
 	File fXmlFile;
-	Map<String, UserAuthParameters> authMap;
+	Map<String, UserAuthParametersParser> authMap;
 
 	public AuthSettingsParser(File emailAuthSettingFilePath) {
 		this.fXmlFile = emailAuthSettingFilePath;
@@ -73,7 +73,7 @@ public class AuthSettingsParser {
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 
-			UserAuthParameters userAuth = new UserAuthParameters();
+			UserAuthParametersParser userAuth = new UserAuthParametersParser();
 			String id = null;
 			Node nNode = nList.item(temp);
 
@@ -98,15 +98,15 @@ public class AuthSettingsParser {
 		}
 	}
 	
-	public UserAuthParameters getAuthParametersByID(String id){
+	public UserAuthParametersParser getAuthParametersByID(String id){
 		return getAuthMap().get(id);
 	}
 
-	public Map<String, UserAuthParameters> getAuthMap() {
+	public Map<String, UserAuthParametersParser> getAuthMap() {
 		return authMap;
 	}
 
-	public void setAuthMap(Map<String, UserAuthParameters> authMap) {
+	public void setAuthMap(Map<String, UserAuthParametersParser> authMap) {
 		this.authMap = authMap;
 	}
 }

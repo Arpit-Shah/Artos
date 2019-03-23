@@ -39,8 +39,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import com.artos.framework.xml.AuthSettingsParser;
-import com.artos.framework.xml.UserAuthParameters;
+import com.artos.framework.parser.AuthSettingsParser;
+import com.artos.framework.parser.UserAuthParametersParser;
 
 public class EmailClient {
 
@@ -74,7 +74,7 @@ public class EmailClient {
 		this.emailBody = emailBody;
 
 		AuthSettingsParser authSettingsParser = new AuthSettingsParser(emailAuthSettingsFilePath);
-		UserAuthParameters authParam = authSettingsParser.getAuthParametersByID(authID);
+		UserAuthParametersParser authParam = authSettingsParser.getAuthParametersByID(authID);
 		if (null == authParam) {
 			throw new Exception("Invalid Auth ID");
 		}

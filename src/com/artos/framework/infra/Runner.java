@@ -42,9 +42,9 @@ import org.xml.sax.SAXException;
 
 import com.artos.exception.InvalidDataException;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.xml.FrameworkConfig;
-import com.artos.framework.xml.TestScriptParser;
-import com.artos.framework.xml.TestSuite;
+import com.artos.framework.parser.FrameworkConfigParser;
+import com.artos.framework.parser.TestScriptParser;
+import com.artos.framework.parser.TestSuite;
 import com.artos.interfaces.TestExecutable;
 import com.google.common.collect.Lists;
 
@@ -53,7 +53,7 @@ public class Runner {
 	Class<?> cls;
 	// Default thread count should be 1
 	int threadCount = 1;
-	String profile = null;
+	String profile = "dev";
 	TestSuite runnerTestSuite;
 
 	/**
@@ -128,8 +128,8 @@ public class Runner {
 		provideSchema();
 
 		// Take profile name from the command line parameters, if not available then take it from the Runner class parameters
-		FWStaticStore.frameworkConfig = new FrameworkConfig(true, null == CliProcessor.getProfile() ? profile : CliProcessor.getProfile());
-		
+		FWStaticStore.frameworkConfig = new FrameworkConfigParser(true, null == CliProcessor.getProfile() ? profile : CliProcessor.getProfile());
+
 		// Generate files/configurations required for ARTOS
 		generateRequiredFiles();
 
@@ -401,6 +401,15 @@ public class Runner {
 	}
 
 	/**
+	 * Sets Feature File List
+	 * 
+	 * @param featureFileList featureFileList provided by user
+	 */
+	public void setFeatureFileList(List<BDDFeatureObjectWrapper> featureFileList) {
+		runnerTestSuite.setFeatureFiles(featureFileList);
+	}
+
+	/**
 	 * Sets loop count for test suite execution. If not set then suite will be run once.
 	 * 
 	 * @param loopCount test loop count
@@ -476,8 +485,14 @@ class SuiteTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			// Create ArtosRunner per thread
-			new ArtosRunner(context).run();
+			List<BDDFeatureObjectWrapper> featureFiles = context.getTestSuite().getFeatureFiles();
+			if (null == featureFiles || featureFiles.isEmpty()) {
+				// Create ArtosRunner per thread
+				new ArtosRunner(context).run();
+			} else {
+				// Create ArtosRunner per thread
+				new BDDRunner(context).run();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			context.getLogger().error(e);

@@ -22,8 +22,10 @@
 package com.artos.interfaces;
 
 import com.artos.framework.Enums.TestStatus;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestUnitObjectWrapper;
+import com.artos.framework.infra.BDDScenario;
+import com.artos.framework.infra.BDDStep;
+import com.artos.framework.infra.TestObjectWrapper;
+import com.artos.framework.infra.TestUnitObjectWrapper;
 
 /**
  * Interface recommended for any listener which requires to be notified test progress events.
@@ -101,6 +103,18 @@ public interface TestProgress {
 	 */
 	public void printTestPlan(TestObjectWrapper t);
 
+	public void printTestPlan(BDDScenario sc);
+
+	/**
+	 * Method is called before {@code BeforeTestUnit} method execution starts
+	 * 
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void printTestUnitPlan(TestUnitObjectWrapper unit);
+
+	public void printTestUnitPlan(BDDStep step);
+
 	// ==========================================================
 	// Test Unit Before and After
 	// ==========================================================
@@ -113,6 +127,8 @@ public interface TestProgress {
 	 */
 	public void globalBeforeTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit);
 
+	public void globalBeforeTestUnitMethodExecutionStarted(String methodName, BDDStep step);
+
 	/**
 	 * Method is called after global {@code BeforeTestUnit} method execution starts
 	 * 
@@ -120,6 +136,8 @@ public interface TestProgress {
 	 * @see TestUnitObjectWrapper
 	 */
 	public void globalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
+
+	public void globalBeforeTestUnitMethodExecutionFinished(BDDStep step);
 
 	/**
 	 * Method is called after global {@code AfterTestUnit} method execution starts
@@ -130,6 +148,8 @@ public interface TestProgress {
 	 */
 	public void globalAfterTestUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit);
 
+	public void globalAfterTestUnitMethodExecutionStarted(String methodName, BDDStep step);
+
 	/**
 	 * Method is called after global {@code AfterTestUnit} method execution starts
 	 * 
@@ -137,6 +157,8 @@ public interface TestProgress {
 	 * @see TestUnitObjectWrapper
 	 */
 	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
+
+	public void globalAfterTestUnitMethodExecutionFinished(BDDStep step);
 
 	/**
 	 * Method is called before local {@code BeforeTestUnit} method execution starts
@@ -184,6 +206,8 @@ public interface TestProgress {
 	 */
 	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t);
 
+	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, BDDScenario scenario);
+
 	/**
 	 * Method is called after {@code BeforeTest} method execution finishes
 	 * 
@@ -191,6 +215,8 @@ public interface TestProgress {
 	 * @see TestObjectWrapper
 	 */
 	public void globalBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t);
+
+	public void globalBeforeTestCaseMethodExecutionFinished(BDDScenario scenario);
 
 	/**
 	 * Method is called before {@code AfterTest} method execution started
@@ -201,6 +227,8 @@ public interface TestProgress {
 	 */
 	public void globalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t);
 
+	public void globalAfterTestCaseMethodExecutionStarted(String methodName, BDDScenario scenario);
+
 	/**
 	 * Method is called after {@code AfterTest} method execution finishes
 	 * 
@@ -208,6 +236,8 @@ public interface TestProgress {
 	 * @see TestObjectWrapper
 	 */
 	public void globalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t);
+
+	public void globalAfterTestCaseMethodExecutionFinished(BDDScenario scenario);
 
 	/**
 	 * Method is called before {@code BeforeTest} method execution starts
@@ -254,6 +284,8 @@ public interface TestProgress {
 	 */
 	public void testCaseExecutionStarted(TestObjectWrapper t);
 
+	public void testCaseExecutionStarted(BDDScenario scenario);
+
 	/**
 	 * Method is called when test execution finishes
 	 * 
@@ -261,6 +293,8 @@ public interface TestProgress {
 	 * @see TestObjectWrapper
 	 */
 	public void testCaseExecutionFinished(TestObjectWrapper t);
+
+	public void testCaseExecutionFinished(BDDScenario scenario);
 
 	/**
 	 * Method is called when test unit execution starts
@@ -270,6 +304,8 @@ public interface TestProgress {
 	 */
 	public void testUnitExecutionStarted(TestUnitObjectWrapper unit);
 
+	public void testUnitExecutionStarted(BDDStep step);
+
 	/**
 	 * Method is called when test unit execution finishes
 	 * 
@@ -277,6 +313,8 @@ public interface TestProgress {
 	 * @see TestUnitObjectWrapper
 	 */
 	public void testUnitExecutionFinished(TestUnitObjectWrapper unit);
+
+	public void testUnitExecutionFinished(BDDStep step);
 
 	// ==========================================================
 	// Test Skip
@@ -301,6 +339,8 @@ public interface TestProgress {
 	 */
 	public void childTestCaseExecutionStarted(TestObjectWrapper t, String paramInfo);
 
+	public void childTestCaseExecutionStarted(BDDScenario scenario, String paramInfo);
+
 	/**
 	 * Method is called when child test execution finishes
 	 * 
@@ -308,6 +348,8 @@ public interface TestProgress {
 	 * @see TestObjectWrapper
 	 */
 	public void childTestCaseExecutionFinished(TestObjectWrapper t);
+
+	public void childTestCaseExecutionFinished(BDDScenario scenario);
 
 	/**
 	 * Method is called when unit child test execution starts
@@ -319,6 +361,8 @@ public interface TestProgress {
 	 */
 	public void childTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String paramInfo);
 
+	public void childTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String paramInfo);
+
 	/**
 	 * Method is called when unit child test execution finishes
 	 * 
@@ -326,6 +370,8 @@ public interface TestProgress {
 	 * @see TestUnitObjectWrapper
 	 */
 	public void childTestUnitExecutionFinished(TestUnitObjectWrapper unit);
+
+	public void childTestUnitExecutionFinished(BDDStep step);
 
 	// ==========================================================
 	// Test Status update

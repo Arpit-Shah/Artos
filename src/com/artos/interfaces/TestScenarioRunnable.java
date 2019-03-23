@@ -19,44 +19,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.interfaces;
 
-import java.lang.reflect.Method;
+import java.util.List;
 
-public class TestDataProvider {
+import com.artos.framework.infra.BDDScenario;
+import com.artos.framework.infra.TestContext;
 
-	String dataProviderName;
-	Class<?> classOfTheMethod;
-	Method method;
-	boolean staticMethod;
+/**
+ * Used for BDD GUI Test Selector
+ */
+public interface TestScenarioRunnable {
 
 	/**
-	 * @param method method which has {@code DataProvider} annotation
-	 * @param dataProviderName name given to {@code DataProvider}
-	 * @param classOfTheMethod class object where method belongs to
-	 * @param staticMethod true if method is static
+	 * Execute tests from testScenarioList sequentially
+	 * 
+	 * @param context Test Context
+	 * @param scenarioList List of TestScenarios to run
+	 * @throws Exception exceptions that happened within the tests
 	 */
-	public TestDataProvider(Method method, String dataProviderName, Class<?> classOfTheMethod, boolean staticMethod) {
-		super();
-		this.method = method;
-		this.dataProviderName = dataProviderName;
-		this.classOfTheMethod = classOfTheMethod;
-		this.staticMethod = staticMethod;
-	}
-
-	public String getDataProviderName() {
-		return dataProviderName;
-	}
-
-	public Class<?> getClassOfTheMethod() {
-		return classOfTheMethod;
-	}
-
-	public Method getMethod() {
-		return method;
-	}
-
-	public boolean isStaticMethod() {
-		return staticMethod;
-	}
+	public void executeTest(TestContext context, List<BDDScenario> scenarioList) throws Exception;
 }

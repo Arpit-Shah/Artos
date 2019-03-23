@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework.xml;
+package com.artos.framework.parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +49,8 @@ import org.xml.sax.SAXException;
 import com.artos.exception.InvalidDataException;
 import com.artos.framework.Enums.ScriptFileType;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestObjectWrapper;
+import com.artos.framework.infra.BDDFeatureObjectWrapper;
+import com.artos.framework.infra.TestObjectWrapper;
 
 public class TestScriptParser {
 
@@ -166,6 +167,17 @@ public class TestScriptParser {
 				_suite.setTestFQCNList(new ArrayList<>());
 			}
 
+			NodeList featureFileNodeList = eElement.getElementsByTagName("featurefiles");
+			if (featureFileNodeList.getLength() > 0) {
+				for (int temp = 0; temp < featureFileNodeList.getLength(); temp++) {
+					Node featureFileNode = featureFileNodeList.item(temp);
+					parseFeatureFiles(_suite, featureFileNode);
+				}
+			} else {
+				// create empty list so null pointer exception can be avoided
+				_suite.setFeatureFiles(new ArrayList<>());
+			}
+
 			NodeList paramsNodeList = eElement.getElementsByTagName("parameters");
 			if (paramsNodeList.getLength() > 0) {
 				for (int temp = 0; temp < paramsNodeList.getLength(); temp++) {
@@ -231,6 +243,25 @@ public class TestScriptParser {
 			}
 		}
 		_suite.setTestFQCNList(testFQCNList);
+	}
+
+	private void parseFeatureFiles(TestSuite _suite, Node featureFileNode) {
+		List<BDDFeatureObjectWrapper> featureFileList = new ArrayList<>();
+		NodeList nChildList = featureFileNode.getChildNodes();
+		for (int i = 0; i < nChildList.getLength(); i++) {
+			Node nChildNode = nChildList.item(i);
+			if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nChildNode;
+				if ("file".equals(eElement.getNodeName())) {
+					File f = new File("." + File.separator + "script" + File.separator + eElement.getAttribute("name").trim());
+					if (f.exists() && f.isFile() && f.getName().toLowerCase().endsWith(".feature")) {
+						featureFileList.add(new BDDFeatureObjectWrapper(f, ""));
+					}
+				}
+			}
+		}
+
+		_suite.setFeatureFiles(featureFileList);
 	}
 
 	private void parseTestGroups(TestSuite _suite, Node groupsNode) {
@@ -345,6 +376,7 @@ public class TestScriptParser {
 		suite.getParentNode().insertBefore(comment, suite);
 
 		createTestList(testList, doc, suite);
+		createFeatureFiles(doc, suite);
 		createSuiteParameters(doc, suite);
 		createTestCaseGroups(doc, suite);
 		createTestUnitGroups(doc, suite);
@@ -376,6 +408,25 @@ public class TestScriptParser {
 			attr1.setValue(testList.get(i).getTestClassObject().getCanonicalName());
 			property.setAttributeNode(attr1);
 		}
+	}
+
+	private void createFeatureFiles(Document doc, Element suite) {
+		// Organisation Info elements
+		Element files = doc.createElement("featurefiles");
+		suite.appendChild(files);
+
+		// add feature files
+		Element property = doc.createElement("file");
+		property.appendChild(doc.createTextNode(""));
+		files.appendChild(property);
+
+		Attr attr1 = doc.createAttribute("name");
+		attr1.setValue("testscenarios.feature");
+		property.setAttributeNode(attr1);
+
+		Attr attr2 = doc.createAttribute("glue");
+		attr2.setValue("");
+		property.setAttributeNode(attr2);
 	}
 
 	private void createSuiteParameters(Document doc, Element suite) {

@@ -23,7 +23,7 @@ package com.artos.framework;
 
 import java.io.File;
 
-import com.artos.framework.xml.FrameworkConfig;
+import com.artos.framework.parser.FrameworkConfigParser;
 
 /**
  * This class provides container which holds all static element of test framework
@@ -56,7 +56,7 @@ public class FWStaticStore {
 	public static final String LOG_BASE_DIR = "." + File.separator + "reporting" + File.separator;
 
 	// Must be kept after default paths initialised
-	public static FrameworkConfig frameworkConfig = null;
+	public static FrameworkConfigParser frameworkConfig = null;
 	public static SystemProperties systemProperties = new SystemProperties();
 	public static final String ARTOS_BUILD_VERSION = new Version().getBuildVersion();
 	public static final String ARTOS_BUILD_DATE = new Version().getBuildDate();

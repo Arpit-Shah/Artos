@@ -39,7 +39,7 @@ import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuild
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.xml.TestSuite;
+import com.artos.framework.parser.TestSuite;
 
 /**
  * This class is responsible for initialising all log streams which may require
