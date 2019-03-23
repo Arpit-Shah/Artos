@@ -49,7 +49,6 @@ public class BDDRunner {
 	TestContext context;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
 	Map<String, TestUnitObjectWrapper> stepDefinitionMap = null;
-	BDDFeature feature;
 
 	// ==================================================================================
 	// Constructor (Starting point of framework)
@@ -96,48 +95,68 @@ public class BDDRunner {
 	 */
 	protected void run() throws Exception {
 
-		// Parse file, If any issue then stop execution
-		File featureFile = context.getTestSuite().getFeatureFiles().get(0).getFeatureFile();
+		// Create empty scenario list
+		List<BDDScenario> scenarioList = new ArrayList<>();
+		// Get all featureFileObjectWrapper
+		List<BDDFeatureObjectWrapper> featureObjectWrapperList = context.getTestSuite().getFeatureFiles();
+		// Find unitGroupList
 		List<String> groupList = context.getTestSuite().getTestUnitGroupList();
-		BDDFeatureFileParser featureFileParser = new BDDFeatureFileParser(featureFile, groupList);
-		// print(featureFileParser.getScenarioList());
 
-		// get feature which contains all methods filtered by the grouplist
-		this.feature = featureFileParser.getFeature();
+		// Iterate through each of the provided feature file and find scenarios
+		for (BDDFeatureObjectWrapper featureObj : featureObjectWrapperList) {
+			// Parse file, If any issue then stop execution
+			File featureFile = featureObj.getFeatureFile();
+			BDDFeatureFileParser featureFileParser = new BDDFeatureFileParser(featureFile, groupList);
+			// print(featureFileParser.getScenarioList());
+
+			// get feature scenarios which contains all methods filtered by the group list
+			if (null == scenarioList || scenarioList.isEmpty()) {
+				// If it is first feature file then following line will be exercised
+				scenarioList = featureFileParser.getFeature().getScenarios();
+			} else {
+				// If more feature files are processed then add them all to the scenario list
+				List<BDDScenario> newScenarioList = featureFileParser.getFeature().getScenarios();
+				if (null != newScenarioList && !newScenarioList.isEmpty()) {
+					scenarioList.addAll(newScenarioList);
+				}
+			}
+		}
 
 		// Transform TestUnitList into TestUnitObjectWrapper Map
 		this.stepDefinitionMap = new BDDTransformToTestObjectWrapper(context).getStepDefinitionMap();
 
 		// find and populate all methods against test steps
-		mapTestStepMethods();
+		mapTestStepMethods(scenarioList);
 
 		// If GUI test selector is enabled then show it or else execute test cases
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelector()) {
 			TestScenarioRunnable runObj = new TestScenarioRunnable() {
 				@Override
-				public void executeTest(TestContext context, BDDFeature feature) throws Exception {
-					runTest(feature);
+				public void executeTest(TestContext context, List<BDDScenario> scenarioList) throws Exception {
+					runTest(scenarioList);
 				}
 			};
-			new BDDGUITestSelector(context, (BDDFeature) feature, runObj);
+			new BDDGUITestSelector(context, (List<BDDScenario>) scenarioList, runObj);
 		} else {
-			runTest(feature);
+			runTest(scenarioList);
 		}
+
 	}
 
 	/**
 	 * Finds all units for each of the test steps and store them inside TestStep object If any units are missing then generates skeleton method for
 	 * helping user. This will stop execution straight away.
+	 * 
+	 * @param feature BDD feature object
 	 */
-	private void mapTestStepMethods() {
+	private void mapTestStepMethods(List<BDDScenario> scenarioList) {
 		boolean missingStepMethods = false;
 		List<String> mockMethodNames = new ArrayList<>();
-		List<BDDScenario> scenarios = feature.getScenarios();
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("\nSEEMS THAT YOU ARE MISSING SOME METHODS\nYou can implement missing steps with the snippets below:");
 
-		for (BDDScenario sc : scenarios) {
+		for (BDDScenario sc : scenarioList) {
 			for (BDDStep st : sc.getSteplist()) {
 				String description = st.getStepDescription().trim().replaceAll("\\\".*?\\\"", "\"\"");
 
@@ -153,7 +172,7 @@ public class BDDRunner {
 
 		if (missingStepMethods) {
 			// Print Scenario so user can see what we read from the file
-			printScenario(scenarios);
+			printScenario(scenarioList);
 			// Print mock methods, which may help user construct step class
 			System.err.println(sb.toString());
 			// Stop execution
@@ -173,7 +192,11 @@ public class BDDRunner {
 				}
 				System.out.println("");
 			}
-			System.out.println("Scenario: " + sc.scenarioDescription);
+			if (sc.isBackground()) {
+				System.out.println("BackGround: " + sc.scenarioDescription);
+			} else {
+				System.out.println("Scenario: " + sc.scenarioDescription);
+			}
 			for (BDDStep step : sc.steplist) {
 				System.out.println("\t" + step.getStepAction() + " " + step.getStepDescription());
 				if (null != step.getLocalDataTable() && !step.getLocalDataTable().isEmpty()) {
@@ -228,10 +251,9 @@ public class BDDRunner {
 	 * @param feature test feature
 	 * @throws Exception
 	 */
-	private void runTest(BDDFeature feature) throws Exception {
+	private void runTest(List<BDDScenario> scenarioList) throws Exception {
 
 		LogWrapper logger = context.getLogger();
-		List<BDDScenario> scenarioList = feature.getScenarios();
 
 		// TODO : Parallel running test case can not work with current
 		// architecture so should not enable this feature until solution is
@@ -248,7 +270,7 @@ public class BDDRunner {
 		// sb.append("\n");
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 		sb.append("\n");
-		sb.append("[TestCases] ");
+		sb.append("[Scenarios] ");
 		sb.append("EXECUTED:" + String.format("%-" + 4 + "s", context.getTotalTestCount()));
 		sb.append(" PASS:" + String.format("%-" + 4 + "s", context.getCurrentPassCount()));
 		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentSkipCount()));
@@ -294,7 +316,7 @@ public class BDDRunner {
 	private void PrintTotalUnitResult(List<BDDScenario> scenarioList, StringBuilder sb) {
 		// Print Test results
 		sb.append("\n");
-		sb.append("[TestUnits] ");
+		sb.append("[TestSteps] ");
 		sb.append("EXECUTED:" + String.format("%-" + 4 + "s", context.getTotalUnitTestCount()));
 		sb.append(" PASS:" + String.format("%-" + 4 + "s", context.getCurrentUnitPassCount()));
 		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentUnitSkipCount()));
@@ -321,7 +343,7 @@ public class BDDRunner {
 			StringBuilder sb = new StringBuilder();
 			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 			sb.append("\n");
-			sb.append(" FAILED TEST CASES (" + context.getCurrentFailCount() + ")");
+			sb.append(" FAILED TEST SCENARIOS (" + context.getCurrentFailCount() + ")");
 			sb.append("\n\n");
 			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
@@ -604,11 +626,11 @@ public class BDDRunner {
 		// Parameterised Child TestCase Start
 		// ********************************************************************************************
 
-		// notifyChildTestCaseExecutionStarted(scenario, userInfo);
+		notifyChildTestCaseExecutionStarted(scenario, userInfo);
 
 		runIndividualTest(scenario);
 
-		// notifyChildTestCaseExecutionFinished(scenario);
+		notifyChildTestCaseExecutionFinished(scenario);
 
 		// ********************************************************************************************
 		// Parameterised Child TestCase Finish

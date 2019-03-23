@@ -21,7 +21,9 @@
  ******************************************************************************/
 package com.artos.interfaces;
 
-import com.artos.framework.infra.BDDFeature;
+import java.util.List;
+
+import com.artos.framework.infra.BDDScenario;
 import com.artos.framework.infra.TestContext;
 
 /**
@@ -33,8 +35,8 @@ public interface TestScenarioRunnable {
 	 * Execute tests from testScenarioList sequentially
 	 * 
 	 * @param context Test Context
-	 * @param testScenarioList List of TestExecutors to run
+	 * @param scenarioList List of TestScenarios to run
 	 * @throws Exception exceptions that happened within the tests
 	 */
-	public void executeTest(TestContext context, BDDFeature feature) throws Exception;
+	public void executeTest(TestContext context, List<BDDScenario> scenarioList) throws Exception;
 }
