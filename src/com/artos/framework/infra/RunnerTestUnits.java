@@ -34,9 +34,6 @@ import java.util.concurrent.TimeoutException;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestDataProvider;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.interfaces.TestProgress;
 import com.artos.utils.UtilsFramework;
 

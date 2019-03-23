@@ -52,9 +52,6 @@ import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestDataProvider;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestPlanWrapper;
 import com.artos.interfaces.TestExecutable;
 
 import javassist.Modifier;

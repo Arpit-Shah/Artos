@@ -22,11 +22,13 @@
 package com.artos.framework.listener;
 
 import com.artos.framework.Enums.TestStatus;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestUnitObjectWrapper;
 import com.artos.framework.Version;
+import com.artos.framework.infra.BDDScenario;
+import com.artos.framework.infra.BDDStep;
 import com.artos.framework.infra.LogWrapper;
 import com.artos.framework.infra.TestContext;
+import com.artos.framework.infra.TestObjectWrapper;
+import com.artos.framework.infra.TestUnitObjectWrapper;
 import com.artos.interfaces.TestProgress;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
@@ -67,9 +69,21 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void testCaseExecutionStarted(BDDScenario scenario) {
+		testParent = extent.startTest("Scenario: ", scenario.getScenarioDescription());
+		testParent.assignAuthor("");
+	}
+
+	@Override
 	public void childTestCaseExecutionStarted(TestObjectWrapper t, String paramInfo) {
 		testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
 		testChild.assignAuthor(t.getTestPlanPreparedBy());
+	}
+
+	@Override
+	public void childTestCaseExecutionStarted(BDDScenario scenario, String paramInfo) {
+		testChild = extent.startTest(paramInfo, scenario.getScenarioDescription());
+		testChild.assignAuthor("");
 	}
 
 	@Override
@@ -79,7 +93,21 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void testCaseExecutionFinished(BDDScenario scenario) {
+		extent.endTest(testParent);
+		testParent = null;
+	}
+
+	@Override
 	public void childTestCaseExecutionFinished(TestObjectWrapper t) {
+		// add child to parent
+		testParent.appendChild(testChild);
+		extent.endTest(testChild);
+		testChild = null;
+	}
+
+	@Override
+	public void childTestCaseExecutionFinished(BDDScenario scenario) {
 		// add child to parent
 		testParent.appendChild(testChild);
 		extent.endTest(testChild);
@@ -177,33 +205,45 @@ public class ExtentReportListener implements TestProgress {
 		// TODO Auto-generated method stub
 
 	}
-	
+
+	@Override
+	public void printTestPlan(BDDScenario sc) {
+		// TODO Auto-generated method stub
+
+	}
+
 	@Override
 	public void localBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void localBeforeTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void localAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void localAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, BDDScenario scenario) {
 		// TODO Auto-generated method stub
 
 	}
@@ -215,13 +255,31 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void globalBeforeTestCaseMethodExecutionFinished(BDDScenario scenario) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void globalAfterTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	public void globalAfterTestCaseMethodExecutionStarted(String methodName, BDDScenario scenario) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void globalAfterTestCaseMethodExecutionFinished(TestObjectWrapper t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterTestCaseMethodExecutionFinished(BDDScenario scenario) {
 		// TODO Auto-generated method stub
 
 	}
@@ -257,7 +315,19 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void globalBeforeTestUnitMethodExecutionStarted(String methodName, BDDStep step) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void globalBeforeTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalBeforeTestUnitMethodExecutionFinished(BDDStep step) {
 		// TODO Auto-generated method stub
 
 	}
@@ -281,7 +351,19 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void globalAfterTestUnitMethodExecutionStarted(String methodName, BDDStep step) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterTestUnitMethodExecutionFinished(BDDStep step) {
 		// TODO Auto-generated method stub
 
 	}
@@ -305,7 +387,19 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void testUnitExecutionStarted(BDDStep step) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void testUnitExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void testUnitExecutionFinished(BDDStep step) {
 		// TODO Auto-generated method stub
 
 	}
@@ -317,7 +411,21 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
+	public void childTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String paramInfo) {
+		testChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
+		testChild.assignAuthor("");
+	}
+
+	@Override
 	public void childTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
+		// add child to parent
+		testParent.appendChild(testChild);
+		extent.endTest(testChild);
+		testChild = null;
+	}
+
+	@Override
+	public void childTestUnitExecutionFinished(BDDStep step) {
 		// add child to parent
 		testParent.appendChild(testChild);
 		extent.endTest(testChild);
@@ -327,7 +435,13 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void printTestUnitPlan(TestUnitObjectWrapper unit) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void printTestUnitPlan(BDDStep step) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
