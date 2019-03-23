@@ -41,6 +41,7 @@ public class ExtentReportListener implements TestProgress {
 	ExtentReports extent = null;
 	ExtentTest testParent;
 	ExtentTest testChild;
+	ExtentTest testChildOfChild;
 
 	public ExtentReportListener(TestContext context) {
 		this.context = context;
@@ -70,8 +71,8 @@ public class ExtentReportListener implements TestProgress {
 
 	@Override
 	public void testCaseExecutionStarted(BDDScenario scenario) {
-		testParent = extent.startTest("Scenario: ", scenario.getScenarioDescription());
-		testParent.assignAuthor("");
+		testParent = extent.startTest("Scenario: " + scenario.getScenarioDescription(), scenario.getScenarioDescription());
+		// testParent.assignAuthor("");
 	}
 
 	@Override
@@ -124,7 +125,18 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	public void testCaseStatusUpdate(TestStatus testStatus, String description) {
-		if (null != testChild) {
+		if (null != testChildOfChild) {
+			if (TestStatus.FAIL == testStatus) {
+				testChildOfChild.log(LogStatus.FAIL, description);
+			} else if (TestStatus.KTF == testStatus) {
+				// Extent do not have KTF status so add it to warning
+				testChildOfChild.log(LogStatus.WARNING, description);
+			} else if (TestStatus.SKIP == testStatus) {
+				testChildOfChild.log(LogStatus.SKIP, description);
+			} else if (TestStatus.PASS == testStatus) {
+				testChildOfChild.log(LogStatus.PASS, description);
+			}
+		} else if (null != testChild) {
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -151,7 +163,18 @@ public class ExtentReportListener implements TestProgress {
 
 	@Override
 	public void testResult(TestStatus testStatus, String description) {
-		if (null != testChild) {
+		if (null != testChildOfChild) {
+			if (TestStatus.FAIL == testStatus) {
+				testChildOfChild.log(LogStatus.FAIL, description);
+			} else if (TestStatus.KTF == testStatus) {
+				// Extent do not have KTF status so add it to warning
+				testChildOfChild.log(LogStatus.WARNING, description);
+			} else if (TestStatus.SKIP == testStatus) {
+				testChildOfChild.log(LogStatus.SKIP, description);
+			} else if (TestStatus.PASS == testStatus) {
+				testChildOfChild.log(LogStatus.PASS, description);
+			}
+		} else if (null != testChild) {
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -406,30 +429,58 @@ public class ExtentReportListener implements TestProgress {
 
 	@Override
 	public void childTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String paramInfo) {
-		testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
-		testChild.assignAuthor(t.getTestPlanPreparedBy());
+		/*
+		 * Parameterised test case at test case level and test unit level call this function
+		 */
+		if (null == testChild) {
+			testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
+			testChild.assignAuthor(t.getTestPlanPreparedBy());
+		}
 	}
 
 	@Override
 	public void childTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String paramInfo) {
-		testChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
-		testChild.assignAuthor("");
+		// If Child test case is not present (Because test case is running as non-parameterised test cases) then create new child test case in extent
+		if (null == testChild) {
+			testChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
+			testChild.assignAuthor("");
+
+			// If Child test case is present (Because test case is running as Parameterised test cases) then create new childOfchild test case in
+			// extent
+		} else {
+			testChildOfChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
+			testChildOfChild.assignAuthor("");
+		}
 	}
 
 	@Override
 	public void childTestUnitExecutionFinished(TestUnitObjectWrapper unit) {
-		// add child to parent
-		testParent.appendChild(testChild);
-		extent.endTest(testChild);
-		testChild = null;
+		if (null == testChildOfChild) {
+			// add child to parent
+			testParent.appendChild(testChild);
+			extent.endTest(testChild);
+			testChild = null;
+		} else {
+			// add child to parent
+			testChild.appendChild(testChildOfChild);
+			extent.endTest(testChildOfChild);
+			testChildOfChild = null;
+		}
 	}
 
 	@Override
 	public void childTestUnitExecutionFinished(BDDStep step) {
-		// add child to parent
-		testParent.appendChild(testChild);
-		extent.endTest(testChild);
-		testChild = null;
+		if (null == testChildOfChild) {
+			// add child to parent
+			testParent.appendChild(testChild);
+			extent.endTest(testChild);
+			testChild = null;
+		} else {
+			// add child to parent
+			testChild.appendChild(testChildOfChild);
+			extent.endTest(testChildOfChild);
+			testChildOfChild = null;
+		}
 	}
 
 	@Override

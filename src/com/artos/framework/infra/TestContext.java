@@ -327,7 +327,7 @@ public class TestContext {
 
 		long totalTestTime = scenario.getTestFinishTime() - scenario.getTestStartTime();
 		// Finalise and add test result in log file
-		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n" + FWStaticStore.ARTOS_LINE_BREAK_1);
+		getLogger().info("\nScenario Result : {}", getCurrentTestStatus().name() + "\n" + FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(scenario, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
@@ -414,7 +414,7 @@ public class TestContext {
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "] : " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
+				+ "] : " + step.getStepDescription() + " " + bugTrackingNum);
 
 		// reset status for next test
 		resetUnitTestStatus();

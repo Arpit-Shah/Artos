@@ -144,6 +144,10 @@ public class TestExecutionEventListener implements TestProgress {
 			sb.append("BDD Test Plan	: " + BDD);
 			sb.append("\n");
 		}
+		if (!"".equals(unit.getStepDefinition())) {
+			sb.append("Step Definition	: " + unit.getStepDefinition());
+			sb.append("\n");
+		}
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
@@ -155,7 +159,7 @@ public class TestExecutionEventListener implements TestProgress {
 
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 		sb.append("\n");
-		sb.append("\tStep: " + step.getStepAction() + " " + step.getStepDescription());
+		sb.append("Step: " + step.getStepAction() + " " + step.getStepDescription());
 		sb.append("\n");
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
@@ -378,12 +382,12 @@ public class TestExecutionEventListener implements TestProgress {
 
 	@Override
 	public void testUnitExecutionStarted(TestUnitObjectWrapper unit) {
-		logger.info("\n=> " + unit.getTestUnitMethod().getName() + "(context)");
+		// logger.info("\n=> " + unit.getTestUnitMethod().getName() + "(context)");
 	}
 
 	@Override
 	public void testUnitExecutionStarted(BDDStep step) {
-		logger.info("\n=> " + step.getUnit().getTestUnitMethod().getName() + "(context)");
+		// logger.info("\n=> " + step.getUnit().getTestUnitMethod().getName() + "(context)");
 	}
 
 	@Override

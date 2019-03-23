@@ -139,7 +139,7 @@ public class BDDRunnerTestSteps {
 			step.getUnit().setTestUnitStartTime(System.currentTimeMillis());
 
 			runSimpleStep(step);
-			
+
 			postTestValidation(step.getUnit());
 		} catch (Throwable e) {
 			processTestUnitException(step.getUnit(), e);
@@ -260,12 +260,13 @@ public class BDDRunnerTestSteps {
 		// ********************************************************************************************
 		// Parameterised Child TestCase Start
 		// ********************************************************************************************
-
-		notifyChildTestUnitExecutionStarted(scenario, step, userInfo);
+		// Disabled because it generates wrong extent flow when it runs as parameterised steps
+		// notifyChildTestUnitExecutionStarted(scenario, step, userInfo);
 
 		runIndividualUnitTest(step);
 
-		notifyChildTestUnitExecutionFinished(step);
+		// Disabled because it generates wrong extent flow when it runs as parameterised steps
+		// notifyChildTestUnitExecutionFinished(step);
 
 		// ********************************************************************************************
 		// Parameterised Child TestCase Finish
@@ -337,7 +338,7 @@ public class BDDRunnerTestSteps {
 			}
 		}
 	}
-	
+
 	/**
 	 * Responsible for processing throwable/exception thrown by test cases during execution time. If {@code ExpectedException} annotation defines
 	 * expected throwable/exception and received throwable/exception does not match any of the defined throwable(s)/Exception(s) then test will be
@@ -474,17 +475,17 @@ public class BDDRunnerTestSteps {
 		}
 	}
 
-	private void notifyChildTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String userInfo) {
-		for (TestProgress listener : listenerList) {
-			listener.childTestUnitExecutionStarted(scenario, step, userInfo);
-		}
-	}
+	// private void notifyChildTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String userInfo) {
+	// for (TestProgress listener : listenerList) {
+	// listener.childTestUnitExecutionStarted(scenario, step, userInfo);
+	// }
+	// }
 
-	private void notifyChildTestUnitExecutionFinished(BDDStep step) {
-		for (TestProgress listener : listenerList) {
-			listener.childTestUnitExecutionFinished(step);
-		}
-	}
+	// private void notifyChildTestUnitExecutionFinished(BDDStep step) {
+	// for (TestProgress listener : listenerList) {
+	// listener.childTestUnitExecutionFinished(step);
+	// }
+	// }
 
 	// void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName, TestScenario scenario) {
 	// for (TestProgress listener : listenerList) {

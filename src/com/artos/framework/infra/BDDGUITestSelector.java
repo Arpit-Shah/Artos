@@ -61,7 +61,6 @@ public class BDDGUITestSelector {
 	private JTextField loopCountField;
 	private TestScenarioRunnable testScenarioRunner;
 	private ArrayList<BDDScenario> selectedTests;
-	private BDDFeature feature;
 
 	/**
 	 * TestRunnerGui constructor
@@ -69,24 +68,21 @@ public class BDDGUITestSelector {
 	 * @param context TestContext
 	 * @param testSCList List of Tests defined in Main class
 	 * @param testScenarioRunner A TestRunner implementation that will execute the tests
-	 * @throws Exception if gui could not launch
+	 * @throws Exception if GUI could not launch
 	 */
-	public BDDGUITestSelector(TestContext context, BDDFeature feature, TestScenarioRunnable testScenarioRunner) throws Exception {
+	public BDDGUITestSelector(TestContext context, List<BDDScenario> testScenarios, TestScenarioRunnable testScenarioRunner) throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		this.context = context;
-		this.feature = feature;
-		List<BDDScenario> testSCList = feature.getScenarios();
-		testRunnerDataModel = new TestBDDRunnerDataModel(testSCList);
+		testRunnerDataModel = new TestBDDRunnerDataModel(testScenarios);
 		this.testScenarioRunner = testScenarioRunner;
 		selectedTests = new ArrayList<BDDScenario>();
 
 		// If more than one test cases to select then only show GUI otherwise
 		// just run the suit
-
-		if (testSCList.size() > 1) {
+		if (testScenarios.size() > 1) {
 
 			initMainFrame();
 			initMainViewComponents();
@@ -111,8 +107,7 @@ public class BDDGUITestSelector {
 			container.setVisible(true);
 		} else {
 			try {
-				feature.setScenarios(testRunnerDataModel.getTestList());
-				testScenarioRunner.executeTest(context, feature);
+				testScenarioRunner.executeTest(context, testScenarios);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -140,7 +135,7 @@ public class BDDGUITestSelector {
 			}
 		});
 
-		container.setSize(new Dimension(500, 550));
+		container.setSize(new Dimension(700, 550));
 		container.setResizable(false);
 		container.setLocation(new Point(100, 50));
 	}
@@ -215,7 +210,10 @@ public class BDDGUITestSelector {
 		setTableStyle(testTableView);
 
 		// so we can scroll the table view if there are a lot of tests
+		testTableView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		JScrollPane scrollPane = new JScrollPane(testTableView);
+		Dimension preferredSize = new Dimension(650, 450);
+		scrollPane.setPreferredSize(preferredSize);
 
 		// basic layout, no constraints (any suggestions here?)
 		FlowLayout layout = new FlowLayout();
@@ -246,7 +244,11 @@ public class BDDGUITestSelector {
 		col.setCellRenderer(renderer);
 
 		col = testTableView.getColumnModel().getColumn(1);
-		col.setPreferredWidth(465);
+		if (testRunnerDataModel.getTestList().size() > 25) {
+			col.setPreferredWidth(615 - 20);
+		} else {
+			col.setPreferredWidth(615 - 2);
+		}
 	}
 
 	/**
@@ -269,11 +271,9 @@ public class BDDGUITestSelector {
 			public void run() {
 				try {
 					if (selectedOnly) {
-						feature.setScenarios(selectedTests);
-						testScenarioRunner.executeTest(context, feature);
+						testScenarioRunner.executeTest(context, selectedTests);
 					} else {
-						feature.setScenarios(testRunnerDataModel.getTestList());
-						testScenarioRunner.executeTest(context, feature);
+						testScenarioRunner.executeTest(context, testRunnerDataModel.getTestList());
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
