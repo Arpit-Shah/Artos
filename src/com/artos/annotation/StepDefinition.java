@@ -27,22 +27,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import com.artos.framework.Enums.Gherkin;
-
 @Retention(RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface StepDefinition {
-	/**
-	 * Accepts Enum which defines test steps Gherkin way
-	 * 
-	 * @return Gherkin step type
-	 */
-	public Gherkin gherkin();
 
-	/**
-	 * Accepts String step definition
-	 * 
-	 * @return Gherkin step definition
-	 */
-	String stepDef();
+	String value() default "";
 }
