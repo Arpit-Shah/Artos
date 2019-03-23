@@ -38,10 +38,12 @@ public class Enums {
 	public enum TestStatus {
 
 		// @formatter:off
+		
 		PASS(0),
 		SKIP(1),
 		KTF(2), 
 		FAIL(3);
+		
 		// @formatter:on
 
 		private final int status;
@@ -106,12 +108,14 @@ public class Enums {
 	public enum Importance {
 
 		// @formatter:off
+		
 		FATAL(0),
 		CRITICAL(1),
 		HIGH(2), 
 		MEDIUM(3),
 		LOW(4),
 		UNDEFINED(5);
+		
 		// @formatter:on
 
 		private final int status;
@@ -138,8 +142,10 @@ public class Enums {
 	public enum ScriptFileType {
 
 		// @formatter:off
+		
 		TEST_SCRIPT(0),
 		ERROR_SCRIPT(1);
+		
 		// @formatter:on
 
 		private final int status;
@@ -186,7 +192,7 @@ public class Enums {
 		}
 
 		public String getEnumName(String step) {
-			for (ExceptionValue e : ExceptionValue.values()) {
+			for (Gherkin e : Gherkin.values()) {
 				if (step.equals(e.getValue())) {
 					return e.name();
 				}
