@@ -19,12 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework.xml;
+package com.artos.framework.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.artos.framework.infra.BDDFeatureObjectWrapper;
 
 public class TestSuite {
 
@@ -38,6 +40,7 @@ public class TestSuite {
 	private String version = "1";
 	private boolean enable = true;
 	private boolean testScriptProvided = false;
+	private List<BDDFeatureObjectWrapper> featureFiles = new ArrayList<>();
 
 	// *****************************************************************
 	// Getters and setters
@@ -120,6 +123,14 @@ public class TestSuite {
 
 	public void setTestScriptProvided(boolean testScriptProvided) {
 		this.testScriptProvided = testScriptProvided;
+	}
+
+	public List<BDDFeatureObjectWrapper> getFeatureFiles() {
+		return featureFiles;
+	}
+
+	public void setFeatureFiles(List<BDDFeatureObjectWrapper> featureFiles) {
+		this.featureFiles = featureFiles;
 	}
 
 }

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.framework.infra;
 
 import com.artos.annotation.Group;
 import com.artos.annotation.KnownToFail;

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework.xml;
+package com.artos.framework.parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +49,7 @@ import com.artos.framework.FWStaticStore;
 /**
  * This class is responsible for storing framework Configuration. During test suit execution XML file will be searched at location ./conf
  */
-public class FrameworkConfig {
+public class FrameworkConfigParser {
 
 	final File fXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "framework_configuration.xml");
 	String profileName = "Dev";
@@ -100,7 +100,7 @@ public class FrameworkConfig {
 	 * @param createIfNotPresent enables creation of default configuration file if not present
 	 * @param profileName profile name for choosing correct framework configuration
 	 */
-	public FrameworkConfig(boolean createIfNotPresent, String profileName) {
+	public FrameworkConfigParser(boolean createIfNotPresent, String profileName) {
 		this.profileName = profileName;
 
 		// If profile name is not provided then apply default settings

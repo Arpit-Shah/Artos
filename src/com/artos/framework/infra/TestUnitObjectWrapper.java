@@ -19,13 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.artos.framework;
+package com.artos.framework.infra;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.artos.framework.Enums.Gherkin;
+import com.artos.framework.Enums;
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
 
@@ -56,7 +56,6 @@ public class TestUnitObjectWrapper {
 	String testPlanBDD = "";
 	
 	// StepDefinition
-	Gherkin stepKeyword = null;
 	String stepDefinition = "";
 
 	// testImportance
@@ -259,14 +258,6 @@ public class TestUnitObjectWrapper {
 
 	public void setTestPlanBDD(String testPlanBDD) {
 		this.testPlanBDD = testPlanBDD;
-	}
-
-	public Gherkin getStepKeyword() {
-		return stepKeyword;
-	}
-
-	public void setStepKeyword(Gherkin stepKeyword) {
-		this.stepKeyword = stepKeyword;
 	}
 
 	public String getStepDefinition() {

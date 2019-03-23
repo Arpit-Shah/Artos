@@ -1,6 +1,6 @@
-package com.artos.framework.xml;
+package com.artos.framework.parser;
 
-public class UserAuthParameters {
+public class UserAuthParametersParser {
 
 	String userName;
 	String password;
