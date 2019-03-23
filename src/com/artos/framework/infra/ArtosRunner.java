@@ -184,6 +184,10 @@ public class ArtosRunner {
 		// HighLight Failed Test Cases
 		highlightFailure(transformedTestList);
 
+		//Create Script file for failed test cases
+		FailedTestScriptParser failtestscript = new FailedTestScriptParser();
+		failtestscript.createExecScriptFromObjWrapper(transformedTestList);
+		
 		// to release a thread lock
 		context.getThreadLatch().countDown();
 	}
