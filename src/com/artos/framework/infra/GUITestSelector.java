@@ -52,7 +52,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestObjectWrapper;
 import com.artos.interfaces.TestRunnable;
 
 public class GUITestSelector {
