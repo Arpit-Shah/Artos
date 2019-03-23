@@ -47,6 +47,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.artos.exception.InvalidDataException;
+import com.artos.framework.Enums.ScriptFileType;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestObjectWrapper;
 
@@ -278,22 +279,33 @@ public class TestScriptParser {
 		_suite.setTestUnitGroupList(groupList);
 	}
 
-	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList) throws Exception {
+	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList, ScriptFileType scriptType) throws Exception {
 		if (null == testList || testList.isEmpty()) {
 			return;
 		}
 
-		String packageName;
-		// Package will be none if test is in root package
-		if (null == testList.get(0).getTestClassObject().getPackage()) {
-			packageName = "ProjectRoot";
-		} else {
-			packageName = testList.get(0).getTestClassObject().getPackage().getName();
-		}
-		File scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + packageName + ".xml");
+		File scriptFile;
+		if (scriptType == ScriptFileType.TEST_SCRIPT) {
+			String packageName;
+			// Package will be none if test is in root package
+			if (null == testList.get(0).getTestClassObject().getPackage()) {
+				packageName = "ProjectRoot";
+			} else {
+				packageName = testList.get(0).getTestClassObject().getPackage().getName();
+			}
+			scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + packageName + ".xml");
 
-		if (scriptFile.exists() && scriptFile.isFile()) {
-			return;
+			if (scriptFile.exists() && scriptFile.isFile()) {
+				// If file is present then do not overwrite
+				return;
+			}
+		} else {
+			scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + "FAIL_SCRIPT" + ".xml");
+			
+			if (scriptFile.exists() && scriptFile.isFile()) {
+				// Delete old file if present
+				scriptFile.delete();
+			}
 		}
 
 		if (!scriptFile.getParentFile().exists()) {
@@ -329,7 +341,7 @@ public class TestScriptParser {
 		suite.setAttributeNode(attr3);
 
 		Comment comment = doc
-				.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\".\\script\\" + packageName + ".xml\"");
+				.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\"script_name.xml\"");
 		suite.getParentNode().insertBefore(comment, suite);
 
 		createTestList(testList, doc, suite);

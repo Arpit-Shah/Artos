@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.artos.framework.Enums.Importance;
+import com.artos.framework.Enums.ScriptFileType;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.TestDataProvider;
@@ -103,7 +104,7 @@ public class ArtosRunner {
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context).getListOfTransformedTestCases();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
-			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList);
+			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList, ScriptFileType.TEST_SCRIPT);
 		}
 
 		// If GUI test selector is enabled then show it or else execute test cases
@@ -182,12 +183,13 @@ public class ArtosRunner {
 		notifyTestSuiteSummaryPrinting(sb.toString());
 
 		// HighLight Failed Test Cases
-		highlightFailure(transformedTestList);
+		List<TestObjectWrapper> failedTestList = highlightFailure(transformedTestList);
 
-		//Create Script file for failed test cases
-		FailedTestScriptParser failtestscript = new FailedTestScriptParser();
-		failtestscript.createExecScriptFromObjWrapper(transformedTestList);
-		
+		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
+			// Create Script file for failed test cases
+			new TestScriptParser().createExecScriptFromObjWrapper(failedTestList, ScriptFileType.ERROR_SCRIPT);
+		}
+
 		// to release a thread lock
 		context.getThreadLatch().countDown();
 	}
@@ -262,9 +264,11 @@ public class ArtosRunner {
 	 * Highlight failed test cases at the end of test execution
 	 * 
 	 * @param transformedTestList list of test cases
+	 * @return list of failed test cases
 	 */
-	private void highlightFailure(List<TestObjectWrapper> transformedTestList) {
+	private List<TestObjectWrapper> highlightFailure(List<TestObjectWrapper> transformedTestList) {
 
+		List<TestObjectWrapper> failedTestList = new ArrayList<>();
 		if (context.getCurrentFailCount() > 0) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
@@ -284,6 +288,8 @@ public class ArtosRunner {
 				}
 
 				if (t.getTestOutcomeList().get(0) == TestStatus.FAIL) {
+					failedTestList.add(t);
+
 					testErrorcount++;
 					sb.append("\n");
 					sb.append(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
@@ -324,6 +330,8 @@ public class ArtosRunner {
 			System.err.println(sb.toString());
 			notifyTestSuiteFailureHighlight(sb.toString());
 		}
+
+		return failedTestList;
 	}
 
 	private void runSingleThread(List<TestObjectWrapper> testList, TestContext context)
