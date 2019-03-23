@@ -41,8 +41,6 @@ import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
 import com.artos.framework.FWStaticStore;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestUnitObjectWrapper;
 
 import javassist.Modifier;
 
@@ -124,7 +122,7 @@ public class ScanTestCase {
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 			Group group = method.getAnnotation(Group.class);
 			TestImportance testImportance = method.getAnnotation(TestImportance.class);
-			StepDefinition stepDefinition = method.getAnnotation(StepDefinition.class);
+			StepDefinition stepDef = method.getAnnotation(StepDefinition.class);
 
 			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(),
 					unit.testtimeout());
@@ -137,12 +135,6 @@ public class ScanTestCase {
 				testUnitObj.setTestreviewedBy(testplan.reviewedBy());
 				testUnitObj.setTestReviewDate(testplan.reviewDate());
 				testUnitObj.setTestPlanBDD(testplan.bdd());
-			}
-
-			// Step Definition is an optional attribute so it can be null
-			if (null != stepDefinition) {
-				testUnitObj.setStepKeyword(stepDefinition.gherkin());
-				testUnitObj.setStepDefinition(stepDefinition.stepDef());
 			}
 
 			/*
@@ -193,6 +185,11 @@ public class ScanTestCase {
 				testUnitObj.setTestImportance(testImportance.value());
 			}
 
+			// Test Def is an optional attribute so it can be null
+			if (null != stepDef) {
+				testUnitObj.setStepDefinition(stepDef.value().trim());
+			}
+
 			testUnitWrapperList_All.add(testUnitObj);
 			if (!unit.skip()) {
 				testUnitWrapperList_WithoutSkipped.add(testUnitObj);
@@ -202,6 +199,7 @@ public class ScanTestCase {
 		}
 
 		List<String> groupList = context.getTestSuite().getTestUnitGroupList();
+
 		groupBasedFiltering(groupList);
 
 		// Clear list otherwise wrong methods will be added against wrong class
