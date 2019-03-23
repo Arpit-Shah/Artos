@@ -31,12 +31,9 @@ import java.util.concurrent.TimeUnit;
 
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
+import com.artos.framework.parser.TestSuite;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
-import com.artos.framework.TestDataProvider;
-import com.artos.framework.TestObjectWrapper;
-import com.artos.framework.TestUnitObjectWrapper;
-import com.artos.framework.xml.TestSuite;
 import com.artos.interfaces.TestProgress;
 
 /**
@@ -51,6 +48,7 @@ public class TestContext {
 	private boolean KnownToFail = false;
 
 	private String strBugTrackingReference = "";
+
 	private long totalTestCount = 0;
 	private long currentPassCount = 0;
 	private long currentFailCount = 0;
@@ -64,6 +62,20 @@ public class TestContext {
 	private int totalMediumCount = 0;
 	private int totalLowCount = 0;
 	private int totalUndefinedCount = 0;
+
+	private long totalUnitTestCount = 0;
+	private long currentUnitPassCount = 0;
+	private long currentUnitFailCount = 0;
+	private long currentUnitSkipCount = 0;
+	private long currentUnitKTFCount = 0;
+
+	// Test Importance for failed test units
+	private int totalUnitFatalCount = 0;
+	private int totalUnitCriticalCount = 0;
+	private int totalUnitHighCount = 0;
+	private int totalUnitMediumCount = 0;
+	private int totalUnitLowCount = 0;
+	private int totalUnitUndefinedCount = 0;
 
 	private TestSuite testSuite = null;
 	private CountDownLatch threadLatch;
@@ -84,10 +96,18 @@ public class TestContext {
 	// Test suite finish time
 	private long testSuiteFinishTime = 0;
 
+	// Index of parameterised Array
+	private int testParameterIndex = 0;
+	private int testUnitParameterIndex = 0;
+
+	// Global parameters
 	private Map<String, Object> globalObject = new HashMap<String, Object>();
 	private Map<String, String> globalString = new HashMap<String, String>();
 	private Object parameterisedObject1 = null;
 	private Object parameterisedObject2 = null;
+
+	// FeatureFile Related Parameter
+	private Map<String, String> stepParameter = new HashMap<String, String>();
 
 	/**
 	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
@@ -262,6 +282,144 @@ public class TestContext {
 		resetUnitTestStatus();
 	}
 
+	public void generateTestScenarioSummary(BDDScenario scenario) {
+		String strTestFQCN = scenario.getScenarioDescription();
+
+		// Test is marked as known to fail and for some reason it pass then
+		// consider that test Fail so user can look in to it
+		if (isKnownToFail()) {
+			if (getCurrentTestStatus() == TestStatus.PASS) {
+				//@formatter:off
+				getLogger().info(FWStaticStore.ARTOS_KTF_TEST_PASSED_STAMP);
+				//@formatter:on
+				setTestStatus(TestStatus.FAIL, "KTF Test passed, which is not as expected");
+			}
+		}
+
+		// Add to total test count
+		setTotalTestCount(getTotalTestCount() + 1);
+
+		// Store count details per status
+		if (getCurrentTestStatus() == TestStatus.PASS) {
+			setCurrentPassCount(getCurrentPassCount() + 1);
+		} else if (getCurrentTestStatus() == TestStatus.FAIL) {
+			setCurrentFailCount(getCurrentFailCount() + 1);
+
+			// Record test importance count in case of failure
+			if (scenario.getTestImportance() == Importance.FATAL) {
+				setTotalFatalCount(getTotalFatalCount() + 1);
+			} else if (scenario.getTestImportance() == Importance.CRITICAL) {
+				setTotalCriticalCount(getTotalCriticalCount() + 1);
+			} else if (scenario.getTestImportance() == Importance.HIGH) {
+				setTotalHighCount(getTotalHighCount() + 1);
+			} else if (scenario.getTestImportance() == Importance.MEDIUM) {
+				setTotalMediumCount(getTotalMediumCount() + 1);
+			} else if (scenario.getTestImportance() == Importance.LOW) {
+				setTotalLowCount(getTotalLowCount() + 1);
+			} else if (scenario.getTestImportance() == Importance.UNDEFINED) {
+				setTotalUndefinedCount(getTotalUndefinedCount() + 1);
+			}
+		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
+			setCurrentSkipCount(getCurrentSkipCount() + 1);
+		} else if (getCurrentTestStatus() == TestStatus.KTF) {
+			setCurrentKTFCount(getCurrentKTFCount() + 1);
+		}
+
+		long totalTestTime = scenario.getTestFinishTime() - scenario.getTestStartTime();
+		// Finalise and add test result in log file
+		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n" + FWStaticStore.ARTOS_LINE_BREAK_1);
+
+		// Finalise and add test summary to Summary report
+		appendSummaryReport(scenario, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
+				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
+		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
+		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		scenario.getTestOutcomeList().add(getCurrentTestStatus());
+
+		// Go through test unit of each log and print status of each test units into report
+		for (int i = 0; i < scenario.getSteplist().size(); i++) {
+			BDDStep step = scenario.getSteplist().get(i);
+			TestUnitObjectWrapper unit = step.getUnit();
+			long totalTestUnitTime = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
+
+			// go through outcome list of test unit and print them all
+			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
+				appendUnitSummaryReport(unit, unit.getTestUnitOutcomeList().get(j), step.getStepAction() + " " + step.getStepDescription(),
+						unit.getBugTrackingNumber(), totalTestUnitTime);
+			}
+
+			// This has to be done in BDD because same test can be called again in next scenario
+			// This is to avoid mix up
+			unit.getTestUnitOutcomeList().clear();
+		}
+
+		// reset status for next test
+		resetUnitTestStatus();
+		resetTestStatus();
+		// Reset Known to fail status
+		setKnownToFail(false, "");
+	}
+
+	public void generateStepTestSummary(BDDStep step) {
+		TestUnitObjectWrapper unit = step.getUnit();
+		// Test is marked as known to fail and for some reason it pass then
+		// consider that test Fail so user can look in to it
+		if (unit.isKTF()) {
+			if (getCurrentUnitTestStatus() == TestStatus.PASS) {
+				//@formatter:off
+						getLogger().info(FWStaticStore.ARTOS_KTF_TESTUNIT_PASSED_STAMP);
+						//@formatter:on
+				setTestStatus(TestStatus.FAIL, "KTF Test unit passed, which is not as expected");
+			}
+		}
+
+		// Add to total test count
+		setTotalUnitTestCount(getTotalUnitTestCount() + 1);
+
+		// Store count details per status
+		if (getCurrentUnitTestStatus() == TestStatus.PASS) {
+			setCurrentUnitPassCount(getCurrentUnitPassCount() + 1);
+		} else if (getCurrentUnitTestStatus() == TestStatus.FAIL) {
+			setCurrentUnitFailCount(getCurrentUnitFailCount() + 1);
+
+			// Record test importance count in case of failure
+			if (step.getUnit().getTestImportance() == Importance.FATAL) {
+				setTotalUnitFatalCount(getTotalUnitFatalCount() + 1);
+			} else if (step.getUnit().getTestImportance() == Importance.CRITICAL) {
+				setTotalUnitCriticalCount(getTotalUnitCriticalCount() + 1);
+			} else if (step.getUnit().getTestImportance() == Importance.HIGH) {
+				setTotalUnitHighCount(getTotalUnitHighCount() + 1);
+			} else if (step.getUnit().getTestImportance() == Importance.MEDIUM) {
+				setTotalUnitMediumCount(getTotalUnitMediumCount() + 1);
+			} else if (step.getUnit().getTestImportance() == Importance.LOW) {
+				setTotalUnitLowCount(getTotalUnitLowCount() + 1);
+			} else if (step.getUnit().getTestImportance() == Importance.UNDEFINED) {
+				setTotalUnitUndefinedCount(getTotalUnitUndefinedCount() + 1);
+			} else {
+				System.err.println(step.getUnit().getTestImportance().name());
+			}
+		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
+			setCurrentUnitSkipCount(getCurrentUnitSkipCount() + 1);
+		} else if (getCurrentTestStatus() == TestStatus.KTF) {
+			setCurrentUnitKTFCount(getCurrentUnitKTFCount() + 1);
+		}
+
+		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
+
+		// print test unit outcome on the console and log file
+		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : " + step.getStepAction() + " "
+				+ step.getStepDescription());
+
+		// Log test unit summary into extent report
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
+				+ "] : " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
+
+		// reset status for next test
+		resetUnitTestStatus();
+	}
+
 	/**
 	 * Append test summary to summary report
 	 * 
@@ -293,8 +451,44 @@ public class TestContext {
 		String FailCount = String.format("%-" + 4 + "s", failCount);
 		String TestImportance = String.format("%-" + 10 + "s", (t.getTestImportance() == Importance.UNDEFINED ? "" : t.getTestImportance().name()));
 
-		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:"
-				+ KTFCount + " F:" + FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:"
+				+ FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+	}
+
+	/**
+	 * Append test summary to summary report
+	 * 
+	 * @param scenario {@link BDDScenario} object
+	 * @param status Test status
+	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
+	 * @param bugTrackingNumber BugTracking Number
+	 * @param passCount Current passed test count
+	 * @param failCount Current failed test count
+	 * @param skipCount Current skipped test count
+	 * @param ktfCount Current known to fail test count
+	 * @param testDuration Test duration
+	 */
+	private void appendSummaryReport(BDDScenario scenario, TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount,
+			long failCount, long skipCount, long ktfCount, long testDuration) {
+
+		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+
+		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
+		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String PassCount = String.format("%-" + 4 + "s", passCount);
+		String SkipCount = String.format("%-" + 4 + "s", skipCount);
+		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
+		String FailCount = String.format("%-" + 4 + "s", failCount);
+		String TestImportance = String.format("%-" + 10 + "s",
+				(scenario.getTestImportance() == Importance.UNDEFINED ? "" : scenario.getTestImportance().name()));
+
+		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:"
+				+ FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
 	}
 
 	/**
@@ -327,6 +521,8 @@ public class TestContext {
 
 		getLogger().getSummaryLogger().info("  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount
 				+ "  :" + KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+		// System.err.println(" |--" + testStatus + " = " + testName + " :" + PassCount + " :" + FailCount + " :" + SkipCount + " :" + KTFCount
+		// + " [" + TestImportance + "] " + testTime + " " + JiraRef);
 	}
 
 	/**
@@ -831,9 +1027,125 @@ public class TestContext {
 	protected void setTotalUndefinedCount(int totalUndefinedCount) {
 		this.totalUndefinedCount = totalUndefinedCount;
 	}
-	
-	public boolean isRunningFromScript(){
+
+	public boolean isRunningFromScript() {
 		return CliProcessor.getTestScriptFile() == null ? false : true;
+	}
+
+	public String getStepParameter(String key) {
+		return stepParameter.get(key);
+	}
+
+	protected Map<String, String> getStepParameterMap() {
+		return stepParameter;
+	}
+
+	protected void setStepParameter(Map<String, String> stepParameter) {
+		this.stepParameter = stepParameter;
+	}
+
+	public int getTestParameterIndex() {
+		return testParameterIndex;
+	}
+
+	public void setTestParameterIndex(int testParameterIndex) {
+		this.testParameterIndex = testParameterIndex;
+	}
+
+	public int getTestUnitParameterIndex() {
+		return testUnitParameterIndex;
+	}
+
+	public void setTestUnitParameterIndex(int testUnitParameterIndex) {
+		this.testUnitParameterIndex = testUnitParameterIndex;
+	}
+
+	public long getTotalUnitTestCount() {
+		return totalUnitTestCount;
+	}
+
+	protected void setTotalUnitTestCount(long totalUnitTestCount) {
+		this.totalUnitTestCount = totalUnitTestCount;
+	}
+
+	public long getCurrentUnitPassCount() {
+		return currentUnitPassCount;
+	}
+
+	protected void setCurrentUnitPassCount(long currentUnitPassCount) {
+		this.currentUnitPassCount = currentUnitPassCount;
+	}
+
+	public long getCurrentUnitFailCount() {
+		return currentUnitFailCount;
+	}
+
+	protected void setCurrentUnitFailCount(long currentUnitFailCount) {
+		this.currentUnitFailCount = currentUnitFailCount;
+	}
+
+	public long getCurrentUnitSkipCount() {
+		return currentUnitSkipCount;
+	}
+
+	protected void setCurrentUnitSkipCount(long currentUnitSkipCount) {
+		this.currentUnitSkipCount = currentUnitSkipCount;
+	}
+
+	public long getCurrentUnitKTFCount() {
+		return currentUnitKTFCount;
+	}
+
+	protected void setCurrentUnitKTFCount(long currentUnitKTFCount) {
+		this.currentUnitKTFCount = currentUnitKTFCount;
+	}
+
+	public int getTotalUnitFatalCount() {
+		return totalUnitFatalCount;
+	}
+
+	protected void setTotalUnitFatalCount(int totalUnitFatalCount) {
+		this.totalUnitFatalCount = totalUnitFatalCount;
+	}
+
+	public int getTotalUnitCriticalCount() {
+		return totalUnitCriticalCount;
+	}
+
+	protected void setTotalUnitCriticalCount(int totalUnitCriticalCount) {
+		this.totalUnitCriticalCount = totalUnitCriticalCount;
+	}
+
+	public int getTotalUnitHighCount() {
+		return totalUnitHighCount;
+	}
+
+	protected void setTotalUnitHighCount(int totalUnitHighCount) {
+		this.totalUnitHighCount = totalUnitHighCount;
+	}
+
+	public int getTotalUnitMediumCount() {
+		return totalUnitMediumCount;
+	}
+
+	protected void setTotalUnitMediumCount(int totalUnitMediumCount) {
+		this.totalUnitMediumCount = totalUnitMediumCount;
+	}
+
+	public int getTotalUnitLowCount() {
+		return totalUnitLowCount;
+	}
+
+	protected void setTotalUnitLowCount(int totalUnitLowCount) {
+		this.totalUnitLowCount = totalUnitLowCount;
+	}
+
+	public int getTotalUnitUndefinedCount() {
+		return totalUnitUndefinedCount;
+	}
+
+	protected void setTotalUnitUndefinedCount(int totalUnitUndefinedCount) {
+		this.totalUnitUndefinedCount = totalUnitUndefinedCount;
 	}
 
 }

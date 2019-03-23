@@ -1,0 +1,61 @@
+/*******************************************************************************
+ * Copyright (C) 2018-2019 Arpit Shah and Artos Contributors
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+package com.artos.framework.infra;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class BDDTransformToTestObjectWrapper {
+
+	private Map<String, TestUnitObjectWrapper> stepDefinitionMap;
+
+	/**
+	 * Transforms given test list of{@code TestEecutable} type into {@code TestObjectWrapper} type list. This method will only consider test This
+	 * method can not transform test cases outside current package, so those test cases will be omitted from the list
+	 * 
+	 * @param context {@code TestContext}
+	 * @throws Exception in case any requirement of test cases are not met
+	 */
+	protected BDDTransformToTestObjectWrapper(TestContext context) throws Exception {
+		stepDefinitionMap = new HashMap<>();
+
+		if (null == context.getTestSuite().getTestGroupList() || context.getTestSuite().getTestGroupList().isEmpty()) {
+			new Exception("Group must be specified");
+		}
+
+		// If main() method executes from root then package name will be none
+		String packageName = "";
+		if (null != context.getPrePostRunnableObj().getPackage()) {
+			packageName = context.getPrePostRunnableObj().getPackage().getName();
+		}
+		BDDScanTestSuite reflection = new BDDScanTestSuite(context, packageName);
+		stepDefinitionMap = reflection.getStepDefinitionsMap();
+	}
+
+	public Map<String, TestUnitObjectWrapper> getStepDefinitionMap() {
+		return stepDefinitionMap;
+	}
+
+	protected void setStepDefinitionMap(Map<String, TestUnitObjectWrapper> stepDefinitionMap) {
+		this.stepDefinitionMap = stepDefinitionMap;
+	}
+}
