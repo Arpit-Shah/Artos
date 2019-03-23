@@ -125,7 +125,35 @@ public class Enums {
 		}
 
 		public String getEnumName(int status) {
-			for (TestStatus e : TestStatus.values()) {
+			for (Importance e : Importance.values()) {
+				if (status == e.getValue()) {
+					return e.name();
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public enum ScriptFileType {
+
+		// @formatter:off
+		TEST_SCRIPT(0),
+		ERROR_SCRIPT(1);
+		// @formatter:on
+
+		private final int status;
+
+		ScriptFileType(int status) {
+			this.status = status;
+		}
+
+		public int getValue() {
+			return status;
+		}
+
+		public String getEnumName(int status) {
+			for (ScriptFileType e : ScriptFileType.values()) {
 				if (status == e.getValue()) {
 					return e.name();
 				}
