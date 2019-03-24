@@ -39,6 +39,7 @@ import com.artos.annotation.KnownToFail;
 import com.artos.annotation.StepDefinition;
 import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
+import com.artos.annotation.Unit;
 
 import javassist.Modifier;
 
@@ -82,6 +83,7 @@ public class BDDScanTestSuite {
 		reflection.getMethodsAnnotatedWith(StepDefinition.class).stream().filter(method -> Modifier.isPublic(method.getModifiers()))
 				.forEach(method -> {
 
+					Unit unit = method.getAnnotation(Unit.class);
 					TestPlan testplan = method.getAnnotation(TestPlan.class);
 					KnownToFail ktf = method.getAnnotation(KnownToFail.class);
 					ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
@@ -89,7 +91,14 @@ public class BDDScanTestSuite {
 					TestImportance testImportance = method.getAnnotation(TestImportance.class);
 					StepDefinition stepDef = method.getAnnotation(StepDefinition.class);
 
-					TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, false, 0, null, 0);
+					// @Unit annotation is an optional for BDD
+					TestUnitObjectWrapper testUnitObj;
+					if (null == unit) {
+						testUnitObj = new TestUnitObjectWrapper(method, false, 0, null, 0, "");
+					} else {
+						testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(), unit.testtimeout(),
+								unit.bugref());
+					}
 
 					// Test Plan is an optional attribute so it can be null
 					if (null != testplan) {
@@ -137,7 +146,6 @@ public class BDDScanTestSuite {
 					// KTF is optional annotation so it can be null
 					if (null != ktf) {
 						testUnitObj.setKTF(ktf.ktf());
-						testUnitObj.setBugTrackingNumber(ktf.bugref());
 					}
 
 					// expectedException is an optional annotation
@@ -157,7 +165,7 @@ public class BDDScanTestSuite {
 					if (null != stepDef) {
 
 						String stepDefKey = stepDef.value().trim();
-						
+
 						// If cucumber was used to generate the argument then do the following
 						if (stepDefKey.startsWith("^") && stepDefKey.endsWith("$")) {
 							// Replace "([^"]*)"
@@ -166,7 +174,7 @@ public class BDDScanTestSuite {
 							stepDefKey = stepDefKey.replaceAll("\\$", "").trim();
 							// Replace ^
 							stepDefKey = stepDefKey.replaceAll("\\^", "").trim();
-							
+
 						} else { // otherwise do this
 							// Replace anything between quotes to empty string "xyz" => ""
 							stepDefKey = stepDefKey.replaceAll("\\\".*?\\\"", "\"\"").trim();

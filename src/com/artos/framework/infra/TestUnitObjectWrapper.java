@@ -80,8 +80,9 @@ public class TestUnitObjectWrapper {
 	 * @param testsequence test sequence as specified in annotation
 	 * @param dataProviderName dataProvider name provided in {@code DataProvider} annotation
 	 * @param testTimeout test execution timeout, 0=no timeout
+	 * @param bugTrackingNumber bug reference number
 	 */
-	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout) {
+	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout, String bugTrackingNumber) {
 		super();
 
 		this.testUnitMethod = method;
@@ -89,6 +90,7 @@ public class TestUnitObjectWrapper {
 		this.testsequence = testsequence;
 		this.dataProviderName = dataProviderName;
 		this.testTimeout = testTimeout;
+		this.bugTrackingNumber = bugTrackingNumber;
 	}
 
 	public long getTestUnitStartTime() {

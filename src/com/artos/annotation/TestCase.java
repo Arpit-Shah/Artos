@@ -63,7 +63,7 @@ public @interface TestCase {
 	 * 
 	 * @return test case label
 	 */
-	String[] label() default { "all" };
+	// String[] label() default { "all" };
 
 	/**
 	 * Data provider name set insider {@code DataProvider} annotation
@@ -77,5 +77,12 @@ public @interface TestCase {
 	 * 
 	 * @return test timeout in milliseconds
 	 */
-	//long testtimeout() default 0;
+	// long testtimeout() default 0;
+
+	/**
+	 * bug reference number
+	 * 
+	 * @return bugRefNumber
+	 */
+	String bugref() default "";
 }

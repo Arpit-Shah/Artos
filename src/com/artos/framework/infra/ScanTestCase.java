@@ -125,7 +125,7 @@ public class ScanTestCase {
 			StepDefinition stepDef = method.getAnnotation(StepDefinition.class);
 
 			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(),
-					unit.testtimeout());
+					unit.testtimeout(), unit.bugref());
 
 			// Test Plan is an optional attribute so it can be null
 			if (null != testplan) {
@@ -169,7 +169,6 @@ public class ScanTestCase {
 			// KTF is optional annotation so it can be null
 			if (null != ktf) {
 				testUnitObj.setKTF(ktf.ktf());
-				testUnitObj.setBugTrackingNumber(ktf.bugref());
 			}
 
 			// expectedException is an optional annotation

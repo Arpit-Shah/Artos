@@ -69,5 +69,13 @@ public @interface Unit {
 	 * @return data provider method name
 	 */
 	String dataprovider() default "";
+	
+
+	/**
+	 * bug reference number
+	 * 
+	 * @return bugRefNumber
+	 */
+	String bugref() default "";
 
 }

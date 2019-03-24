@@ -50,12 +50,6 @@ public @interface KnownToFail {
 	 * @return true = test case outcome must be {@code TestStatus} = KTF otherwise test case will be marked as fail|false = test case outcome can be
 	 *         anything.
 	 */
-	boolean ktf() default false;
+	boolean ktf() default true;
 
-	/**
-	 * bug reference number
-	 * 
-	 * @return bugRefNumber
-	 */
-	String bugref() default "";
 }
