@@ -52,7 +52,7 @@ public class TestObjectWrapper {
 	List<String> groupList = new ArrayList<>();
 	String dataProviderName = "";
 	long testTimeout = 0;
-	
+
 	// testImportance
 	Importance testImportance = Importance.UNDEFINED;
 
@@ -88,8 +88,9 @@ public class TestObjectWrapper {
 	 * @param testsequence test sequence as specified in annotation
 	 * @param dataProviderName Name of the dataProvider (Upper case)
 	 * @param testTimeout test execution timeout, 0=no timeout
+	 * @param bugTrackingNumber bug reference number
 	 */
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName, long testTimeout) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName, long testTimeout, String bugTrackingNumber) {
 		super();
 
 		this.testClassObject = cls;
@@ -98,6 +99,7 @@ public class TestObjectWrapper {
 		this.testsequence = testsequence;
 		this.dataProviderName = dataProviderName;
 		this.testTimeout = testTimeout;
+		this.bugTrackingNumber = bugTrackingNumber;
 	}
 
 	public String getTestPlanDescription() {

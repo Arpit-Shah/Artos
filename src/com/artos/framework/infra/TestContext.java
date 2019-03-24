@@ -134,10 +134,10 @@ public class TestContext {
 		 * allowed to be printed.
 		 */
 		if (null == description) {
-			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "] : ");
+			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "]: ");
 			notifyTestStatusUpdate(testStatus, "");
 		} else {
-			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "] : " + description);
+			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "]: " + description);
 			notifyTestStatusUpdate(testStatus, description);
 		}
 
@@ -270,13 +270,13 @@ public class TestContext {
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : "
+		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
 				+ unit.getTestUnitMethod().getName() + "(context)");
 
 		// Log test unit summary into extent report
-		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "] : " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
+				+ "]: " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 
 		// reset status for next test
 		resetUnitTestStatus();
@@ -408,13 +408,13 @@ public class TestContext {
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "] : " + step.getStepAction() + " "
+		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "]: " + step.getStepAction() + " "
 				+ step.getStepDescription());
 
 		// Log test unit summary into extent report
-		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? unit.getBugTrackingNumber() : "=>" + unit.getBugTrackingNumber();
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "] : " + step.getStepDescription() + " " + bugTrackingNum);
+				+ "]: " + step.getStepDescription() + " " + bugTrackingNum);
 
 		// reset status for next test
 		resetUnitTestStatus();

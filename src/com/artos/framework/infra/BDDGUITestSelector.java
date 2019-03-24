@@ -66,8 +66,8 @@ public class BDDGUITestSelector {
 	 * TestRunnerGui constructor
 	 * 
 	 * @param context TestContext
-	 * @param testSCList List of Tests defined in Main class
-	 * @param testScenarioRunner A TestRunner implementation that will execute the tests
+	 * @param testScenarios List of Test scenarios
+	 * @param testScenarioRunner A TestRunner implementation that will execute the scenarios
 	 * @throws Exception if GUI could not launch
 	 */
 	public BDDGUITestSelector(TestContext context, List<BDDScenario> testScenarios, TestScenarioRunnable testScenarioRunner) throws Exception {

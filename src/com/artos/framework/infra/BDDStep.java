@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.bson.types.Code;
+
 public class BDDStep {
 
 	private String stepAction;
@@ -35,8 +37,10 @@ public class BDDStep {
 	private boolean hasGlobalReference = false;
 
 	/**
-	 * @param stepDescription
-	 * @param localDataTable
+	 * 
+	 * @param stepAction Gherikin action keyword (GIVEN, AND, THEN, WHEN, BUT)
+	 * @param stepDescription stepDescription description of a test step
+	 * @param localDataTable local datatable object
 	 */
 	public BDDStep(String stepAction, String stepDescription, LinkedHashMap<String, List<String>> localDataTable) {
 		super();

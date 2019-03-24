@@ -235,7 +235,7 @@ public class BDDRunner {
 		// add _ to avoid error in-case description has digit as first character
 		// replace all spaces with _
 		// replace all values between "" to empty space
-		sb.append("public void _" + stepDefinition.replaceAll("\\\".*?\\\"", "").trim().replaceAll("\\s", "_")
+		sb.append("public void _" + stepDefinition.replaceAll("\\\".*?\\\"", "").trim().replaceAll("\\s", "_").toLowerCase()
 				+ "(TestContext context) throws Exception {");
 		sb.append("\n");
 		sb.append("\t");

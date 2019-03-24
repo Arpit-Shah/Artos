@@ -303,7 +303,7 @@ public class BDDRunnerTestSteps {
 		Map<String, String> stepParameter = context.getStepParameterMap();
 
 		// This is to look after local table and local table with global tag
-		// [WARNING] : Any key name overlapping with global key will be overwritten
+		// [WARNING]: Any key name overlapping with global key will be overwritten
 		for (Entry<String, List<String>> entry : step.getLocalDataTable().entrySet()) {
 			String key = entry.getKey();
 			List<String> valueList = entry.getValue();

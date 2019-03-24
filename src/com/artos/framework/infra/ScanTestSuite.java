@@ -144,7 +144,7 @@ public class ScanTestSuite {
 				FQCNList.add(cl.getPackage().getName());
 			}
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", 0);
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", 0, testcase.bugref());
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {
@@ -185,29 +185,9 @@ public class ScanTestSuite {
 				}
 			}
 
-			/*
-			 * Store label list for each test cases.
-			 * 
-			 * @formatter:off
-			 * Label must follow following rules
-			 * <PRE>
-			 * - Name is case in-sensitive (but it will stored in upper case)
-			 * - Name can not have leading or trailing spaces, it will be removed
-			 * - Name can not have \r or \n or \t char, it will be removed
-			 * - Name can not have \ char, it will be removed
-			 * </PRE>
-			 * @formatter:on
-			 */
-			{
-				List<String> labelList = Arrays.asList(testcase.label());
-				testobj.setLabelList(labelList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "")
-						.replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
-			}
-
 			// KTF is optional annotation so it can be null
 			if (null != ktf) {
 				testobj.setKTF(ktf.ktf());
-				testobj.setBugTrackingNumber(ktf.bugref());
 			}
 
 			// expectedException is an optional annotation

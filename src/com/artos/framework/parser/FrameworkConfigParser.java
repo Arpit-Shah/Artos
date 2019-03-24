@@ -539,7 +539,7 @@ public class FrameworkConfigParser {
 			if (element.hasAttributes()) {
 				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
 					if (profileName == null || temp == nList.getLength() - 1) {
-						System.err.println("[WARNING] : logger profile with name " + profileName + " does not exist. Applying default");
+						System.err.println("[WARNING]: logger profile with name " + profileName + " does not exist. Applying default");
 					}
 					continue;
 				}
@@ -595,7 +595,7 @@ public class FrameworkConfigParser {
 			if (element.hasAttributes()) {
 				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
 					if (profileName == null || temp == nList.getLength() - 1) {
-						System.err.println("[WARNING] : features profile with name " + profileName + " does not exist. Applying default");
+						System.err.println("[WARNING]: features profile with name " + profileName + " does not exist. Applying default");
 					}
 					continue;
 				}
@@ -654,7 +654,7 @@ public class FrameworkConfigParser {
 			if (element.hasAttributes()) {
 				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
 					if (profileName == null || temp == nList.getLength() - 1) {
-						System.err.println("[WARNING] : organization_info profile with name " + profileName + " does not exist. Applying default");
+						System.err.println("[WARNING]: organization_info profile with name " + profileName + " does not exist. Applying default");
 					}
 					continue;
 				}
@@ -702,7 +702,7 @@ public class FrameworkConfigParser {
 			if (element.hasAttributes()) {
 				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
 					if (profileName == null || temp == nList.getLength() - 1) {
-						System.err.println("[WARNING] : smtp_settings profile with name " + profileName + " does not exist. Applying default");
+						System.err.println("[WARNING]: smtp_settings profile with name " + profileName + " does not exist. Applying default");
 					}
 					continue;
 				}

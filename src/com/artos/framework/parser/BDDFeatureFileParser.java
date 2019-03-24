@@ -41,35 +41,6 @@ import com.google.common.collect.Lists;
  * Feature File Parser
  * 
  * @author Arpit Shah
- * 
- *         <PRE>
- * 	<TestFeature>
- * 		<TestBackGround/>
- * 		<List>
- * 			<TestScenario>
- * 				<MetaData/>
- * 				<GlobalDataTable/>
- * 				<TestStep><Metadata/><LocalDataTable/></TestStep>
- * 				<TestStep><Metadata/><LocalDataTable/></TestStep>
- * 				.
- * 				.
- * 				<TestStep><Metadata/><LocalDataTable/></TestStep>
- * 			</TestScenario>
- * 			.
- * 			.
- * 			.
- * 			<TestScenario>
- * 				<MetaData/>
- * 				<GlobalDataTable/>
- * 				<TestStep><Metadata/><LocalDataTable/></TestStep>
- * 				<TestStep><Metadata/><LocalDataTable/></TestStep>
- * 				.
- * 				.
- * 				<TestStep><Metadata/><LocalDataTable/></TestStep>
- * 			</TestScenario>
- * 		</List>
- * 	</TestFeature>
- *         </PRE>
  *
  */
 public class BDDFeatureFileParser {
@@ -338,7 +309,7 @@ public class BDDFeatureFileParser {
 	 * Returns {@code BDDFeature} object
 	 * 
 	 * @return {@code BDDFeature} object
-	 * @see {@code BDDFeature}
+	 * @see BDDFeature
 	 */
 	public BDDFeature getFeature() {
 		return feature;
