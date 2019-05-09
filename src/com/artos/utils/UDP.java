@@ -412,7 +412,8 @@ class UDPClientTask implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			System.out.println("Connection Terminated");
 		}
 		System.out.println("Terminating thread");
 	}
