@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,41 +105,32 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Creates a datagram socket, bound to the specified local socket address. If,
-	 * if the address is null, creates an unbound socket. With Infinite socket
-	 * timeout
+	 * Creates a datagram socket, bound to the specified local socket address. If, if the address is null, creates an unbound socket. With Infinite
+	 * socket timeout
 	 * 
 	 */
-	public void connect() {
+	public void connect() throws Exception {
 		// set infinite timeout by default
 		connect(0);
 	}
 
 	/**
-	 * Creates a datagram socket, bound to the specified local socket address. If,
-	 * if the address is null, creates an unbound socket.
+	 * Creates a datagram socket, bound to the specified local socket address. If, if the address is null, creates an unbound socket.
 	 * 
-	 * With timeout option set to a non-zero, a call to receive() for this
-	 * DatagramSocket will block for only this amount of time. If the timeout
-	 * expires, a java.net.SocketTimeoutException is raised, though the
-	 * DatagramSocket is still valid.
+	 * With timeout option set to a non-zero, a call to receive() for this DatagramSocket will block for only this amount of time. If the timeout
+	 * expires, a java.net.SocketTimeoutException is raised, though the DatagramSocket is still valid.
 	 * 
-	 * @param soTimeout
-	 *            the specified timeout in milliseconds.
+	 * @param soTimeout the specified timeout in milliseconds.
 	 */
-	public void connect(int soTimeout) {
-		try {
-			// Start Reading task in parallel thread
-			System.out.println("Listening on local port : " + localPort);
-			serverSocket = new DatagramSocket(localSocketAddress);
-			// infinite timeout by default
-			serverSocket.setSoTimeout(soTimeout);
-			readFromSocket();
-			System.out.println("Remote port : " + remotePort);
-			notifyConnected();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void connect(int soTimeout) throws Exception {
+		// Start Reading task in parallel thread
+		System.out.println("Listening on local port : " + localPort);
+		serverSocket = new DatagramSocket(localSocketAddress);
+		// infinite timeout by default
+		serverSocket.setSoTimeout(soTimeout);
+		readFromSocket();
+		System.out.println("Remote port : " + remotePort);
+		notifyConnected();
 	}
 
 	public boolean isConnected() {
@@ -160,7 +152,6 @@ public class UDP implements Connectable {
 			serverThread.interrupt();
 			serverSocket.close();
 			notifyDisconnected();
-			System.out.println("Connection Closed");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -411,6 +402,8 @@ class UDPClientTask implements Runnable {
 					applyFilter(readData);
 				}
 			}
+		} catch (SocketException se) {
+			System.out.println("UDP socket closed");
 		} catch (Exception e) {
 			// e.printStackTrace();
 			System.out.println("Connection Terminated");
