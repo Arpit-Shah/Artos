@@ -398,6 +398,22 @@ public interface TestProgress {
 	public void testResult(TestStatus testStatus, String description);
 
 	/**
+	 * Method is called when test case execution is finished and summary requires to be printed
+	 * 
+	 * @param FQCN testcase name0
+	 * @param description description/summary statement
+	 */
+	public void testCaseSummaryPrinting(String FQCN, String description);
+
+	/**
+	 * Method is called when test unit execution is finished and summary requires to be printed
+	 * 
+	 * @param FQCN testcase name0
+	 * @param description description/summary statement
+	 */
+	public void testUnitSummaryPrinting(String FQCN, String description);
+
+	/**
 	 * Method is called when test suite execution is finished and summary requires to be printed
 	 * 
 	 * @param description description/summary statement

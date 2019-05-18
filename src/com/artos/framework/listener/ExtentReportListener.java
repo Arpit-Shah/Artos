@@ -495,4 +495,16 @@ public class ExtentReportListener implements TestProgress {
 
 	}
 
+	@Override
+	public void testCaseSummaryPrinting(String FQCN, String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void testUnitSummaryPrinting(String FQCN, String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

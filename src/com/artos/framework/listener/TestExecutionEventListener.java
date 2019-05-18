@@ -420,4 +420,16 @@ public class TestExecutionEventListener implements TestProgress {
 		// logger.trace("\n---------------- Child Test Unit Execution finished -------------------");
 	}
 
+	@Override
+	public void testCaseSummaryPrinting(String FQCN, String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void testUnitSummaryPrinting(String FQCN, String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
