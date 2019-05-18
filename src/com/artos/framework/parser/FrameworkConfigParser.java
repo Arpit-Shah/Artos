@@ -52,7 +52,7 @@ import com.artos.framework.FWStaticStore;
 public class FrameworkConfigParser {
 
 	final File fXmlFile = new File(FWStaticStore.CONFIG_BASE_DIR + "framework_configuration.xml");
-	String profileName = "Dev";
+	String profileName = "dev";
 
 	// Organisation Info
 	private String Organisation_Name = "<Organisation> PTY LTD";
@@ -82,6 +82,10 @@ public class FrameworkConfigParser {
 	private boolean enableHTMLLog = false;
 	private boolean enableExtentReport = true;
 
+	// Dashboard
+	private String dashBoardRemoteIP = "127.0.0.1";
+	private String dashBoardRemotePort = "11111";
+
 	// Features
 	private boolean enableGUITestSelector = true;
 	private boolean enableGUITestSelectorSeqNumber = true;
@@ -93,6 +97,7 @@ public class FrameworkConfigParser {
 	private boolean generateIntelliJTemplate = false;
 	private boolean generateTestScript = true;
 	private boolean stopOnFail = false;
+	private boolean enableDashBoard = false;
 
 	/**
 	 * Constructor
@@ -138,6 +143,7 @@ public class FrameworkConfigParser {
 
 			readOrganisationInfo(doc);
 			readLoggerConfig(doc);
+			readDashBoardConfig(doc);
 			readFeatures(doc);
 			if (isEnableEmailClient()) {
 				readEmailConfig(doc);
@@ -178,6 +184,7 @@ public class FrameworkConfigParser {
 		addOrganisatioInfo(doc, rootElement);
 		addLoggerConfig(doc, rootElement);
 		addEmailConfig(doc, rootElement);
+		addDashBoardConfig(doc, rootElement);
 		addFeatureList(doc, rootElement);
 
 		// write the content into xml file
@@ -286,6 +293,15 @@ public class FrameworkConfigParser {
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("stopOnFail");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableDashBoard())));
+			features.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableDashBoard");
 			property.setAttributeNode(attr);
 		}
 	}
@@ -449,6 +465,34 @@ public class FrameworkConfigParser {
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("enableExtentReport");
+			property.setAttributeNode(attr);
+		}
+	}
+
+	private void addDashBoardConfig(Document doc, Element rootElement) {
+		// Logger config elements
+		Element logger = doc.createElement("dashboard");
+		logger.setAttribute("profile", "dev");
+		rootElement.appendChild(logger);
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getDashBoardRemoteIP()));
+			logger.appendChild(property);
+
+			Comment comment = doc.createComment("Default : 127.0.0.1");
+			property.getParentNode().insertBefore(comment, property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("dashBoardRemoteIP");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(getDashBoardRemotePort()));
+			logger.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("dashBoardRemotePort");
 			property.setAttributeNode(attr);
 		}
 	}
@@ -627,6 +671,8 @@ public class FrameworkConfigParser {
 						setGenerateTestScript(Boolean.parseBoolean(eElement.getTextContent()));
 					} else if ("stopOnFail".equals(eElement.getAttribute("name"))) {
 						setStopOnFail(Boolean.parseBoolean(eElement.getTextContent()));
+					} else if ("enableDashBoard".equals(eElement.getAttribute("name"))) {
+						setEnableDashBoard(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -647,7 +693,7 @@ public class FrameworkConfigParser {
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
-			
+
 			Element element = (Element) nNode;
 
 			// If profile is provided then look for configuration with given profile or else take default
@@ -690,12 +736,59 @@ public class FrameworkConfigParser {
 		}
 	}
 
-	private void readEmailConfig(Document doc) {
-		NodeList nList = doc.getElementsByTagName("smtp_settings");
-		
+	/**
+	 * Reads dash board configuration from config file
+	 * 
+	 * @param doc Document object of an XML file
+	 */
+	private void readDashBoardConfig(Document doc) {
+		// System.out.println("Root element :" +
+		// doc.getDocumentElement().getNodeName());
+		NodeList nList = doc.getElementsByTagName("dashboard");
+
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
-			
+
+			Element element = (Element) nNode;
+
+			// If profile is provided then look for configuration with given profile or else take default
+			if (element.hasAttributes()) {
+				if (profileName == null || !profileName.equals(element.getAttribute("profile").toString().trim())) {
+					if (profileName == null || temp == nList.getLength() - 1) {
+						System.err.println("[WARNING]: dashboard profile with name " + profileName + " does not exist. Applying default");
+					}
+					continue;
+				}
+			}
+
+			NodeList nChildList = nNode.getChildNodes();
+			for (int i = 0; i < nChildList.getLength(); i++) {
+				Node nChildNode = nChildList.item(i);
+				if (nChildNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nChildNode;
+					// System.out.println(eElement.getNodeName());
+					// System.out.println(eElement.getAttribute("name"));
+					// System.out.println(eElement.getAttribute("name") +
+					// ":" +
+					// eElement.getTextContent());
+					if ("dashBoardRemoteIP".equals(eElement.getAttribute("name"))) {
+						setDashBoardRemoteIP(eElement.getTextContent());
+					} else if ("dashBoardRemotePort".equals(eElement.getAttribute("name"))) {
+						setDashBoardRemotePort(eElement.getTextContent());
+					}
+				}
+			}
+
+			break;
+		}
+	}
+
+	private void readEmailConfig(Document doc) {
+		NodeList nList = doc.getElementsByTagName("smtp_settings");
+
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+			Node nNode = nList.item(temp);
+
 			Element element = (Element) nNode;
 
 			// If profile is provided then look for configuration with given profile or else take default
@@ -1026,5 +1119,29 @@ public class FrameworkConfigParser {
 
 	public void setGenerateIntelliJTemplate(boolean generateIntelliJTemplate) {
 		this.generateIntelliJTemplate = generateIntelliJTemplate;
+	}
+
+	public boolean isEnableDashBoard() {
+		return enableDashBoard;
+	}
+
+	public void setEnableDashBoard(boolean enableDashBoard) {
+		this.enableDashBoard = enableDashBoard;
+	}
+
+	public String getDashBoardRemoteIP() {
+		return dashBoardRemoteIP;
+	}
+
+	public void setDashBoardRemoteIP(String dashBoardRemoteIP) {
+		this.dashBoardRemoteIP = dashBoardRemoteIP;
+	}
+
+	public String getDashBoardRemotePort() {
+		return dashBoardRemotePort;
+	}
+
+	public void setDashBoardRemotePort(String dashBoardRemotePort) {
+		this.dashBoardRemotePort = dashBoardRemotePort;
 	}
 }

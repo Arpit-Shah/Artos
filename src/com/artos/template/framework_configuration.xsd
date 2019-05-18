@@ -7,6 +7,7 @@
         <xs:element ref="logger"/>
         <xs:element ref="organization_info"/>
         <xs:element ref="smtp_settings"/>
+        <xs:element ref="dashboard"/>
       </xs:choice>
     </xs:complexType>
   </xs:element>
@@ -35,6 +36,14 @@
     </xs:complexType>
   </xs:element>
   <xs:element name="smtp_settings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="profile" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dashboard">
     <xs:complexType>
       <xs:sequence>
         <xs:element maxOccurs="unbounded" ref="property"/>
