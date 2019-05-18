@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ import com.artos.framework.parser.FrameworkConfigParser;
 import com.artos.framework.parser.TestScriptParser;
 import com.artos.framework.parser.TestSuite;
 import com.artos.interfaces.TestExecutable;
+import com.artos.utils.UDP;
 import com.google.common.collect.Lists;
 
 public class Runner {
@@ -155,6 +157,31 @@ public class Runner {
 		// generate logger context
 		LoggerContext loggerContext = createGlobalLoggerContext(testSuiteList);
 
+		// Established UDP channel to DashBoard
+		UDP dashBoardConnector = null;
+		{
+			if (FWStaticStore.frameworkConfig.isEnableDashBoard()) {
+				String dashBoardremoteIP = FWStaticStore.frameworkConfig.getDashBoardRemoteIP();
+				int dashBoardremotePort = Integer.parseInt(FWStaticStore.frameworkConfig.getDashBoardRemotePort());
+				try {
+					dashBoardConnector = new UDP("127.0.0.1", 22222, dashBoardremoteIP, dashBoardremotePort);
+					dashBoardConnector.connect();
+					dashBoardConnector.sendMsg("Connector Launched : " + FWStaticStore.systemProperties.getUserAccountName());
+				} catch (BindException be) {
+					System.err.println("Port " + dashBoardremotePort + " is already in use by other application");
+					System.err.println("Resolve the port binding issue or disable dashboard feature to progress");
+					System.exit(-1);
+				} catch (Exception e) {
+					System.err.println("Error in establishing dashBoard UDP channel");
+					e.printStackTrace();
+					if (null != dashBoardConnector) {
+						dashBoardConnector.disconnect();
+					}
+					dashBoardConnector = null;
+				}
+			}
+		}
+
 		// Start Executor service
 		{
 			ExecutorService service = Executors.newFixedThreadPool(threadCount + 20);
@@ -177,6 +204,9 @@ public class Runner {
 				// store logger
 				context.setOrganisedLogger(logWrapper);
 
+				// Set DashBoard Connector
+				context.setDashBoardConnector(dashBoardConnector);
+
 				if (null != testSuiteList && !testSuiteList.isEmpty()) {
 					// store test suite
 					context.setTestSuite(testSuiteList.get(i));
@@ -198,6 +228,12 @@ public class Runner {
 
 			// Block until all threads complete execution
 			latch.await();
+
+			// Disconnect dashBoard UDP connector at the end
+			if (null != dashBoardConnector) {
+				dashBoardConnector.disconnect();
+				dashBoardConnector = null;
+			}
 
 			// Terminate JVM
 			System.exit(0);
@@ -460,6 +496,9 @@ public class Runner {
 	 * @param profile framework configuration profile name
 	 */
 	public void setProfile(String profile) {
+		if (null == profile || "".equals(profile)) {
+			return;
+		}
 		this.profile = profile;
 	}
 

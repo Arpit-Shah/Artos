@@ -39,6 +39,7 @@ import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.listener.ExtentReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
+import com.artos.framework.listener.UDPReportListener;
 import com.artos.framework.parser.TestScriptParser;
 import com.artos.interfaces.TestExecutable;
 import com.artos.interfaces.TestProgress;
@@ -83,6 +84,12 @@ public class ArtosRunner {
 			ExtentReportListener extentListener = new ExtentReportListener(context);
 			registerListener(extentListener);
 			context.registerListener(extentListener);
+		}
+
+		if (FWStaticStore.frameworkConfig.isEnableDashBoard()) {
+			UDPReportListener udpListener = new UDPReportListener(context);
+			registerListener(udpListener);
+			context.registerListener(udpListener);
 		}
 
 	}
