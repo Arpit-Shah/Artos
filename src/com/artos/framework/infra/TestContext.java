@@ -31,10 +31,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
-import com.artos.framework.parser.TestSuite;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.SystemProperties;
+import com.artos.framework.parser.TestSuite;
 import com.artos.interfaces.TestProgress;
+import com.artos.utils.UDP;
 
 /**
  * This is TestContext which is wrapper around all objects/tools/loggers user may need during test case execution. This class is also responsible for
@@ -105,6 +106,8 @@ public class TestContext {
 	private Map<String, String> globalString = new HashMap<String, String>();
 	private Object parameterisedObject1 = null;
 	private Object parameterisedObject2 = null;
+
+	UDP dashBoardConnector = null;
 
 	// FeatureFile Related Parameter
 	private Map<String, String> stepParameter = new HashMap<String, String>();
@@ -233,10 +236,10 @@ public class TestContext {
 			// go through outcome list of test unit and print them all
 			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 				if (unit.getDataProviderName().equals("")) {
-					appendUnitSummaryReport(unit, unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
+					appendUnitSummaryReport(t, unit, unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
 							unit.getBugTrackingNumber(), totalTestUnitTime);
 				} else { // if data provider then append data provider number
-					appendUnitSummaryReport(unit, unit.getTestUnitOutcomeList().get(j),
+					appendUnitSummaryReport(t, unit, unit.getTestUnitOutcomeList().get(j),
 							unit.getTestUnitMethod().getName() + "(context)" + " : data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
 				}
 			}
@@ -344,7 +347,7 @@ public class TestContext {
 
 			// go through outcome list of test unit and print them all
 			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
-				appendUnitSummaryReport(unit, unit.getTestUnitOutcomeList().get(j), step.getStepAction() + " " + step.getStepDescription(),
+				appendUnitSummaryReport(scenario, unit, unit.getTestUnitOutcomeList().get(j), step.getStepAction() + " " + step.getStepDescription(),
 						unit.getBugTrackingNumber(), totalTestUnitTime);
 			}
 
@@ -443,16 +446,18 @@ public class TestContext {
 		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
-		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".");
-		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
+		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", passCount);
 		String SkipCount = String.format("%-" + 4 + "s", skipCount);
 		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
 		String FailCount = String.format("%-" + 4 + "s", failCount);
 		String TestImportance = String.format("%-" + 10 + "s", (t.getTestImportance() == Importance.UNDEFINED ? "" : t.getTestImportance().name()));
 
-		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:"
-				+ FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+		String summaryString = testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:" + FailCount + " ["
+				+ TestImportance + "] " + testTime + " " + JiraRef;
+		getLogger().getSummaryLogger().info(summaryString);
+		notifyTestCaseSummary(t.getTestClassObject().getName(), summaryString);
 	}
 
 	/**
@@ -479,7 +484,7 @@ public class TestContext {
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
-		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", passCount);
 		String SkipCount = String.format("%-" + 4 + "s", skipCount);
 		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
@@ -487,21 +492,25 @@ public class TestContext {
 		String TestImportance = String.format("%-" + 10 + "s",
 				(scenario.getTestImportance() == Importance.UNDEFINED ? "" : scenario.getTestImportance().name()));
 
-		getLogger().getSummaryLogger().info(testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:"
-				+ FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+		String summaryString = testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:" + FailCount + " ["
+				+ TestImportance + "] " + testTime + " " + JiraRef;
+		getLogger().getSummaryLogger().info(summaryString);
+		notifyTestCaseSummary(scenario.scenarioDescription, summaryString);
+
 	}
 
 	/**
 	 * Append test unit summary to summary report
 	 * 
+	 * @param t {@link TestObjectWrapper} object
 	 * @param unit {@link TestUnitObjectWrapper} object
 	 * @param status Test status
 	 * @param testUnitName Test unit name
 	 * @param bugTrackingNumber BugTracking Number
 	 * @param testDuration Test duration
 	 */
-	private void appendUnitSummaryReport(TestUnitObjectWrapper unit, TestStatus status, String testUnitName, String bugTrackingNumber,
-			long testDuration) {
+	private void appendUnitSummaryReport(TestObjectWrapper t, TestUnitObjectWrapper unit, TestStatus status, String testUnitName,
+			String bugTrackingNumber, long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
@@ -510,8 +519,8 @@ public class TestContext {
 		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
-		String testName = String.format("%-" + 95 + "s", testUnitName);
-		String JiraRef = String.format("%-" + 15 + "s", bugTrackingNumber);
+		String testName = String.format("%-" + 95 + "s", testUnitName).replace(" ", ".").substring(0, 95);
+		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", "");
 		String FailCount = String.format("%-" + 4 + "s", "");
 		String SkipCount = String.format("%-" + 4 + "s", "");
@@ -519,10 +528,45 @@ public class TestContext {
 		String TestImportance = String.format("%-" + 10 + "s",
 				(unit.getTestImportance() == Importance.UNDEFINED ? "" : unit.getTestImportance().name()));
 
-		getLogger().getSummaryLogger().info("  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount
-				+ "  :" + KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef);
-		// System.err.println(" |--" + testStatus + " = " + testName + " :" + PassCount + " :" + FailCount + " :" + SkipCount + " :" + KTFCount
-		// + " [" + TestImportance + "] " + testTime + " " + JiraRef);
+		String summaryString = "  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount + "  :" + KTFCount
+				+ " [" + TestImportance + "] " + testTime + " " + JiraRef;
+		getLogger().getSummaryLogger().info(summaryString);
+		notifyTestUnitSummary(t.getTestClassObject().getName(), summaryString);
+	}
+
+	/**
+	 * Append test unit summary to summary report
+	 * 
+	 * @param scenario {@link BDDScenario} object
+	 * @param unit {@link TestUnitObjectWrapper} object
+	 * @param status Test status
+	 * @param testUnitName Test unit name
+	 * @param bugTrackingNumber BugTracking Number
+	 * @param testDuration Test duration
+	 */
+	private void appendUnitSummaryReport(BDDScenario scenario, TestUnitObjectWrapper unit, TestStatus status, String testUnitName,
+			String bugTrackingNumber, long testDuration) {
+
+		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+
+		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testName = String.format("%-" + 95 + "s", testUnitName).substring(0, 95);
+		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
+		String PassCount = String.format("%-" + 4 + "s", "");
+		String FailCount = String.format("%-" + 4 + "s", "");
+		String SkipCount = String.format("%-" + 4 + "s", "");
+		String KTFCount = String.format("%-" + 4 + "s", "");
+		String TestImportance = String.format("%-" + 10 + "s",
+				(unit.getTestImportance() == Importance.UNDEFINED ? "" : unit.getTestImportance().name()));
+
+		String summaryString = "  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount + "  :" + KTFCount
+				+ " [" + TestImportance + "] " + testTime + " " + JiraRef;
+		getLogger().getSummaryLogger().info(summaryString);
+		notifyTestUnitSummary(scenario.scenarioDescription, summaryString);
 	}
 
 	/**
@@ -650,6 +694,18 @@ public class TestContext {
 	private void notifyTestResult(TestStatus testStatus, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testResult(testStatus, Msg);
+		}
+	}
+
+	private void notifyTestCaseSummary(String FQCN, String description) {
+		for (TestProgress listener : listenerList) {
+			listener.testCaseSummaryPrinting(FQCN, description);
+		}
+	}
+
+	private void notifyTestUnitSummary(String FQCN, String description) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitSummaryPrinting(FQCN, description);
 		}
 	}
 
@@ -1146,6 +1202,18 @@ public class TestContext {
 
 	protected void setTotalUnitUndefinedCount(int totalUnitUndefinedCount) {
 		this.totalUnitUndefinedCount = totalUnitUndefinedCount;
+	}
+
+	public String getTestSuiteName() {
+		return this.testSuite.getSuiteName();
+	}
+
+	public UDP getDashBoardConnector() {
+		return dashBoardConnector;
+	}
+
+	protected void setDashBoardConnector(UDP dashBoardConnector) {
+		this.dashBoardConnector = dashBoardConnector;
 	}
 
 }
