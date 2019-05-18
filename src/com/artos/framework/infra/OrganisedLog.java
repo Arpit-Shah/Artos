@@ -22,6 +22,8 @@
 package com.artos.framework.infra;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -42,8 +44,7 @@ import com.artos.framework.FWStaticStore;
 import com.artos.framework.parser.TestSuite;
 
 /**
- * This class is responsible for initialising all log streams which may require
- * during test suite execution
+ * This class is responsible for initialising all log streams which may require during test suite execution
  */
 class OrganisedLog {
 
@@ -54,59 +55,42 @@ class OrganisedLog {
 	public static String REALTIME_LOGGER_NAME_STX = "RealTime_";
 
 	/**
-	 * Constructor responsible for creating log base directory and Log4J
-	 * loggerContext using Framework configuration and TestSuite information
+	 * Constructor responsible for creating log base directory and Log4J loggerContext using Framework configuration and TestSuite information
 	 * 
-	 * @param logDirPath
-	 *            Log base directory absolute or reference path
-	 * @param testCaseFQCN
-	 *            Test case fully qualified class name (Example :
-	 *            com.test.unit.Abc)
-	 * @param enableLogDecoration
-	 *            Enables/disable log decoration (Time-stamp, source package,
-	 *            thread number etc..)
-	 * @param enableTextLog
-	 *            Enables/disable text log
-	 * @param enableHTMLLog
-	 *            Enable/disable HTML log
-	 * @param testSuiteList
-	 *            list of testSuite (if any) or pass null
+	 * @param logDirPath Log base directory absolute or reference path
+	 * @param testCaseFQCN Test case fully qualified class name (Example : com.test.unit.Abc)
+	 * @param enableLogDecoration Enables/disable log decoration (Time-stamp, source package, thread number etc..)
+	 * @param enableTextLog Enables/disable text log
+	 * @param enableHTMLLog Enable/disable HTML log
+	 * @param testSuiteList list of testSuite (if any) or pass null
 	 */
 	public OrganisedLog(String logDirPath, String testCaseFQCN, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog,
 			List<TestSuite> testSuiteList) {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
-		
-		if(null == logDirPath){
+
+		if (null == logDirPath) {
 			logDirPath = FWStaticStore.LOG_BASE_DIR;
 		}
 
 		if (!logDirPath.endsWith("/") && !logDirPath.endsWith("\\")) {
 			logDirPath = logDirPath + File.separator;
 		}
-		
+
 		setLogBaseDir(logDirPath + testCaseFQCN + File.separator);
 		setLoggerContext(dynamicallyConfigureLog4J(getLogBaseDir(), testCaseFQCN, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList));
 	}
 
 	/**
-	 * Dynamically Generates and applies Log4J configuration XML as per test
-	 * suite requirement
+	 * Dynamically Generates and applies Log4J configuration XML as per test suite requirement
 	 * 
-	 * @param baseDir
-	 *            Log file root directory
-	 * @param testFQCN
-	 *            Log file name
-	 * @param enableLogDecoration
-	 *            Enable/disable log decoration (Time-stamp, source package,
-	 *            thread number etc..)
-	 * @param enableTextLog
-	 *            Enables/disable text log
-	 * @param enableHTMLLog
-	 *            Enable/disable HTML log
-	 * @param testSuiteList
-	 *            testSuiteLite (if any) or pass null
+	 * @param baseDir Log file root directory
+	 * @param testFQCN Log file name
+	 * @param enableLogDecoration Enable/disable log decoration (Time-stamp, source package, thread number etc..)
+	 * @param enableTextLog Enables/disable text log
+	 * @param enableHTMLLog Enable/disable HTML log
+	 * @param testSuiteList testSuiteLite (if any) or pass null
 	 * @return {@code LoggerContext}
 	 * 
 	 * @see LoggerContext
@@ -196,8 +180,12 @@ class OrganisedLog {
 
 		for (int i = 0; i < numberOfAppenders; i++) {
 			// retrieve file prefix
-			String logFilePrefix = (testSuiteList != null ) ? testSuiteList.get(i).getSuiteName() + "_" : ""; 
-			String logFileName = testFQCN + "_" + i + "_" + logFilePrefix + System.currentTimeMillis();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd-HH.mm.ss.SSS");
+			Date resultdate = new Date(System.currentTimeMillis());
+			// System.out.println(sdf.format(resultdate));
+
+			String logFilePrefix = (testSuiteList != null) ? testSuiteList.get(i).getSuiteName() + "_" : "";
+			String logFileName = testFQCN + "_" + i + "_" + logFilePrefix + sdf.format(resultdate); // System.currentTimeMillis();
 
 			// create a rolling file appender for general logs
 			{
