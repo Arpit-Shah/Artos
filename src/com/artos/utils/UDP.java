@@ -121,6 +121,7 @@ public class UDP implements Connectable {
 	 * expires, a java.net.SocketTimeoutException is raised, though the DatagramSocket is still valid.
 	 * 
 	 * @param soTimeout the specified timeout in milliseconds.
+	 * @throws Exception if failed to connect or create a socket
 	 */
 	public void connect(int soTimeout) throws Exception {
 		// Start Reading task in parallel thread

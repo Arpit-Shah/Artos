@@ -369,6 +369,7 @@ public class ArtosRunner {
 					// If "stop on fail" is enabled then stop test execution
 					if (FWStaticStore.frameworkConfig.isStopOnFail()) {
 						if (context.getCurrentFailCount() > 0) {
+							context.getLogger().info(FWStaticStore.ARTOS_STOP_ON_FAIL_STAMP);
 							break;
 						}
 					}

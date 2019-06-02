@@ -384,7 +384,7 @@ public class UDPReportListener implements TestProgress {
 			String userName = String.format("%-" + 10 + "s", rawUserName.length() > 10 ? rawUserName.substring(0, 10) : rawUserName);
 			String testCaseName = String.format("%-" + 100 + "s", FQCN.length() > 100 ? FQCN.substring(0, 100) : FQCN);
 			String msg = description + ":" + userName + ":" + suiteName + ":" + testCaseName;
-			System.err.println(msg);
+			// System.err.println(msg);
 			udp.sendMsg(msg.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -404,7 +404,7 @@ public class UDPReportListener implements TestProgress {
 			String userName = String.format("%-" + 10 + "s", rawUserName.length() > 10 ? rawUserName.substring(0, 10) : rawUserName);
 			String testCaseName = String.format("%-" + 100 + "s", FQCN.length() > 100 ? FQCN.substring(0, 100) : FQCN);
 			String msg = description + ":" + userName + ":" + suiteName + ":" + testCaseName;
-			System.err.println(msg);
+			// System.err.println(msg);
 			udp.sendMsg(msg.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();

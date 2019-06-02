@@ -443,7 +443,7 @@ public class TestContext {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
@@ -480,7 +480,7 @@ public class TestContext {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
@@ -516,7 +516,7 @@ public class TestContext {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 95 + "s", testUnitName).replace(" ", ".").substring(0, 95);
@@ -551,7 +551,7 @@ public class TestContext {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%2d", hours, minutes, seconds, millis).replace(" ", "0");
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 95 + "s", testUnitName).substring(0, 95);
