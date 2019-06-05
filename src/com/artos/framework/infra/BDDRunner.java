@@ -35,6 +35,7 @@ import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.listener.ExtentReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
+import com.artos.framework.listener.UDPReportListener;
 import com.artos.framework.parser.BDDFeatureFileParser;
 import com.artos.interfaces.TestProgress;
 import com.artos.interfaces.TestScenarioRunnable;
@@ -62,11 +63,14 @@ public class BDDRunner {
 	 * </PRE>
 	 * 
 	 * @param context TestContext object
+	 * @param externalListnerClassList external listener class list
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
 	 */
-	protected BDDRunner(TestContext context) {
+	protected BDDRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException {
 		this.context = context;
 
 		// Register default listener
@@ -79,6 +83,22 @@ public class BDDRunner {
 			ExtentReportListener extentListener = new ExtentReportListener(context);
 			registerListener(extentListener);
 			context.registerListener(extentListener);
+		}
+
+		// Register UDPReport listener
+		if (FWStaticStore.frameworkConfig.isEnableDashBoard()) {
+			UDPReportListener udpListener = new UDPReportListener(context);
+			registerListener(udpListener);
+			context.registerListener(udpListener);
+		}
+
+		// Register external listener
+		if (null != externalListnerClassList) {
+			for (Class<?> listener : externalListnerClassList) {
+				TestProgress externalListener = (TestProgress) listener.newInstance();
+				registerListener(externalListener);
+				context.registerListener(externalListener);
+			}
 		}
 
 	}

@@ -54,7 +54,7 @@ public class ArtosRunner {
 
 	TestContext context;
 	List<TestProgress> listenerList = new ArrayList<TestProgress>();
-
+	List<Class<?>> externalListnerClassList = null;
 	// ==================================================================================
 	// Constructor (Starting point of framework)
 	// ==================================================================================
@@ -67,12 +67,16 @@ public class ArtosRunner {
 	 * </PRE>
 	 * 
 	 * @param context TestContext object
+	 * @param externalListnerClassList external listener class list
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
 	 */
-	protected ArtosRunner(TestContext context) {
+	protected ArtosRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException {
 		this.context = context;
+		this.externalListnerClassList = externalListnerClassList;
 
 		// Register default listener
 		TestExecutionEventListener testListener = new TestExecutionEventListener(context);
@@ -86,10 +90,20 @@ public class ArtosRunner {
 			context.registerListener(extentListener);
 		}
 
+		// Register UDPReport listener
 		if (FWStaticStore.frameworkConfig.isEnableDashBoard()) {
 			UDPReportListener udpListener = new UDPReportListener(context);
 			registerListener(udpListener);
 			context.registerListener(udpListener);
+		}
+
+		// Register external listener
+		if (null != externalListnerClassList) {
+			for (Class<?> listener : externalListnerClassList) {
+				TestProgress externalListener = (TestProgress) listener.newInstance();
+				registerListener(externalListener);
+				context.registerListener(externalListener);
+			}
 		}
 
 	}

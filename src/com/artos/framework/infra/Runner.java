@@ -53,17 +53,32 @@ import com.google.common.collect.Lists;
 public class Runner {
 
 	Class<?> cls;
+	List<Class<?>> listnerClass = null;
 	// Default thread count should be 1
 	int threadCount = 1;
 	String profile = "dev";
 	TestSuite runnerTestSuite;
 
 	/**
-	 * @param cls Runner for the test Suite
+	 * @param runnerClass Runner for the test Suite
 	 * @see TestContext
 	 */
-	public Runner(Class<?> cls) {
-		this.cls = cls;
+	public Runner(Class<?> runnerClass) {
+		this.cls = runnerClass;
+		init();
+	}
+
+	/**
+	 * @param runnerClass Runner for the test Suite
+	 * @param listnerClass custom listener which has implemented {@code TestProgress}
+	 */
+	public Runner(Class<?> runnerClass, List<Class<?>> listnerClass) {
+		this.cls = runnerClass;
+		this.listnerClass = listnerClass;
+		init();
+	}
+
+	private void init() {
 		runnerTestSuite = new TestSuite();
 		// This is false if object is created using main method information
 		runnerTestSuite.setTestScriptProvided(false);
@@ -213,7 +228,7 @@ public class Runner {
 				}
 
 				// Launch a thread with runnable
-				Future<?> f = service.submit(new SuiteTask(context));
+				Future<?> f = service.submit(new SuiteTask(context, listnerClass));
 				futures.add((Future<Runnable>) f);
 
 			}
@@ -511,14 +526,16 @@ class SuiteTask implements Runnable {
 
 	TestContext context;
 	CountDownLatch latch;
+	List<Class<?>> listnerClass;
 
 	/**
 	 * Constructor for Runnable
 	 *
 	 * @param context test context
 	 */
-	public SuiteTask(TestContext context) {
+	public SuiteTask(TestContext context, List<Class<?>> listnerClass) {
 		this.context = context;
+		this.listnerClass = listnerClass;
 	}
 
 	@Override
@@ -527,10 +544,10 @@ class SuiteTask implements Runnable {
 			List<BDDFeatureObjectWrapper> featureFiles = context.getTestSuite().getFeatureFiles();
 			if (null == featureFiles || featureFiles.isEmpty()) {
 				// Create ArtosRunner per thread
-				new ArtosRunner(context).run();
+				new ArtosRunner(context, listnerClass).run();
 			} else {
 				// Create ArtosRunner per thread
-				new BDDRunner(context).run();
+				new BDDRunner(context, listnerClass).run();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
