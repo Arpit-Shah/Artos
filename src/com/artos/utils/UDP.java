@@ -62,14 +62,10 @@ public class UDP implements Connectable {
 	/**
 	 * Allows user to use different send and receive ports
 	 * 
-	 * @param localAddress
-	 *            Host IP
-	 * @param localPort
-	 *            Host Port
-	 * @param remoteAddress
-	 *            Remote IP
-	 * @param remotePort
-	 *            Remote Port
+	 * @param localAddress Host IP
+	 * @param localPort Host Port
+	 * @param remoteAddress Remote IP
+	 * @param remotePort Remote Port
 	 */
 	public UDP(String localAddress, int localPort, String remoteAddress, int remotePort) {
 		this.localPort = localPort;
@@ -80,21 +76,14 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Allows user to use different send and receive ports. Every filter adds
-	 * overheads in processing received messages which may have impact on
-	 * performance. If filter logic takes too much time to make decision then UDP
-	 * message may be dropped.
+	 * Allows user to use different send and receive ports. Every filter adds overheads in processing received messages which may have impact on
+	 * performance. If filter logic takes too much time to make decision then UDP message may be dropped.
 	 * 
-	 * @param localAddress
-	 *            Host IP
-	 * @param localPort
-	 *            Host Port
-	 * @param remoteAddress
-	 *            Remote IP
-	 * @param remotePort
-	 *            Remote Port
-	 * @param filterList
-	 *            list of filters
+	 * @param localAddress Host IP
+	 * @param localPort Host Port
+	 * @param remoteAddress Remote IP
+	 * @param remotePort Remote Port
+	 * @param filterList list of filters
 	 */
 	public UDP(String localAddress, int localPort, String remoteAddress, int remotePort, List<ConnectableFilter> filterList) {
 		this.localPort = localPort;
@@ -144,8 +133,7 @@ public class UDP implements Connectable {
 	/**
 	 * Closes this datagram socket.
 	 * 
-	 * Any thread currently blocked in receive upon this socket will throw a
-	 * SocketException.
+	 * Any thread currently blocked in receive upon this socket will throw a SocketException.
 	 * 
 	 */
 	public void disconnect() {
@@ -170,19 +158,14 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received within
-	 * timeout period
+	 * Polls the queue for msg, Function will block until msg is polled from the queue or timeout has occurred. null is returned if no message
+	 * received within timeout period
 	 * 
-	 * @param timeout
-	 *            msg timeout
-	 * @param timeunit
-	 *            timeunit
+	 * @param timeout msg timeout
+	 * @param timeunit timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
-	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The interrupted
-	 *             status of the current thread is cleared when this exception is
-	 *             thrown.
+	 * @throws InterruptedException if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when
+	 *             this exception is thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -198,8 +181,11 @@ public class UDP implements Connectable {
 			if ((finishTime - startTime) > maxAllowedTime) {
 				return null;
 			}
+			synchronized (queue) {
+				queue.wait(finishTime - startTime);
+			}
 			// Give system some time to do other things
-			Thread.sleep(10);
+			// Thread.sleep(10);
 		}
 		return null;
 	}
@@ -216,16 +202,12 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Constructs and sends datagram packet to the specified port number on the
-	 * specified host. The length argument must be less than or equal to buf.length.
-	 * The DatagramPacket includes information indicating the data to be sent, its
-	 * length, the IP address of the remote host, and the port number on the remote
-	 * host.
+	 * Constructs and sends datagram packet to the specified port number on the specified host. The length argument must be less than or equal to
+	 * buf.length. The DatagramPacket includes information indicating the data to be sent, its length, the IP address of the remote host, and the port
+	 * number on the remote host.
 	 * 
-	 * @param stringMsg
-	 *            String data
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @param stringMsg String data
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public void sendMsg(String stringMsg) throws IOException {
 		byte[] data = stringMsg.getBytes();
@@ -233,14 +215,11 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Constructs and sends datagram packet to the specified port number on the
-	 * specified host. The length argument must be less than or equal to buf.length.
-	 * The DatagramPacket includes information indicating the data to be sent, its
-	 * length, the IP address of the remote host, and the port number on the remote
-	 * host.
+	 * Constructs and sends datagram packet to the specified port number on the specified host. The length argument must be less than or equal to
+	 * buf.length. The DatagramPacket includes information indicating the data to be sent, its length, the IP address of the remote host, and the port
+	 * number on the remote host.
 	 * 
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @throws IOException if an I/O error occurs.
 	 */
 	@Override
 	public void sendMsg(byte[] data) throws IOException {
@@ -421,8 +400,14 @@ class UDPClientTask implements Runnable {
 				}
 			}
 			queue.add(readData);
+			synchronized (queue) {
+				queue.notifyAll();
+			}
 		} else {
 			queue.add(readData);
+			synchronized (queue) {
+				queue.notifyAll();
+			}
 		}
 	}
 

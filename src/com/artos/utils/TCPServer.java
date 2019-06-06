@@ -39,8 +39,7 @@ import com.artos.interfaces.ConnectableFilter;
 import com.artos.interfaces.ConnectableMessageParser;
 
 /**
- * This class listens for client connection and accepts single client connection
- * with server
+ * This class listens for client connection and accepts single client connection with server
  * 
  * 
  *
@@ -60,9 +59,7 @@ public class TCPServer implements Connectable {
 	/**
 	 * Constructor
 	 * 
-	 * @param nPort
-	 *            Port Number, or 0 to use a port number that is automatically
-	 *            allocated
+	 * @param nPort Port Number, or 0 to use a port number that is automatically allocated
 	 */
 	public TCPServer(int nPort) {
 		this.nPort = nPort;
@@ -70,17 +67,11 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Constructor. Every filter adds overheads in processing received messages
-	 * which may have impact on performance
+	 * Constructor. Every filter adds overheads in processing received messages which may have impact on performance
 	 * 
-	 * @param nPort
-	 *            Port Number, or 0 to use a port number that is automatically
-	 *            allocated
-	 * @param msgParser
-	 *            parser which is used to separate relevant msgs from received
-	 *            TCP byte array
-	 * @param filterList
-	 *            list of filters
+	 * @param nPort Port Number, or 0 to use a port number that is automatically allocated
+	 * @param msgParser parser which is used to separate relevant msgs from received TCP byte array
+	 * @param filterList list of filters
 	 */
 	public TCPServer(int nPort, ConnectableMessageParser msgParser, List<ConnectableFilter> filterList) {
 		this.nPort = nPort;
@@ -89,11 +80,9 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks
-	 * until a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks until a connection is made.
 	 * 
-	 * @throws IOException
-	 *             if an I/O error occurs when opening the socket.
+	 * @throws IOException if an I/O error occurs when opening the socket.
 	 */
 	public void connect() throws IOException {
 		// set infinite timeout by default
@@ -101,18 +90,13 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Creates a server socket, bound to the specified port. The method blocks
-	 * until a connection is made.
+	 * Creates a server socket, bound to the specified port. The method blocks until a connection is made.
 	 * 
-	 * Setting soTimeout to a non-zero timeout, a call to accept() for this
-	 * ServerSocket will block for only this amount of time. If the timeout
-	 * expires, a java.net.SocketTimeoutException is raised, though the
-	 * ServerSocket is still valid.
+	 * Setting soTimeout to a non-zero timeout, a call to accept() for this ServerSocket will block for only this amount of time. If the timeout
+	 * expires, a java.net.SocketTimeoutException is raised, though the ServerSocket is still valid.
 	 * 
-	 * @param soTimeout
-	 *            the specified timeout in milliseconds.
-	 * @throws IOException
-	 *             if an I/O error occurs when opening the socket.
+	 * @param soTimeout the specified timeout in milliseconds.
+	 * @throws IOException if an I/O error occurs when opening the socket.
 	 */
 	public void connect(int soTimeout) throws IOException {
 		System.out.println("Listening on Port : " + nPort);
@@ -130,8 +114,7 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Returns the connection state of the socket. true is returned if socket is
-	 * successfully connected and has not been closed
+	 * Returns the connection state of the socket. true is returned if socket is successfully connected and has not been closed
 	 */
 	public boolean isConnected() {
 		if (serverSocket.isConnected() && serverSocket.isBound() && !serverSocket.isClosed()) {
@@ -141,12 +124,10 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Closes this socket. Once a socket has been closed, it is not available
-	 * for further networking use (i.e. can't be reconnected or rebound). A new
+	 * Closes this socket. Once a socket has been closed, it is not available for further networking use (i.e. can't be reconnected or rebound). A new
 	 * socket needs to be created.
 	 * 
-	 * @throws IOException
-	 *             if an I/O error occurs when closing this socket.
+	 * @throws IOException if an I/O error occurs when closing this socket.
 	 */
 	public void disconnect() throws IOException {
 		serverSocket.close();
@@ -167,19 +148,14 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Polls the queue for msg, Function will block until msg is polled from the
-	 * queue or timeout has occurred. null is returned if no message received
-	 * within timeout period
+	 * Polls the queue for msg, Function will block until msg is polled from the queue or timeout has occurred. null is returned if no message
+	 * received within timeout period
 	 * 
-	 * @param timeout
-	 *            msg timeout
-	 * @param timeunit
-	 *            timeunit
+	 * @param timeout msg timeout
+	 * @param timeunit timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
-	 * @throws InterruptedException
-	 *             if any thread has interrupted the current thread. The
-	 *             interrupted status of the current thread is cleared when this
-	 *             exception is thrown.
+	 * @throws InterruptedException if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when
+	 *             this exception is thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
 		boolean isTimeout = false;
@@ -195,8 +171,11 @@ public class TCPServer implements Connectable {
 			if ((finishTime - startTime) > maxAllowedTime) {
 				return null;
 			}
+			synchronized (queue) {
+				queue.wait(finishTime - startTime);
+			}
 			// Give system some time to do other things
-			Thread.sleep(10);
+			// Thread.sleep(10);
 		}
 		return null;
 	}
@@ -215,10 +194,8 @@ public class TCPServer implements Connectable {
 	/**
 	 * Send data to client in String format
 	 * 
-	 * @param data
-	 *            data to be sent in String format
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @param data data to be sent in String format
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public void sendMsg(String data) throws IOException {
 		sendMsg(data.getBytes());
@@ -227,8 +204,7 @@ public class TCPServer implements Connectable {
 	/**
 	 * Send byte array to client
 	 * 
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @throws IOException if an I/O error occurs.
 	 */
 	@Override
 	public void sendMsg(byte[] data) throws IOException {
@@ -316,8 +292,7 @@ public class TCPServer implements Connectable {
 }
 
 /**
- * Inner Class which acts as receiver thread for incoming data. All Data will be
- * added to the Queue
+ * Inner Class which acts as receiver thread for incoming data. All Data will be added to the Queue
  * 
  * 
  *
@@ -355,17 +330,14 @@ class ClientTask implements Runnable {
 					notifyReceive(readData);
 
 					/*
-					 * If user has not provided logic for msg parsing then do
-					 * simple filtering
+					 * If user has not provided logic for msg parsing then do simple filtering
 					 */
 					if (null == msgParser) {
 						applyFilter(readData);
 					} else {
 						/*
-						 * If user has provided message parsing logic then
-						 * assemble any left over data from previous byte[] to
-						 * readData and then put it through parsing logic to
-						 * separate each messages.
+						 * If user has provided message parsing logic then assemble any left over data from previous byte[] to readData and then put
+						 * it through parsing logic to separate each messages.
 						 */
 						if (null != leftOverBytes) {
 							readData = _transform.concat(leftOverBytes, readData);
@@ -390,7 +362,7 @@ class ClientTask implements Runnable {
 		if (null != msgParser.getLeftOverBytes() && msgParser.getLeftOverBytes().length != 0) {
 			leftOverBytes = msgParser.getLeftOverBytes();
 		}
-		
+
 		for (byte[] msg : msgList) {
 			applyFilter(msg);
 		}
@@ -405,8 +377,14 @@ class ClientTask implements Runnable {
 				}
 			}
 			queue.add(readData);
+			synchronized (queue) {
+				queue.notifyAll();
+			}
 		} else {
 			queue.add(readData);
+			synchronized (queue) {
+				queue.notifyAll();
+			}
 		}
 	}
 
