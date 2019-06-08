@@ -55,6 +55,7 @@ public class TCPServer implements Connectable {
 	RealTimeLogEventListener realTimeListener = null;
 	ConnectableMessageParser msgParser = null;
 	Transform _transform = new Transform();
+	ExecutorService clientProcessingPool;
 
 	/**
 	 * Constructor
@@ -132,6 +133,7 @@ public class TCPServer implements Connectable {
 	public void disconnect() throws IOException {
 		serverSocket.close();
 		tcpSocket.close();
+		clientProcessingPool.shutdownNow();
 		notifyDisconnected();
 		System.out.println("Connection Closed");
 	}
@@ -148,36 +150,31 @@ public class TCPServer implements Connectable {
 	}
 
 	/**
-	 * Polls the queue for msg, Function will block until msg is polled from the queue or timeout has occurred. null is returned if no message
-	 * received within timeout period
+	 * Get the message from the queue. With non zero timeout, function blocks until message is received or timeout has occurred. If timeout value is
+	 * zero then function will block until next message is received with infinite timeout.
 	 * 
-	 * @param timeout msg timeout
+	 * @param timeout timeout value
 	 * @param timeunit timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when
 	 *             this exception is thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
-		boolean isTimeout = false;
-		long startTime = System.nanoTime();
-		long finishTime;
-		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(timeout, timeunit);
-
-		while (!isTimeout) {
-			if (hasNextMsg()) {
-				return queue.poll();
-			}
-			finishTime = System.nanoTime();
-			if ((finishTime - startTime) > maxAllowedTime) {
-				return null;
-			}
-			synchronized (queue) {
-				queue.wait(finishTime - startTime);
-			}
-			// Give system some time to do other things
-			// Thread.sleep(10);
+		long maxAllowedTime = TimeUnit.MILLISECONDS.convert(timeout, timeunit);
+		// If queue has message then return it
+		if (hasNextMsg()) {
+			return queue.poll();
 		}
-		return null;
+		// If queue did not have message then wait for message until timeout
+		synchronized (queue) {
+			queue.wait(maxAllowedTime);
+		}
+		// If queue has message then return it or return null
+		if (hasNextMsg()) {
+			return queue.poll();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -221,7 +218,7 @@ public class TCPServer implements Connectable {
 	}
 
 	private void readFromSocket() {
-		final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
+		clientProcessingPool = Executors.newFixedThreadPool(10);
 		final Runnable serverTask = new Runnable() {
 			@Override
 			public void run() {
