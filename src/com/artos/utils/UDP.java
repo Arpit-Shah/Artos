@@ -160,31 +160,33 @@ public class UDP implements Connectable {
 	}
 
 	/**
-	 * Get the message from the queue. With non zero timeout, function blocks until message is received or timeout has occurred. If timeout value is
-	 * zero then function will block until next message is received with infinite timeout.
+	 * Polls the queue for msg, Function will block until msg is polled from the queue or timeout has occurred. null is returned if no message
+	 * received within timeout period
 	 * 
-	 * @param timeout timeout value
+	 * @param timeout msg timeout
 	 * @param timeunit timeunit
 	 * @return byte[] from queue, null is returned if timeout has occurred
 	 * @throws InterruptedException if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when
 	 *             this exception is thrown.
 	 */
 	public byte[] getNextMsg(long timeout, TimeUnit timeunit) throws InterruptedException {
-		long maxAllowedTime = TimeUnit.MILLISECONDS.convert(timeout, timeunit);
-		// If queue has message then return it
-		if (hasNextMsg()) {
-			return queue.poll();
+		boolean isTimeout = false;
+		long startTime = System.nanoTime();
+		long finishTime;
+		long maxAllowedTime = TimeUnit.NANOSECONDS.convert(timeout, timeunit);
+
+		while (!isTimeout) {
+			if (hasNextMsg()) {
+				return queue.poll();
+			}
+			finishTime = System.nanoTime();
+			if ((finishTime - startTime) > maxAllowedTime) {
+				return null;
+			}
+			// Give system some time to do other things
+			Thread.sleep(2);
 		}
-		// If queue does not have message then wait for message
-		synchronized (queue) {
-			queue.wait(maxAllowedTime);
-		}
-		// If queue has message then return it or return null;
-		if (hasNextMsg()) {
-			return queue.poll();
-		} else {
-			return null;
-		}
+		return null;
 	}
 
 	/**
@@ -397,14 +399,8 @@ class UDPClientTask implements Runnable {
 				}
 			}
 			queue.add(readData);
-			synchronized (queue) {
-				queue.notifyAll();
-			}
 		} else {
 			queue.add(readData);
-			synchronized (queue) {
-				queue.notifyAll();
-			}
 		}
 	}
 
