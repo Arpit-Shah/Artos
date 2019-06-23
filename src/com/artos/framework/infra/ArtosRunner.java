@@ -68,8 +68,8 @@ public class ArtosRunner {
 	 * 
 	 * @param context TestContext object
 	 * @param externalListnerClassList external listener class list
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
@@ -377,6 +377,14 @@ public class ArtosRunner {
 			for (int index = 0; index < loopCount; index++) {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
+
+				if (testList.isEmpty()) {
+					System.err.println("[WARNING] : Test case execution list is empty");
+					System.err.println("[HINT-01] : Test case class may not be meeting criteria");
+					System.err.println("[HINT-02] : Test cases may not be within the same package as TestRunner");
+					System.err.println("[HINT-03] : Test case(s) are filtered out due to group filtering");
+				}
+
 				// Go through each test case and execute it
 				for (TestObjectWrapper t : testList) {
 

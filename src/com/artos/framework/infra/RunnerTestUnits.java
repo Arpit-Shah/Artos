@@ -63,6 +63,10 @@ public class RunnerTestUnits {
 			List<TestUnitObjectWrapper> unitTests = t.getTestUnitList();
 
 			if (null == unitTests || unitTests.isEmpty()) {
+				System.err.println("[WARNING] : Test unit execution list is empty");
+				System.err.println("[HINT-01] : Test unit(s) may not be present in the test case");
+				System.err.println("[HINT-02] : Test unit(s) may not be meeting criteria");
+				System.err.println("[HINT-03] : Test unit(s) are skipped due to group filtering");
 				return;
 			}
 
