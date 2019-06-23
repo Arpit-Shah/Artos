@@ -291,26 +291,36 @@ public class ScanTestCase {
 		// Only public methods are allowed
 		if (!Modifier.isPublic(method.getModifiers())) {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method is not public");
+			System.err.println(
+					"[WARNING] : " + method.getDeclaringClass().getName() + "=>" + method.getName() + " @Unit is not public, Unit will be ignored");
 			return false;
 		}
 		// Only non static methods are allowed
 		if (Modifier.isStatic(method.getModifiers())) {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method is static");
+			System.err.println(
+					"[WARNING] : " + method.getDeclaringClass().getName() + "=>" + method.getName() + " @Unit is Static, Unit will be ignored");
 			return false;
 		}
 		// Only method with return value to be void is allowed
 		if (null != method.getReturnType() && void.class != method.getReturnType()) {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method return type is not void");
+			System.err.println(
+					"[WARNING] : " + method.getDeclaringClass().getName() + "=>" + method.getName() + " @Unit must retun void, Unit will be ignored");
 			return false;
 		}
 		// Only method with one parameter is allowed
 		if (1 != method.getParameterCount()) {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method parameter count is not 1");
+			System.err.println("[WARNING] : " + method.getDeclaringClass().getName() + "=>" + method.getName()
+					+ " @Unit signature is not \"public void methodname(TestContext context)\", Unit will be ignored");
 			return false;
 		}
 		// Only method with parameter of type TestContext is allowed
 		if (null == method.getParameters() || method.getParameterTypes()[0] != TestContext.class) {
 			FWStaticStore.logDebug(method.getName() + " : Method Ignored, Method parameter type is not " + TestContext.class.getName());
+			System.err.println("[WARNING] : " + method.getDeclaringClass().getName() + "=>" + method.getName()
+					+ " @Unit signature is not \"public void methodname(TestContext context)\", Unit will be ignored");
 			return false;
 		}
 

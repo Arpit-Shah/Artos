@@ -108,12 +108,16 @@ public class ScanTestSuite {
 			String dataProviderName = m.getAnnotation(DataProvider.class).name().toUpperCase();
 			TestDataProvider testDataProvider = new TestDataProvider(m, dataProviderName, m.getDeclaringClass(), Modifier.isStatic(m.getModifiers()));
 			if (dataProviderMap.containsKey(dataProviderName)) {
-				System.err.println("Duplicate Dataprovider (case in-sensitive): " + m.getAnnotation(DataProvider.class).name());
+				System.err.println("[WARNING] : Duplicate Dataprovider (case in-sensitive): " + m.getAnnotation(DataProvider.class).name());
 			}
 			dataProviderMap.put(dataProviderName, testDataProvider);
 		});
 
 		for (Class<?> cl : reflection.getTypesAnnotatedWith(TestCase.class)) {
+
+			if (!TestExecutable.class.isAssignableFrom(cl)) {
+				System.err.println("[WARNING] : Class is not an instance of " + TestExecutable.class.getSimpleName() + " : " + cl.getName());
+			}
 
 			/*
 			 * Reflection constructor takes package name as an argument, It will find all packages which starts with package name, thus as a side
