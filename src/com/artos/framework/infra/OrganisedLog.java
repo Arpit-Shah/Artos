@@ -95,6 +95,7 @@ class OrganisedLog {
 	 * 
 	 * @see LoggerContext
 	 */
+	@SuppressWarnings("deprecation")
 	private LoggerContext dynamicallyConfigureLog4J(String baseDir, String testFQCN, boolean enableLogDecoration, boolean enableTextLog,
 			boolean enableHTMLLog, List<TestSuite> testSuiteList) {
 
@@ -314,6 +315,13 @@ class OrganisedLog {
 				if (enableHTMLLog) {
 					realTimeLoggerBuilder.add(appendRef22);
 				}
+			}
+
+			// Suppress freemarker logs as we are not interested in it
+			try {
+				freemarker.log.Logger.selectLoggerLibrary(freemarker.log.Logger.LIBRARY_NONE);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 
 			builder.add(generalLoggerBuilder);
