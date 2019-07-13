@@ -51,6 +51,7 @@ import com.artos.annotation.TestCase;
 import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
+import com.artos.framework.Enums.Importance;
 import com.artos.framework.FWStaticStore;
 import com.artos.interfaces.TestExecutable;
 
@@ -240,12 +241,14 @@ public class ScanTestSuite {
 		List<TestPlanWrapper> testPlanList = new ArrayList<>();
 		for (TestObjectWrapper testObject : testObjWrapperList_All) {
 			TestPlanWrapper testPlan = new TestPlanWrapper();
+
 			testPlan.setTestPlan(testObject.getTestClassObject().getName(), testObject.getTestPlanDescription(), testObject.getTestPlanPreparedBy(),
 					testObject.getTestPlanPreparationDate(), testObject.getTestreviewedBy(), testObject.getTestReviewDate(),
 					testObject.getTestPlanBDD());
 			testPlan.setTestPlanGroup(testObject.getGroupList().toString());
 			testPlan.setTestPlanKTF(testObject.isKTF(), testObject.getBugTrackingNumber());
 			testPlan.setTestPlanSkip(testObject.getTestsequence(), testObject.isSkipTest(), testObject.getDataProviderName());
+			testPlan.setTestImportance(Importance.getEnumName(testObject.getTestImportance().getValue()));
 
 			testPlanList.add(testPlan);
 		}

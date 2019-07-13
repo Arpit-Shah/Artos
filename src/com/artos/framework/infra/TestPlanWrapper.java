@@ -34,13 +34,13 @@ public class TestPlanWrapper {
 	private String dataProviderName;
 
 	// test plan
-	private String TestCaseName = "";
-	private String TestDescription = "";
-	private String TestPreparedBy = "";
-	private String TestPreparationDate = "";
-	private String TestReviewedBy = "";
-	private String TestReviewedDate = "";
-	private String TestBDD = "";
+	private String testCaseName = "";
+	private String testDescription = "";
+	private String testPreparedBy = "";
+	private String testPreparationDate = "";
+	private String testReviewedBy = "";
+	private String testReviewedDate = "";
+	private String testBDD = "";
 
 	// test group
 	private String groupList = "";
@@ -48,6 +48,9 @@ public class TestPlanWrapper {
 	// ktf
 	private boolean ktf;
 	private String bugTrackingNumber;
+
+	// importance
+	private String testImportance;
 
 	/**
 	 * This method allows setting of parameters set using {@link TestPlan} annotation.
@@ -62,13 +65,13 @@ public class TestPlanWrapper {
 	 */
 	public void setTestPlan(String testCaseName, String testDescription, String testPreparedBy, String testPreparationDate, String testReviewedBy,
 			String testReviewedDate, String testBDD) {
-		TestCaseName = testCaseName;
-		TestDescription = testDescription;
-		TestPreparedBy = testPreparedBy;
-		TestPreparationDate = testPreparationDate;
-		TestReviewedBy = testReviewedBy;
-		TestReviewedDate = testReviewedDate;
-		TestBDD = testBDD;
+		this.testCaseName = testCaseName;
+		this.testDescription = testDescription;
+		this.testPreparedBy = testPreparedBy;
+		this.testPreparationDate = testPreparationDate;
+		this.testReviewedBy = testReviewedBy;
+		this.testReviewedDate = testReviewedDate;
+		this.testBDD = testBDD;
 	}
 
 	/**
@@ -104,13 +107,17 @@ public class TestPlanWrapper {
 		this.bugTrackingNumber = bugTrackingNumber;
 	}
 
+	public String setTestImportance(String enumName) {
+		return testImportance;
+	}
+
 	/**
 	 * Gets test case name
 	 * 
 	 * @return test case name
 	 */
 	public String getTestCaseName() {
-		return TestCaseName;
+		return testCaseName;
 	}
 
 	/**
@@ -119,7 +126,7 @@ public class TestPlanWrapper {
 	 * @return test case description
 	 */
 	public String getTestDescription() {
-		return TestDescription;
+		return testDescription;
 	}
 
 	/**
@@ -128,7 +135,7 @@ public class TestPlanWrapper {
 	 * @return name of the person preparing the test case
 	 */
 	public String getTestPreparedBy() {
-		return TestPreparedBy;
+		return testPreparedBy;
 	}
 
 	/**
@@ -137,7 +144,7 @@ public class TestPlanWrapper {
 	 * @return test case preparation date
 	 */
 	public String getTestPreparationDate() {
-		return TestPreparationDate;
+		return testPreparationDate;
 	}
 
 	/**
@@ -146,7 +153,7 @@ public class TestPlanWrapper {
 	 * @return test case reviewer name
 	 */
 	public String getTestReviewedBy() {
-		return TestReviewedBy;
+		return testReviewedBy;
 	}
 
 	/**
@@ -155,7 +162,7 @@ public class TestPlanWrapper {
 	 * @return test case review date
 	 */
 	public String getTestReviewedDate() {
-		return TestReviewedDate;
+		return testReviewedDate;
 	}
 
 	/**
@@ -164,7 +171,7 @@ public class TestPlanWrapper {
 	 * @return test plan
 	 */
 	public String getTestBDD() {
-		return TestBDD;
+		return testBDD;
 	}
 
 	/**
@@ -219,6 +226,15 @@ public class TestPlanWrapper {
 	 */
 	public String getBugTrackingNumber() {
 		return bugTrackingNumber;
+	}
+
+	/**
+	 * Gets test case bug tracking number(s)
+	 * 
+	 * @return bug tracking references
+	 */
+	public String getTestImportance() {
+		return testImportance;
 	}
 
 }
