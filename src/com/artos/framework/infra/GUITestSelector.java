@@ -29,6 +29,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +52,14 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.xml.sax.SAXException;
+
+import com.artos.exception.InvalidDataException;
 import com.artos.framework.FWStaticStore;
+import com.artos.framework.parser.TestScriptParser;
+import com.artos.framework.parser.TestSuite;
 import com.artos.interfaces.TestRunnable;
 
 public class GUITestSelector {
@@ -242,28 +250,30 @@ public class GUITestSelector {
 	 */
 	private void setTableStyle(JTable testTableView) {
 
-		// set column widths, we know we only have 2 columns for now
-		TableColumn col = testTableView.getColumnModel().getColumn(0);
-		col.setPreferredWidth(35);
 		// set column0 text to centre align
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(JLabel.CENTER);
+
+		// set column widths, we know we only have 2 columns for now
+		TableColumn col = testTableView.getColumnModel().getColumn(0);
+		col.setPreferredWidth(20);
+		col.setCellRenderer(renderer);
+
+		// set column widths, we know we only have 2 columns for now
+		col = testTableView.getColumnModel().getColumn(1);
+		col.setPreferredWidth(35);
 		col.setCellRenderer(renderer);
 
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
 			// set column widths, we know we only have 2 columns for now
-			col = testTableView.getColumnModel().getColumn(1);
+			col = testTableView.getColumnModel().getColumn(2);
 			col.setPreferredWidth(45);
-
-			// set column1 text to centre align
-			renderer = new DefaultTableCellRenderer();
-			renderer.setHorizontalAlignment(JLabel.CENTER);
 			col.setCellRenderer(renderer);
 
-			col = testTableView.getColumnModel().getColumn(2);
+			col = testTableView.getColumnModel().getColumn(3);
 			col.setPreferredWidth(410);
 		} else {
-			col = testTableView.getColumnModel().getColumn(1);
+			col = testTableView.getColumnModel().getColumn(2);
 			col.setPreferredWidth(465);
 		}
 	}
@@ -311,9 +321,9 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 		// Enable if package name column is required
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
-			columnNames = new String[] { "#", "Seq", "Test Name" };
+			columnNames = new String[] { "F", " # ", "Seq", "Test Name" };
 		} else {
-			columnNames = new String[] { "#", "Test Name" };
+			columnNames = new String[] { "F", " # ", "Test Name" };
 		}
 		populateDisplayData();
 	}
@@ -322,6 +332,21 @@ class TestRunnerDataModel extends AbstractTableModel {
 	 * A 2d array to be used as display data
 	 */
 	private void populateDisplayData() {
+
+		List<String> failedTestCaseFQCNList = new ArrayList<>();
+		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
+			// Read FAIL TEST SCRIPT
+			try {
+				File failTestScript = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + "FAIL_SCRIPT" + ".xml");
+				if (failTestScript.exists() && failTestScript.isFile()) {
+					List<TestSuite> testSuiteList = new TestScriptParser().readTestScript(failTestScript);
+					failedTestCaseFQCNList = testSuiteList.get(0).getTestFQCNList();
+				}
+			} catch (ParserConfigurationException | SAXException | IOException | InvalidDataException e) {
+				e.printStackTrace();
+			}
+		}
+
 		displayData = new String[testList.size()][columnNames.length];
 
 		for (int index = 0; index < testList.size(); ++index) {
@@ -330,17 +355,22 @@ class TestRunnerDataModel extends AbstractTableModel {
 			int last = fullTestName.lastIndexOf(".") + 1;
 			String testName = fullTestName.substring(last);
 
-			// column0 - test number
-			displayData[index][0] = String.valueOf(index);
+			if (failedTestCaseFQCNList.contains(fullTestName)) {
+				// column0 - Previous Failure Highlight
+				displayData[index][0] = String.valueOf("~");
+			}
+
+			// column1 - test number
+			displayData[index][1] = String.valueOf(index);
 
 			if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
-				// column1 - test seq
-				displayData[index][1] = Integer.toString(testList.get(index).getTestsequence());
+				// column2 - test seq
+				displayData[index][2] = Integer.toString(testList.get(index).getTestsequence());
+				// column3 - test name
+				displayData[index][3] = testName;
+			} else {
 				// column2 - test name
 				displayData[index][2] = testName;
-			} else {
-				// column1 - test name
-				displayData[index][1] = testName;
 			}
 		}
 	}
@@ -358,7 +388,6 @@ class TestRunnerDataModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int columnIndex) {
 		return columnNames[columnIndex];
-
 	}
 
 	@Override
