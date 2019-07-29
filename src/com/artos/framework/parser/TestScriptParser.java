@@ -310,20 +310,16 @@ public class TestScriptParser {
 		_suite.setTestUnitGroupList(groupList);
 	}
 
-	public void createExecScriptFromObjWrapper(List<TestObjectWrapper> testList, ScriptFileType scriptType) throws Exception {
-		if (null == testList || testList.isEmpty()) {
+	public void createExecScriptFromObjWrapper(Class<?> mainClass, List<TestObjectWrapper> testList, ScriptFileType scriptType) throws Exception {
+		if (null == testList) {
 			return;
 		}
 
+		// Package name will be null if Runner is in root package
+		String packageName = (null == mainClass.getPackage() ? "ProjectRoot" : mainClass.getPackage().getName());
+
 		File scriptFile;
 		if (scriptType == ScriptFileType.TEST_SCRIPT) {
-			String packageName;
-			// Package will be none if test is in root package
-			if (null == testList.get(0).getTestClassObject().getPackage()) {
-				packageName = "ProjectRoot";
-			} else {
-				packageName = testList.get(0).getTestClassObject().getPackage().getName();
-			}
 			scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + packageName + ".xml");
 
 			if (scriptFile.exists() && scriptFile.isFile()) {
@@ -331,12 +327,17 @@ public class TestScriptParser {
 				return;
 			}
 		} else {
-			scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + "FAIL_SCRIPT" + ".xml");
-			
+			scriptFile = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + "FAIL_" + packageName + ".xml");
+
 			if (scriptFile.exists() && scriptFile.isFile()) {
 				// Delete old file if present
 				scriptFile.delete();
 			}
+		}
+
+		// When test list is empty then do not create a file because empty file means use all test cases
+		if (testList.isEmpty()) {
+			return;
 		}
 
 		if (!scriptFile.getParentFile().exists()) {
@@ -371,8 +372,7 @@ public class TestScriptParser {
 		attr3.setValue("1");
 		suite.setAttributeNode(attr3);
 
-		Comment comment = doc
-				.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\"script_name.xml\"");
+		Comment comment = doc.createComment("java -cp \"artos-0.0.1.jar;test.jar\" unit_test.Main --testscript=\"script_name.xml\"");
 		suite.getParentNode().insertBefore(comment, suite);
 
 		createTestList(testList, doc, suite);

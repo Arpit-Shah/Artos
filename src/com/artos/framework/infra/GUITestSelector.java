@@ -85,7 +85,7 @@ public class GUITestSelector {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		this.context = context;
-		testRunnerDataModel = new TestRunnerDataModel(testList);
+		testRunnerDataModel = new TestRunnerDataModel(context, testList);
 		this.testRunner = testRunner;
 		selectedTests = new ArrayList<TestObjectWrapper>();
 
@@ -315,9 +315,11 @@ class TestRunnerDataModel extends AbstractTableModel {
 	private List<TestObjectWrapper> testList;
 	private String[] columnNames;
 	private String[][] displayData;
+	private TestContext context;
 
-	public TestRunnerDataModel(List<TestObjectWrapper> testList) {
+	public TestRunnerDataModel(TestContext context, List<TestObjectWrapper> testList) {
 		this.testList = testList;
+		this.context = context;
 
 		// Enable if package name column is required
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
@@ -335,9 +337,16 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 		List<String> failedTestCaseFQCNList = new ArrayList<>();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
-			// Read FAIL TEST SCRIPT
+
+			String packageName;
+
+			// Package name will be null if Runner is in root package
+			packageName = (null == context.getPrePostRunnableObj().getPackage() ? "ProjectRoot"
+					: context.getPrePostRunnableObj().getPackage().getName());
+
+			// Read fail test script
 			try {
-				File failTestScript = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + "FAIL_SCRIPT" + ".xml");
+				File failTestScript = new File(FWStaticStore.TESTSCRIPT_BASE_DIR + "FAIL_" + packageName + ".xml");
 				if (failTestScript.exists() && failTestScript.isFile()) {
 					List<TestSuite> testSuiteList = new TestScriptParser().readTestScript(failTestScript);
 					failedTestCaseFQCNList = testSuiteList.get(0).getTestFQCNList();
@@ -357,7 +366,7 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 			if (failedTestCaseFQCNList.contains(fullTestName)) {
 				// column0 - Previous Failure Highlight
-				displayData[index][0] = String.valueOf("~");
+				displayData[index][0] = String.valueOf("F");
 			}
 
 			// column1 - test number

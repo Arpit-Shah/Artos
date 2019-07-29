@@ -123,7 +123,7 @@ public class ArtosRunner {
 		// Transform TestList into TestObjectWrapper Object list
 		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context).getListOfTransformedTestCases();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
-			new TestScriptParser().createExecScriptFromObjWrapper(transformedTestList, ScriptFileType.TEST_SCRIPT);
+			new TestScriptParser().createExecScriptFromObjWrapper(context.getPrePostRunnableObj(), transformedTestList, ScriptFileType.TEST_SCRIPT);
 		}
 
 		// If GUI test selector is enabled then show it or else execute test cases
@@ -206,7 +206,7 @@ public class ArtosRunner {
 
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
 			// Create Script file for failed test cases
-			new TestScriptParser().createExecScriptFromObjWrapper(failedTestList, ScriptFileType.ERROR_SCRIPT);
+			new TestScriptParser().createExecScriptFromObjWrapper(context.getPrePostRunnableObj(), failedTestList, ScriptFileType.ERROR_SCRIPT);
 		}
 
 		// to release a thread lock
