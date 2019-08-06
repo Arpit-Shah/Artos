@@ -57,5 +57,24 @@ OR
 > `sphinx-build -b html "C:\User\test" "C:\User\test\_build"`
 * If you see HTML output inside build directory then Sphinx setup is working and Sphinx is building correctly.
 
-### Install `sphinx_rtd_theme` theme and change conf.py to work correctly
+### Install `sphinx_rtd_theme` theme
+
+> `pip install sphinx_rtd_theme`
+
+### Check out ArtosDOC project
+([ArtosDOC](https://github.com/Arpit-Shah/ArtosDoc))
+
+* Go to check out location
+* Go to docs directory
+* launch Command prompt or PowerShell from Windows at that location
+* Run following command to make html
+
+> Run command `.\make.bat html`
+
+* User shall see output in build/html directory
+* To modify anything sources could be found in source directory
+
+* Run following command to clean html
+
+> Run command `.\make.bat clean`
 
