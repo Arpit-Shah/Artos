@@ -63,10 +63,13 @@ public class RunnerTestUnits {
 			List<TestUnitObjectWrapper> unitTests = t.getTestUnitList();
 
 			if (null == unitTests || unitTests.isEmpty()) {
+				// Setting test status to Pass will ensure that extent report will not set unknown status in absence of unit execution
+				context.setTestStatus(TestStatus.PASS, "0 units executed");
 				System.err.println("[WARNING] : Test unit execution list is empty");
 				System.err.println("[HINT-01] : Test unit(s) may not be present in the test case");
 				System.err.println("[HINT-02] : Test unit(s) may not be meeting criteria");
 				System.err.println("[HINT-03] : Test unit(s) are skipped due to group filtering");
+				// Do not run before and after for the unit if no units to execute
 				return;
 			}
 
