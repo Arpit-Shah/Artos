@@ -214,68 +214,21 @@ public class ArtosRunner {
 	}
 
 	private void PrintTotalUnitResult(List<TestObjectWrapper> transformedTestList, StringBuilder sb) {
-		int totalUnitPassCount = 0;
-		int totalUnitFailCount = 0;
-		int totalSkipCount = 0;
-		int totalKTFCount = 0;
-		int totalExecuted = 0;
-
-		int totalFatal = 0;
-		int totalCritical = 0;
-		int totalHigh = 0;
-		int totalMedium = 0;
-		int totalLow = 0;
-		int totalUndefined = 0;
-		for (TestObjectWrapper t : transformedTestList) {
-			for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
-				if (unit.getTestUnitOutcomeList().isEmpty()) {
-					continue;
-				}
-				for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
-					totalExecuted++;
-					if (unit.getTestUnitOutcomeList().get(j) == TestStatus.PASS) {
-						totalUnitPassCount++;
-					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
-						totalUnitFailCount++;
-
-						if (unit.getTestImportance() == Importance.FATAL) {
-							totalFatal++;
-						} else if (unit.getTestImportance() == Importance.CRITICAL) {
-							totalCritical++;
-						} else if (unit.getTestImportance() == Importance.HIGH) {
-							totalHigh++;
-						} else if (unit.getTestImportance() == Importance.MEDIUM) {
-							totalMedium++;
-						} else if (unit.getTestImportance() == Importance.LOW) {
-							totalLow++;
-						} else if (unit.getTestImportance() == Importance.UNDEFINED) {
-							totalUndefined++;
-						}
-					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.SKIP) {
-						totalSkipCount++;
-					} else if (unit.getTestUnitOutcomeList().get(j) == TestStatus.KTF) {
-						totalKTFCount++;
-					}
-
-				}
-			}
-		}
-
 		// Print Test results
 		sb.append("\n");
 		sb.append("[TestUnits] ");
-		sb.append("EXECUTED:" + String.format("%-" + 4 + "s", totalExecuted));
-		sb.append(" PASS:" + String.format("%-" + 4 + "s", totalUnitPassCount));
-		sb.append(" SKIP:" + String.format("%-" + 4 + "s", totalSkipCount));
-		sb.append(" KTF:" + String.format("%-" + 4 + "s", totalKTFCount));
-		sb.append(" FAIL:" + String.format("%-" + 4 + "s", totalUnitFailCount));
+		sb.append("EXECUTED:" + String.format("%-" + 4 + "s", context.getTotalUnitTestCount()));
+		sb.append(" PASS:" + String.format("%-" + 4 + "s", context.getCurrentUnitPassCount()));
+		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentUnitSkipCount()));
+		sb.append(" KTF:" + String.format("%-" + 4 + "s", context.getCurrentUnitKTFCount()));
+		sb.append(" FAIL:" + String.format("%-" + 4 + "s", context.getCurrentUnitFailCount()));
 		sb.append(" [");
-		sb.append("FATAL:" + String.format("%-" + 4 + "s", totalFatal));
-		sb.append(" CRITICAL:" + String.format("%-" + 4 + "s", totalCritical));
-		sb.append(" HIGH:" + String.format("%-" + 4 + "s", totalHigh));
-		sb.append(" MEDIUM:" + String.format("%-" + 4 + "s", totalMedium));
-		sb.append(" LOW:" + String.format("%-" + 4 + "s", totalLow));
-		sb.append(" UNDEFINED:" + String.format("%-" + 4 + "s", totalUndefined));
+		sb.append("FATAL:" + String.format("%-" + 4 + "s", context.getTotalUnitFatalCount()));
+		sb.append(" CRITICAL:" + String.format("%-" + 4 + "s", context.getTotalUnitCriticalCount()));
+		sb.append(" HIGH:" + String.format("%-" + 4 + "s", context.getTotalUnitHighCount()));
+		sb.append(" MEDIUM:" + String.format("%-" + 4 + "s", context.getTotalUnitMediumCount()));
+		sb.append(" LOW:" + String.format("%-" + 4 + "s", context.getTotalUnitLowCount()));
+		sb.append(" UNDEFINED:" + String.format("%-" + 4 + "s", context.getTotalUnitUndefinedCount()));
 		sb.append("]");
 	}
 
@@ -379,6 +332,8 @@ public class ArtosRunner {
 				notifyTestExecutionLoopCount(index);
 				// --------------------------------------------------------------------------------------------
 
+				long preserveFailCount = context.getCurrentFailCount();
+
 				if (testList.isEmpty()) {
 					System.err.println("[WARNING] : Test case execution list is empty");
 					System.err.println("[HINT-01] : Test case class may not be meeting criteria");
@@ -390,11 +345,9 @@ public class ArtosRunner {
 				for (TestObjectWrapper t : testList) {
 
 					// If "stop on fail" is enabled then stop test execution
-					if (FWStaticStore.frameworkConfig.isStopOnFail()) {
-						if (context.getCurrentFailCount() > 0) {
-							context.getLogger().info(FWStaticStore.ARTOS_STOP_ON_FAIL_STAMP);
-							break;
-						}
+					if (FWStaticStore.frameworkConfig.isStopOnFail() && context.getCurrentFailCount() > 0) {
+						context.getLogger().info(FWStaticStore.ARTOS_STOP_ON_FAIL_STAMP);
+						break;
 					}
 
 					// Print test case header and test plan in the log file
@@ -405,6 +358,12 @@ public class ArtosRunner {
 						runIndividualTest(t);
 					} else { // if data provider is specified
 						runParameterizedTest(t);
+					}
+
+					// If "drop following tests execution upon failure" is enabled then drop rest of test cases
+					if (t.isDropRemainingTestsUponFailure() && context.getCurrentFailCount() > preserveFailCount) {
+						context.getLogger().info(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_TEST_FAIL_STAMP);
+						break;
 					}
 
 				}

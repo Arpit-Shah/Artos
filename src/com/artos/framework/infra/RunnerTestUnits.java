@@ -87,12 +87,14 @@ public class RunnerTestUnits {
 			// --------------------------------------------------------------------------------------------
 			for (TestUnitObjectWrapper unit : unitTests) {
 
+				long preserveFailCount = context.getCurrentUnitFailCount();
+
 				// Reset test status for next execution
 				context.setCurrentUnitTestStatus(TestStatus.PASS);
 
-				// If stop on fail is selected then stop test execution
+				// If "stop on fail" is selected then stop test execution
 				if (FWStaticStore.frameworkConfig.isStopOnFail()) {
-					if (context.getCurrentFailCount() > 0) {
+					if (context.getCurrentFailCount() > 0 || context.getCurrentUnitFailCount() > 0) {
 						break;
 					}
 				}
@@ -104,6 +106,12 @@ public class RunnerTestUnits {
 					runIndividualUnitTest(unit);
 				} else {
 					runParameterizedUnitTest(unit);
+				}
+
+				// If "drop following units upon failure" is enabled then drop rest of the unit execution
+				if (unit.isDropRemainingUnitsUponFailure() && context.getCurrentUnitFailCount() > preserveFailCount) {
+					context.getLogger().info(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_UNIT_FAIL_STAMP);
+					break;
 				}
 			}
 			// --------------------------------------------------------------------------------------------
@@ -185,6 +193,7 @@ public class RunnerTestUnits {
 		// ********************************************************************************************
 
 		try {
+
 			// Run custom after method post each test unit execution
 			if (null != t.getMethodAfterTestUnit()) {
 				notifyLocalAfterTestUnitMethodExecutionStarted(t, unit);
@@ -197,6 +206,12 @@ public class RunnerTestUnits {
 				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), unit);
 				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyGlobalAfterTestUnitMethodExecutionFinished(unit);
+			}
+
+			// Run global after unit failed method post each failed test unit execution
+			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
+			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL || (unit.isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
+				context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 			}
 		} catch (Throwable e) {
 			printException(e);

@@ -94,10 +94,10 @@ public class BDDScanTestSuite {
 					// @Unit annotation is an optional for BDD
 					TestUnitObjectWrapper testUnitObj;
 					if (null == unit) {
-						testUnitObj = new TestUnitObjectWrapper(method, false, 0, null, 0, "");
+						testUnitObj = new TestUnitObjectWrapper(method, false, 0, null, 0, "", false);
 					} else {
 						testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(), unit.testtimeout(),
-								unit.bugref());
+								unit.bugref(), unit.dropRemainingUnitsUponFailure());
 					}
 
 					// Test Plan is an optional attribute so it can be null

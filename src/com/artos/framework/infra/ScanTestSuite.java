@@ -37,6 +37,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
+import com.artos.annotation.AfterFailedUnit;
 import com.artos.annotation.AfterTest;
 import com.artos.annotation.AfterTestSuite;
 import com.artos.annotation.AfterTestUnit;
@@ -149,7 +150,8 @@ public class ScanTestSuite {
 				FQCNList.add(cl.getPackage().getName());
 			}
 
-			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", 0, testcase.bugref());
+			TestObjectWrapper testobj = new TestObjectWrapper(cl, testcase.skip(), testcase.sequence(), "", 0, testcase.bugref(),
+					testcase.dropRemainingTestsUponFailure());
 
 			// Test Plan is optional attribute so it can be null
 			if (null != testplan) {
@@ -439,6 +441,12 @@ public class ScanTestSuite {
 				if (null == context.getAfterTestUnit() && isValidMethod(method, AfterTestUnit.class)) {
 					context.setAfterTestUnit(method);
 				}
+
+				// If one method is found then do not accept any other
+				if (null == context.getAfterFailedUnit() && isValidMethod(method, AfterFailedUnit.class)) {
+					context.setAfterFailedUnit(method);
+				}
+
 			}
 			// move to the upper class in the hierarchy in search for more methods
 			klass = klass.getSuperclass();

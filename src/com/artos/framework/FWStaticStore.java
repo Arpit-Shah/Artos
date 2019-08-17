@@ -40,18 +40,29 @@ public class FWStaticStore {
 	// Warning/Highlights
 	public static final String ARTOS_LINE_BREAK_3 = "=========================================================================";
 	// Fail Stamp
-	public static final String ARTOS_TEST_FAIL_STAMP = ARTOS_LINE_BREAK_3 + "\n=============================== FAIL HERE ===============================\n" + ARTOS_LINE_BREAK_3;
+	public static final String ARTOS_TEST_FAIL_STAMP = ARTOS_LINE_BREAK_3
+			+ "\n=============================== FAIL HERE ===============================\n" + ARTOS_LINE_BREAK_3;
 	// KTF TEST PASSED Stamp
-	public static final String ARTOS_KTF_TEST_PASSED_STAMP = ARTOS_LINE_BREAK_3 + "\n============================ KTF TEST PASSED ============================\n" + ARTOS_LINE_BREAK_3;
+	public static final String ARTOS_KTF_TEST_PASSED_STAMP = ARTOS_LINE_BREAK_3
+			+ "\n============================ KTF TEST PASSED ============================\n" + ARTOS_LINE_BREAK_3;
 	// KTF TEST UNIT PASSED Stamp
-	public static final String ARTOS_KTF_TESTUNIT_PASSED_STAMP = ARTOS_LINE_BREAK_3 + "\n========================== KTF TEST UNIT PASSED =========================\n" + ARTOS_LINE_BREAK_3;
+	public static final String ARTOS_KTF_TESTUNIT_PASSED_STAMP = ARTOS_LINE_BREAK_3
+			+ "\n========================== KTF TEST UNIT PASSED =========================\n" + ARTOS_LINE_BREAK_3;
 	// DataProvider Fail Stamp
 	public static final String ARTOS_DATAPROVIDER_FAIL_STAMP = ARTOS_LINE_BREAK_3 + "\n=== DataProvider Method failed to return data ===\n"
 			+ ARTOS_LINE_BREAK_3;
 	// Stop on Fail Stamp
-	public static final String ARTOS_STOP_ON_FAIL_STAMP = ARTOS_LINE_BREAK_3 + "\n====================== STOP ON FAIL IS ACTIVE ===========================" 
-	+ "\n================== REMAINING TESTS WILL BE SKIPPED ======================\n" + ARTOS_LINE_BREAK_3;
-	
+	public static final String ARTOS_STOP_ON_FAIL_STAMP = ARTOS_LINE_BREAK_3
+			+ "\n====================== STOP ON FAIL IS ACTIVE ==========================="
+			+ "\n================== REMAINING TESTS WILL BE SKIPPED ======================\n" + ARTOS_LINE_BREAK_3;
+	// Drop units on Fail Stamp
+	public static final String ARTOS_DROP_EXECUTION_UPON_UNIT_FAIL_STAMP = ARTOS_LINE_BREAK_3
+			+ "\n========== DROP REMAINING UNITS UPON FAILURE IS TRIGGERED ==============="
+			+ "\n================== REMAINING UNITS WILL BE DROPPED ======================\n" + ARTOS_LINE_BREAK_3;
+	// Drop tests on Fail Stamp
+	public static final String ARTOS_DROP_EXECUTION_UPON_TEST_FAIL_STAMP = ARTOS_LINE_BREAK_3
+			+ "\n========== DROP REMAINING TESTS UPON FAILURE IS TRIGGERED ==============="
+			+ "\n================== REMAINING TESTS WILL BE DROPPED ======================\n" + ARTOS_LINE_BREAK_3;
 
 	// default paths
 	public static final String TESTSCRIPT_BASE_DIR = "." + File.separator + "script" + File.separator;

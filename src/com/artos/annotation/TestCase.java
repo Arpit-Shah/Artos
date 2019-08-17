@@ -85,4 +85,12 @@ public @interface TestCase {
 	 * @return bugRefNumber
 	 */
 	String bugref() default "";
+
+	/**
+	 * Responsible for dropping execution of remaining test cases within test suite execution if particular test case outcome is a fail. Generally
+	 * used for test cases which are critical or pre-requisite for other test cases
+	 * 
+	 * @return true = stop test suite execution upon failure | false = continue execution rest of the test case/units
+	 */
+	boolean dropRemainingTestsUponFailure() default false;
 }

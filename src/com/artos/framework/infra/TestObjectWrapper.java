@@ -47,6 +47,7 @@ public class TestObjectWrapper {
 	// TestCase
 	Class<?> testClassObject = null;
 	boolean skipTest = false;
+	boolean dropRemainingTestsUponFailure = false;
 	int testsequence = 0;
 	List<String> labelList = new ArrayList<>();
 	List<String> groupList = new ArrayList<>();
@@ -79,7 +80,7 @@ public class TestObjectWrapper {
 	List<Class<? extends Throwable>> expectedExceptionList = null;
 	String exceptionContains = "";
 	Boolean enforce = true;
-
+	
 	/**
 	 * Default constructor
 	 * 
@@ -90,7 +91,7 @@ public class TestObjectWrapper {
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 * @param bugTrackingNumber bug reference number
 	 */
-	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName, long testTimeout, String bugTrackingNumber) {
+	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName, long testTimeout, String bugTrackingNumber, boolean dropRemainingTestsUponFailure) {
 		super();
 
 		this.testClassObject = cls;
@@ -100,6 +101,7 @@ public class TestObjectWrapper {
 		this.dataProviderName = dataProviderName;
 		this.testTimeout = testTimeout;
 		this.bugTrackingNumber = bugTrackingNumber;
+		this.dropRemainingTestsUponFailure = dropRemainingTestsUponFailure;
 	}
 
 	public String getTestPlanDescription() {
@@ -324,6 +326,14 @@ public class TestObjectWrapper {
 
 	public void setMethodAfterTestCase(Method methodAfterTestCase) {
 		this.methodAfterTestCase = methodAfterTestCase;
+	}
+
+	public boolean isDropRemainingTestsUponFailure() {
+		return dropRemainingTestsUponFailure;
+	}
+
+	public void setDropRemainingTestsUponFailure(boolean dropRemainingTestsUponFailure) {
+		this.dropRemainingTestsUponFailure = dropRemainingTestsUponFailure;
 	}
 
 }

@@ -42,6 +42,7 @@ public class TestUnitObjectWrapper {
 	// TestUnit
 	Method testUnitMethod = null;
 	boolean skipTest = false;
+	boolean dropRemainingUnitsUponFailure = false;
 	int testsequence = 0;
 	String dataProviderName = "";
 	long testTimeout = 0;
@@ -53,7 +54,7 @@ public class TestUnitObjectWrapper {
 	String testreviewedBy = "";
 	String testReviewDate = "";
 	String testPlanBDD = "";
-	
+
 	// StepDefinition
 	String stepDefinition = "";
 
@@ -82,7 +83,8 @@ public class TestUnitObjectWrapper {
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 * @param bugTrackingNumber bug reference number
 	 */
-	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout, String bugTrackingNumber) {
+	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout,
+			String bugTrackingNumber, boolean dropRemainingUnitsUponFailure) {
 		super();
 
 		this.testUnitMethod = method;
@@ -91,6 +93,7 @@ public class TestUnitObjectWrapper {
 		this.dataProviderName = dataProviderName;
 		this.testTimeout = testTimeout;
 		this.bugTrackingNumber = bugTrackingNumber;
+		this.dropRemainingUnitsUponFailure = dropRemainingUnitsUponFailure;
 	}
 
 	public long getTestUnitStartTime() {
@@ -267,6 +270,14 @@ public class TestUnitObjectWrapper {
 
 	public void setStepDefinition(String stepDefinition) {
 		this.stepDefinition = stepDefinition;
+	}
+
+	public boolean isDropRemainingUnitsUponFailure() {
+		return dropRemainingUnitsUponFailure;
+	}
+
+	public void setDropRemainingUnitsUponFailure(boolean dropRemainingUnitsUponFailure) {
+		this.dropRemainingUnitsUponFailure = dropRemainingUnitsUponFailure;
 	}
 
 }

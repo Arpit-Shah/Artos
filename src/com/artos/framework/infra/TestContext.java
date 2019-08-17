@@ -91,6 +91,7 @@ public class TestContext {
 	private Method afterTest = null;
 	private Method beforeTestUnit = null;
 	private Method afterTestUnit = null;
+	private Method afterFailedUnit = null;
 
 	// Test suite start time
 	private long testSuiteStartTime = 0;
@@ -267,6 +268,37 @@ public class TestContext {
 				//@formatter:on
 				setTestStatus(TestStatus.FAIL, "KTF Test unit passed, which is not as expected");
 			}
+		}
+
+		// Add to total test count
+		setTotalUnitTestCount(getTotalUnitTestCount() + 1);
+
+		// Store count details per status
+		if (getCurrentUnitTestStatus() == TestStatus.PASS) {
+			setCurrentUnitPassCount(getCurrentUnitPassCount() + 1);
+		} else if (getCurrentUnitTestStatus() == TestStatus.FAIL) {
+			setCurrentUnitFailCount(getCurrentUnitFailCount() + 1);
+
+			// Record test importance count in case of failure
+			if (unit.getTestImportance() == Importance.FATAL) {
+				setTotalUnitFatalCount(getTotalUnitFatalCount() + 1);
+			} else if (unit.getTestImportance() == Importance.CRITICAL) {
+				setTotalUnitCriticalCount(getTotalUnitCriticalCount() + 1);
+			} else if (unit.getTestImportance() == Importance.HIGH) {
+				setTotalUnitHighCount(getTotalUnitHighCount() + 1);
+			} else if (unit.getTestImportance() == Importance.MEDIUM) {
+				setTotalUnitMediumCount(getTotalUnitMediumCount() + 1);
+			} else if (unit.getTestImportance() == Importance.LOW) {
+				setTotalUnitLowCount(getTotalUnitLowCount() + 1);
+			} else if (unit.getTestImportance() == Importance.UNDEFINED) {
+				setTotalUnitUndefinedCount(getTotalUnitUndefinedCount() + 1);
+			} else {
+				System.err.println(unit.getTestImportance().name());
+			}
+		} else if (getCurrentTestStatus() == TestStatus.SKIP) {
+			setCurrentUnitSkipCount(getCurrentUnitSkipCount() + 1);
+		} else if (getCurrentTestStatus() == TestStatus.KTF) {
+			setCurrentUnitKTFCount(getCurrentUnitKTFCount() + 1);
 		}
 
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
@@ -1214,6 +1246,14 @@ public class TestContext {
 
 	protected void setDashBoardConnector(UDP dashBoardConnector) {
 		this.dashBoardConnector = dashBoardConnector;
+	}
+
+	public Method getAfterFailedUnit() {
+		return afterFailedUnit;
+	}
+
+	protected void setAfterFailedUnit(Method afterFailedUnit) {
+		this.afterFailedUnit = afterFailedUnit;
 	}
 
 }

@@ -125,7 +125,7 @@ public class ScanTestCase {
 			StepDefinition stepDef = method.getAnnotation(StepDefinition.class);
 
 			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(),
-					unit.testtimeout(), unit.bugref());
+					unit.testtimeout(), unit.bugref(), unit.dropRemainingUnitsUponFailure());
 
 			// Test Plan is an optional attribute so it can be null
 			if (null != testplan) {
