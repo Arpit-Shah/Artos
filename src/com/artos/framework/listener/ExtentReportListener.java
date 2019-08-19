@@ -21,6 +21,8 @@
  ******************************************************************************/
 package com.artos.framework.listener;
 
+import java.io.File;
+
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.Version;
 import com.artos.framework.infra.BDDScenario;
@@ -65,8 +67,21 @@ public class ExtentReportListener implements TestProgress {
 
 	@Override
 	public void testCaseExecutionStarted(TestObjectWrapper t) {
-		testParent = extent.startTest(t.getTestClassObject().getName(), t.getTestPlanDescription());
+		testParent = extent.startTest(t.getTestClassObject().getName(),
+				"".equals(t.getTestPlanDescription()) ? t.getTestPlanBDD() : t.getTestPlanDescription());
 		testParent.assignAuthor(t.getTestPlanPreparedBy());
+		if (t.getGroupList().size() == 1) {
+			testParent.assignCategory(t.getGroupList().get(0));
+		} else if (t.getGroupList().size() == 2) {
+			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1));
+		} else if (t.getGroupList().size() == 3) {
+			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2));
+		} else if (t.getGroupList().size() == 4) {
+			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2), t.getGroupList().get(3));
+		} else if (t.getGroupList().size() == 5) {
+			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2), t.getGroupList().get(3),
+					t.getGroupList().get(4));
+		}
 	}
 
 	@Override
@@ -124,8 +139,9 @@ public class ExtentReportListener implements TestProgress {
 	public void testExecutionLoopCount(int count) {
 	}
 
-	public void testCaseStatusUpdate(TestStatus testStatus, String description) {
+	public void testCaseStatusUpdate(TestStatus testStatus, File snapshot, String description) {
 		if (null != testChildOfChild) {
+			description = (null == snapshot ? description : description + testChildOfChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChildOfChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -137,6 +153,7 @@ public class ExtentReportListener implements TestProgress {
 				testChildOfChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testChild) {
+			description = (null == snapshot ? description : description + testChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -148,6 +165,7 @@ public class ExtentReportListener implements TestProgress {
 				testChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testParent) {
+			description = (null == snapshot ? description : description + testParent.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testParent.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -162,8 +180,9 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testResult(TestStatus testStatus, String description) {
+	public void testResult(TestStatus testStatus, File snapshot, String description) {
 		if (null != testChildOfChild) {
+			description = (null == snapshot ? description : description + testChildOfChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChildOfChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -175,6 +194,7 @@ public class ExtentReportListener implements TestProgress {
 				testChildOfChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testChild) {
+			description = (null == snapshot ? description : description + testChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -186,6 +206,7 @@ public class ExtentReportListener implements TestProgress {
 				testChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testParent) {
+			description = (null == snapshot ? description : description + testParent.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testParent.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -303,6 +324,30 @@ public class ExtentReportListener implements TestProgress {
 
 	@Override
 	public void globalAfterTestCaseMethodExecutionFinished(BDDScenario scenario) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, BDDStep step) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionFinished(BDDStep step) {
 		// TODO Auto-generated method stub
 
 	}
@@ -433,8 +478,8 @@ public class ExtentReportListener implements TestProgress {
 		 * Parameterised test case at test case level and test unit level call this function
 		 */
 		if (null == testChild) {
-			testChild = extent.startTest(paramInfo, t.getTestPlanDescription());
-			testChild.assignAuthor(t.getTestPlanPreparedBy());
+			testChild = extent.startTest(paramInfo, "".equals(unit.getTestPlanDescription()) ? unit.getTestPlanBDD() : unit.getTestPlanDescription());
+			// testChild.assignAuthor("");
 		}
 	}
 
@@ -443,13 +488,13 @@ public class ExtentReportListener implements TestProgress {
 		// If Child test case is not present (Because test case is running as non-parameterised test cases) then create new child test case in extent
 		if (null == testChild) {
 			testChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
-			testChild.assignAuthor("");
+			// testChild.assignAuthor("");
 
 			// If Child test case is present (Because test case is running as Parameterised test cases) then create new childOfchild test case in
 			// extent
 		} else {
 			testChildOfChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
-			testChildOfChild.assignAuthor("");
+			// testChildOfChild.assignAuthor("");
 		}
 	}
 
@@ -498,13 +543,13 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testCaseSummaryPrinting(String FQCN, String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void testUnitSummaryPrinting(String FQCN, String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

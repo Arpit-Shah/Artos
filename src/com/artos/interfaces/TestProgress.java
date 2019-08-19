@@ -21,6 +21,8 @@
  ******************************************************************************/
 package com.artos.interfaces;
 
+import java.io.File;
+
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.infra.BDDScenario;
 import com.artos.framework.infra.BDDStep;
@@ -151,6 +153,17 @@ public interface TestProgress {
 	public void globalAfterTestUnitMethodExecutionStarted(String methodName, BDDStep step);
 
 	/**
+	 * Method is called after global {@code AfterFailedUnit} method execution starts
+	 * 
+	 * @param methodName method name annotated with {@code AfterTestUnit}
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit);
+
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, BDDStep step);
+
+	/**
 	 * Method is called after global {@code AfterTestUnit} method execution starts
 	 * 
 	 * @param unit test unit object wrapper
@@ -159,6 +172,16 @@ public interface TestProgress {
 	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
 
 	public void globalAfterTestUnitMethodExecutionFinished(BDDStep step);
+
+	/**
+	 * Method is called after global {@code AfterFailedUnit} method execution starts
+	 * 
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void globalAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
+
+	public void globalAfterFailedUnitMethodExecutionFinished(BDDStep step);
 
 	/**
 	 * Method is called before local {@code BeforeTestUnit} method execution starts
@@ -380,10 +403,11 @@ public interface TestProgress {
 	 * Method is called when user updates test status.
 	 * 
 	 * @param testStatus Test status set by user
+	 * @param snapshot picture file or null
 	 * @param msg description/reason provided by user
 	 * @see TestStatus
 	 */
-	public void testCaseStatusUpdate(TestStatus testStatus, String msg);
+	public void testCaseStatusUpdate(TestStatus testStatus, File snapshot, String msg);
 
 	// ==========================================================
 	// Test Outcome
@@ -392,10 +416,11 @@ public interface TestProgress {
 	 * Method is called when test result is finalised.
 	 * 
 	 * @param testStatus Test status set by user
+	 * @param snapshot picture file or null
 	 * @param description bug tracking info (Ticket/JIRA number)
 	 * @see TestStatus
 	 */
-	public void testResult(TestStatus testStatus, String description);
+	public void testResult(TestStatus testStatus, File snapshot, String description);
 
 	/**
 	 * Method is called when test case execution is finished and summary requires to be printed

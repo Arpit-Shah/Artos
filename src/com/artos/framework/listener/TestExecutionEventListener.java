@@ -21,6 +21,8 @@
  ******************************************************************************/
 package com.artos.framework.listener;
 
+import java.io.File;
+
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.infra.BDDScenario;
@@ -299,12 +301,12 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void testCaseStatusUpdate(TestStatus testStatus, String msg) {
+	public void testCaseStatusUpdate(TestStatus testStatus, File snapshot, String msg) {
 		// logger.trace("\n---------------- Test Status Update -------------------");
 	}
 
 	@Override
-	public void testResult(TestStatus testStatus, String description) {
+	public void testResult(TestStatus testStatus, File snapshot, String description) {
 		// logger.trace("\n---------------- Test Result -------------------");
 	}
 
@@ -361,6 +363,16 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
+		logger.info("\n=> " + methodName + "(context)");
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, BDDStep step) {
+		logger.info("\n=> " + methodName + "(context)");
+	}
+
+	@Override
 	public void globalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("\n---------------- Global After Test Unit Method Finished -------------------");
 	}
@@ -368,6 +380,18 @@ public class TestExecutionEventListener implements TestProgress {
 	@Override
 	public void globalAfterTestUnitMethodExecutionFinished(BDDStep step) {
 		// logger.trace("\n---------------- Global After Test Unit Method Finished -------------------");
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionFinished(BDDStep step) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -423,13 +447,13 @@ public class TestExecutionEventListener implements TestProgress {
 	@Override
 	public void testCaseSummaryPrinting(String FQCN, String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void testUnitSummaryPrinting(String FQCN, String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

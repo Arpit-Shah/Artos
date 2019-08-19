@@ -21,6 +21,7 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,6 +133,18 @@ public class TestContext {
 	 * @param description status description or reason
 	 */
 	public void setTestStatus(TestStatus testStatus, String description) {
+		setTestStatus(testStatus, null, description);
+	}
+
+	/**
+	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
+	 * soon as status is set to FAIL so user can pin point location of the failure
+	 * 
+	 * @param testStatus Test Status
+	 * @param snapshot Image file required to upload to report or null
+	 * @param description status description or reason
+	 */
+	public void setTestStatus(TestStatus testStatus, File snapshot, String description) {
 
 		/*
 		 * Print status set by user and description/reason. User can not down grade (FAIL=>KTF=>SKIP=>PASS) finalTest status but down graded status is
@@ -139,10 +152,10 @@ public class TestContext {
 		 */
 		if (null == description) {
 			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "]: ");
-			notifyTestStatusUpdate(testStatus, "");
+			notifyTestStatusUpdate(testStatus, snapshot, "");
 		} else {
 			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "]: " + description);
-			notifyTestStatusUpdate(testStatus, description);
+			notifyTestStatusUpdate(testStatus, snapshot, description);
 		}
 
 		/*
@@ -225,7 +238,7 @@ public class TestContext {
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(t, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
-		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
+		notifyTestResult(getCurrentTestStatus(), null, getStrBugTrackingReference());
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
@@ -310,7 +323,7 @@ public class TestContext {
 
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
-		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 
 		// reset status for next test
@@ -367,7 +380,7 @@ public class TestContext {
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(scenario, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
-		notifyTestResult(getCurrentTestStatus(), getStrBugTrackingReference());
+		notifyTestResult(getCurrentTestStatus(), null, getStrBugTrackingReference());
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		scenario.getTestOutcomeList().add(getCurrentTestStatus());
 
@@ -448,7 +461,7 @@ public class TestContext {
 
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
-		notifyTestStatusUpdate(getCurrentUnitTestStatus(), "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + step.getStepDescription() + " " + bugTrackingNum);
 
 		// reset status for next test
@@ -717,15 +730,15 @@ public class TestContext {
 		listenerList.clear();
 	}
 
-	private void notifyTestStatusUpdate(TestStatus testStatus, String Msg) {
+	private void notifyTestStatusUpdate(TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
-			listener.testCaseStatusUpdate(testStatus, Msg);
+			listener.testCaseStatusUpdate(testStatus, snapshot, Msg);
 		}
 	}
 
-	private void notifyTestResult(TestStatus testStatus, String Msg) {
+	private void notifyTestResult(TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
-			listener.testResult(testStatus, Msg);
+			listener.testResult(testStatus, snapshot, Msg);
 		}
 	}
 

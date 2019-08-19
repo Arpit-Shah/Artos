@@ -1,5 +1,6 @@
 package com.artos.framework.listener;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.artos.framework.Enums.TestStatus;
@@ -212,6 +213,30 @@ public class UDPReportListener implements TestProgress {
 	}
 
 	@Override
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionStarted(String methodName, BDDStep step) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void globalAfterFailedUnitMethodExecutionFinished(BDDStep step) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void localBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
 		// TODO Auto-generated method stub
 
@@ -338,13 +363,13 @@ public class UDPReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testCaseStatusUpdate(TestStatus testStatus, String msg) {
+	public void testCaseStatusUpdate(TestStatus testStatus, File snapshot, String msg) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void testResult(TestStatus testStatus, String description) {
+	public void testResult(TestStatus testStatus, File snapshot, String description) {
 	}
 
 	@Override

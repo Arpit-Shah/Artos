@@ -128,7 +128,8 @@ public class BDDRunnerTestSteps {
 		try {
 			// Run global before method prior to each test unit execution
 			if (null != context.getBeforeTestUnit()) {
-				notifyGlobalBeforeTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
+				notifyGlobalBeforeTestUnitMethodExecutionStarted(context.getBeforeTestUnit().getName(), step);
+				// notifyGlobalBeforeTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
 				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyGlobalBeforeTestUnitMethodExecutionFinished(step);
 			}
@@ -161,15 +162,20 @@ public class BDDRunnerTestSteps {
 		try {
 			// Run global after method post each test unit execution
 			if (null != context.getAfterTestUnit()) {
-				notifyGlobalAfterTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
+				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), step);
+				// notifyGlobalAfterTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
 				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyGlobalAfterTestUnitMethodExecutionFinished(step);
 			}
-			
+
 			// Run global after unit failed method post each failed test unit execution
 			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
-			if(context.getCurrentUnitTestStatus() == TestStatus.FAIL || (step.getUnit().isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
+			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL
+					|| (step.getUnit().isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
+				notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), step);
+				// notifyGlobalAfterFailedUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
 				context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				notifyGlobalAfterFailedUnitMethodExecutionFinished(step);
 			}
 		} catch (Throwable e) {
 			printException(e);
@@ -450,6 +456,18 @@ public class BDDRunnerTestSteps {
 	void notifyGlobalAfterTestUnitMethodExecutionFinished(BDDStep step) {
 		for (TestProgress listener : listenerList) {
 			listener.globalAfterTestUnitMethodExecutionFinished(step);
+		}
+	}
+
+	void notifyGlobalAfterFailedUnitMethodExecutionStarted(String methodName, BDDStep step) {
+		for (TestProgress listener : listenerList) {
+			listener.globalAfterFailedUnitMethodExecutionStarted(methodName, step);
+		}
+	}
+
+	void notifyGlobalAfterFailedUnitMethodExecutionFinished(BDDStep step) {
+		for (TestProgress listener : listenerList) {
+			listener.globalAfterFailedUnitMethodExecutionFinished(step);
 		}
 	}
 
