@@ -81,6 +81,7 @@ public class FrameworkConfigParser {
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
 	private boolean enableExtentReport = true;
+	private boolean enableJUnitReport = false;
 
 	// Dashboard
 	private String dashBoardRemoteIP = "127.0.0.1";
@@ -467,6 +468,15 @@ public class FrameworkConfigParser {
 			attr.setValue("enableExtentReport");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableJUnitReport())));
+			logger.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableJUnitReport");
+			property.setAttributeNode(attr);
+		}
 	}
 
 	private void addDashBoardConfig(Document doc, Element rootElement) {
@@ -612,6 +622,8 @@ public class FrameworkConfigParser {
 						setEnableHTMLLog(Boolean.parseBoolean(eElement.getTextContent()));
 					} else if ("enableExtentReport".equals(eElement.getAttribute("name"))) {
 						setEnableExtentReport(Boolean.parseBoolean(eElement.getTextContent()));
+					} else if ("enableJUnitReport".equals(eElement.getAttribute("name"))) {
+						setEnableJUnitReport(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -1143,5 +1155,13 @@ public class FrameworkConfigParser {
 
 	public void setDashBoardRemotePort(String dashBoardRemotePort) {
 		this.dashBoardRemotePort = dashBoardRemotePort;
+	}
+
+	public boolean isEnableJUnitReport() {
+		return enableJUnitReport;
+	}
+
+	public void setEnableJUnitReport(boolean enableJUnitReport) {
+		this.enableJUnitReport = enableJUnitReport;
 	}
 }

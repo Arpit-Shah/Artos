@@ -306,7 +306,7 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void testResult(TestStatus testStatus, File snapshot, String description) {
+	public void testResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String description) {
 		// logger.trace("\n---------------- Test Result -------------------");
 	}
 
@@ -454,6 +454,18 @@ public class TestExecutionEventListener implements TestProgress {
 	public void testUnitSummaryPrinting(String FQCN, String description) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void testResult(BDDScenario scenario, TestStatus testStatus, File snapshot, String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void testUnitResult(TestUnitObjectWrapper unit, TestStatus testStatus, File snapshot, String description) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

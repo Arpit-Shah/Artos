@@ -415,12 +415,24 @@ public interface TestProgress {
 	/**
 	 * Method is called when test result is finalised.
 	 * 
+	 * @param t test object wrapper
 	 * @param testStatus Test status set by user
 	 * @param snapshot picture file or null
 	 * @param description bug tracking info (Ticket/JIRA number)
 	 * @see TestStatus
 	 */
-	public void testResult(TestStatus testStatus, File snapshot, String description);
+	public void testResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String description);
+	
+	/**
+	 * Method is called when test result is finalised.
+	 * 
+	 * @param scenario test scenario object
+	 * @param testStatus Test status set by user
+	 * @param snapshot picture file or null
+	 * @param description bug tracking info (Ticket/JIRA number)
+	 * @see TestStatus
+	 */
+	public void testResult(BDDScenario scenario, TestStatus testStatus, File snapshot, String description);
 
 	/**
 	 * Method is called when test case execution is finished and summary requires to be printed
@@ -430,6 +442,17 @@ public interface TestProgress {
 	 */
 	public void testCaseSummaryPrinting(String FQCN, String description);
 
+	/**
+	 * Method is called when test unit result is finalised.
+	 * 
+	 * @param unit unit object wrapper
+	 * @param testStatus Test status set by user
+	 * @param snapshot picture file or null
+	 * @param description bug tracking info (Ticket/JIRA number)
+	 * @see TestStatus
+	 */
+	public void testUnitResult(TestUnitObjectWrapper unit, TestStatus testStatus, File snapshot, String description);
+	
 	/**
 	 * Method is called when test unit execution is finished and summary requires to be printed
 	 * 

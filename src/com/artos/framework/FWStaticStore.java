@@ -69,6 +69,7 @@ public class FWStaticStore {
 	public static final String CONFIG_BASE_DIR = "." + File.separator + "conf" + File.separator;
 	public static final String TEMPLATE_BASE_DIR = "." + File.separator + "template" + File.separator;
 	public static final String LOG_BASE_DIR = "." + File.separator + "reporting" + File.separator;
+	public static final String JUNIT_REPORT_BASE_DIR = "." + File.separator + "reporting" + File.separator + "JUnitReport" + File.separator;
 
 	// Must be kept after default paths initialised
 	public static FrameworkConfigParser frameworkConfig = null;

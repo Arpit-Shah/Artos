@@ -355,6 +355,30 @@ public class Runner {
 				ins.close();
 			}
 		}
+		
+		if (FWStaticStore.frameworkConfig.isEnableJUnitReport()) {
+			// only create Extent configuration file if not present already
+			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "JUnit.xsd");
+
+			if (!targetFile.exists() || !targetFile.isFile()) {
+
+				// create dir if not present
+				File file = new File(FWStaticStore.CONFIG_BASE_DIR);
+				if (!file.exists() || !file.isDirectory()) {
+					file.mkdirs();
+				}
+
+				InputStream ins = getClass().getResourceAsStream("/com/artos/template/JUnit.xsd");
+				byte[] buffer = new byte[ins.available()];
+				ins.read(buffer);
+
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.flush();
+				outStream.close();
+				ins.close();
+			}
+		}
 
 		if (FWStaticStore.frameworkConfig.isEnableEmailClient()) {
 

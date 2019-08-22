@@ -31,47 +31,47 @@ import com.artos.framework.Enums.TestStatus;
 public class TestUnitObjectWrapper {
 
 	// TestTracking variables
-	long testUnitStartTime;
-	long testUnitFinishTime;
+	private long testUnitStartTime;
+	private long testUnitFinishTime;
 
 	/*
 	 * This will be used to store all parameterised tests status. If test case is not parameterised test case then only one status will be stored
 	 */
-	List<TestStatus> testUnitOutcomeList = new ArrayList<>();
+	private List<TestStatus> testUnitOutcomeList = new ArrayList<>();
 
 	// TestUnit
-	Method testUnitMethod = null;
-	boolean skipTest = false;
-	boolean dropRemainingUnitsUponFailure = false;
-	int testsequence = 0;
-	String dataProviderName = "";
-	long testTimeout = 0;
+	private Method testUnitMethod = null;
+	private boolean skipTest = false;
+	private boolean dropRemainingUnitsUponFailure = false;
+	private int testsequence = 0;
+	private String dataProviderName = "";
+	private long testTimeout = 0;
 
 	// TestPlan
-	String testPlanDescription = "";
-	String testPlanPreparedBy = "";
-	String testPlanPreparationDate = "";
-	String testreviewedBy = "";
-	String testReviewDate = "";
-	String testPlanBDD = "";
+	private String testPlanDescription = "";
+	private String testPlanPreparedBy = "";
+	private String testPlanPreparationDate = "";
+	private String testreviewedBy = "";
+	private String testReviewDate = "";
+	private String testPlanBDD = "";
 
 	// StepDefinition
-	String stepDefinition = "";
+	private String stepDefinition = "";
 
 	// testImportance
-	Importance testImportance = Importance.UNDEFINED;
+	private Importance testImportance = Importance.UNDEFINED;
 
 	// Group
-	List<String> groupList = new ArrayList<>();
+	private List<String> groupList = new ArrayList<>();
 
 	// KnowToFail
-	boolean KTF = false;
-	String bugTrackingNumber = "";
+	private boolean KTF = false;
+	private String bugTrackingNumber = "";
 
 	// ExpectedException
-	List<Class<? extends Throwable>> expectedExceptionList = null;
-	String exceptionContains = "";
-	Boolean enforce = true;
+	private List<Class<? extends Throwable>> expectedExceptionList = null;
+	private String exceptionContains = "";
+	private Boolean enforce = true;
 
 	/**
 	 * Default constructor

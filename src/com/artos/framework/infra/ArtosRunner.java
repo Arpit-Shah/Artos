@@ -38,6 +38,7 @@ import com.artos.framework.Enums.ScriptFileType;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.framework.listener.ExtentReportListener;
+import com.artos.framework.listener.JUnitReportListener;
 import com.artos.framework.listener.TestExecutionEventListener;
 import com.artos.framework.listener.UDPReportListener;
 import com.artos.framework.parser.TestScriptParser;
@@ -89,6 +90,13 @@ public class ArtosRunner {
 			ExtentReportListener extentListener = new ExtentReportListener(context);
 			registerListener(extentListener);
 			context.registerListener(extentListener);
+		}
+		
+		// Register JUnit reporting listener
+		if(FWStaticStore.frameworkConfig.isEnableJUnitReport()){
+			JUnitReportListener jUnitReportListener = new JUnitReportListener(context);
+			registerListener(jUnitReportListener);
+			context.registerListener(jUnitReportListener);
 		}
 
 		// Register UDPReport listener

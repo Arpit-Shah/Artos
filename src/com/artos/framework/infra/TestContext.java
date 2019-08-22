@@ -238,7 +238,7 @@ public class TestContext {
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(t, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
-		notifyTestResult(getCurrentTestStatus(), null, getStrBugTrackingReference());
+		notifyTestResult(t, getCurrentTestStatus(), null, getStrBugTrackingReference());
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
@@ -381,7 +381,7 @@ public class TestContext {
 		// Finalise and add test summary to Summary report
 		appendSummaryReport(scenario, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
 				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
-		notifyTestResult(getCurrentTestStatus(), null, getStrBugTrackingReference());
+		notifyTestResult(scenario, getCurrentTestStatus(), null, getStrBugTrackingReference());
 		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
 		scenario.getTestOutcomeList().add(getCurrentTestStatus());
 
@@ -737,9 +737,21 @@ public class TestContext {
 		}
 	}
 
-	private void notifyTestResult(TestStatus testStatus, File snapshot, String Msg) {
+	private void notifyTestResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
-			listener.testResult(testStatus, snapshot, Msg);
+			listener.testResult(t, testStatus, snapshot, Msg);
+		}
+	}
+	
+	private void notifyTestResult(BDDScenario scenario, TestStatus testStatus, File snapshot, String Msg) {
+		for (TestProgress listener : listenerList) {
+			listener.testResult(scenario, testStatus, snapshot, Msg);
+		}
+	}
+	
+	private void notifyTestUnitResult(TestUnitObjectWrapper unit, TestStatus testStatus, File snapshot, String Msg) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitResult(unit, testStatus, snapshot, Msg);
 		}
 	}
 
@@ -837,7 +849,7 @@ public class TestContext {
 	 * 
 	 * @return Test duration in milliseconds
 	 */
-	protected long getTestSuiteTimeDuration() {
+	public long getTestSuiteTimeDuration() {
 		return getTestSuiteFinishTime() - getTestSuiteStartTime();
 	}
 
