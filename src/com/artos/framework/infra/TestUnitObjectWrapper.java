@@ -82,6 +82,7 @@ public class TestUnitObjectWrapper {
 	 * @param dataProviderName dataProvider name provided in {@code DataProvider} annotation
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 * @param bugTrackingNumber bug reference number
+	 * @param dropRemainingUnitsUponFailure drop remaining units from execution list if set to true
 	 */
 	public TestUnitObjectWrapper(Method method, boolean skipTest, int testsequence, String dataProviderName, long testTimeout,
 			String bugTrackingNumber, boolean dropRemainingUnitsUponFailure) {

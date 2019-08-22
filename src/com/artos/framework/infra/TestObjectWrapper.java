@@ -90,6 +90,7 @@ public class TestObjectWrapper {
 	 * @param dataProviderName Name of the dataProvider (Upper case)
 	 * @param testTimeout test execution timeout, 0=no timeout
 	 * @param bugTrackingNumber bug reference number
+	 * @param dropRemainingTestsUponFailure drop remaining test case if set to true
 	 */
 	public TestObjectWrapper(Class<?> cls, boolean skipTest, int testsequence, String dataProviderName, long testTimeout, String bugTrackingNumber, boolean dropRemainingTestsUponFailure) {
 		super();
