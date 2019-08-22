@@ -56,7 +56,7 @@ public class Enums {
 			return status;
 		}
 
-		public String getEnumName(int status) {
+		public static String getEnumName(int status) {
 			for (TestStatus e : TestStatus.values()) {
 				if (status == e.getValue()) {
 					return e.name();

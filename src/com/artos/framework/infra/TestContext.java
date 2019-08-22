@@ -151,10 +151,10 @@ public class TestContext {
 		 * allowed to be printed.
 		 */
 		if (null == description) {
-			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "]: ");
+			getLogger().info("[" + TestStatus.getEnumName(testStatus.getValue()) + "]: ");
 			notifyTestStatusUpdate(testStatus, snapshot, "");
 		} else {
-			getLogger().info("[" + testStatus.getEnumName(testStatus.getValue()) + "]: " + description);
+			getLogger().info("[" + TestStatus.getEnumName(testStatus.getValue()) + "]: " + description);
 			notifyTestStatusUpdate(testStatus, snapshot, description);
 		}
 
@@ -318,13 +318,14 @@ public class TestContext {
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
+		getLogger().info("[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
 				+ unit.getTestUnitMethod().getName() + "(context)");
 
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
-		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
+		notifyTestUnitResult(unit, getCurrentUnitTestStatus(), null, unit.getBugTrackingNumber());
 
 		// reset status for next test
 		resetUnitTestStatus();
@@ -456,12 +457,12 @@ public class TestContext {
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue()) + "]: " + step.getStepAction() + " "
+		getLogger().info("[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: " + step.getStepAction() + " "
 				+ step.getStepDescription());
 
 		// Log test unit summary into extent report
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
-		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + getCurrentUnitTestStatus().getEnumName(getCurrentUnitTestStatus().getValue())
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + step.getStepDescription() + " " + bugTrackingNum);
 
 		// reset status for next test
@@ -490,7 +491,7 @@ public class TestContext {
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
 		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
-		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
 		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", passCount);
@@ -527,7 +528,7 @@ public class TestContext {
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
 		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
-		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
 		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", passCount);
@@ -563,7 +564,7 @@ public class TestContext {
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
 		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
-		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 95 + "s", testUnitName).replace(" ", ".").substring(0, 95);
 		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", "");
@@ -598,7 +599,7 @@ public class TestContext {
 		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
 		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
 
-		String testStatus = String.format("%-" + 4 + "s", status.getEnumName(status.getValue()));
+		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 95 + "s", testUnitName).substring(0, 95);
 		String JiraRef = String.format("%-" + 20 + "s", bugTrackingNumber).replace(" ", ".").substring(0, 20);
 		String PassCount = String.format("%-" + 4 + "s", "");
