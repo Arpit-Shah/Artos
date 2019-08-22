@@ -64,7 +64,7 @@ public class BDDRunnerTestSteps {
 
 			// --------------------------------------------------------------------------------------------
 			for (BDDStep step : testSteps) {
-				
+
 				long preserveFailCount = context.getCurrentFailCount();
 
 				// Reset test status for next execution
@@ -92,7 +92,7 @@ public class BDDRunnerTestSteps {
 				} else {
 					runParameterizedUnitTest(step);
 				}
-				
+
 				// If "drop following tests execution upon failure" is enabled then drop rest of test cases
 				if (step.getUnit().isDropRemainingUnitsUponFailure() && context.getCurrentUnitFailCount() > preserveFailCount) {
 					context.getLogger().info(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_UNIT_FAIL_STAMP);
@@ -172,10 +172,12 @@ public class BDDRunnerTestSteps {
 			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
 			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL
 					|| (step.getUnit().isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
-				notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), step);
-				// notifyGlobalAfterFailedUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-				context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalAfterFailedUnitMethodExecutionFinished(step);
+				if (null != context.getAfterFailedUnit()) {
+					notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), step);
+					// notifyGlobalAfterFailedUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
+					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+					notifyGlobalAfterFailedUnitMethodExecutionFinished(step);
+				}
 			}
 		} catch (Throwable e) {
 			printException(e);

@@ -211,9 +211,11 @@ public class RunnerTestUnits {
 			// Run global after unit failed method post each failed test unit execution
 			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
 			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL || (unit.isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
-				notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), unit);
-				context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
-				notifyGlobalAfterFailedUnitMethodExecutionFinished(unit);
+				if (null != context.getAfterFailedUnit()) {
+					notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), unit);
+					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+					notifyGlobalAfterFailedUnitMethodExecutionFinished(unit);
+				}
 			}
 		} catch (Throwable e) {
 			printException(e);
@@ -501,7 +503,7 @@ public class RunnerTestUnits {
 			listener.globalAfterTestUnitMethodExecutionFinished(unit);
 		}
 	}
-	
+
 	void notifyGlobalAfterFailedUnitMethodExecutionStarted(String methodName, TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
 			listener.globalAfterFailedUnitMethodExecutionStarted(methodName, unit);
