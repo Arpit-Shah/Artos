@@ -127,10 +127,8 @@ public class JUnitReportListener implements TestProgress {
 			rootElement.setAttribute("failures", Long.toString(context.getCurrentFailCount()));
 			rootElement.setAttribute("name", context.getTestSuiteName());
 			rootElement.setAttribute("tests", Long.toString(context.getTotalTestCount()));
-			rootElement.setAttribute("time",
-					String.format("%2d.%3d", 
-							TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration()),
-									- TimeUnit.MINUTES.toMillis(TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration()))));
+			rootElement.setAttribute("time", String.format("%2d.%3d", TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration()),
+					-TimeUnit.MINUTES.toMillis(TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration()))));
 			doc.appendChild(rootElement);
 
 			// write the content into xml file
@@ -388,8 +386,8 @@ public class JUnitReportListener implements TestProgress {
 		test_suite.setAttribute("failures", Long.toString(singleTestCaseFailUnitCount));
 		test_suite.setAttribute("hostname", "");
 		test_suite.setAttribute("id", "");
-		test_suite.setAttribute("name", t.getTestClassObject().getSimpleName());
-		test_suite.setAttribute("package", t.getTestClassObject().getPackage().getName());
+		test_suite.setAttribute("name", t.getTestClassObject().getName());
+		// test_suite.setAttribute("package", t.getTestClassObject().getPackage().getName());
 		test_suite.setAttribute("tests", Long.toString(t.getTestUnitList().size()));
 		test_suite.setAttribute("time", convertMillisecondsToSecondMills(t.getTestFinishTime() - t.getTestStartTime()));
 		test_suite.setAttribute("timestamp", "");
@@ -425,7 +423,7 @@ public class JUnitReportListener implements TestProgress {
 
 		// add testcase to properties element
 		Element testcase = doc.createElement("testcase");
-		
+
 		if (testStatus == TestStatus.PASS) {
 			totalUnitPassCount++;
 			singleTestCasePassUnitCount++;
@@ -449,7 +447,7 @@ public class JUnitReportListener implements TestProgress {
 		}
 
 		testcase.setAttribute("assertions", "");
-		testcase.setAttribute("classname", unit.getTestUnitMethod().getClass().getSimpleName());
+		testcase.setAttribute("classname", unit.getTestUnitMethod().getDeclaringClass().getName());
 		testcase.setAttribute("name", unit.getTestUnitMethod().getName());
 		testcase.setAttribute("status", TestStatus.getEnumName(context.getCurrentUnitTestStatus().getValue()));
 		testcase.setAttribute("time", convertMillisecondsToSecondMills(unit.getTestUnitFinishTime() - unit.getTestUnitStartTime()));
