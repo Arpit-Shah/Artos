@@ -49,6 +49,7 @@ import com.artos.annotation.ExpectedException;
 import com.artos.annotation.Group;
 import com.artos.annotation.KnownToFail;
 import com.artos.annotation.TestCase;
+import com.artos.annotation.TestDependency;
 import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
@@ -142,6 +143,7 @@ public class ScanTestSuite {
 			KnownToFail ktf = cl.getAnnotation(KnownToFail.class);
 			ExpectedException expectedException = cl.getAnnotation(ExpectedException.class);
 			TestImportance testImportance = cl.getAnnotation(TestImportance.class);
+			TestDependency dependency = cl.getAnnotation(TestDependency.class);
 
 			// When test case is in the root directory package will be null
 			if (null == cl.getPackage() && !FQCNList.contains("")) {
@@ -208,6 +210,12 @@ public class ScanTestSuite {
 			// TestImportance is an optional annotation
 			if (null != testImportance) {
 				testobj.setTestImportance(testImportance.value());
+			}
+			
+			// TestDependency is an optional annotation
+			if(null != dependency) {
+				List<Class<? extends TestExecutable>> dependencyList = Arrays.asList(dependency.dependency());
+				testobj.setDependencyList(dependencyList);
 			}
 
 			// Get test units and store it in test object

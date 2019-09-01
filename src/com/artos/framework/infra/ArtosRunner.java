@@ -25,6 +25,7 @@ import java.io.InvalidObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -32,6 +33,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.ScriptFileType;
@@ -91,9 +95,9 @@ public class ArtosRunner {
 			registerListener(extentListener);
 			context.registerListener(extentListener);
 		}
-		
+
 		// Register JUnit reporting listener
-		if(FWStaticStore.frameworkConfig.isEnableJUnitReport()){
+		if (FWStaticStore.frameworkConfig.isEnableJUnitReport()) {
 			JUnitReportListener jUnitReportListener = new JUnitReportListener(context);
 			registerListener(jUnitReportListener);
 			context.registerListener(jUnitReportListener);
@@ -354,12 +358,19 @@ public class ArtosRunner {
 
 					// If "stop on fail" is enabled then stop test execution
 					if (FWStaticStore.frameworkConfig.isStopOnFail() && context.getCurrentFailCount() > 0) {
-						context.getLogger().info(FWStaticStore.ARTOS_STOP_ON_FAIL_STAMP);
+						context.getLogger().warn(FWStaticStore.ARTOS_STOP_ON_FAIL_STAMP);
 						break;
 					}
 
 					// Print test case header and test plan in the log file
 					notifyPrintTestPlan(t);
+
+					if (null != t.getDependencyList() && !t.getDependencyList().isEmpty()) {
+						if (!hasDependencyMet(testList, t)) {
+							context.getLogger().warn(FWStaticStore.ARTOS_DEPENDENCY_REQ_NOT_MET);
+							continue;
+						}
+					}
 
 					// if data provider is not specified
 					if (null == t.getDataProviderName() || "".equals(t.getDataProviderName())) {
@@ -370,7 +381,7 @@ public class ArtosRunner {
 
 					// If "drop following tests execution upon failure" is enabled then drop rest of test cases
 					if (t.isDropRemainingTestsUponFailure() && context.getCurrentFailCount() > preserveFailCount) {
-						context.getLogger().info(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_TEST_FAIL_STAMP);
+						context.getLogger().warn(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_TEST_FAIL_STAMP);
 						break;
 					}
 
@@ -404,6 +415,54 @@ public class ArtosRunner {
 		// ********************************************************************************************
 		// TestSuite Finish
 		// ********************************************************************************************
+	}
+
+	public static <T> Collector<T, ?, Optional<T>> toSingleton() {
+		return Collectors.collectingAndThen(Collectors.toList(), list -> list.size() == 1 ? Optional.of(list.get(0)) : Optional.empty());
+	}
+
+	/**
+	 * Dependency feature ensures that user specified test cases are executed prior to executing target test case and pre-requisite test cases must be
+	 * completed with PASS status, otherwise dependency agreement will not be met.
+	 * 
+	 * @param testList = test case list
+	 * @param t = target test case
+	 * @return true if dependency agreement is met | false if dependency agreement is not met
+	 */
+	private boolean hasDependencyMet(List<TestObjectWrapper> testList, TestObjectWrapper t) {
+
+		// Find execution index of target test case
+		int indexOfTest = testList.indexOf(t);
+
+		// Iterate through provided dependency list and ensure it meets an agreement
+		for (Class<? extends TestExecutable> dependencyClass : t.getDependencyList()) {
+
+			List<TestObjectWrapper> matchList;
+
+			// Find list dependency class in execution list, If we can not find list class in execution list then dependency agreement will not be met
+			{
+				matchList = testList.stream().filter(obj -> obj.getTestClassObject().getName().equals(dependencyClass.getName()))
+						.collect(Collectors.toList());
+				if (null == matchList || matchList.isEmpty()) {
+					return false;
+				}
+			}
+
+			TestObjectWrapper dependencyTestCaseObjectWrapper = matchList.get(0);
+			// If dependency test case execution index is same or greater than target test-case execution index then requirements will not be met
+			{
+				int matchIndex = testList.indexOf(dependencyTestCaseObjectWrapper);
+				if (matchIndex >= indexOfTest) {
+					return false;
+				}
+			}
+
+			// If dependency test cases status is not PASS then dependency agreement will not be met
+			if (!dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.PASS)))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

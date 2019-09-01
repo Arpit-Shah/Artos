@@ -63,6 +63,10 @@ public class FWStaticStore {
 	public static final String ARTOS_DROP_EXECUTION_UPON_TEST_FAIL_STAMP = ARTOS_LINE_BREAK_3
 			+ "\n========== DROP REMAINING TESTS UPON FAILURE IS TRIGGERED ==============="
 			+ "\n================== REMAINING TESTS WILL BE DROPPED ======================\n" + ARTOS_LINE_BREAK_3;
+	// Dependency requirements are not met
+	public static final String ARTOS_DEPENDENCY_REQ_NOT_MET = ARTOS_LINE_BREAK_3
+			+ "\n================ DEPENDENCY REQUIREMENTS ARE NOT MET ===================="
+			+ "\n===================== TESTCASE WILL BE DROPPED ==========================\n" + ARTOS_LINE_BREAK_3;
 
 	// default paths
 	public static final String TESTSCRIPT_BASE_DIR = "." + File.separator + "script" + File.separator;

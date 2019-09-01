@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.TestStatus;
+import com.artos.interfaces.TestExecutable;
 
 /**
  * This class wraps test object with other necessary information which is helpful during test execution
@@ -80,6 +81,9 @@ public class TestObjectWrapper {
 	List<Class<? extends Throwable>> expectedExceptionList = null;
 	String exceptionContains = "";
 	Boolean enforce = true;
+	
+	// DependencyList
+	List<Class<? extends TestExecutable>> dependencyList = null;
 	
 	/**
 	 * Default constructor
@@ -335,6 +339,14 @@ public class TestObjectWrapper {
 
 	public void setDropRemainingTestsUponFailure(boolean dropRemainingTestsUponFailure) {
 		this.dropRemainingTestsUponFailure = dropRemainingTestsUponFailure;
+	}
+
+	public List<Class<? extends TestExecutable>> getDependencyList() {
+		return dependencyList;
+	}
+
+	public void setDependencyList(List<Class<? extends TestExecutable>> dependencyList) {
+		this.dependencyList = dependencyList;
 	}
 
 }
