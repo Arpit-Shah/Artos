@@ -355,7 +355,7 @@ public class Runner {
 				ins.close();
 			}
 		}
-		
+
 		if (FWStaticStore.frameworkConfig.isEnableJUnitReport()) {
 			// only create Extent configuration file if not present already
 			File targetFile = new File(FWStaticStore.CONFIG_BASE_DIR + File.separator + "JUnit.xsd");
@@ -456,9 +456,11 @@ public class Runner {
 		boolean enableLogDecoration = FWStaticStore.frameworkConfig.isEnableLogDecoration();
 		boolean enableTextLog = FWStaticStore.frameworkConfig.isEnableTextLog();
 		boolean enableHTMLLog = FWStaticStore.frameworkConfig.isEnableHTMLLog();
+		boolean enableRealTimeLog = FWStaticStore.frameworkConfig.isEnableRealTimeLog();
 
 		// Create loggerContext
-		OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList);
+		OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, enableRealTimeLog,
+				testSuiteList);
 		return organisedLog.getLoggerContext();
 	}
 

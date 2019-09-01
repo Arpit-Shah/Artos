@@ -62,10 +62,11 @@ class OrganisedLog {
 	 * @param enableLogDecoration Enables/disable log decoration (Time-stamp, source package, thread number etc..)
 	 * @param enableTextLog Enables/disable text log
 	 * @param enableHTMLLog Enable/disable HTML log
+	 * @param enableRealTimeLog Enable/disable Real Time log
 	 * @param testSuiteList list of testSuite (if any) or pass null
 	 */
 	public OrganisedLog(String logDirPath, String testCaseFQCN, boolean enableLogDecoration, boolean enableTextLog, boolean enableHTMLLog,
-			List<TestSuite> testSuiteList) {
+			boolean enableRealTimeLog, List<TestSuite> testSuiteList) {
 
 		// System.setProperty("log4j.configurationFile",
 		// "./conf/log4j2.properties");
@@ -79,7 +80,8 @@ class OrganisedLog {
 		}
 
 		setLogBaseDir(logDirPath + testCaseFQCN + File.separator);
-		setLoggerContext(dynamicallyConfigureLog4J(getLogBaseDir(), testCaseFQCN, enableLogDecoration, enableTextLog, enableHTMLLog, testSuiteList));
+		setLoggerContext(dynamicallyConfigureLog4J(getLogBaseDir(), testCaseFQCN, enableLogDecoration, enableTextLog, enableHTMLLog,
+				enableRealTimeLog, testSuiteList));
 	}
 
 	/**
@@ -90,6 +92,7 @@ class OrganisedLog {
 	 * @param enableLogDecoration Enable/disable log decoration (Time-stamp, source package, thread number etc..)
 	 * @param enableTextLog Enables/disable text log
 	 * @param enableHTMLLog Enable/disable HTML log
+	 * @param enableRealTimeLog Enable/disable Real Time log
 	 * @param testSuiteList testSuiteLite (if any) or pass null
 	 * @return {@code LoggerContext}
 	 * 
@@ -97,7 +100,7 @@ class OrganisedLog {
 	 */
 	@SuppressWarnings("deprecation")
 	private LoggerContext dynamicallyConfigureLog4J(String baseDir, String testFQCN, boolean enableLogDecoration, boolean enableTextLog,
-			boolean enableHTMLLog, List<TestSuite> testSuiteList) {
+			boolean enableHTMLLog, boolean enableRealTimeLog, List<TestSuite> testSuiteList) {
 
 		int numberOfAppenders = 1;
 
@@ -242,7 +245,7 @@ class OrganisedLog {
 				appenderBuilder8.addAttribute("filePattern", baseDir + logFileName + "-realtime-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
 				appenderBuilder8.add(realTimeLogLayout);
 				appenderBuilder8.addComponent(triggeringPolicy);
-				if (enableTextLog) {
+				if (enableRealTimeLog && enableTextLog) {
 					builder.add(appenderBuilder8);
 				}
 
@@ -252,7 +255,7 @@ class OrganisedLog {
 				appenderBuilder9.addAttribute("filePattern", baseDir + logFileName + "-realtime-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
 				appenderBuilder9.add(htmlrealTimeLogLayout);
 				appenderBuilder9.addComponent(triggeringPolicy);
-				if (enableHTMLLog) {
+				if (enableRealTimeLog && enableHTMLLog) {
 					builder.add(appenderBuilder9);
 				}
 			}
@@ -309,10 +312,10 @@ class OrganisedLog {
 				AppenderRefComponentBuilder appendRef22 = builder.newAppenderRef("realtime-log-html" + i);
 				appendRef22.addAttribute("level", Level.ALL);
 
-				if (enableTextLog) {
+				if (enableRealTimeLog && enableTextLog) {
 					realTimeLoggerBuilder.add(appendRef21);
 				}
-				if (enableHTMLLog) {
+				if (enableRealTimeLog && enableHTMLLog) {
 					realTimeLoggerBuilder.add(appendRef22);
 				}
 			}
@@ -326,7 +329,9 @@ class OrganisedLog {
 
 			builder.add(generalLoggerBuilder);
 			builder.add(summaryLoggerBuilder);
-			builder.add(realTimeLoggerBuilder);
+			if (enableRealTimeLog) {
+				builder.add(realTimeLoggerBuilder);
+			}
 		}
 
 		// create root logger

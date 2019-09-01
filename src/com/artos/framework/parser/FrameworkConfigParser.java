@@ -80,8 +80,9 @@ public class FrameworkConfigParser {
 	private boolean enableLogDecoration = false;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
+	private boolean enableRealTimeLog = true;
 	private boolean enableExtentReport = true;
-	private boolean enableJUnitReport = false;
+	private boolean enableJUnitReport = true;
 
 	// Dashboard
 	private String dashBoardRemoteIP = "127.0.0.1";
@@ -461,6 +462,15 @@ public class FrameworkConfigParser {
 		}
 		{
 			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableRealTimeLog())));
+			logger.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableRealTimeLog");
+			property.setAttributeNode(attr);
+		}
+		{
+			Element property = doc.createElement("property");
 			property.appendChild(doc.createTextNode(Boolean.toString(isEnableExtentReport())));
 			logger.appendChild(property);
 
@@ -620,6 +630,8 @@ public class FrameworkConfigParser {
 						setEnableTextLog(Boolean.parseBoolean(eElement.getTextContent()));
 					} else if ("enableHTMLLog".equals(eElement.getAttribute("name"))) {
 						setEnableHTMLLog(Boolean.parseBoolean(eElement.getTextContent()));
+					} else if ("enableRealTimeLog".equals(eElement.getAttribute("name"))) {
+						setEnableRealTimeLog(Boolean.parseBoolean(eElement.getTextContent()));
 					} else if ("enableExtentReport".equals(eElement.getAttribute("name"))) {
 						setEnableExtentReport(Boolean.parseBoolean(eElement.getTextContent()));
 					} else if ("enableJUnitReport".equals(eElement.getAttribute("name"))) {
@@ -1163,5 +1175,13 @@ public class FrameworkConfigParser {
 
 	public void setEnableJUnitReport(boolean enableJUnitReport) {
 		this.enableJUnitReport = enableJUnitReport;
+	}
+
+	public boolean isEnableRealTimeLog() {
+		return enableRealTimeLog;
+	}
+
+	public void setEnableRealTimeLog(boolean enableRealTimeLog) {
+		this.enableRealTimeLog = enableRealTimeLog;
 	}
 }
