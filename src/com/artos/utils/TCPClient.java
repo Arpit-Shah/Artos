@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
@@ -330,13 +331,12 @@ class ServerTask implements Runnable {
 					}
 				}
 			}
+		} catch (SocketException se) {
+			// Do nothing because if connector was closed then this
+			// exception is as expected
+			System.out.println(se.getMessage());
 		} catch (Exception e) {
-			if (connector.isClosed() && e.getMessage().contains("Socket closed")) {
-				// Do nothing because if connector was closed then this
-				// exception is as expected
-			} else {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 	}
 

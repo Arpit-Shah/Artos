@@ -26,6 +26,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -344,13 +345,12 @@ class ClientTask implements Runnable {
 					}
 				}
 			}
+		} catch (SocketException se) {
+			// Do nothing because if connector was closed then this
+			// exception is as expected
+			System.out.println(se.getMessage());
 		} catch (Exception e) {
-			if (connector.isClosed() && e.getMessage().contains("Socket closed")) {
-				// Do nothing because if connector was closed then this
-				// exception is as expected
-			} else {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 	}
 
