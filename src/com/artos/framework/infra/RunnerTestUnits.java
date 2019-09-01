@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
@@ -101,6 +102,13 @@ public class RunnerTestUnits {
 
 				notifyPrintTestUnitPlan(unit);
 
+				if (null != unit.getDependencyList() && !unit.getDependencyList().isEmpty()) {
+					if (!hasDependencyMet(unitTests, unit)) {
+						context.getLogger().warn(FWStaticStore.ARTOS_UNIT_DEPENDENCY_REQ_NOT_MET);
+						continue;
+					}
+				}
+
 				// if data provider name is not specified then only execute test once
 				if (null == unit.getDataProviderName() || "".equals(unit.getDataProviderName())) {
 					runIndividualUnitTest(unit);
@@ -134,6 +142,58 @@ public class RunnerTestUnits {
 		// ********************************************************************************************
 		// TestUnits Execution Finish
 		// ********************************************************************************************
+	}
+
+	/**
+	 * Dependency feature ensures that user specified test cases are executed prior to executing target test case and pre-requisite test cases must be
+	 * completed with PASS status, otherwise dependency agreement will not be met.
+	 * 
+	 * @param unitList = test unit list
+	 * @param unit = target test unit
+	 * @return true if dependency agreement is met | false if dependency agreement is not met
+	 */
+	private boolean hasDependencyMet(List<TestUnitObjectWrapper> unitList, TestUnitObjectWrapper unit) {
+
+		// Find execution index of target test unit
+		int indexOfUnit = unitList.indexOf(unit);
+
+		// Iterate through provided dependency list and ensure it meets an agreement
+		for (String depenencyMethod : unit.getDependencyList()) {
+
+			List<TestUnitObjectWrapper> matchList;
+
+			// Find list dependency method in execution list, If we can not find listed method in execution list then dependency agreement will not be
+			// met
+			{
+				matchList = unitList.stream().filter(obj -> obj.getTestUnitMethod().getName().equals(depenencyMethod)).collect(Collectors.toList());
+				if (null == matchList || matchList.isEmpty()) {
+					return false;
+				}
+			}
+
+			TestUnitObjectWrapper dependencyTestUnitObjectWrapper = matchList.get(0);
+			// If dependency test case execution index is same or greater than target test-case execution index then requirements will not be met
+			{
+				int matchIndex = unitList.indexOf(dependencyTestUnitObjectWrapper);
+				if (matchIndex >= indexOfUnit) {
+					return false;
+				}
+			}
+
+			// If dependency test cases status is not PASS then dependency agreement will not be met
+			{
+				if (dependencyTestUnitObjectWrapper.getTestUnitOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.FAIL)))) {
+					return false;
+				}
+				if (dependencyTestUnitObjectWrapper.getTestUnitOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.KTF)))) {
+					return false;
+				}
+				if (dependencyTestUnitObjectWrapper.getTestUnitOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.SKIP)))) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private void printException(Throwable e) {

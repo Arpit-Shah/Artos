@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.artos.framework.Enums.Importance;
 import com.artos.framework.Enums.ScriptFileType;
@@ -367,7 +366,7 @@ public class ArtosRunner {
 
 					if (null != t.getDependencyList() && !t.getDependencyList().isEmpty()) {
 						if (!hasDependencyMet(testList, t)) {
-							context.getLogger().warn(FWStaticStore.ARTOS_DEPENDENCY_REQ_NOT_MET);
+							context.getLogger().warn(FWStaticStore.ARTOS_TEST_DEPENDENCY_REQ_NOT_MET);
 							continue;
 						}
 					}
@@ -458,8 +457,16 @@ public class ArtosRunner {
 			}
 
 			// If dependency test cases status is not PASS then dependency agreement will not be met
-			if (!dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.PASS)))) {
-				return false;
+			{
+				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.FAIL)))) {
+					return false;
+				}
+				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.KTF)))) {
+					return false;
+				}
+				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.SKIP)))) {
+					return false;
+				}
 			}
 		}
 		return true;

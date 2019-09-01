@@ -72,6 +72,9 @@ public class TestUnitObjectWrapper {
 	private List<Class<? extends Throwable>> expectedExceptionList = null;
 	private String exceptionContains = "";
 	private Boolean enforce = true;
+	
+	// Dependency
+	private List<String> dependencyList = null;
 
 	/**
 	 * Default constructor
@@ -279,6 +282,14 @@ public class TestUnitObjectWrapper {
 
 	public void setDropRemainingUnitsUponFailure(boolean dropRemainingUnitsUponFailure) {
 		this.dropRemainingUnitsUponFailure = dropRemainingUnitsUponFailure;
+	}
+
+	public List<String> getDependencyList() {
+		return dependencyList;
+	}
+
+	public void setDependencyList(List<String> dependencyList) {
+		this.dependencyList = dependencyList;
 	}
 
 }

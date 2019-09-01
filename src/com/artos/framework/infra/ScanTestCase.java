@@ -40,6 +40,7 @@ import com.artos.annotation.StepDefinition;
 import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
+import com.artos.annotation.UnitDependency;
 import com.artos.framework.FWStaticStore;
 
 import javassist.Modifier;
@@ -122,6 +123,7 @@ public class ScanTestCase {
 			ExpectedException expectedException = method.getAnnotation(ExpectedException.class);
 			Group group = method.getAnnotation(Group.class);
 			TestImportance testImportance = method.getAnnotation(TestImportance.class);
+			UnitDependency dependency = method.getAnnotation(UnitDependency.class);
 			StepDefinition stepDef = method.getAnnotation(StepDefinition.class);
 
 			TestUnitObjectWrapper testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(),
@@ -182,6 +184,12 @@ public class ScanTestCase {
 			// TestImportance is an optional annotation
 			if (null != testImportance) {
 				testUnitObj.setTestImportance(testImportance.value());
+			}
+
+			// UnitDependency is an optional annotation
+			if (null != dependency) {
+				List<String> depedencyList = Arrays.asList(dependency.dependency());
+				testUnitObj.setDependencyList(depedencyList);
 			}
 
 			// Test Def is an optional attribute so it can be null
