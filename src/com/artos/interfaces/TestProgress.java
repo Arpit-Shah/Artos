@@ -422,7 +422,7 @@ public interface TestProgress {
 	 * @see TestStatus
 	 */
 	public void testResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String description);
-	
+
 	/**
 	 * Method is called when test result is finalised.
 	 * 
@@ -452,7 +452,7 @@ public interface TestProgress {
 	 * @see TestStatus
 	 */
 	public void testUnitResult(TestUnitObjectWrapper unit, TestStatus testStatus, File snapshot, String description);
-	
+
 	/**
 	 * Method is called when test unit execution is finished and summary requires to be printed
 	 * 
@@ -484,15 +484,22 @@ public interface TestProgress {
 	/**
 	 * Method is called when exception is thrown during test suite execution which can not be handled on test level
 	 * 
-	 * @param description Description of an error/exception
+	 * @param e an error/exception/throwable
 	 */
-	public void testSuiteException(String description);
+	public void testSuiteException(Throwable e);
 
 	/**
 	 * Method is called when exception is thrown during test case execution
 	 * 
-	 * @param description Description of an error/exception
+	 * @param e an error/exception/throwable
 	 */
-	public void testException(String description);
+	public void testException(Throwable e);
+
+	/**
+	 * Method is called when exception is thrown during unit execution
+	 * 
+	 * @param e an error/exception/throwable
+	 */
+	public void unitException(Throwable e);
 
 }

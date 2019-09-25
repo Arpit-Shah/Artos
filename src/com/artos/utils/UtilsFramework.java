@@ -36,29 +36,33 @@ public class UtilsFramework {
 	/**
 	 * Writes Print StackTrace on console and log file as per chosen option
 	 * 
-	 * @param context
-	 *            Test context
-	 * @param e
-	 *            Exception
+	 * @param context Test context
+	 * @param e Exception
 	 */
 	public static void writePrintStackTrace(TestContext context, Exception e) {
-		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw));
-		context.getLogger().error(sw.toString());
+		context.getLogger().error(getPrintStackTraceAsString(e));
 	}
 
 	/**
 	 * Writes Print StackTrace on console and log file as per chosen option
 	 * 
-	 * @param context
-	 *            Test context
-	 * @param e
-	 *            Throwable
+	 * @param context Test context
+	 * @param e Throwable
 	 */
 	public static void writePrintStackTrace(TestContext context, Throwable e) {
+		context.getLogger().error(getPrintStackTraceAsString(e));
+	}
+
+	/**
+	 * Gets Print StackTrace as a string
+	 * 
+	 * @param e Throwable
+	 * @return String transformed stack trace
+	 */
+	public static String getPrintStackTraceAsString(Throwable e) {
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
-		context.getLogger().error(sw.toString());
+		return sw.toString();
 	}
 
 }
