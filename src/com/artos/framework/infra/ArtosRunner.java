@@ -400,11 +400,11 @@ public class ArtosRunner {
 			if (null == e.getCause()) {
 				// Handle if any exception in pre-post runnable
 				UtilsFramework.writePrintStackTrace(context, e);
-				notifyTestSuiteException(e.getMessage());
+				notifyTestSuiteException(e);
 			} else {
 				// Handle if any exception in pre-post runnable
 				UtilsFramework.writePrintStackTrace(context, e.getCause());
-				notifyTestSuiteException(e.getCause().getMessage());
+				notifyTestSuiteException(e.getCause());
 			}
 		}
 
@@ -514,7 +514,7 @@ public class ArtosRunner {
 			postTestValidation(t);
 		} catch (Throwable e) {
 			processTestException(t, e);
-			notifyTestException(e.getMessage());
+			notifyTestException(e);
 		} finally {
 			t.setTestFinishTime(System.currentTimeMillis());
 		}
@@ -597,7 +597,7 @@ public class ArtosRunner {
 		} catch (Exception e) {
 			// Print Exception
 			UtilsFramework.writePrintStackTrace(context, e);
-			notifyTestSuiteException(e.getMessage());
+			notifyTestSuiteException(e);
 
 			// Mark current test as fail due to exception during data provider processing
 			context.setTestStatus(TestStatus.FAIL, e.getMessage());
@@ -946,15 +946,15 @@ public class ArtosRunner {
 		}
 	}
 
-	void notifyTestSuiteException(String description) {
+	void notifyTestSuiteException(Throwable e) {
 		for (TestProgress listener : listenerList) {
-			listener.testSuiteException(description);
+			listener.testSuiteException(e);
 		}
 	}
 
-	void notifyTestException(String description) {
+	void notifyTestException(Throwable e) {
 		for (TestProgress listener : listenerList) {
-			listener.testException(description);
+			listener.testException(e);
 		}
 	}
 

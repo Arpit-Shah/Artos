@@ -291,13 +291,19 @@ public class TestExecutionEventListener implements TestProgress {
 	}
 
 	@Override
-	public void testSuiteException(String description) {
+	public void testSuiteException(Throwable e) {
 		// logger.trace("\n---------------- Test Suite Exception -------------------");
 	}
 
 	@Override
-	public void testException(String description) {
+	public void testException(Throwable e) {
 		// logger.trace("\n---------------- Test Case Exception -------------------");
+	}
+	
+	@Override
+	public void unitException(Throwable e) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

@@ -492,6 +492,7 @@ public class RunnerTestUnits {
 						} else {
 							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : " + unit.getExceptionContains()
 									+ "\nReceived : " + e.getMessage());
+							notifyPrintTestUnitException(e);
 						}
 					}
 
@@ -507,10 +508,12 @@ public class RunnerTestUnits {
 				context.setTestStatus(TestStatus.FAIL,
 						"Exception is not as expected : \nExpected : " + expectedExceptions + "\nReturned : " + e.getClass().getName());
 				UtilsFramework.writePrintStackTrace(context, e);
+				notifyPrintTestUnitException(e);
 			}
 		} else {
 			context.setTestStatus(TestStatus.FAIL, e.getMessage());
 			UtilsFramework.writePrintStackTrace(context, e);
+			notifyPrintTestUnitException(e);
 		}
 	}
 
@@ -651,6 +654,12 @@ public class RunnerTestUnits {
 	void notifyPrintTestUnitPlan(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
 			listener.printTestUnitPlan(unit);
+		}
+	}
+	
+	void notifyPrintTestUnitException(Throwable e) {
+		for (TestProgress listener : listenerList) {
+			listener.unitException(e);
 		}
 	}
 

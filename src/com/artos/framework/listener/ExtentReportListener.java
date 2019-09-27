@@ -32,6 +32,7 @@ import com.artos.framework.infra.TestContext;
 import com.artos.framework.infra.TestObjectWrapper;
 import com.artos.framework.infra.TestUnitObjectWrapper;
 import com.artos.interfaces.TestProgress;
+import com.artos.utils.UtilsFramework;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
@@ -353,15 +354,33 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testSuiteException(String description) {
+	public void testSuiteException(Throwable e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void testException(String description) {
-		// TODO Auto-generated method stub
+	public void testException(Throwable e) {
+		String exceptionString = UtilsFramework.getPrintStackTraceAsString(e).replace("\n", "<p/>");
+		if (null != testChildOfChild) {
+			testChildOfChild.log(LogStatus.FAIL, exceptionString);
+		} else if (null != testChild) {
+			testChild.log(LogStatus.FAIL, exceptionString);
+		} else if (null != testParent) {
+			testParent.log(LogStatus.FAIL, exceptionString);
+		}
+	}
 
+	@Override
+	public void unitException(Throwable e) {
+		String exceptionString = UtilsFramework.getPrintStackTraceAsString(e).replace("\n", "<p/>");
+		if (null != testChildOfChild) {
+			testChildOfChild.log(LogStatus.FAIL, exceptionString);
+		} else if (null != testChild) {
+			testChild.log(LogStatus.FAIL, exceptionString);
+		} else if (null != testParent) {
+			testParent.log(LogStatus.FAIL, exceptionString);
+		}
 	}
 
 	@Override

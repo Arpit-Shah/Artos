@@ -385,13 +385,19 @@ public class UDPReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testSuiteException(String description) {
+	public void testSuiteException(Throwable e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void testException(String description) {
+	public void testException(Throwable e) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	@Override
+	public void unitException(Throwable e) {
 		// TODO Auto-generated method stub
 
 	}
