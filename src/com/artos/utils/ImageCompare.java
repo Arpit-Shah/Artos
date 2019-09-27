@@ -80,12 +80,6 @@ public class ImageCompare {
 			throw new Exception("File extensions are not the same");
 		}
 
-		if (null != resultDir) {
-			if (!resultDir.exists() || !resultDir.isDirectory()) {
-				resultDir.mkdirs();
-			}
-		}
-
 		long matchCount = 0;
 		BufferedImage refImage = ImageIO.read(referenceImage);
 		BufferedImage testImage = ImageIO.read(targetImage);
@@ -123,8 +117,20 @@ public class ImageCompare {
 		}
 
 		if (null != resultDir && null != resultImageName) {
-			setResultImage(new File(resultDir, resultImageName + "." + fileExtenstion));
-			if (fileExtenstion.toUpperCase().contains("PNG")) {
+			if (!resultDir.exists() || !resultDir.isDirectory()) {
+				resultDir.mkdirs();
+			}
+			File resultFile = new File(resultDir, resultImageName + "." + fileExtenstion);
+
+			// Delete resultFile if already present
+			try {
+				resultFile.delete();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			setResultImage(resultFile);
+			if (fileExtenstion.equalsIgnoreCase("PNG")) {
 				createPngImage(rImage);
 			} else {
 				createJpgImage(rImage);

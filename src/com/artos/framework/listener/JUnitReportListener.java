@@ -74,6 +74,15 @@ public class JUnitReportListener implements TestProgress {
 		this.context = context;
 		fXmlFile = new File(FWStaticStore.JUNIT_REPORT_BASE_DIR + "JUnit_Report_" + context.getTestSuiteName() + ".xml");
 
+		// Delete this file if already exist
+		try {
+			if (fXmlFile.exists() && fXmlFile.isFile()) {
+				fXmlFile.delete();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		try {
 			if (!fXmlFile.exists() || !fXmlFile.isFile()) {
 				fXmlFile.getParentFile().mkdirs();
@@ -401,8 +410,8 @@ public class JUnitReportListener implements TestProgress {
 		property.setAttribute("value", "");
 		properties.appendChild(property);
 
-		test_suite.appendChild(doc.createElement("system-out"));
-		test_suite.appendChild(doc.createElement("system-err"));
+//		test_suite.appendChild(doc.createElement("system-out"));
+//		test_suite.appendChild(doc.createElement("system-err"));
 
 		// add properties element to test suite
 		test_suite.appendChild(properties);
@@ -452,8 +461,8 @@ public class JUnitReportListener implements TestProgress {
 		testcase.setAttribute("status", TestStatus.getEnumName(context.getCurrentUnitTestStatus().getValue()));
 		testcase.setAttribute("time", convertMillisecondsToSecondMills(unit.getTestUnitFinishTime() - unit.getTestUnitStartTime()));
 
-		testcase.appendChild(doc.createElement("system-out"));
-		testcase.appendChild(doc.createElement("system-err"));
+		// testcase.appendChild(doc.createElement("system-out"));
+		// testcase.appendChild(doc.createElement("system-err"));
 		test_suite.appendChild(testcase);
 	}
 

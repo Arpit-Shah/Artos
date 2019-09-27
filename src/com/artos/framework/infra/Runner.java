@@ -478,12 +478,22 @@ public class Runner {
 	}
 
 	/**
-	 * Sets Feature File List
+	 * List of Feature file(s) name. Name must contain extension ".feature"
 	 * 
-	 * @param featureFileList featureFileList provided by user
+	 * @param featureFileNameList List of feature file names provided by user
 	 */
-	public void setFeatureFileList(List<BDDFeatureObjectWrapper> featureFileList) {
-		runnerTestSuite.setFeatureFiles(featureFileList);
+	public void setFeatureFileList(List<String> featureFileNameList) {
+		List<BDDFeatureObjectWrapper> featureFileObjWrapperList = new ArrayList<>();
+		for (String fileName : featureFileNameList) {
+			if (null == fileName) {
+				continue;
+			}
+			File f = new File("." + File.separator + "script" + File.separator + fileName.trim());
+			if (f.exists() && f.isFile() && f.getName().toLowerCase().endsWith(".feature")) {
+				featureFileObjWrapperList.add(new BDDFeatureObjectWrapper(f, ""));
+			}
+		}
+		runnerTestSuite.setFeatureFiles(featureFileObjWrapperList);
 	}
 
 	/**
