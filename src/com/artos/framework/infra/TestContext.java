@@ -719,15 +719,15 @@ public class TestContext {
 	// *******************************************************************
 	// Listener
 	// *******************************************************************
-	public void registerListener(TestProgress listener) {
+	protected void registerListener(TestProgress listener) {
 		listenerList.add(listener);
 	}
 
-	public void deRegisterListener(TestProgress listener) {
+	protected void deRegisterListener(TestProgress listener) {
 		listenerList.remove(listener);
 	}
 
-	public void deRegisterAllListener() {
+	protected void deRegisterAllListener() {
 		listenerList.clear();
 	}
 
