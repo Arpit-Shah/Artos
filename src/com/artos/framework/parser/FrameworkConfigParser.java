@@ -77,12 +77,13 @@ public class FrameworkConfigParser {
 	// Logger
 	private String logLevel = "debug";
 	private String logRootDir = FWStaticStore.LOG_BASE_DIR;
-	private boolean enableLogDecoration = false;
+	private boolean enableLogDecoration = true;
 	private boolean enableTextLog = true;
 	private boolean enableHTMLLog = false;
-	private boolean enableRealTimeLog = true;
+	private boolean enableRealTimeLog = false;
 	private boolean enableExtentReport = true;
 	private boolean enableJUnitReport = true;
+	private boolean enableLogCleanup = true;
 
 	// Dashboard
 	private String dashBoardRemoteIP = "127.0.0.1";
@@ -487,6 +488,15 @@ public class FrameworkConfigParser {
 			attr.setValue("enableJUnitReport");
 			property.setAttributeNode(attr);
 		}
+		{
+			Element property = doc.createElement("property");
+			property.appendChild(doc.createTextNode(Boolean.toString(isEnableLogCleanup())));
+			logger.appendChild(property);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("enableLogCleanup");
+			property.setAttributeNode(attr);
+		}
 	}
 
 	private void addDashBoardConfig(Document doc, Element rootElement) {
@@ -636,6 +646,8 @@ public class FrameworkConfigParser {
 						setEnableExtentReport(Boolean.parseBoolean(eElement.getTextContent()));
 					} else if ("enableJUnitReport".equals(eElement.getAttribute("name"))) {
 						setEnableJUnitReport(Boolean.parseBoolean(eElement.getTextContent()));
+					} else if ("enableLogCleanup".equals(eElement.getAttribute("name"))) {
+						setEnableLogCleanup(Boolean.parseBoolean(eElement.getTextContent()));
 					}
 				}
 			}
@@ -1183,5 +1195,13 @@ public class FrameworkConfigParser {
 
 	public void setEnableRealTimeLog(boolean enableRealTimeLog) {
 		this.enableRealTimeLog = enableRealTimeLog;
+	}
+
+	public boolean isEnableLogCleanup() {
+		return enableLogCleanup;
+	}
+
+	public void setEnableLogCleanup(boolean enableLogCleanup) {
+		this.enableLogCleanup = enableLogCleanup;
 	}
 }

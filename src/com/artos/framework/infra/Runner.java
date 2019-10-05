@@ -48,6 +48,7 @@ import com.artos.framework.parser.TestScriptParser;
 import com.artos.framework.parser.TestSuite;
 import com.artos.interfaces.TestExecutable;
 import com.artos.utils.UDP;
+import com.artos.utils.UtilsFile;
 import com.google.common.collect.Lists;
 
 public class Runner {
@@ -446,9 +447,9 @@ public class Runner {
 		 * Package name can not be used for log sub-directory name in case where test cases are launched from project root directory, thus log will
 		 * come out in logging base directory.
 		 */
-		String logSubDir = "";
+		String testCaseFQCN = "";
 		if (null != cls.getPackage()) {
-			logSubDir = cls.getPackage().getName();
+			testCaseFQCN = cls.getPackage().getName();
 		}
 
 		// Get Framework configuration set by user
@@ -458,8 +459,15 @@ public class Runner {
 		boolean enableHTMLLog = FWStaticStore.frameworkConfig.isEnableHTMLLog();
 		boolean enableRealTimeLog = FWStaticStore.frameworkConfig.isEnableRealTimeLog();
 
+		if (FWStaticStore.frameworkConfig.isEnableLogCleanup()) {
+			File logDir = new File(logDirPath + testCaseFQCN + File.separator);
+			if (logDir.exists() && logDir.isDirectory()) {
+				UtilsFile.cleanDir(logDir, false);
+			}
+		}
+
 		// Create loggerContext
-		OrganisedLog organisedLog = new OrganisedLog(logDirPath, logSubDir, enableLogDecoration, enableTextLog, enableHTMLLog, enableRealTimeLog,
+		OrganisedLog organisedLog = new OrganisedLog(logDirPath, testCaseFQCN, enableLogDecoration, enableTextLog, enableHTMLLog, enableRealTimeLog,
 				testSuiteList);
 		return organisedLog.getLoggerContext();
 	}
