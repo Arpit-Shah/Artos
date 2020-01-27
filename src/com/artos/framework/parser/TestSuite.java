@@ -33,6 +33,9 @@ public class TestSuite {
 	private String suiteName = "SuiteName";
 	private int loopCount = 1; // default 1
 	private List<String> testGroupList = new ArrayList<>();
+	
+	private List<String> testBeforeUnitGroupList = new ArrayList<>();
+	private List<String> testAfterUnitGroupList = new ArrayList<>();
 	private List<String> testUnitGroupList = new ArrayList<>();
 	private List<String> testFQCNList = new ArrayList<>();
 	private Map<String, String> testSuiteParameters = new HashMap<>();
@@ -93,6 +96,22 @@ public class TestSuite {
 		this.testGroupList = testGroupList;
 	}
 
+	public List<String> getTestBeforeUnitGroupList() {
+		return testBeforeUnitGroupList;
+	}
+
+	public void setTestBeforeUnitGroupList(List<String> testBeforeUnitGroupList) {
+		this.testBeforeUnitGroupList = testBeforeUnitGroupList;
+	}
+	
+	public List<String> getTestAfterUnitGroupList() {
+		return testAfterUnitGroupList;
+	}
+
+	public void setTestAfterUnitGroupList(List<String> testAfterUnitGroupList) {
+		this.testAfterUnitGroupList = testAfterUnitGroupList;
+	}
+	
 	public List<String> getTestUnitGroupList() {
 		return testUnitGroupList;
 	}

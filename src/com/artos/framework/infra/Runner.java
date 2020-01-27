@@ -116,6 +116,24 @@ public class Runner {
 			runnerTestSuite.getTestGroupList().replaceAll(String::toUpperCase);
 
 			// Add a default group if user does not pass a group parameter
+			{
+			if(null==runnerTestSuite.getTestBeforeUnitGroupList() || runnerTestSuite.getTestBeforeUnitGroupList().isEmpty()) {
+			runnerTestSuite.setTestBeforeUnitGroupList(Lists.newArrayList("*"));	
+			}
+			// Store only Upper case group names to avoid case sensitiveness
+			runnerTestSuite.getTestBeforeUnitGroupList().replaceAll(String::toUpperCase);
+			}
+		
+			// Add a default group if user does not pass a group parameter
+			{
+			if(null==runnerTestSuite.getTestAfterUnitGroupList() || runnerTestSuite.getTestAfterUnitGroupList().isEmpty()) {
+			runnerTestSuite.setTestAfterUnitGroupList(Lists.newArrayList("*"));	
+			}
+			// Store only Upper case group names to avoid case sensitiveness
+			runnerTestSuite.getTestAfterUnitGroupList().replaceAll(String::toUpperCase);
+			}
+			
+			// Add a default group if user does not pass a group parameter
 			if (null == runnerTestSuite.getTestUnitGroupList() || runnerTestSuite.getTestUnitGroupList().isEmpty()) {
 				runnerTestSuite.setTestUnitGroupList(Lists.newArrayList("*"));
 			}
@@ -522,6 +540,24 @@ public class Runner {
 		runnerTestSuite.setTestGroupList(testGroupList);
 	}
 
+	/**
+	 * Sets the group list for before test units. If not set then all test units will be run
+	 * 
+	 * @param testBeforeUnitGroupList group list required to filter before test units
+	 */
+	public void setTestBeforeUnitGroupList(List<String> testBeforeUnitGroupList) {
+		runnerTestSuite.setTestBeforeUnitGroupList(testBeforeUnitGroupList);
+	}
+	
+	/**
+	 * Sets the group list for after test units. If not set then all test units will be run
+	 * 
+	 * @param testAfterUnitGroupList group list required to filter before test units
+	 */
+	public void setTestAfterUnitGroupList(List<String> testAfterUnitGroupList) {
+		runnerTestSuite.setTestAfterUnitGroupList(testAfterUnitGroupList);
+	}
+	
 	/**
 	 * Sets the group list for test units. If not set then all test units will be run
 	 * 

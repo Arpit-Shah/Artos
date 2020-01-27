@@ -64,6 +64,9 @@ public class TestUnitObjectWrapper {
 	// Group
 	private List<String> groupList = new ArrayList<>();
 
+	private List<String> beforeUnitgroupList = new ArrayList<>();
+	private List<String> afterUnitgroupList = new ArrayList<>();
+
 	// KnowToFail
 	private boolean KTF = false;
 	private String bugTrackingNumber = "";
@@ -212,6 +215,22 @@ public class TestUnitObjectWrapper {
 		this.groupList = groupList;
 	}
 
+	public List<String> getbeforeUnitgroupList() {
+		return beforeUnitgroupList;
+	}
+
+	public void setbeforeUnitgroupList(List<String> beforeUnitgroupList) {
+		this.beforeUnitgroupList = beforeUnitgroupList;
+	}
+	
+	public List<String> getafterUnitgroupList() {
+		return afterUnitgroupList;
+	}
+
+	public void setafterUnitgroupList(List<String> afterUnitgroupList) {
+		this.afterUnitgroupList = afterUnitgroupList;
+	}
+	
 	public Importance getTestImportance() {
 		return testImportance;
 	}
