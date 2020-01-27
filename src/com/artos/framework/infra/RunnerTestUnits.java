@@ -23,6 +23,8 @@ package com.artos.framework.infra;
 
 import java.io.InvalidObjectException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +35,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import com.artos.annotation.AfterTestUnit;
+import com.artos.annotation.BeforeTestUnit;
 import com.artos.framework.Enums.TestStatus;
 import com.artos.framework.FWStaticStore;
 import com.artos.interfaces.TestProgress;
@@ -221,14 +225,41 @@ public class RunnerTestUnits {
 
 			// Run custom before method prior to each test unit execution
 			if (null != t.getMethodBeforeTestUnit()) {
+				
+				List<String> beforeUnitgroupList = context.getTestSuite().getTestBeforeUnitGroupList();//defined by user in main class
+				BeforeTestUnit beforeunit = t.getMethodBeforeTestUnit().getAnnotation(BeforeTestUnit.class);//DeclaredAnnotations();
+
+				{
+					if (null != beforeunit) {
+						List<String> groupList = Arrays.asList(beforeunit.group());
+						unit.setbeforeUnitgroupList(groupList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
+								.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
+						
+					} else {
+						// Create empty arrayList
+						unit.setbeforeUnitgroupList(new ArrayList<String>());
+					}
+
+					// each group must have * by default (which represents all
+					if (!unit.getbeforeUnitgroupList().contains("*")) {
+						unit.getbeforeUnitgroupList().add("*");
+					}
+				}
+				
+				if (belongsToApprovedGroup(beforeUnitgroupList, unit.getbeforeUnitgroupList())) {		
 				notifyLocalBeforeTestUnitMethodExecutionStarted(t, unit);
+
 				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
 				notifyLocalBeforeTestUnitMethodExecutionFinished(unit);
+				} else {
+					System.out.println("local Before method is skipped due to group filtering.");
+				}
 			}
 		} catch (Throwable e) {
 			printException(e);
 		}
-
+		
+		
 		// ********************************************************************************************
 		// TestUnit Start
 		// ********************************************************************************************
@@ -256,9 +287,35 @@ public class RunnerTestUnits {
 
 			// Run custom after method post each test unit execution
 			if (null != t.getMethodAfterTestUnit()) {
-				notifyLocalAfterTestUnitMethodExecutionStarted(t, unit);
-				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
-				notifyLocalAfterTestUnitMethodExecutionFinished(unit);
+				
+					List<String> afterUnitgroupList = context.getTestSuite().getTestAfterUnitGroupList();//defined by user in main class
+					AfterTestUnit afterunit = t.getMethodAfterTestUnit().getAnnotation(AfterTestUnit.class);//DeclaredAnnotations();
+
+					{
+						if (null != afterunit) {
+							List<String> groupList = Arrays.asList(afterunit.group());
+							unit.setafterUnitgroupList(groupList.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
+									.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", "")).collect(Collectors.toList()));
+							
+						} else {
+							// Create empty arrayList
+							unit.setafterUnitgroupList(new ArrayList<String>());
+						}
+
+						// each group must have * by default (which represents all
+						if (!unit.getafterUnitgroupList().contains("*")) {
+							unit.getafterUnitgroupList().add("*");
+						}
+					}
+					
+					if (belongsToApprovedGroup(afterUnitgroupList, unit.getafterUnitgroupList())) {	
+						notifyLocalAfterTestUnitMethodExecutionStarted(t, unit);
+						t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+						notifyLocalAfterTestUnitMethodExecutionFinished(unit);
+					}
+					else {
+						System.out.println("local After method is skipped due to group filtering.");
+					}
 			}
 
 			// Run global after method post each test unit execution
@@ -286,6 +343,35 @@ public class RunnerTestUnits {
 		// ********************************************************************************************
 		context.generateUnitTestSummary(unit);
 		// context.getLogger().info(FWStaticStore.ARTOS_LINE_BREAK_2);
+
+	}
+	
+	/**
+	 * Validate if test case belongs to any user defined group(s)
+	 * 
+	 * @param refGroupList list of user defined group (list is made up of group name or regular expression)
+	 * @param testGroupList list of group test case belong to
+	 * @return true if test case belongs to at least one of the user defined groups, false if test case does not belong to any user defined groups
+	 */
+	private boolean belongsToApprovedGroup(List<String> refGroupList, List<String> testGroupList) {
+
+		if (null != refGroupList && null != testGroupList) {
+
+			// Check if string matches
+			if (refGroupList.stream().anyMatch(num -> testGroupList.contains(num))) {
+				return true;
+			} else {
+				// Check if group matches regular expression
+				for (String refGroup : refGroupList) {
+					for (String testcaseGroup : testGroupList) {
+						if (testcaseGroup.matches(refGroup)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 
 	}
 
