@@ -245,6 +245,7 @@ class OrganisedLog {
 				appenderBuilder8.addAttribute("filePattern", baseDir + logFileName + "-realtime-%d{yyyy-MM-dd_HH.mm.ss.SSS}.log");
 				appenderBuilder8.add(realTimeLogLayout);
 				appenderBuilder8.addComponent(triggeringPolicy);
+				// When RealTimeLog is disabled and appended is added then it will create an empty file
 				if (enableRealTimeLog && enableTextLog) {
 					builder.add(appenderBuilder8);
 				}
@@ -255,6 +256,7 @@ class OrganisedLog {
 				appenderBuilder9.addAttribute("filePattern", baseDir + logFileName + "-realtime-%d{yyyy-MM-dd_HH.mm.ss.SSS}.html");
 				appenderBuilder9.add(htmlrealTimeLogLayout);
 				appenderBuilder9.addComponent(triggeringPolicy);
+				// When RealTimeLog is disabled and appended is added then it will create an empty file
 				if (enableRealTimeLog && enableHTMLLog) {
 					builder.add(appenderBuilder9);
 				}
@@ -308,9 +310,11 @@ class OrganisedLog {
 			realTimeLoggerBuilder.addAttribute("additivity", false);
 			{
 				AppenderRefComponentBuilder appendRef21 = builder.newAppenderRef("realtime-log-text" + i);
-				appendRef21.addAttribute("level", Level.ALL);
+				// Change log level to off when real time logs are disabled, otherwise logs will be printed on a console
+				appendRef21.addAttribute("level", enableRealTimeLog ? Level.ALL : Level.OFF);
 				AppenderRefComponentBuilder appendRef22 = builder.newAppenderRef("realtime-log-html" + i);
-				appendRef22.addAttribute("level", Level.ALL);
+				// Change log level to off when real time logs are disabled, otherwise logs will be printed on a console
+				appendRef22.addAttribute("level", enableRealTimeLog ? Level.ALL : Level.OFF);
 
 				if (enableRealTimeLog && enableTextLog) {
 					realTimeLoggerBuilder.add(appendRef21);
@@ -329,9 +333,7 @@ class OrganisedLog {
 
 			builder.add(generalLoggerBuilder);
 			builder.add(summaryLoggerBuilder);
-			if (enableRealTimeLog) {
-				builder.add(realTimeLoggerBuilder);
-			}
+			builder.add(realTimeLoggerBuilder);
 		}
 
 		// create root logger
