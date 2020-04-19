@@ -584,13 +584,7 @@ public class ExtentReportListener implements TestProgress {
 	}
 
 	@Override
-	public void testUnitOutcome(TestUnitObjectWrapper unit, TestStatus testStatus) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void testUnitOutcome(BDDStep step, TestStatus testStatus) {
+	public void testUnitResult(BDDStep step, TestStatus testStatus, File snapshot, String description) {
 		// TODO Auto-generated method stub
 		
 	}

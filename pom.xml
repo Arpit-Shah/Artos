@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.13</version>
+	<version>0.0.14-beta-1</version>
 
 	<!-- Organisation Info -->
 	<organization>

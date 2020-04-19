@@ -326,9 +326,6 @@ public class TestContext {
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 		notifyTestUnitResult(unit, getCurrentUnitTestStatus(), null, unit.getBugTrackingNumber());
-		
-		// notify unit final outcome
-		notifyTestUnitOutcome(unit, getCurrentTestStatus());
 		// reset status for next test
 		resetUnitTestStatus();
 	}
@@ -466,9 +463,8 @@ public class TestContext {
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + step.getStepDescription() + " " + bugTrackingNum);
-		
 		// notify step final outcome
-		notifyTestUnitOutcome(step, getCurrentTestStatus());
+		notifyTestUnitResult(step, getCurrentUnitTestStatus(), null, unit.getBugTrackingNumber());
 		// reset status for next test
 		resetUnitTestStatus();
 	}
@@ -741,18 +737,6 @@ public class TestContext {
 		}
 	}
 	
-	private void notifyTestUnitOutcome(TestUnitObjectWrapper unit, TestStatus testStatus) {
-		for (TestProgress listener : listenerList) {
-			listener.testUnitOutcome(unit, testStatus);
-		}
-	}
-	
-	private void notifyTestUnitOutcome(BDDStep step, TestStatus testStatus) {
-		for (TestProgress listener : listenerList) {
-			listener.testUnitOutcome(step, testStatus);
-		}
-	}
-
 	private void notifyTestResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testResult(t, testStatus, snapshot, Msg);
@@ -770,7 +754,13 @@ public class TestContext {
 			listener.testUnitResult(unit, testStatus, snapshot, Msg);
 		}
 	}
-
+	
+	private void notifyTestUnitResult(BDDStep step, TestStatus testStatus, File snapshot, String Msg) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitResult(step, testStatus, snapshot, Msg);
+		}
+	}
+	
 	private void notifyTestCaseSummary(String FQCN, String description) {
 		for (TestProgress listener : listenerList) {
 			listener.testCaseSummaryPrinting(FQCN, description);

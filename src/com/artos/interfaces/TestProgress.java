@@ -339,16 +339,6 @@ public interface TestProgress {
 
 	public void testUnitExecutionFinished(BDDStep step);
 	
-	/**
-	 * Method is called when test unit outcome is finalised
-	 * 
-	 * @param unit test object wrapper
-	 * @see TestUnitObjectWrapper
-	 */
-	public void testUnitOutcome(TestUnitObjectWrapper unit, TestStatus testStatus);
-	
-	public void testUnitOutcome(BDDStep step, TestStatus testStatus);
-
 	// ==========================================================
 	// Test Skip
 	// ==========================================================
@@ -462,6 +452,7 @@ public interface TestProgress {
 	 * @see TestStatus
 	 */
 	public void testUnitResult(TestUnitObjectWrapper unit, TestStatus testStatus, File snapshot, String description);
+	public void testUnitResult(BDDStep step, TestStatus testStatus, File snapshot, String description);
 
 	/**
 	 * Method is called when test unit execution is finished and summary requires to be printed
