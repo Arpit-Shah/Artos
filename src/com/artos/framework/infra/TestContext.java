@@ -326,7 +326,9 @@ public class TestContext {
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 		notifyTestUnitResult(unit, getCurrentUnitTestStatus(), null, unit.getBugTrackingNumber());
-
+		
+		// notify unit final outcome
+		notifyTestUnitOutcome(unit, getCurrentTestStatus());
 		// reset status for next test
 		resetUnitTestStatus();
 	}
@@ -464,7 +466,9 @@ public class TestContext {
 		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
 		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
 				+ "]: " + step.getStepDescription() + " " + bugTrackingNum);
-
+		
+		// notify step final outcome
+		notifyTestUnitOutcome(step, getCurrentTestStatus());
 		// reset status for next test
 		resetUnitTestStatus();
 	}
@@ -734,6 +738,18 @@ public class TestContext {
 	private void notifyTestStatusUpdate(TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testCaseStatusUpdate(testStatus, snapshot, Msg);
+		}
+	}
+	
+	private void notifyTestUnitOutcome(TestUnitObjectWrapper unit, TestStatus testStatus) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitOutcome(unit, testStatus);
+		}
+	}
+	
+	private void notifyTestUnitOutcome(BDDStep step, TestStatus testStatus) {
+		for (TestProgress listener : listenerList) {
+			listener.testUnitOutcome(step, testStatus);
 		}
 	}
 

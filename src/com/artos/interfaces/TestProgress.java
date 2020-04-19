@@ -338,6 +338,16 @@ public interface TestProgress {
 	public void testUnitExecutionFinished(TestUnitObjectWrapper unit);
 
 	public void testUnitExecutionFinished(BDDStep step);
+	
+	/**
+	 * Method is called when test unit outcome is finalised
+	 * 
+	 * @param unit test object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void testUnitOutcome(TestUnitObjectWrapper unit, TestStatus testStatus);
+	
+	public void testUnitOutcome(BDDStep step, TestStatus testStatus);
 
 	// ==========================================================
 	// Test Skip

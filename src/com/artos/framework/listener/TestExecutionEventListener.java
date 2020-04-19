@@ -474,4 +474,16 @@ public class TestExecutionEventListener implements TestProgress {
 		
 	}
 
+	@Override
+	public void testUnitOutcome(TestUnitObjectWrapper unit, TestStatus testStatus) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void testUnitOutcome(BDDStep step, TestStatus testStatus) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
