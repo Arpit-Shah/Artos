@@ -466,6 +466,18 @@ public class ExtentReportListener implements TestProgress {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public void localAfterFailedUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void localAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
 	public void testUnitExecutionStarted(TestUnitObjectWrapper unit) {

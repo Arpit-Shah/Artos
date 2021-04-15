@@ -267,6 +267,16 @@ public class RunnerTestUnits {
 				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
 				notifyGlobalAfterTestUnitMethodExecutionFinished(unit);
 			}
+			
+			// Run custom after unit failed method post each failed test unit execution
+			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
+			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL || (unit.isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
+				if (null != t.getMethodAfterFailedUnit()) {
+					notifyLocalAfterFailedUnitMethodExecutionStarted(t, unit);
+					t.getMethodAfterFailedUnit().invoke(t.getTestClassObject().newInstance(), context);
+					notifyLocalAfterFailedUnitMethodExecutionFinished(unit);
+				}
+			}
 
 			// Run global after unit failed method post each failed test unit execution
 			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
@@ -600,6 +610,18 @@ public class RunnerTestUnits {
 	void notifyLocalAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		for (TestProgress listener : listenerList) {
 			listener.localAfterTestUnitMethodExecutionFinished(unit);
+		}
+	}
+	
+	void notifyLocalAfterFailedUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.localAfterFailedUnitMethodExecutionStarted(t, unit);
+		}
+	}
+
+	void notifyLocalAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		for (TestProgress listener : listenerList) {
+			listener.localAfterFailedUnitMethodExecutionFinished(unit);
 		}
 	}
 

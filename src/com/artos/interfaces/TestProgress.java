@@ -216,6 +216,23 @@ public interface TestProgress {
 	 * @see TestUnitObjectWrapper
 	 */
 	public void localAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
+	
+	/**
+	 * Method is called after local {@code AfterFailedUnit} method execution starts
+	 * 
+	 * @param t test object wrapper
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void localAfterFailedUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit);
+	
+	/**
+	 * Method is called after local {@code AfterTestUnit} method execution starts
+	 * 
+	 * @param unit test unit object wrapper
+	 * @see TestUnitObjectWrapper
+	 */
+	public void localAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit);
 
 	// ==========================================================
 	// Test Case Before and After
