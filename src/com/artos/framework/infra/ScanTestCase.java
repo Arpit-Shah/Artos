@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.artos.annotation.AfterFailedUnit;
 import com.artos.annotation.AfterTest;
 import com.artos.annotation.AfterTestUnit;
 import com.artos.annotation.BeforeTest;
@@ -109,6 +110,11 @@ public class ScanTestCase {
 				if (null == testObj.getMethodAfterTestCase() && isValidMethod(method, AfterTest.class)) {
 					testObj.setMethodAfterTestCase(method);
 					continue;
+				}
+				
+				// If one method is found then do not accept any other
+				if (null == testObj.getMethodAfterFailedUnit() && isValidMethod(method, AfterFailedUnit.class)) {
+					testObj.setMethodAfterFailedUnit(method);
 				}
 			}
 			// move to the upper class in the hierarchy in search for more methods
