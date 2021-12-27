@@ -11,7 +11,7 @@
   <logger>
     <!--LogLevel Options : info:debug:trace:fatal:warn:all-->
     <property name="logLevel">debug</property>
-    <property name="logRootDir">.\reporting\</property>
+    <property name="logRootDir">./reporting/</property>
     <property name="logSubDir">SN-123</property>
     <property name="enableLogDecoration">false</property>
     <property name="enableTextLog">true</property>
@@ -24,7 +24,7 @@
     <property name="SMTPAuth">true</property>
     <property name="SendersName">John Murray</property>
     <property name="SendersEmail">artos.framework@gmail.com</property>
-    <property name="emailAuthSettingsFilePath">.\conf\user_auth_settings.xml</property>
+    <property name="emailAuthSettingsFilePath">./conf/user_auth_settings.xml</property>
     <property name="ReceiversEmail">arpit.shah1@gmail.com</property>
     <property name="ReceiversName">Mac Murray</property>
     <property name="EmailSubject">Artos Email Client</property>

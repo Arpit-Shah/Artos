@@ -23,6 +23,7 @@ package com.artos.framework.parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -628,7 +629,7 @@ public class FrameworkConfigParser {
 					if ("logLevel".equals(eElement.getAttribute("name"))) {
 						setLogLevel(eElement.getTextContent());
 					} else if ("logRootDir".equals(eElement.getAttribute("name"))) {
-						String rootDir = eElement.getTextContent();
+						String rootDir = Paths.get(eElement.getTextContent()).toString();
 						if (rootDir.endsWith("/") || rootDir.endsWith("\\")) {
 							setLogRootDir(rootDir);
 						} else {
@@ -853,7 +854,7 @@ public class FrameworkConfigParser {
 					} else if ("SendersName".equals(eElement.getAttribute("name"))) {
 						setEmailSendersName(eElement.getTextContent());
 					} else if ("emailAuthSettingsFilePath".equals(eElement.getAttribute("name"))) {
-						setEmailAuthSettingsFilePath(eElement.getTextContent());
+						setEmailAuthSettingsFilePath(Paths.get(eElement.getTextContent()).toString());
 					} else if ("ReceiversEmail".equals(eElement.getAttribute("name"))) {
 						setEmailReceiversEmail(eElement.getTextContent());
 					} else if ("ReceiversName".equals(eElement.getAttribute("name"))) {
