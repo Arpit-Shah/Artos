@@ -22,6 +22,7 @@
 package com.artos.utils;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.artos.exception.ValueNotAsExpectedException;
 import com.artos.exception.WrongFlowException;
@@ -108,8 +109,23 @@ public class Guard {
 			return (reference == actual) ? true : false;
 		}
 
-		return (actual.equals(reference) || actual.matches(reference)) ? true : false;
+		return actual.equals(reference) || actual.matches(reference);
 	}
+
+	/**
+	 * Validates that two case-sensetive strings are equal or reference value matches given regular expression and returns boolean as a result.
+	 *
+	 * @param reference Reference string value or regular expression
+	 * @param actual Actual string value
+	 * @return true|false
+	 */
+	public static boolean isEqualsIgnoreCase(final String reference, final String actual) {
+		if (null == reference || null == actual) {
+			return Objects.equals(reference, actual);
+		}
+		return actual.equalsIgnoreCase(reference) || actual.matches(reference);
+	}
+
 
 	/**
 	 * Validates that two strings are equal or reference value matches given regular expression. If they are not, an
@@ -178,6 +194,22 @@ public class Guard {
 			throw new ValueNotAsExpectedException(strNotEqual_fail + "\n" + constructMsg(reference, actual));
 		}
 	}
+
+	/**
+	 *  Compares this {@code reference} to another {@code actual}, ignoring case considerations. Two strings are considered equal ignoring case if they
+	 *  are of the same length and corresponding characters in the two strings are equal ignoring case.
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
+	 *
+	 * @param reference Reference string value or regular expression
+	 * @param actual Actual string value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardEqualsIgnoreCase(final String reference, final String actual) throws ValueNotAsExpectedException {
+		if (!isEqualsIgnoreCase(reference,actual)) {
+			throw new ValueNotAsExpectedException(strEqual_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+
 
 	// *******************************************************************************************
 	// Boolean

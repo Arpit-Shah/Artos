@@ -156,6 +156,104 @@ public class TestGuard {
 		Guard.guardNotEquals(expected, actual);
 	}
 
+	@Test
+	public void testGuardEqualsIgnoreCaseString() throws Exception {
+		// same value
+		String actual = "testString";
+		String expected = "testString";
+		Guard.guardEqualsIgnoreCase(expected, actual);
+
+		//Case-sensetive value
+		actual = "TestString";
+		expected = "TESTSTRING";
+		Guard.guardEqualsIgnoreCase(expected, actual);
+
+		//Case-sensetive value
+		actual = "test.string.com";
+		expected = "TEST.STRING.com";
+		Guard.guardEqualsIgnoreCase(expected, actual);
+
+		//Regex comparision
+		actual = "323737bc-13ab-4d96-9708-54d19ae18d37";
+		expected = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+		Guard.guardEqualsIgnoreCase(expected, actual);
+
+		//Regex comparision
+		actual = "192.164.201.15";
+		expected = "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b";
+		Guard.guardEqualsIgnoreCase(expected, actual);
+
+		// same null value
+		expected = null;
+		actual = null;
+		Guard.guardEqualsIgnoreCase(expected, actual);
+
+		try {
+			// different value
+			actual = "foo";
+			expected = "bar";
+			Guard.guardEqualsIgnoreCase(expected, actual);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			// different value
+			actual = null;
+			expected = "testString";
+			Guard.guardEqualsIgnoreCase(expected, actual);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			// different value
+			actual = "TestString";
+			expected = null;
+			Guard.guardEqualsIgnoreCase(expected, actual);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			// different value
+			actual = "test string";
+			expected = "testString";
+			Guard.guardEqualsIgnoreCase(expected, actual);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+
+		try {
+			// different regex value
+			actual = "323737BC-13ab-4d96-9708-54d19ae18d37";
+			expected = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+			Guard.guardEqualsIgnoreCase(expected, actual);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+		try {
+			// different value
+			actual = "192.164.abc.15";
+			expected = "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b";
+			Guard.guardEqualsIgnoreCase(expected, actual);
+
+			Guard.guardWrongFlow("Did not expect to reach here");
+		} catch (Exception e) {
+			Guard.guardEquals(e, "values are not equal");
+		}
+	}
+
 	// *******************************************************************************************
 	// Boolean
 	// *******************************************************************************************
