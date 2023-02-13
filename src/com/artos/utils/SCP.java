@@ -139,6 +139,7 @@ public class SCP {
 	 */
 	public void connect() {
 		SSH2SCP1Client scpClient = null;
+
 		try {
 			Socket serverSocket = new Socket(getServer(), getPort());
 			setTransport(new SSH2Transport(serverSocket, createSecureRandom()));

@@ -978,7 +978,7 @@ public class TestContext {
 	 * 
 	 * @param logWrapper logWrapper Object
 	 */
-	protected void setOrganisedLogger(LogWrapper logWrapper) {
+	public void setOrganisedLogger(LogWrapper logWrapper) {
 		this.logWrapper = logWrapper;
 		printMendatoryInfo();
 		printUsefulInfo();

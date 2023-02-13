@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.17-beta-1</version>
+	<version>0.0.18-beta-1</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -266,6 +266,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>make-assmebly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -276,7 +277,7 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
+<!--					<appendAssemblyId>false</appendAssemblyId>-->
 				</configuration>
 			</plugin>
 
