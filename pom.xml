@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.18-beta-1</version>
+	<version>0.0.19</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -154,10 +154,11 @@
 			<version>2.41.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.7</version>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
