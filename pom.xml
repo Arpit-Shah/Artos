@@ -132,7 +132,7 @@
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
-			<version>0.1.54</version>
+			<version>0.1.55</version>
 		</dependency>
 		<dependency>
 			<groupId>com.arpitos</groupId>
@@ -162,7 +162,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 		</dependency>
 	</dependencies>
 
