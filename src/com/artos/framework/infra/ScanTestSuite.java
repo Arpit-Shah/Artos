@@ -53,7 +53,6 @@ import com.artos.annotation.TestDependency;
 import com.artos.annotation.TestImportance;
 import com.artos.annotation.TestPlan;
 import com.artos.annotation.Unit;
-import com.artos.framework.Enums.Importance;
 import com.artos.framework.FWStaticStore;
 import com.artos.interfaces.TestExecutable;
 
@@ -332,17 +331,15 @@ public class ScanTestSuite {
 	 * @param sortBySeqNum Enables sorting of the test cases (Sorting happens within package scope)
 	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
 	 * @return List of {@code TestExecutable}
-	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
-	 * @throws InstantiationException if this Class represents an abstract class, an interface, an array class, a primitive type, or void; or if the
-	 *             class has no nullary constructor; or if the instantiation fails for some other reason.
+	 * @throws Exception
 	 */
-	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws InstantiationException, IllegalAccessException {
+	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws Exception {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();
 
 		List<TestObjectWrapper> testObjWrapperList = getTestObjWrapperList(sortBySeqNum, removeSkippedTests, true);
 		for (TestObjectWrapper t : testObjWrapperList) {
 			// create new Instance of test object so user can execute the test
-			testList.add((TestExecutable) t.getTestClassObject().newInstance());
+			testList.add((TestExecutable) t.getTestClassObject().getDeclaredConstructor().newInstance());
 		}
 		return testList;
 	}

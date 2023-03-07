@@ -78,7 +78,7 @@ public class RunnerTestUnits {
 				// Run local before Method prior to any test Execution
 				if (null != t.getMethodBeforeTestCase()) {
 					notifyLocalBeforeTestCaseMethodExecutionStarted(t.getMethodBeforeTestCase().getName(), t);
-					t.getMethodBeforeTestCase().invoke(t.getTestClassObject().newInstance(), context);
+					t.getMethodBeforeTestCase().invoke(t.getTestClassObject().getDeclaredConstructor().newInstance(), context);
 					notifyLocalBeforeTestCaseMethodExecutionFinished(t);
 				}
 			} catch (Throwable e) {
@@ -128,7 +128,7 @@ public class RunnerTestUnits {
 				// Run local after Method prior to any test Execution
 				if (null != t.getMethodAfterTestCase()) {
 					notifyLocalAfterTestCaseMethodExecutionStarted(t.getMethodAfterTestCase().getName(), t);
-					t.getMethodAfterTestCase().invoke(t.getTestClassObject().newInstance(), context);
+					t.getMethodAfterTestCase().invoke(t.getTestClassObject().getDeclaredConstructor().newInstance(), context);
 					notifyLocalAfterTestCaseMethodExecutionFinished(t);
 				}
 			} catch (Throwable e) {
@@ -215,14 +215,14 @@ public class RunnerTestUnits {
 			// Run global before method prior to each test unit execution
 			if (null != context.getBeforeTestUnit()) {
 				notifyGlobalBeforeTestUnitMethodExecutionStarted(context.getBeforeTestUnit().getName(), unit);
-				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalBeforeTestUnitMethodExecutionFinished(unit);
 			}
 
 			// Run custom before method prior to each test unit execution
 			if (null != t.getMethodBeforeTestUnit()) {
 				notifyLocalBeforeTestUnitMethodExecutionStarted(t, unit);
-				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				t.getMethodBeforeTestUnit().invoke(t.getTestClassObject().getDeclaredConstructor().newInstance(), context);
 				notifyLocalBeforeTestUnitMethodExecutionFinished(unit);
 			}
 		} catch (Throwable e) {
@@ -257,14 +257,14 @@ public class RunnerTestUnits {
 			// Run custom after method post each test unit execution
 			if (null != t.getMethodAfterTestUnit()) {
 				notifyLocalAfterTestUnitMethodExecutionStarted(t, unit);
-				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().newInstance(), context);
+				t.getMethodAfterTestUnit().invoke(t.getTestClassObject().getDeclaredConstructor().newInstance(), context);
 				notifyLocalAfterTestUnitMethodExecutionFinished(unit);
 			}
 
 			// Run global after method post each test unit execution
 			if (null != context.getAfterTestUnit()) {
 				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), unit);
-				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalAfterTestUnitMethodExecutionFinished(unit);
 			}
 
@@ -273,7 +273,7 @@ public class RunnerTestUnits {
 			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL || (unit.isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
 				if (null != context.getAfterFailedUnit()) {
 					notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), unit);
-					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 					notifyGlobalAfterFailedUnitMethodExecutionFinished(unit);
 				}
 			}
@@ -317,7 +317,7 @@ public class RunnerTestUnits {
 					data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
 				} else {
 					/* NonStatic data provider method needs an instance */
-					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
+					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().getDeclaredConstructor().newInstance(), context);
 				}
 			} catch (InvocationTargetException e) {
 				context.getLogger().debug("=================================================");
@@ -358,7 +358,7 @@ public class RunnerTestUnits {
 			notifyTestUnitExecutionStarted(unit);
 
 			// Run single unit
-			unit.getTestUnitMethod().invoke(t.getTestClassObject().newInstance(), context);
+			unit.getTestUnitMethod().invoke(t.getTestClassObject().getDeclaredConstructor().newInstance(), context);
 
 			notifyTestUnitExecutionFinished(unit);
 

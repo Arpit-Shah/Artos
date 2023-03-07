@@ -130,7 +130,7 @@ public class BDDRunnerTestSteps {
 			if (null != context.getBeforeTestUnit()) {
 				notifyGlobalBeforeTestUnitMethodExecutionStarted(context.getBeforeTestUnit().getName(), step);
 				// notifyGlobalBeforeTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalBeforeTestUnitMethodExecutionFinished(step);
 			}
 		} catch (Throwable e) {
@@ -164,7 +164,7 @@ public class BDDRunnerTestSteps {
 			if (null != context.getAfterTestUnit()) {
 				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), step);
 				// notifyGlobalAfterTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalAfterTestUnitMethodExecutionFinished(step);
 			}
 
@@ -175,7 +175,7 @@ public class BDDRunnerTestSteps {
 				if (null != context.getAfterFailedUnit()) {
 					notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), step);
 					// notifyGlobalAfterFailedUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().newInstance(), context);
+					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 					notifyGlobalAfterFailedUnitMethodExecutionFinished(step);
 				}
 			}
@@ -242,7 +242,7 @@ public class BDDRunnerTestSteps {
 
 			// Run single unit
 			TestUnitObjectWrapper unit = step.getUnit();
-			unit.getTestUnitMethod().invoke(unit.getTestUnitMethod().getDeclaringClass().newInstance(), context);
+			unit.getTestUnitMethod().invoke(unit.getTestUnitMethod().getDeclaringClass().getDeclaredConstructor().newInstance(), context);
 
 			notifyTestUnitExecutionFinished(step);
 

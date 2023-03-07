@@ -75,11 +75,15 @@ public class ArtosRunner {
 	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
 	 * @throws InstantiationException if this Class represents an abstract class,an interface, an array class, a primitive type, or void;or if the
 	 *             class has no nullary constructor;or if the instantiation fails for some other reason.
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
 	 */
-	protected ArtosRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException {
+	protected ArtosRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		this.context = context;
 		this.externalListnerClassList = externalListnerClassList;
 
@@ -112,7 +116,7 @@ public class ArtosRunner {
 		// Register external listener
 		if (null != externalListnerClassList) {
 			for (Class<?> listener : externalListnerClassList) {
-				TestProgress externalListener = (TestProgress) listener.newInstance();
+				TestProgress externalListener = (TestProgress) listener.getDeclaredConstructor().newInstance();
 				registerListener(externalListener);
 				context.registerListener(externalListener);
 			}
@@ -332,7 +336,7 @@ public class ArtosRunner {
 			// Run prior to each test suite
 			if (null != context.getBeforeTestSuite()) {
 				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -391,7 +395,7 @@ public class ArtosRunner {
 			// Run at the end of each test suit
 			if (null != context.getAfterTestSuite()) {
 				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -483,7 +487,7 @@ public class ArtosRunner {
 			// Run Pre Method prior to any test Execution
 			if (null != context.getBeforeTest()) {
 				notifyGlobalBeforeTestCaseMethodExecutionStarted(context.getBeforeTest().getName(), t);
-				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalBeforeTestCaseMethodExecutionFinished(t);
 			}
 		} catch (Throwable e) {
@@ -526,7 +530,7 @@ public class ArtosRunner {
 			// Run Post Method prior to any test Execution
 			if (null != context.getAfterTest()) {
 				notifyGlobalAfterTestCaseMethodExecutionStarted(context.getAfterTest().getName(), t);
-				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalAfterTestCaseMethodExecutionFinished(t);
 			}
 		} catch (Throwable e) {
@@ -572,7 +576,7 @@ public class ArtosRunner {
 					data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
 				} else {
 					/* NonStatic data provider method needs an instance */
-					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().newInstance(), context);
+					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().getDeclaredConstructor().newInstance(), context);
 				}
 			} catch (InvocationTargetException e) {
 				context.getLogger().info(FWStaticStore.ARTOS_DATAPROVIDER_FAIL_STAMP);
@@ -787,7 +791,7 @@ public class ArtosRunner {
 		// Run prior to each test suite
 		if (null != context.getBeforeTestSuite()) {
 			notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
-			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 			notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 		}
 
@@ -820,7 +824,7 @@ public class ArtosRunner {
 		// Run at the end of each test suit
 		if (null != context.getAfterTestSuite()) {
 			notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
-			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 			notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 		}
 		// ********************************************************************************************
@@ -988,12 +992,12 @@ class runTestInParallel implements Runnable {
 		try {
 			// notifyTestExecutionStarted(t);
 			// Run Pre Method prior to any test Execution
-			context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 
 			runIndividualTest(t);
 
 			// Run Post Method prior to any test Execution
-			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 			// notifyTestExecutionFinished(t);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1008,7 +1012,7 @@ class runTestInParallel implements Runnable {
 
 			// --------------------------------------------------------------------------------------------
 			// get test objects new instance and cast it to TestExecutable type
-			((TestExecutable) t.getTestClassObject().newInstance()).execute(context);
+			((TestExecutable) t.getTestClassObject().getDeclaredConstructor().newInstance()).execute(context);
 			// --------------------------------------------------------------------------------------------
 
 		} catch (Exception e) {

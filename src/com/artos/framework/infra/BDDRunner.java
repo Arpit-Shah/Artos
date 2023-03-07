@@ -67,11 +67,15 @@ public class BDDRunner {
 	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
 	 * @throws InstantiationException if this Class represents an abstract class,an interface, an array class, a primitive type, or void;or if the
 	 *             class has no nullary constructor;or if the instantiation fails for some other reason.
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
 	 */
-	protected BDDRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException {
+	protected BDDRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		this.context = context;
 
 		// Register default listener
@@ -96,7 +100,7 @@ public class BDDRunner {
 		// Register external listener
 		if (null != externalListnerClassList) {
 			for (Class<?> listener : externalListnerClassList) {
-				TestProgress externalListener = (TestProgress) listener.newInstance();
+				TestProgress externalListener = (TestProgress) listener.getDeclaredConstructor().newInstance();
 				registerListener(externalListener);
 				context.registerListener(externalListener);
 			}
@@ -438,7 +442,7 @@ public class BDDRunner {
 			// Run prior to each test suite
 			if (null != context.getBeforeTestSuite()) {
 				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -480,7 +484,7 @@ public class BDDRunner {
 			// Run at the end of each test suit
 			if (null != context.getAfterTestSuite()) {
 				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -516,7 +520,7 @@ public class BDDRunner {
 			// Run Pre Method prior to any scenario Execution
 			if (null != context.getBeforeTest()) {
 				notifyGlobalBeforeTestCaseMethodExecutionStarted(context.getBeforeTest().getName(), scenario);
-				context.getBeforeTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalBeforeTestCaseMethodExecutionFinished(scenario);
 			}
 		} catch (Throwable e) {
@@ -554,7 +558,7 @@ public class BDDRunner {
 			// Run Post Method prior to any test Execution
 			if (null != context.getAfterTest()) {
 				notifyGlobalAfterTestCaseMethodExecutionStarted(context.getAfterTest().getName(), scenario);
-				context.getAfterTest().invoke(context.getPrePostRunnableObj().newInstance(), context);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalAfterTestCaseMethodExecutionFinished(scenario);
 			}
 		} catch (Throwable e) {
