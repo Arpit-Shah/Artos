@@ -240,31 +240,7 @@ public class ScanTestSuite {
 	private List<TestObjectWrapper> bubble_srt(List<TestObjectWrapper> testObjWrapperList) {
 		return testObjWrapperList.parallelStream().sorted(Comparator.comparing(t -> t.getTestsequence())).collect(Collectors.toList());
 	}
-
-	/**
-	 * Generates test plan using annotation provided in the test case classes
-	 * 
-	 * @param context Test Context
-	 * @return {@code TestPlanWrapper} list
-	 */
-	public List<TestPlanWrapper> getTestPlan(TestContext context) {
-		List<TestPlanWrapper> testPlanList = new ArrayList<>();
-		for (TestObjectWrapper testObject : testObjWrapperList_All) {
-			TestPlanWrapper testPlan = new TestPlanWrapper();
-
-			testPlan.setTestPlan(testObject.getTestClassObject().getName(), testObject.getTestPlanDescription(), testObject.getTestPlanPreparedBy(),
-					testObject.getTestPlanPreparationDate(), testObject.getTestreviewedBy(), testObject.getTestReviewDate(),
-					testObject.getTestPlanBDD());
-			testPlan.setTestPlanGroup(testObject.getGroupList().toString());
-			testPlan.setTestPlanKTF(testObject.isKTF(), testObject.getBugTrackingNumber());
-			testPlan.setTestPlanSkip(testObject.getTestsequence(), testObject.isSkipTest(), testObject.getDataProviderName());
-			testPlan.setTestImportance(Importance.getEnumName(testObject.getTestImportance().getValue()));
-
-			testPlanList.add(testPlan);
-		}
-		return testPlanList;
-	}
-
+	
 	/**
 	 * Returns all scanned test cases wrapped with TestObjWrapper components. if user has chosen to remove "SKIPPED" test cases then any test cases
 	 * marked with "skip=true" will be omitted from the list. If user has chosen to sort by sequence number then test cases will be sorted within

@@ -99,7 +99,7 @@ public class TestExecutionEventListener implements TestProgress {
 			sb.append("\n");
 		}
 		if (!"".equals(t.getTestPlanBDD())) {
-			String BDD = processBDD(t.getTestPlanBDD());
+			String BDD = context.processBDD(t.getTestPlanBDD());
 			sb.append("BDD Test Plan	: " + BDD);
 			sb.append("\n");
 		}
@@ -142,7 +142,7 @@ public class TestExecutionEventListener implements TestProgress {
 			sb.append("\n");
 		}
 		if (!"".equals(unit.getTestPlanBDD())) {
-			String BDD = processBDD(unit.getTestPlanBDD());
+			String BDD = context.processBDD(unit.getTestPlanBDD());
 			sb.append("BDD Test Plan	: " + BDD);
 			sb.append("\n");
 		}
@@ -166,15 +166,6 @@ public class TestExecutionEventListener implements TestProgress {
 		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
-	}
-
-	private String processBDD(String testPlanBDD) {
-		String strBDD = testPlanBDD.replaceAll("\\b([Gg][Ii][Vv][Ee][Nn])\\b", "\nGIVEN");
-		strBDD = strBDD.replaceAll("\\b([Aa][Nn][Dd])\\b", "\nAND");
-		strBDD = strBDD.replaceAll("\\b([Ww][Hh][Ee][Nn])\\b", "\nWHEN");
-		strBDD = strBDD.replaceAll("\\b([Tt][Hh][Ee][Nn])\\b", "\nTHEN");
-		strBDD = strBDD.replaceAll("\\b([Bb][Uu][Tt])\\b", "\nBUT");
-		return strBDD;
 	}
 
 	@Override

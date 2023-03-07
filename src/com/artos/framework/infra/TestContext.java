@@ -716,6 +716,101 @@ public class TestContext {
 		return methodName;
 	}
 
+	/**
+	 * Generates test plan using annotation provided in the test case classes
+	 * 
+	 * @param context            Test Context
+	 * @param removeSkippedTests true = remove skipped test from test plan, false =
+	 *                           print all test plan
+	 * @return {@code TestPlanWrapper} list
+	 */
+	private List<TestPlanWrapper> getTestPlan(boolean removeSkippedTests) {
+
+		String packageName = "";
+		if (null != getPrePostRunnableObj().getPackage()) {
+			packageName = getPrePostRunnableObj().getPackage().getName();
+		}
+
+		ScanTestSuite reflection = new ScanTestSuite(this, packageName);
+		List<TestPlanWrapper> testPlanList = new ArrayList<>();
+		for (TestObjectWrapper testObject : reflection.getTestObjWrapperList(true, removeSkippedTests, true)) {
+			TestPlanWrapper testPlan = new TestPlanWrapper();
+
+			testPlan.setTestPlan(testObject.getTestClassObject().getName(), testObject.getTestPlanDescription(),
+					testObject.getTestPlanPreparedBy(), testObject.getTestPlanPreparationDate(),
+					testObject.getTestreviewedBy(), testObject.getTestReviewDate(), testObject.getTestPlanBDD());
+			testPlan.setTestPlanGroup(testObject.getGroupList().toString());
+			testPlan.setTestPlanKTF(testObject.isKTF(), testObject.getBugTrackingNumber());
+			testPlan.setTestPlanSkip(testObject.getTestsequence(), testObject.isSkipTest(),
+					testObject.getDataProviderName());
+			testPlan.setTestImportance(Importance.getEnumName(testObject.getTestImportance().getValue()));
+
+			testPlanList.add(testPlan);
+		}
+		return testPlanList;
+	}
+
+	/**
+	 * @param formatBDD true = BDD string will be formatted
+	 * Prints test plan for current context
+	 */
+	public void printTestPlan(boolean formatBDD) {
+		List<TestPlanWrapper> testPlanList = getTestPlan(true);
+
+		getLogger().debug("\nTest Plan" + "\n=========");
+
+		for (TestPlanWrapper t : testPlanList) {
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("\n");
+			sb.append("Test Name	: " + t.getTestCaseName());
+			sb.append("\n");
+			if (!"".equals(t.getTestPreparedBy())) {
+				sb.append("Written BY	: " + t.getTestPreparedBy());
+				sb.append("\n");
+			}
+			if (0 != t.getSequenece()) {
+				sb.append("Sequence	: " + t.getSequenece());
+				sb.append("\n");
+			}
+			if (!"".equals(t.getTestPreparationDate())) {
+				sb.append("Date		: " + t.getTestPreparationDate());
+				sb.append("\n");
+			}
+			if (!"".equals(t.getTestDescription())) {
+				sb.append("Short Desc	: " + t.getTestDescription());
+				sb.append("\n");
+			}
+			if (!"".equals(t.getTestBDD())) {
+				String BDD;
+				if (formatBDD) {
+					BDD = processBDD(t.getTestBDD());
+				} else {
+					BDD = t.getTestBDD();
+				}
+				sb.append("BDD Test Plan	: " + BDD);
+				sb.append("\n");
+			}
+
+			getLogger().info(sb.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param testPlanBDD BDD test string
+	 * @return BDD formated string
+	 */
+	public String processBDD(String testPlanBDD) {
+		String strBDD = testPlanBDD.replaceAll("\\b([Gg][Ii][Vv][Ee][Nn])\\b", "\nGIVEN");
+		strBDD = strBDD.replaceAll("\\b([Aa][Nn][Dd])\\b", "\nAND");
+		strBDD = strBDD.replaceAll("\\b([Ww][Hh][Ee][Nn])\\b", "\nWHEN");
+		strBDD = strBDD.replaceAll("\\b([Tt][Hh][Ee][Nn])\\b", "\nTHEN");
+		strBDD = strBDD.replaceAll("\\b([Bb][Uu][Tt])\\b", "\nBUT");
+		return strBDD;
+	}
+
 	// *******************************************************************
 	// Listener
 	// *******************************************************************
