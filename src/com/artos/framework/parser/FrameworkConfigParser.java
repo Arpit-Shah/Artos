@@ -83,8 +83,8 @@ public class FrameworkConfigParser {
 	private boolean enableHTMLLog = false;
 	private boolean enableRealTimeLog = false;
 	private boolean enableExtentReport = true;
-	private boolean enableJUnitReport = true;
-	private boolean enableLogCleanup = true;
+	private boolean enableJUnitReport = false;
+	private boolean enableLogCleanup = false;
 
 	// Dashboard
 	private String dashBoardRemoteIP = "127.0.0.1";
@@ -99,7 +99,7 @@ public class FrameworkConfigParser {
 	private boolean enableArtosDebug = false;
 	private boolean generateEclipseTemplate = true;
 	private boolean generateIntelliJTemplate = false;
-	private boolean generateTestScript = true;
+	private boolean generateTestScript = false;
 	private boolean stopOnFail = false;
 	private boolean enableDashBoard = false;
 
