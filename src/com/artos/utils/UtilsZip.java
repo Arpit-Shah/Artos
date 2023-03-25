@@ -35,8 +35,6 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * This class provides Zip related utilities
- * 
- * 
  *
  */
 public class UtilsZip {

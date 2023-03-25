@@ -23,28 +23,59 @@ package com.artos.framework.infra;
 
 import java.io.File;
 
+/**
+ * BDDFeatureObject Pojo
+ * @author ArpitShah
+ *
+ */
 public class BDDFeatureObjectWrapper {
 
 	File featureFile;
 	String glue;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param featureFile feature file
+	 * @param glue        glue
+	 */
 	public BDDFeatureObjectWrapper(File featureFile, String glue) {
 		this.featureFile = featureFile;
 		this.glue = glue;
 	}
 
+	/**
+	 * Get Feature File
+	 * 
+	 * @return Feature {@link File}
+	 */
 	public File getFeatureFile() {
 		return featureFile;
 	}
 
+	/**
+	 * Set Feature File
+	 * 
+	 * @param featureFile Feature file
+	 */
 	public void setFeatureFile(File featureFile) {
 		this.featureFile = featureFile;
 	}
 
+	/**
+	 * Get Glue
+	 * 
+	 * @return glue
+	 */
 	public String getGlue() {
 		return glue;
 	}
 
+	/**
+	 * Set Glue
+	 * 
+	 * @param glue glue
+	 */
 	public void setGlue(String glue) {
 		this.glue = glue;
 	}

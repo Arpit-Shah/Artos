@@ -37,11 +37,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
-/**
- * 
- * 
- *
- */
 public class UtilsTar {
 
 	/**

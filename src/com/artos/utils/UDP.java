@@ -40,11 +40,6 @@ import com.artos.framework.listener.RealTimeLogEventListener;
 import com.artos.interfaces.Connectable;
 import com.artos.interfaces.ConnectableFilter;
 
-/**
- * 
- * 
- *
- */
 public class UDP implements Connectable {
 	int localPort;
 	int remotePort;

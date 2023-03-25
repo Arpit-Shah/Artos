@@ -31,9 +31,6 @@ public class Enums {
 
 	/**
 	 * Enum for test status
-	 * 
-	 * 
-	 *
 	 */
 	public enum TestStatus {
 
@@ -52,10 +49,21 @@ public class Enums {
 			this.status = status;
 		}
 
+		/**
+		 * Get enum value
+		 * 
+		 * @return enum value
+		 */
 		public int getValue() {
 			return status;
 		}
 
+		/**
+		 * Get Enum name
+		 * 
+		 * @param status status
+		 * @return Enum name
+		 */
 		public static String getEnumName(int status) {
 			for (TestStatus e : TestStatus.values()) {
 				if (status == e.getValue()) {
@@ -68,9 +76,6 @@ public class Enums {
 
 	/**
 	 * Enum for exception value which can be used anywhere in test framework
-	 * 
-	 * 
-	 *
 	 */
 	public enum ExceptionValue {
 
@@ -91,10 +96,21 @@ public class Enums {
 			this.status = status;
 		}
 
+		/**
+		 * Get enum value
+		 * 
+		 * @return enum value
+		 */
 		public String getValue() {
 			return status;
 		}
 
+		/**
+		 * Get Enum name
+		 * 
+		 * @param status status
+		 * @return Enum name
+		 */
 		public String getEnumName(String status) {
 			for (ExceptionValue e : ExceptionValue.values()) {
 				if (status.equals(e.getValue())) {
@@ -105,6 +121,9 @@ public class Enums {
 		}
 	}
 
+	/**
+	 * Enum for imprtance which can be used anywhere in test framework
+	 */
 	public enum Importance {
 
 		// @formatter:off
@@ -124,10 +143,21 @@ public class Enums {
 			this.status = status;
 		}
 
+		/**
+		 * Get enum value
+		 * 
+		 * @return enum value
+		 */
 		public int getValue() {
 			return status;
 		}
 
+		/**
+		 * Get Enum name
+		 * 
+		 * @param status status
+		 * @return Enum name
+		 */
 		public static String getEnumName(int status) {
 			for (Importance e : Importance.values()) {
 				if (status == e.getValue()) {
@@ -139,6 +169,10 @@ public class Enums {
 
 	}
 
+	/**
+	 * Enum for Script file type
+	 * 
+	 */
 	public enum ScriptFileType {
 
 		// @formatter:off
@@ -154,10 +188,21 @@ public class Enums {
 			this.status = status;
 		}
 
+		/**
+		 * Get enum value
+		 * 
+		 * @return enum value
+		 */
 		public int getValue() {
 			return status;
 		}
 
+		/**
+		 * Get Enum name
+		 * 
+		 * @param status status
+		 * @return Enum name
+		 */
 		public String getEnumName(int status) {
 			for (ScriptFileType e : ScriptFileType.values()) {
 				if (status == e.getValue()) {
@@ -169,15 +214,20 @@ public class Enums {
 
 	}
 
+	/**
+	 * Enum for Gherkin
+	 *
+	 */
 	public enum Gherkin {
 
 		// @formatter:off
 		
-		GIVEN("GIVEN"),
-		AND("AND"),
-		BUT("BUT"), 
-		WHEN("WHEN"),
-		THEN("THEN");
+		
+		GIVEN("GIVEN"), // for any statement starting with Given
+		AND("AND"), // for any statement starting with And
+		BUT("BUT"), // for any statement starting with but
+		WHEN("WHEN"), // for any statement starting with When
+		THEN("THEN"); // for any statement starting with Then
 		
 		// @formatter:on
 
@@ -187,10 +237,21 @@ public class Enums {
 			this.step = status;
 		}
 
+		/**
+		 * Get enum value
+		 * 
+		 * @return enum value
+		 */
 		public String getValue() {
 			return step;
 		}
 
+		/**
+		 * Get Enum name
+		 * 
+		 * @param step step
+		 * @return Enum name
+		 */
 		public String getEnumName(String step) {
 			for (Gherkin e : Gherkin.values()) {
 				if (step.equals(e.getValue())) {

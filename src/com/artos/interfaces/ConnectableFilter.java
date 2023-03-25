@@ -29,9 +29,9 @@ package com.artos.interfaces;
 public interface ConnectableFilter {
 
 	/**
+	 * method let user confirm if they meet criteria
 	 * 
-	 * @param data
-	 *            byte array under scanner
+	 * @param data byte array under scanner
 	 * @return true|false based on defined criteria
 	 */
 	public boolean meetCriteria(byte[] data);

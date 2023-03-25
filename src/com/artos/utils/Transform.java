@@ -34,11 +34,6 @@ import java.util.TimeZone;
 
 import com.artos.framework.Enums.ExceptionValue;
 
-/**
- * 
- * 
- *
- */
 public class Transform {
 
 	static final String HEXES = "0123456789ABCDEF";

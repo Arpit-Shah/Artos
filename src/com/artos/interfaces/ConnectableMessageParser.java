@@ -31,12 +31,17 @@ import java.util.List;
 public interface ConnectableMessageParser {
 
 	/**
+	 * method to parse provided input and return parsed response
 	 * 
-	 * @param data
-	 *            received byte array
+	 * @param data received byte array
 	 * @return list of msgs after parsing of the byte array
 	 */
 	public List<byte[]> parse(byte[] data);
 
+	/**
+	 * method to return left over bytes after parsing provided input
+	 * 
+	 * @return
+	 */
 	public byte[] getLeftOverBytes();
 }

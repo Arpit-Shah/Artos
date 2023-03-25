@@ -33,11 +33,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Parses Auth Settings
+ *
+ */
 public class AuthSettingsParser {
 
 	File fXmlFile;
 	Map<String, UserAuthParametersParser> authMap;
 
+	/**
+	 * Parse file for email authentication settings
+	 * 
+	 * @param emailAuthSettingFilePath File path for email auth settings
+	 */
 	public AuthSettingsParser(File emailAuthSettingFilePath) {
 		this.fXmlFile = emailAuthSettingFilePath;
 		this.authMap = new HashMap<>();
@@ -97,15 +106,31 @@ public class AuthSettingsParser {
 			authMap.put(id, userAuth);
 		}
 	}
-	
-	public UserAuthParametersParser getAuthParametersByID(String id){
+
+	/**
+	 * Gets auth parameter by its ID
+	 * 
+	 * @param id pramater ID
+	 * @return {@link UserAuthParametersParser}
+	 */
+	public UserAuthParametersParser getAuthParametersByID(String id) {
 		return getAuthMap().get(id);
 	}
 
+	/**
+	 * Get auth Map
+	 * 
+	 * @return {@link Map} Key value pair
+	 */
 	public Map<String, UserAuthParametersParser> getAuthMap() {
 		return authMap;
 	}
 
+	/**
+	 * Set auth Map
+	 * 
+	 * @param authMap with key value pair
+	 */
 	public void setAuthMap(Map<String, UserAuthParametersParser> authMap) {
 		this.authMap = authMap;
 	}

@@ -23,11 +23,6 @@ package com.artos.utils;
 
 import java.io.File;
 
-/**
- * 
- * 
- *
- */
 public class Tree {
 
 	/**

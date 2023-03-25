@@ -49,8 +49,9 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 
 /**
- * Designed for providing GUI which can guide user during test execution, GUI can be used in blocking or nonblocking manner. GUI can be used multiple
- * ways using following features.
+ * Designed for providing GUI which can guide user during test execution, GUI
+ * can be used in blocking or nonblocking manner. GUI can be used multiple ways
+ * using following features.
  * 
  * <PRE>
  * 1. Display Count down Timer
@@ -110,6 +111,7 @@ import javax.swing.UIManager;
  * </PRE>
  *
  */
+@Deprecated
 public class CustomPrompt implements ItemListener {
 
 	int PANEL_MAX_WIDTH = 700;
@@ -156,6 +158,13 @@ public class CustomPrompt implements ItemListener {
 	JFrame jf = new JFrame();
 
 	/**
+	 * Do not use default constructor
+	 */
+	private CustomPrompt() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
 	 * Set time for count down timer in non-blocking mode
 	 * 
 	 * @param millis time in milliseconds for count down timer
@@ -166,10 +175,11 @@ public class CustomPrompt implements ItemListener {
 	}
 
 	/**
-	 * Set time for count down timer in blocking mode. If CountdownLatch object is null then non-blocking mode will be assumed.
+	 * Set time for count down timer in blocking mode. If CountdownLatch object is
+	 * null then non-blocking mode will be assumed.
 	 * 
 	 * @param ctdwnLatch CountdownLatch object or null
-	 * @param millis time in milliseconds for count down timer
+	 * @param millis     time in milliseconds for count down timer
 	 */
 	public CustomPrompt(CountDownLatch ctdwnLatch, long millis) {
 		this.ctdwnLatch = ctdwnLatch;
@@ -199,7 +209,8 @@ public class CustomPrompt implements ItemListener {
 			// Change coundown panel width to same as image width so it does not look ugly
 			PANEL_MAX_WIDTH = width;
 			// if (width > 1000 || height > 1000) {
-			// throw new Exception(ExceptionValue.OVERSIZE_OBJECT.getValue() + " : " + getImage().getAbsolutePath());
+			// throw new Exception(ExceptionValue.OVERSIZE_OBJECT.getValue() + " : " +
+			// getImage().getAbsolutePath());
 			// }
 			iconlabel = new JLabel();
 			iconlabel.setIcon(icon);
@@ -444,7 +455,8 @@ public class CustomPrompt implements ItemListener {
 	}
 
 	/*
-	 * dispose call has to be synchronised. if called in async manner then it may get into thread deadlock
+	 * dispose call has to be synchronised. if called in async manner then it may
+	 * get into thread deadlock
 	 */
 	synchronized private void disposeGUI() {
 

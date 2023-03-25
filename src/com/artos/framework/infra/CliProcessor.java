@@ -34,11 +34,23 @@ import org.apache.commons.cli.ParseException;
 
 import com.artos.framework.FWStaticStore;
 
-/** Process Command Line arguments */
+/**
+ * Process Command Line arguments
+ * 
+ * @author ArpitShah
+ *
+ */
 public class CliProcessor {
 
 	private static File testScriptFile = null;
 	private static String profile = null;
+
+	/**
+	 * Default constructor
+	 */
+	public CliProcessor() {
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * Processes command line arguments
@@ -58,10 +70,12 @@ public class CliProcessor {
 		Option testScript = Option.builder("t").required(false).longOpt("testscript")
 				.desc("use test script to drive test : --testscript=\"./scripts/sampletest.xml\"").hasArg().build();
 		Option version = Option.builder("v").required(false).longOpt("version").desc("Version of artos").build();
-		Option help = Option.builder("h").required(false).longOpt("help").desc("Command line help. Please visit www.theartos.com for more info")
-				.build();
-		Option contributors = Option.builder("c").required(false).longOpt("contributors").desc("Project Contributors name").build();
-		Option testProfile = Option.builder("p").required(false).longOpt("profile").desc("Test Configuration Profile").hasArg().build();
+		Option help = Option.builder("h").required(false).longOpt("help")
+				.desc("Command line help. Please visit www.theartos.com for more info").build();
+		Option contributors = Option.builder("c").required(false).longOpt("contributors")
+				.desc("Project Contributors name").build();
+		Option testProfile = Option.builder("p").required(false).longOpt("profile").desc("Test Configuration Profile")
+				.hasArg().build();
 
 		// Add Option
 		Options options = new Options();
@@ -99,7 +113,8 @@ public class CliProcessor {
 			if (line.hasOption("testscript")) {
 				PrintWriter pw = new PrintWriter(System.out);
 				// TestScript path should be "./script/testscript.xml"
-				String testScriptPath = "." + File.separator + "script" + File.separator + line.getOptionValue("testscript");
+				String testScriptPath = "." + File.separator + "script" + File.separator
+						+ line.getOptionValue("testscript");
 				File tscriptFile = new File(testScriptPath);
 				if (tscriptFile.exists() && tscriptFile.isFile()) {
 					testScriptFile = tscriptFile;
@@ -118,18 +133,38 @@ public class CliProcessor {
 		}
 	}
 
+	/**
+	 * Return Test script file
+	 * 
+	 * @return test script file
+	 */
 	public static File getTestScriptFile() {
 		return testScriptFile;
 	}
 
+	/**
+	 * Set test script file
+	 * 
+	 * @param testScriptFile test script file
+	 */
 	protected static void setTestScriptFile(File testScriptFile) {
 		CliProcessor.testScriptFile = testScriptFile;
 	}
 
+	/**
+	 * Get profile value
+	 * 
+	 * @return profile value
+	 */
 	public static String getProfile() {
 		return profile;
 	}
 
+	/**
+	 * Set profile value
+	 * 
+	 * @param profile profile value
+	 */
 	protected static void setProfile(String profile) {
 		CliProcessor.profile = profile;
 	}

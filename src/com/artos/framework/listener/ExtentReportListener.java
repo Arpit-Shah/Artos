@@ -46,6 +46,11 @@ public class ExtentReportListener implements TestProgress {
 	ExtentTest testChild;
 	ExtentTest testChildOfChild;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param context {@link TestContext}
+	 */
 	public ExtentReportListener(TestContext context) {
 		this.context = context;
 		this.logger = context.getLogger();
@@ -54,9 +59,14 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testSuiteExecutionStarted(String description) {
 		extent = logger.getExtent();
-		// extent.config().insertJs("$('.test.warning').each(function() { $(this).addClass('pass').removeClass('warning'); });
-		// $('.test-status.warning').each(function() { $(this).addClass('pass').removeClass('warning').text('pass'); });$('.tests-quick-view
-		// .status.warning').each(function() { $(this).addClass('pass').removeClass('warning').text('PASS'); }); testSetChart(); ");
+		// extent.config().insertJs("$('.test.warning').each(function() {
+		// $(this).addClass('pass').removeClass('warning'); });
+		// $('.test-status.warning').each(function() {
+		// $(this).addClass('pass').removeClass('warning').text('pass');
+		// });$('.tests-quick-view
+		// .status.warning').each(function() {
+		// $(this).addClass('pass').removeClass('warning').text('PASS'); });
+		// testSetChart(); ");
 		extent.addSystemInfo("Artos Version", new Version().getBuildVersion());
 	}
 
@@ -78,16 +88,18 @@ public class ExtentReportListener implements TestProgress {
 		} else if (t.getGroupList().size() == 3) {
 			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2));
 		} else if (t.getGroupList().size() == 4) {
-			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2), t.getGroupList().get(3));
+			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2),
+					t.getGroupList().get(3));
 		} else if (t.getGroupList().size() == 5) {
-			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2), t.getGroupList().get(3),
-					t.getGroupList().get(4));
+			testParent.assignCategory(t.getGroupList().get(0), t.getGroupList().get(1), t.getGroupList().get(2),
+					t.getGroupList().get(3), t.getGroupList().get(4));
 		}
 	}
 
 	@Override
 	public void testCaseExecutionStarted(BDDScenario scenario) {
-		testParent = extent.startTest("Scenario: " + scenario.getScenarioDescription(), scenario.getScenarioDescription());
+		testParent = extent.startTest("Scenario: " + scenario.getScenarioDescription(),
+				scenario.getScenarioDescription());
 		// testParent.assignAuthor("");
 	}
 
@@ -142,7 +154,8 @@ public class ExtentReportListener implements TestProgress {
 
 	public void testCaseStatusUpdate(TestStatus testStatus, File snapshot, String description) {
 		if (null != testChildOfChild) {
-			description = (null == snapshot ? description : description + testChildOfChild.addScreenCapture(snapshot.getAbsolutePath()));
+			description = (null == snapshot ? description
+					: description + testChildOfChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChildOfChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -154,7 +167,8 @@ public class ExtentReportListener implements TestProgress {
 				testChildOfChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testChild) {
-			description = (null == snapshot ? description : description + testChild.addScreenCapture(snapshot.getAbsolutePath()));
+			description = (null == snapshot ? description
+					: description + testChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -166,7 +180,8 @@ public class ExtentReportListener implements TestProgress {
 				testChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testParent) {
-			description = (null == snapshot ? description : description + testParent.addScreenCapture(snapshot.getAbsolutePath()));
+			description = (null == snapshot ? description
+					: description + testParent.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testParent.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -183,7 +198,8 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String description) {
 		if (null != testChildOfChild) {
-			description = (null == snapshot ? description : description + testChildOfChild.addScreenCapture(snapshot.getAbsolutePath()));
+			description = (null == snapshot ? description
+					: description + testChildOfChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChildOfChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -195,7 +211,8 @@ public class ExtentReportListener implements TestProgress {
 				testChildOfChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testChild) {
-			description = (null == snapshot ? description : description + testChild.addScreenCapture(snapshot.getAbsolutePath()));
+			description = (null == snapshot ? description
+					: description + testChild.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testChild.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -207,7 +224,8 @@ public class ExtentReportListener implements TestProgress {
 				testChild.log(LogStatus.PASS, description);
 			}
 		} else if (null != testParent) {
-			description = (null == snapshot ? description : description + testParent.addScreenCapture(snapshot.getAbsolutePath()));
+			description = (null == snapshot ? description
+					: description + testParent.addScreenCapture(snapshot.getAbsolutePath()));
 			if (TestStatus.FAIL == testStatus) {
 				testParent.log(LogStatus.FAIL, description);
 			} else if (TestStatus.KTF == testStatus) {
@@ -494,22 +512,26 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void childTestUnitExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit, String paramInfo) {
 		/*
-		 * Parameterised test case at test case level and test unit level call this function
+		 * Parameterised test case at test case level and test unit level call this
+		 * function
 		 */
 		if (null == testChild) {
-			testChild = extent.startTest(paramInfo, "".equals(unit.getTestPlanDescription()) ? unit.getTestPlanBDD() : unit.getTestPlanDescription());
+			testChild = extent.startTest(paramInfo,
+					"".equals(unit.getTestPlanDescription()) ? unit.getTestPlanBDD() : unit.getTestPlanDescription());
 			// testChild.assignAuthor("");
 		}
 	}
 
 	@Override
 	public void childTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String paramInfo) {
-		// If Child test case is not present (Because test case is running as non-parameterised test cases) then create new child test case in extent
+		// If Child test case is not present (Because test case is running as
+		// non-parameterised test cases) then create new child test case in extent
 		if (null == testChild) {
 			testChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
 			// testChild.assignAuthor("");
 
-			// If Child test case is present (Because test case is running as Parameterised test cases) then create new childOfchild test case in
+			// If Child test case is present (Because test case is running as Parameterised
+			// test cases) then create new childOfchild test case in
 			// extent
 		} else {
 			testChildOfChild = extent.startTest(paramInfo, step.getStepAction() + " " + step.getStepDescription());
@@ -586,7 +608,7 @@ public class ExtentReportListener implements TestProgress {
 	@Override
 	public void testUnitResult(BDDStep step, TestStatus testStatus, File snapshot, String description) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

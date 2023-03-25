@@ -32,12 +32,24 @@ import com.artos.framework.FWStaticStore;
 import com.artos.interfaces.TestProgress;
 import com.artos.utils.UtilsFramework;
 
+/**
+ * BDD Runner Test Steps processor
+ * 
+ * @author ArpitShah
+ *
+ */
 public class BDDRunnerTestSteps {
 
 	TestContext context;
 	BDDScenario scenario;
 	List<TestProgress> listenerList;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param context      {@link TestContext}
+	 * @param listenerList List of {@link TestProgress} listener
+	 */
 	protected BDDRunnerTestSteps(TestContext context, List<TestProgress> listenerList) {
 		this.context = context;
 		this.listenerList = listenerList;
@@ -93,8 +105,10 @@ public class BDDRunnerTestSteps {
 					runParameterizedUnitTest(step);
 				}
 
-				// If "drop following tests execution upon failure" is enabled then drop rest of test cases
-				if (step.getUnit().isDropRemainingUnitsUponFailure() && context.getCurrentUnitFailCount() > preserveFailCount) {
+				// If "drop following tests execution upon failure" is enabled then drop rest of
+				// test cases
+				if (step.getUnit().isDropRemainingUnitsUponFailure()
+						&& context.getCurrentUnitFailCount() > preserveFailCount) {
 					context.getLogger().info(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_UNIT_FAIL_STAMP);
 					break;
 				}
@@ -129,8 +143,10 @@ public class BDDRunnerTestSteps {
 			// Run global before method prior to each test unit execution
 			if (null != context.getBeforeTestUnit()) {
 				notifyGlobalBeforeTestUnitMethodExecutionStarted(context.getBeforeTestUnit().getName(), step);
-				// notifyGlobalBeforeTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-				context.getBeforeTestUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				// notifyGlobalBeforeTestUnitMethodExecutionStarted(step.getStepAction() + " " +
+				// step.getStepDescription(), step);
+				context.getBeforeTestUnit()
+						.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalBeforeTestUnitMethodExecutionFinished(step);
 			}
 		} catch (Throwable e) {
@@ -163,19 +179,24 @@ public class BDDRunnerTestSteps {
 			// Run global after method post each test unit execution
 			if (null != context.getAfterTestUnit()) {
 				notifyGlobalAfterTestUnitMethodExecutionStarted(context.getAfterTestUnit().getName(), step);
-				// notifyGlobalAfterTestUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-				context.getAfterTestUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				// notifyGlobalAfterTestUnitMethodExecutionStarted(step.getStepAction() + " " +
+				// step.getStepDescription(), step);
+				context.getAfterTestUnit()
+						.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyGlobalAfterTestUnitMethodExecutionFinished(step);
 			}
 
 			// Run global after unit failed method post each failed test unit execution
-			// If KTF marked test unit is passing then also execute this method because outcome of this unit will be failed
+			// If KTF marked test unit is passing then also execute this method because
+			// outcome of this unit will be failed
 			if (context.getCurrentUnitTestStatus() == TestStatus.FAIL
 					|| (step.getUnit().isKTF() && context.getCurrentUnitTestStatus() == TestStatus.PASS)) {
 				if (null != context.getAfterFailedUnit()) {
 					notifyGlobalAfterFailedUnitMethodExecutionStarted(context.getAfterFailedUnit().getName(), step);
-					// notifyGlobalAfterFailedUnitMethodExecutionStarted(step.getStepAction() + " " + step.getStepDescription(), step);
-					context.getAfterFailedUnit().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+					// notifyGlobalAfterFailedUnitMethodExecutionStarted(step.getStepAction() + " "
+					// + step.getStepDescription(), step);
+					context.getAfterFailedUnit()
+							.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 					notifyGlobalAfterFailedUnitMethodExecutionFinished(step);
 				}
 			}
@@ -192,9 +213,11 @@ public class BDDRunnerTestSteps {
 	}
 
 	/**
-	 * Responsible for executing data provider method which upon successful execution returns an array of parameters. TestCase will be re-run using
-	 * all parameters available in the parameter array. If data provider method returns empty array or null then test case will be executed only once
-	 * with null arguments.
+	 * Responsible for executing data provider method which upon successful
+	 * execution returns an array of parameters. TestCase will be re-run using all
+	 * parameters available in the parameter array. If data provider method returns
+	 * empty array or null then test case will be executed only once with null
+	 * arguments.
 	 * 
 	 * @param step TestCase in format {@code TestUnitObjectWrapper}
 	 */
@@ -206,7 +229,8 @@ public class BDDRunnerTestSteps {
 			if (null == step.getLocalDataTable() || step.getLocalDataTable().isEmpty()) {
 				childIterationSize = 1;
 			} else {
-				// Find the length of dataList, which will tell us how many time to iterate child test cases
+				// Find the length of dataList, which will tell us how many time to iterate
+				// child test cases
 				List<String> firstSet = step.getLocalDataTable().values().iterator().next();
 				childIterationSize = firstSet.size();
 			}
@@ -242,7 +266,8 @@ public class BDDRunnerTestSteps {
 
 			// Run single unit
 			TestUnitObjectWrapper unit = step.getUnit();
-			unit.getTestUnitMethod().invoke(unit.getTestUnitMethod().getDeclaringClass().getDeclaredConstructor().newInstance(), context);
+			unit.getTestUnitMethod().invoke(
+					unit.getTestUnitMethod().getDeclaringClass().getDeclaredConstructor().newInstance(), context);
 
 			notifyTestUnitExecutionFinished(step);
 
@@ -254,7 +279,8 @@ public class BDDRunnerTestSteps {
 		// --------------------------------------------------------------------------------------------
 	}
 
-	private void processInvocationTargetException(InvocationTargetException e) throws InvocationTargetException, Exception {
+	private void processInvocationTargetException(InvocationTargetException e)
+			throws InvocationTargetException, Exception {
 		// Catch InvocationTargetException and return cause
 		if (null == e.getCause()) {
 			throw e;
@@ -265,10 +291,11 @@ public class BDDRunnerTestSteps {
 	}
 
 	/**
-	 * Responsible for execution of test units (Considered as child test units) with given parameter. Parameterised object array index and value(s)
-	 * class type(s) will be printed prior to test execution for user's benefit.
+	 * Responsible for execution of test units (Considered as child test units) with
+	 * given parameter. Parameterised object array index and value(s) class type(s)
+	 * will be printed prior to test execution for user's benefit.
 	 * 
-	 * @param step TestCase in format {@code TestUnitObjectWrapper}
+	 * @param step       TestCase in format {@code TestUnitObjectWrapper}
 	 * @param arrayIndex Parameter array index
 	 */
 	private void executeChildTest(BDDStep step) {
@@ -282,12 +309,14 @@ public class BDDRunnerTestSteps {
 		// ********************************************************************************************
 		// Parameterised Child TestCase Start
 		// ********************************************************************************************
-		// Disabled because it generates wrong extent flow when it runs as parameterised steps
+		// Disabled because it generates wrong extent flow when it runs as parameterised
+		// steps
 		// notifyChildTestUnitExecutionStarted(scenario, step, userInfo);
 
 		runIndividualUnitTest(step);
 
-		// Disabled because it generates wrong extent flow when it runs as parameterised steps
+		// Disabled because it generates wrong extent flow when it runs as parameterised
+		// steps
 		// notifyChildTestUnitExecutionFinished(step);
 
 		// ********************************************************************************************
@@ -330,7 +359,8 @@ public class BDDRunnerTestSteps {
 			String key = entry.getKey();
 			List<String> valueList = entry.getValue();
 
-			// if value refers to global table tag then populate value from global table column
+			// if value refers to global table tag then populate value from global table
+			// column
 			String value = valueList.get(context.getTestUnitParameterIndex());
 			if (value.startsWith("<") && value.endsWith(">")) {
 				String globalDataTableKey = value.replaceFirst("<", "").replaceAll(">", "").trim();
@@ -362,12 +392,13 @@ public class BDDRunnerTestSteps {
 	}
 
 	/**
-	 * Responsible for processing throwable/exception thrown by test cases during execution time. If {@code ExpectedException} annotation defines
-	 * expected throwable/exception and received throwable/exception does not match any of the defined throwable(s)/Exception(s) then test will be
-	 * marked as FAIL.
+	 * Responsible for processing throwable/exception thrown by test cases during
+	 * execution time. If {@code ExpectedException} annotation defines expected
+	 * throwable/exception and received throwable/exception does not match any of
+	 * the defined throwable(s)/Exception(s) then test will be marked as FAIL.
 	 * 
 	 * @param unit test case in format {@code TestObjectWrapper}
-	 * @param e {@code Throwable} or {@code Exception}
+	 * @param e    {@code Throwable} or {@code Exception}
 	 */
 	private void processTestUnitException(TestUnitObjectWrapper unit, Throwable e) {
 		// If user has not specified expected exception then fail the test
@@ -377,18 +408,23 @@ public class BDDRunnerTestSteps {
 			for (Class<? extends Throwable> exceptionClass : unit.getExpectedExceptionList()) {
 				if (e.getClass() == exceptionClass) {
 					/* Exception matches as specified by user */
-					context.setTestStatus(TestStatus.PASS, "Exception class is as expected : " + e.getClass().getName());
+					context.setTestStatus(TestStatus.PASS,
+							"Exception class is as expected : " + e.getClass().getName());
 
-					/* If regular expression then validate exception message with regular expression */
+					/*
+					 * If regular expression then validate exception message with regular expression
+					 */
 					/* If regular expression does not match then do string compare */
 					if (null != unit.getExceptionContains() && !"".equals(unit.getExceptionContains())) {
 						if (e.getMessage().contains(unit.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message contains : " + unit.getExceptionContains());
+							context.setTestStatus(TestStatus.PASS,
+									"Exception message contains : " + unit.getExceptionContains());
 						} else if (e.getMessage().matches(unit.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + unit.getExceptionContains());
+							context.setTestStatus(TestStatus.PASS,
+									"Exception message matches regex : " + unit.getExceptionContains());
 						} else {
-							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : " + unit.getExceptionContains()
-									+ "\nReceived : " + e.getMessage());
+							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : "
+									+ unit.getExceptionContains() + "\nReceived : " + e.getMessage());
 						}
 					}
 
@@ -401,8 +437,8 @@ public class BDDRunnerTestSteps {
 				for (Class<? extends Throwable> exceptionClass : unit.getExpectedExceptionList()) {
 					expectedExceptions += exceptionClass.getName() + " ";
 				}
-				context.setTestStatus(TestStatus.FAIL,
-						"Exception is not as expected : \nExpected : " + expectedExceptions + "\nReturned : " + e.getClass().getName());
+				context.setTestStatus(TestStatus.FAIL, "Exception is not as expected : \nExpected : "
+						+ expectedExceptions + "\nReturned : " + e.getClass().getName());
 				UtilsFramework.writePrintStackTrace(context, e);
 			}
 		} else {
@@ -412,9 +448,10 @@ public class BDDRunnerTestSteps {
 	}
 
 	/**
-	 * Responsible for post validation after test case execution is successfully completed. If expected throwable(s)/exception(s) are defined by user
-	 * using {@code ExpectedException} and test case status is PASS or FAIL then test unit should be marked failed for not throwing expected
-	 * throwable/exception.
+	 * Responsible for post validation after test case execution is successfully
+	 * completed. If expected throwable(s)/exception(s) are defined by user using
+	 * {@code ExpectedException} and test case status is PASS or FAIL then test unit
+	 * should be marked failed for not throwing expected throwable/exception.
 	 * 
 	 * <PRE>
 	 * If test status is marked as SKIP or KTF then do not fail test case based on ExpectedException conditions. 
@@ -426,7 +463,8 @@ public class BDDRunnerTestSteps {
 	 */
 	private void postTestValidation(TestUnitObjectWrapper unit) {
 		if (context.getCurrentTestStatus() == TestStatus.PASS || context.getCurrentTestStatus() == TestStatus.FAIL) {
-			if (null != unit.getExpectedExceptionList() && !unit.getExpectedExceptionList().isEmpty() && unit.isEnforceException()) {
+			if (null != unit.getExpectedExceptionList() && !unit.getExpectedExceptionList().isEmpty()
+					&& unit.isEnforceException()) {
 				// Exception annotation was specified but did not occur
 				context.setTestStatus(TestStatus.FAIL, "Exception was specified but did not occur");
 			}
@@ -473,7 +511,8 @@ public class BDDRunnerTestSteps {
 		}
 	}
 
-	// void notifyLocalBeforeTestUnitMethodExecutionStarted(TestScenario scenario, TestStep step) {
+	// void notifyLocalBeforeTestUnitMethodExecutionStarted(TestScenario scenario,
+	// TestStep step) {
 	// for (TestProgress listener : listenerList) {
 	// listener.localBeforeTestUnitMethodExecutionStarted(scenario, step);
 	// }
@@ -485,7 +524,8 @@ public class BDDRunnerTestSteps {
 	// }
 	// }
 
-	// void notifyLocalAfterTestUnitMethodExecutionStarted(TestScenario scenario, TestStep step) {
+	// void notifyLocalAfterTestUnitMethodExecutionStarted(TestScenario scenario,
+	// TestStep step) {
 	// for (TestProgress listener : listenerList) {
 	// listener.localAfterTestUnitMethodExecutionStarted(scenario, step);
 	// }
@@ -509,7 +549,8 @@ public class BDDRunnerTestSteps {
 		}
 	}
 
-	// private void notifyChildTestUnitExecutionStarted(BDDScenario scenario, BDDStep step, String userInfo) {
+	// private void notifyChildTestUnitExecutionStarted(BDDScenario scenario,
+	// BDDStep step, String userInfo) {
 	// for (TestProgress listener : listenerList) {
 	// listener.childTestUnitExecutionStarted(scenario, step, userInfo);
 	// }
@@ -521,19 +562,22 @@ public class BDDRunnerTestSteps {
 	// }
 	// }
 
-	// void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName, TestScenario scenario) {
+	// void notifyLocalBeforeTestCaseMethodExecutionStarted(String methodName,
+	// TestScenario scenario) {
 	// for (TestProgress listener : listenerList) {
 	// listener.localBeforeTestCaseMethodExecutionStarted(methodName, scenario);
 	// }
 	// }
 
-	// void notifyLocalBeforeTestCaseMethodExecutionFinished(TestScenario scenario) {
+	// void notifyLocalBeforeTestCaseMethodExecutionFinished(TestScenario scenario)
+	// {
 	// for (TestProgress listener : listenerList) {
 	// listener.localBeforeTestCaseMethodExecutionFinished(scenario);
 	// }
 	// }
 
-	// void notifyLocalAfterTestCaseMethodExecutionStarted(String methodName, TestScenario scenario) {
+	// void notifyLocalAfterTestCaseMethodExecutionStarted(String methodName,
+	// TestScenario scenario) {
 	// for (TestProgress listener : listenerList) {
 	// listener.localAfterTestCaseMethodExecutionStarted(methodName, scenario);
 	// }

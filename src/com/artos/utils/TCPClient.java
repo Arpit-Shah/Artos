@@ -41,9 +41,6 @@ import com.artos.interfaces.ConnectableMessageParser;
 
 /**
  * This class creates TCP Client
- * 
- * 
- *
  */
 public class TCPClient implements Connectable {
 	String ip;

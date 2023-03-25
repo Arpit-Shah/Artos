@@ -45,8 +45,6 @@ import javassist.Modifier;
 
 /**
  * This class provides all utilities for reflection
- * 
- * 
  *
  */
 public class BDDScanTestSuite {
@@ -58,7 +56,7 @@ public class BDDScanTestSuite {
 	/**
 	 * Scans all packages within provided package
 	 * 
-	 * @param context Test context
+	 * @param context     Test context
 	 * @param packageName Base package name
 	 * 
 	 */
@@ -77,11 +75,13 @@ public class BDDScanTestSuite {
 	private void scan(String packageName) {
 
 		// Find all annotation
-		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
+		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(),
+				new SubTypesScanner(false));
 
-		// GetAllStepDefMethods => Filter Public methods => Get UpperCase StepDef => Store it
-		reflection.getMethodsAnnotatedWith(StepDefinition.class).stream().filter(method -> Modifier.isPublic(method.getModifiers()))
-				.forEach(method -> {
+		// GetAllStepDefMethods => Filter Public methods => Get UpperCase StepDef =>
+		// Store it
+		reflection.getMethodsAnnotatedWith(StepDefinition.class).stream()
+				.filter(method -> Modifier.isPublic(method.getModifiers())).forEach(method -> {
 
 					Unit unit = method.getAnnotation(Unit.class);
 					TestPlan testplan = method.getAnnotation(TestPlan.class);
@@ -96,8 +96,9 @@ public class BDDScanTestSuite {
 					if (null == unit) {
 						testUnitObj = new TestUnitObjectWrapper(method, false, 0, null, 0, "", false);
 					} else {
-						testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(), unit.dataprovider(), unit.testtimeout(),
-								unit.bugref(), unit.dropRemainingUnitsUponFailure());
+						testUnitObj = new TestUnitObjectWrapper(method, unit.skip(), unit.sequence(),
+								unit.dataprovider(), unit.testtimeout(), unit.bugref(),
+								unit.dropRemainingUnitsUponFailure());
 					}
 
 					// Test Plan is an optional attribute so it can be null
@@ -126,12 +127,10 @@ public class BDDScanTestSuite {
 					{
 						if (null != group) {
 							List<String> groupList = Arrays.asList(group.group());
-							testUnitObj
-									.setGroupList(
-											groupList
-													.stream().map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
-															.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", ""))
-													.collect(Collectors.toList()));
+							testUnitObj.setGroupList(groupList.stream()
+									.map(s -> s.toUpperCase().trim().replaceAll("\n", "").replaceAll("\r", "")
+											.replaceAll("\t", "").replaceAll("\\\\", "").replaceAll("/", ""))
+									.collect(Collectors.toList()));
 						} else {
 							// Create empty arrayList
 							testUnitObj.setGroupList(new ArrayList<String>());
@@ -150,7 +149,8 @@ public class BDDScanTestSuite {
 
 					// expectedException is an optional annotation
 					if (null != expectedException) {
-						List<Class<? extends Throwable>> expectedExceptionsList = Arrays.asList(expectedException.expectedExceptions());
+						List<Class<? extends Throwable>> expectedExceptionsList = Arrays
+								.asList(expectedException.expectedExceptions());
 						testUnitObj.setExpectedExceptionList(expectedExceptionsList);
 						testUnitObj.setExceptionContains(expectedException.contains());
 						testUnitObj.setEnforce(expectedException.enforce());
@@ -193,10 +193,20 @@ public class BDDScanTestSuite {
 				});
 	}
 
+	/**
+	 * Get Step Definitions Map
+	 * 
+	 * @return Key Value pair of {@link TestUnitObjectWrapper}
+	 */
 	public Map<String, TestUnitObjectWrapper> getStepDefinitionsMap() {
 		return stepDefinitionsMap;
 	}
 
+	/**
+	 * Set Step Definitions Map
+	 * 
+	 * @param stepDefinitionsMap Key Value pair of {@link TestUnitObjectWrapper}
+	 */
 	protected void setStepDefinitionsMap(Map<String, TestUnitObjectWrapper> stepDefinitionsMap) {
 		this.stepDefinitionsMap = stepDefinitionsMap;
 	}

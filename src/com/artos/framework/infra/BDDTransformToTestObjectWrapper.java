@@ -24,13 +24,21 @@ package com.artos.framework.infra;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * BDD Transform to Test Object Wrapper
+ * 
+ * @author ArpitShah
+ *
+ */
 public class BDDTransformToTestObjectWrapper {
 
 	private Map<String, TestUnitObjectWrapper> stepDefinitionMap;
 
 	/**
-	 * Transforms given test list of{@code TestEecutable} type into {@code TestObjectWrapper} type list. This method will only consider test This
-	 * method can not transform test cases outside current package, so those test cases will be omitted from the list
+	 * Transforms given test list of{@code TestEecutable} type into
+	 * {@code TestObjectWrapper} type list. This method will only consider test This
+	 * method can not transform test cases outside current package, so those test
+	 * cases will be omitted from the list
 	 * 
 	 * @param context {@code TestContext}
 	 * @throws Exception in case any requirement of test cases are not met
@@ -51,10 +59,21 @@ public class BDDTransformToTestObjectWrapper {
 		stepDefinitionMap = reflection.getStepDefinitionsMap();
 	}
 
+	/**
+	 * Return {@link TestUnitObjectWrapper} map with associated key
+	 * 
+	 * @return {@link TestUnitObjectWrapper} map with associated key
+	 */
 	public Map<String, TestUnitObjectWrapper> getStepDefinitionMap() {
 		return stepDefinitionMap;
 	}
 
+	/**
+	 * Set step definitions {@link TestUnitObjectWrapper} map with associated key
+	 * 
+	 * @param stepDefinitionMap step definitions {@link TestUnitObjectWrapper} map
+	 *                          with associated key
+	 */
 	protected void setStepDefinitionMap(Map<String, TestUnitObjectWrapper> stepDefinitionMap) {
 		this.stepDefinitionMap = stepDefinitionMap;
 	}

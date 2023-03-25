@@ -23,11 +23,6 @@ package com.artos.utils;
 
 import java.util.Arrays;
 
-/**
- * 
- * 
- *
- */
 public class UtilsString {
 	/**
 	 * Escape string to convert it to HTML

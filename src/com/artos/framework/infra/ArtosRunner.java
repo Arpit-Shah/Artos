@@ -25,7 +25,6 @@ import java.io.InvalidObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.artos.framework.Enums.Importance;
@@ -70,20 +68,14 @@ public class ArtosRunner {
 	 * ExtentReportListener is responsible for Extent report generation
 	 * </PRE>
 	 * 
-	 * @param context TestContext object
+	 * @param context                  TestContext object
 	 * @param externalListnerClassList external listener class list
-	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
-	 * @throws InstantiationException if this Class represents an abstract class,an interface, an array class, a primitive type, or void;or if the
-	 *             class has no nullary constructor;or if the instantiation fails for some other reason.
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
+	 * @throws Exception in case of error, exception is thrown
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
 	 */
-	protected ArtosRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	protected ArtosRunner(TestContext context, List<Class<?>> externalListnerClassList) throws Exception {
 		this.context = context;
 		this.externalListnerClassList = externalListnerClassList;
 
@@ -129,23 +121,27 @@ public class ArtosRunner {
 	// ==================================================================================
 
 	/**
-	 * Runner for the framework. Responsible for generating test list after scanning a test suite, generate test script if required, show GUI test
-	 * selector if enabled
+	 * Runner for the framework. Responsible for generating test list after scanning
+	 * a test suite, generate test script if required, show GUI test selector if
+	 * enabled
 	 * 
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
 	protected void run() throws Exception {
 		// Transform TestList into TestObjectWrapper Object list
-		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context).getListOfTransformedTestCases();
+		List<TestObjectWrapper> transformedTestList = new TransformToTestObjectWrapper(context)
+				.getListOfTransformedTestCases();
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
-			new TestScriptParser().createExecScriptFromObjWrapper(context.getPrePostRunnableObj(), transformedTestList, ScriptFileType.TEST_SCRIPT);
+			new TestScriptParser().createExecScriptFromObjWrapper(context.getPrePostRunnableObj(), transformedTestList,
+					ScriptFileType.TEST_SCRIPT);
 		}
 
 		// If GUI test selector is enabled then show it or else execute test cases
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelector()) {
 			TestRunnable runObj = new TestRunnable() {
 				@Override
-				public void executeTest(TestContext context, List<TestObjectWrapper> transformedTestList) throws Exception {
+				public void executeTest(TestContext context, List<TestObjectWrapper> transformedTestList)
+						throws Exception {
 					runTest(transformedTestList);
 				}
 			};
@@ -186,7 +182,8 @@ public class ArtosRunner {
 		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentSkipCount()));
 		sb.append(" KTF:" + String.format("%-" + 4 + "s", context.getCurrentKTFCount()));
 		sb.append(" FAIL:" + String.format("%-" + 4 + "s", context.getCurrentFailCount()));
-		// Total does not make sense because parameterised test cases are considered as a test case
+		// Total does not make sense because parameterised test cases are considered as
+		// a test case
 		// sb.append(" TOTAL:" + transformedTestList.size());
 		sb.append(" [");
 		sb.append("FATAL:" + String.format("%-" + 4 + "s", context.getTotalFatalCount()));
@@ -200,16 +197,19 @@ public class ArtosRunner {
 		PrintTotalUnitResult(transformedTestList, sb);
 
 		// Print Test suite Start and Finish time
-		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		String finishTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
+		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss",
+				context.getTestSuiteStartTime());
+		String finishTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss",
+				context.getTestSuiteFinishTime());
 		sb.append("\n\n");
 		sb.append("Test start time : " + startTimeStamp);
 		sb.append("\n");
 		sb.append("Test finish time : " + finishTimeStamp);
 		sb.append("\n");
-		sb.append("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
-				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
-						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
+		sb.append("Test duration : "
+				+ String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
+						TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration()) - TimeUnit.MINUTES
+								.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
 
 		// Print Test suite summary
 		logger.info(sb.toString());
@@ -221,7 +221,8 @@ public class ArtosRunner {
 
 		if (FWStaticStore.frameworkConfig.isGenerateTestScript()) {
 			// Create Script file for failed test cases
-			new TestScriptParser().createExecScriptFromObjWrapper(context.getPrePostRunnableObj(), failedTestList, ScriptFileType.ERROR_SCRIPT);
+			new TestScriptParser().createExecScriptFromObjWrapper(context.getPrePostRunnableObj(), failedTestList,
+					ScriptFileType.ERROR_SCRIPT);
 		}
 
 		// to release a thread lock
@@ -268,7 +269,8 @@ public class ArtosRunner {
 			for (TestObjectWrapper t : transformedTestList) {
 
 				/*
-				 * If stopOnFail=true then test cases after first failure will not be executed which means TestOutcomeList will be empty
+				 * If stopOnFail=true then test cases after first failure will not be executed
+				 * which means TestOutcomeList will be empty
 				 */
 				if (t.getTestOutcomeList().isEmpty()) {
 					continue;
@@ -280,30 +282,35 @@ public class ArtosRunner {
 					testErrorcount++;
 					sb.append("\n");
 					sb.append(String.format("%-4s%s", testErrorcount, t.getTestClassObject().getName()));
-					sb.append(t.getTestImportance() == Importance.UNDEFINED ? "" : " [" + t.getTestImportance().name() + "]");
+					sb.append(t.getTestImportance() == Importance.UNDEFINED ? ""
+							: " [" + t.getTestImportance().name() + "]");
 
 					for (TestUnitObjectWrapper unit : t.getTestUnitList()) {
 						/*
-						 * If stopOnFail=true then test unit after first failure will not be executed which means TestUnitOutcomeList will be empty
+						 * If stopOnFail=true then test unit after first failure will not be executed
+						 * which means TestUnitOutcomeList will be empty
 						 */
 						if (unit.getTestUnitOutcomeList().isEmpty()) {
 							continue;
 						}
 
 						// If test case is without date provider
-						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
+						if ("".equals(unit.getDataProviderName())
+								&& unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
 							sb.append(String.format("\n"));
 							sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
-							sb.append(unit.getTestImportance() == Importance.UNDEFINED ? "" : " [" + unit.getTestImportance().name() + "]");
+							sb.append(unit.getTestImportance() == Importance.UNDEFINED ? ""
+									: " [" + unit.getTestImportance().name() + "]");
 
 							// If test case with data provider then go through each status of the list
 						} else if (!"".equals(unit.getDataProviderName())) {
 							for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 								if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
 									sb.append(String.format("\n"));
-									sb.append(String.format("\t|-- %s",
-											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
-									sb.append(unit.getTestImportance() == Importance.UNDEFINED ? "" : " [" + unit.getTestImportance().name() + "]");
+									sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"
+											+ " : DataProvider[" + j + "]"));
+									sb.append(unit.getTestImportance() == Importance.UNDEFINED ? ""
+											: " [" + unit.getTestImportance().name() + "]");
 								}
 							}
 						}
@@ -335,8 +342,10 @@ public class ArtosRunner {
 
 			// Run prior to each test suite
 			if (null != context.getBeforeTestSuite()) {
-				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(),
+						context.getPrePostRunnableObj().getName());
+				context.getBeforeTestSuite()
+						.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -382,7 +391,8 @@ public class ArtosRunner {
 						runParameterizedTest(t);
 					}
 
-					// If "drop following tests execution upon failure" is enabled then drop rest of test cases
+					// If "drop following tests execution upon failure" is enabled then drop rest of
+					// test cases
 					if (t.isDropRemainingTestsUponFailure() && context.getCurrentFailCount() > preserveFailCount) {
 						context.getLogger().warn(FWStaticStore.ARTOS_DROP_EXECUTION_UPON_TEST_FAIL_STAMP);
 						break;
@@ -394,8 +404,10 @@ public class ArtosRunner {
 
 			// Run at the end of each test suit
 			if (null != context.getAfterTestSuite()) {
-				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(),
+						context.getPrePostRunnableObj().getName());
+				context.getAfterTestSuite()
+						.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -420,17 +432,25 @@ public class ArtosRunner {
 		// ********************************************************************************************
 	}
 
-	public static <T> Collector<T, ?, Optional<T>> toSingleton() {
-		return Collectors.collectingAndThen(Collectors.toList(), list -> list.size() == 1 ? Optional.of(list.get(0)) : Optional.empty());
-	}
+//	/**
+//	 * 
+//	 * @param <T> Singleton
+//	 * @return
+//	 */
+//	public static <T> Collector<T, ?, Optional<T>> toSingleton() {
+//		return Collectors.collectingAndThen(Collectors.toList(),
+//				list -> list.size() == 1 ? Optional.of(list.get(0)) : Optional.empty());
+//	}
 
 	/**
-	 * Dependency feature ensures that user specified test cases are executed prior to executing target test case and pre-requisite test cases must be
-	 * completed with PASS status, otherwise dependency agreement will not be met.
+	 * Dependency feature ensures that user specified test cases are executed prior
+	 * to executing target test case and pre-requisite test cases must be completed
+	 * with PASS status, otherwise dependency agreement will not be met.
 	 * 
 	 * @param testList = test case list
-	 * @param t = target test case
-	 * @return true if dependency agreement is met | false if dependency agreement is not met
+	 * @param t        = target test case
+	 * @return true if dependency agreement is met | false if dependency agreement
+	 *         is not met
 	 */
 	private boolean hasDependencyMet(List<TestObjectWrapper> testList, TestObjectWrapper t) {
 
@@ -442,9 +462,11 @@ public class ArtosRunner {
 
 			List<TestObjectWrapper> matchList;
 
-			// Find list dependency class in execution list, If we can not find list class in execution list then dependency agreement will not be met
+			// Find list dependency class in execution list, If we can not find list class
+			// in execution list then dependency agreement will not be met
 			{
-				matchList = testList.stream().filter(obj -> obj.getTestClassObject().getName().equals(dependencyClass.getName()))
+				matchList = testList.stream()
+						.filter(obj -> obj.getTestClassObject().getName().equals(dependencyClass.getName()))
 						.collect(Collectors.toList());
 				if (null == matchList || matchList.isEmpty()) {
 					return false;
@@ -452,7 +474,8 @@ public class ArtosRunner {
 			}
 
 			TestObjectWrapper dependencyTestCaseObjectWrapper = matchList.get(0);
-			// If dependency test case execution index is same or greater than target test-case execution index then requirements will not be met
+			// If dependency test case execution index is same or greater than target
+			// test-case execution index then requirements will not be met
 			{
 				int matchIndex = testList.indexOf(dependencyTestCaseObjectWrapper);
 				if (matchIndex >= indexOfTest) {
@@ -460,15 +483,19 @@ public class ArtosRunner {
 				}
 			}
 
-			// If dependency test cases status is not PASS then dependency agreement will not be met
+			// If dependency test cases status is not PASS then dependency agreement will
+			// not be met
 			{
-				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.FAIL)))) {
+				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream()
+						.anyMatch(s -> (s.equals(TestStatus.FAIL)))) {
 					return false;
 				}
-				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.KTF)))) {
+				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream()
+						.anyMatch(s -> (s.equals(TestStatus.KTF)))) {
 					return false;
 				}
-				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream().anyMatch(s -> (s.equals(TestStatus.SKIP)))) {
+				if (dependencyTestCaseObjectWrapper.getTestOutcomeList().stream()
+						.anyMatch(s -> (s.equals(TestStatus.SKIP)))) {
 					return false;
 				}
 			}
@@ -487,7 +514,8 @@ public class ArtosRunner {
 			// Run Pre Method prior to any test Execution
 			if (null != context.getBeforeTest()) {
 				notifyGlobalBeforeTestCaseMethodExecutionStarted(context.getBeforeTest().getName(), t);
-				context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+						context);
 				notifyGlobalBeforeTestCaseMethodExecutionFinished(t);
 			}
 		} catch (Throwable e) {
@@ -530,7 +558,8 @@ public class ArtosRunner {
 			// Run Post Method prior to any test Execution
 			if (null != context.getAfterTest()) {
 				notifyGlobalAfterTestCaseMethodExecutionStarted(context.getAfterTest().getName(), t);
-				context.getAfterTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+						context);
 				notifyGlobalAfterTestCaseMethodExecutionFinished(t);
 			}
 		} catch (Throwable e) {
@@ -549,9 +578,11 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * Responsible for executing data provider method which upon successful execution returns an array of parameters. TestCase will be re-run using
-	 * all parameters available in the parameter array. If data provider method returns empty array or null then test case will be executed only once
-	 * with null arguments.
+	 * Responsible for executing data provider method which upon successful
+	 * execution returns an array of parameters. TestCase will be re-run using all
+	 * parameters available in the parameter array. If data provider method returns
+	 * empty array or null then test case will be executed only once with null
+	 * arguments.
 	 * 
 	 * @param t TestCase in format {@code TestObjectWrapper}
 	 */
@@ -576,7 +607,8 @@ public class ArtosRunner {
 					data = (Object[][]) dataProviderObj.getMethod().invoke(null, context);
 				} else {
 					/* NonStatic data provider method needs an instance */
-					data = (Object[][]) dataProviderObj.getMethod().invoke(dataProviderObj.getClassOfTheMethod().getDeclaredConstructor().newInstance(), context);
+					data = (Object[][]) dataProviderObj.getMethod().invoke(
+							dataProviderObj.getClassOfTheMethod().getDeclaredConstructor().newInstance(), context);
 				}
 			} catch (InvocationTargetException e) {
 				context.getLogger().info(FWStaticStore.ARTOS_DATAPROVIDER_FAIL_STAMP);
@@ -627,8 +659,9 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * Responsible for executing test case with thread timeout. If test case execution is not finished within expected time then test will be
-	 * considered failed.
+	 * Responsible for executing test case with thread timeout. If test case
+	 * execution is not finished within expected time then test will be considered
+	 * failed.
 	 * 
 	 * @param t TestCase in format {@code TestObjectWrapper} object
 	 * @throws Throwable Exception during test execution
@@ -662,11 +695,12 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * Responsible for execution of test cases (Considered as child test case) with given parameter. Parameterised object array index and value(s)
-	 * class type(s) will be printed prior to test execution for user's benefit.
+	 * Responsible for execution of test cases (Considered as child test case) with
+	 * given parameter. Parameterised object array index and value(s) class type(s)
+	 * will be printed prior to test execution for user's benefit.
 	 * 
-	 * @param t TestCase in format {@code TestObjectWrapper}
-	 * @param data Array of parameters
+	 * @param t          TestCase in format {@code TestObjectWrapper}
+	 * @param data       Array of parameters
 	 * @param arrayIndex Parameter array index
 	 */
 	private void executeChildTest(TestObjectWrapper t, Object[][] data, int arrayIndex) {
@@ -706,9 +740,10 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * Responsible for post validation after test case execution is successfully completed. If expected throwable(s)/exception(s) are defined by user
-	 * using {@code ExpectedException} and test case status is PASS or FAIL then test case should be marked failed for not throwing expected
-	 * throwable/exception.
+	 * Responsible for post validation after test case execution is successfully
+	 * completed. If expected throwable(s)/exception(s) are defined by user using
+	 * {@code ExpectedException} and test case status is PASS or FAIL then test case
+	 * should be marked failed for not throwing expected throwable/exception.
 	 * 
 	 * <PRE>
 	 * If test status is marked as SKIP or KTF then do not fail test case based on ExpectedException conditions. 
@@ -720,7 +755,8 @@ public class ArtosRunner {
 	 */
 	private void postTestValidation(TestObjectWrapper t) {
 		if (context.getCurrentTestStatus() == TestStatus.PASS || context.getCurrentTestStatus() == TestStatus.FAIL) {
-			if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty() && t.isEnforceException()) {
+			if (null != t.getExpectedExceptionList() && !t.getExpectedExceptionList().isEmpty()
+					&& t.isEnforceException()) {
 				// Exception annotation was specified but did not occur
 				context.setTestStatus(TestStatus.FAIL, "Exception was specified but did not occur");
 			}
@@ -728,9 +764,10 @@ public class ArtosRunner {
 	}
 
 	/**
-	 * Responsible for processing throwable/exception thrown by test cases during execution time. If {@code ExpectedException} annotation defines
-	 * expected throwable/exception and received throwable/exception does not match any of the defined throwable(s)/Exception(s) then test will be
-	 * marked as FAIL.
+	 * Responsible for processing throwable/exception thrown by test cases during
+	 * execution time. If {@code ExpectedException} annotation defines expected
+	 * throwable/exception and received throwable/exception does not match any of
+	 * the defined throwable(s)/Exception(s) then test will be marked as FAIL.
 	 * 
 	 * @param t test case in format {@code TestObjectWrapper}
 	 * @param e {@code Throwable} or {@code Exception}
@@ -743,18 +780,23 @@ public class ArtosRunner {
 			for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
 				if (e.getClass() == exceptionClass) {
 					/* Exception matches as specified by user */
-					context.setTestStatus(TestStatus.PASS, "Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
+					context.setTestStatus(TestStatus.PASS,
+							"Exception is as expected : " + e.getClass().getName() + " : " + e.getMessage());
 
-					/* If regular expression then validate exception message with regular expression */
+					/*
+					 * If regular expression then validate exception message with regular expression
+					 */
 					/* If regular expression does not match then do string compare */
 					if (null != t.getExceptionContains() && !"".equals(t.getExceptionContains())) {
 						if (e.getMessage().contains(t.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message contains : " + t.getExceptionContains());
+							context.setTestStatus(TestStatus.PASS,
+									"Exception message contains : " + t.getExceptionContains());
 						} else if (e.getMessage().matches(t.getExceptionContains())) {
-							context.setTestStatus(TestStatus.PASS, "Exception message matches regex : " + t.getExceptionContains());
+							context.setTestStatus(TestStatus.PASS,
+									"Exception message matches regex : " + t.getExceptionContains());
 						} else {
-							context.setTestStatus(TestStatus.FAIL,
-									"Exception message does not match : \nExpected : " + t.getExceptionContains() + "\nReceived : " + e.getMessage());
+							context.setTestStatus(TestStatus.FAIL, "Exception message does not match : \nExpected : "
+									+ t.getExceptionContains() + "\nReceived : " + e.getMessage());
 						}
 					}
 
@@ -767,8 +809,8 @@ public class ArtosRunner {
 				for (Class<? extends Throwable> exceptionClass : t.getExpectedExceptionList()) {
 					expectedExceptions += exceptionClass.getName() + " ";
 				}
-				context.setTestStatus(TestStatus.FAIL,
-						"Exception is not as expected : \nExpected : " + expectedExceptions + "\nReturned : " + e.getClass().getName());
+				context.setTestStatus(TestStatus.FAIL, "Exception is not as expected : \nExpected : "
+						+ expectedExceptions + "\nReturned : " + e.getClass().getName());
 				UtilsFramework.writePrintStackTrace(context, e);
 			}
 		} else {
@@ -790,8 +832,10 @@ public class ArtosRunner {
 
 		// Run prior to each test suite
 		if (null != context.getBeforeTestSuite()) {
-			notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
-			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+			notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(),
+					context.getPrePostRunnableObj().getName());
+			context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+					context);
 			notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 		}
 
@@ -823,8 +867,10 @@ public class ArtosRunner {
 
 		// Run at the end of each test suit
 		if (null != context.getAfterTestSuite()) {
-			notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
-			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+			notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(),
+					context.getPrePostRunnableObj().getName());
+			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+					context);
 			notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 		}
 		// ********************************************************************************************
@@ -836,14 +882,27 @@ public class ArtosRunner {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
+	/**
+	 * Register new listener
+	 * 
+	 * @param listener TestProgress listener
+	 */
 	protected void registerListener(TestProgress listener) {
 		listenerList.add(listener);
 	}
 
+	/**
+	 * deResiters specific listener
+	 * 
+	 * @param listener listener
+	 */
 	protected void deRegisterListener(TestProgress listener) {
 		listenerList.remove(listener);
 	}
 
+	/**
+	 * deResiters all listeners
+	 */
 	protected void deRegisterAllListener() {
 		listenerList.clear();
 	}
@@ -992,12 +1051,14 @@ class runTestInParallel implements Runnable {
 		try {
 			// notifyTestExecutionStarted(t);
 			// Run Pre Method prior to any test Execution
-			context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+			context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+					context);
 
 			runIndividualTest(t);
 
 			// Run Post Method prior to any test Execution
-			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+			context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+					context);
 			// notifyTestExecutionFinished(t);
 		} catch (Exception e) {
 			e.printStackTrace();

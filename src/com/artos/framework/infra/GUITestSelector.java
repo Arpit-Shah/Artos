@@ -62,6 +62,11 @@ import com.artos.framework.parser.TestScriptParser;
 import com.artos.framework.parser.TestSuite;
 import com.artos.interfaces.TestRunnable;
 
+/**
+ * UI Test Selector for testcases
+ * @author ArpitShah
+ *
+ */
 public class GUITestSelector {
 
 	private TestContext context;

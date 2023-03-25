@@ -26,11 +26,6 @@ import java.io.StringWriter;
 
 import com.artos.framework.infra.TestContext;
 
-/**
- * 
- * 
- *
- */
 public class UtilsFramework {
 
 	/**

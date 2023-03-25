@@ -25,6 +25,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * BDD Step POJO
+ * 
+ * @author ArpitShah
+ *
+ */
 public class BDDStep {
 
 	private String stepAction;
@@ -35,10 +41,11 @@ public class BDDStep {
 	private boolean hasGlobalReference = false;
 
 	/**
+	 * Constructor
 	 * 
-	 * @param stepAction Gherikin action keyword (GIVEN, AND, THEN, WHEN, BUT)
+	 * @param stepAction      Gherikin action keyword (GIVEN, AND, THEN, WHEN, BUT)
 	 * @param stepDescription stepDescription description of a test step
-	 * @param localDataTable local datatable object
+	 * @param localDataTable  local datatable object
 	 */
 	public BDDStep(String stepAction, String stepDescription, LinkedHashMap<String, List<String>> localDataTable) {
 		super();
@@ -47,50 +54,112 @@ public class BDDStep {
 		this.localDataTable = localDataTable;
 	}
 
+	/**
+	 * Returns step description
+	 * 
+	 * @return step description
+	 */
 	public String getStepDescription() {
 		return stepDescription;
 	}
 
+	/**
+	 * Set step description
+	 * 
+	 * @param stepDescription
+	 */
 	public void setStepDescription(String stepDescription) {
 		this.stepDescription = stepDescription;
 	}
 
+	/**
+	 * Return Local Data Table
+	 * 
+	 * @return Hashmap with data tables stored against their key pair value
+	 */
 	public LinkedHashMap<String, List<String>> getLocalDataTable() {
 		return localDataTable;
 	}
 
+	/**
+	 * Set LocalData table for the step
+	 * 
+	 * @param localDataTable Hashmap with local data table and associated key
+	 */
 	public void setLocalDataTable(LinkedHashMap<String, List<String>> localDataTable) {
 		this.localDataTable = localDataTable;
 	}
 
+	/**
+	 * Return Unit
+	 * 
+	 * @return {@link TestUnitObjectWrapper}
+	 */
 	public TestUnitObjectWrapper getUnit() {
 		return unit;
 	}
 
+	/**
+	 * Set {@link TestUnitObjectWrapper}
+	 * 
+	 * @param unit {@link TestUnitObjectWrapper}
+	 */
 	public void setUnit(TestUnitObjectWrapper unit) {
 		this.unit = unit;
 	}
 
+	/**
+	 * Return inline parameter list
+	 * 
+	 * @return inline parameter list
+	 */
 	public List<String> getInlineParameterList() {
 		return inlineParameterList;
 	}
 
+	/**
+	 * Set inline parameter list
+	 * 
+	 * @param inlineParameterList List of inline parameter
+	 */
 	public void setInlineParameterList(List<String> inlineParameterList) {
 		this.inlineParameterList = inlineParameterList;
 	}
 
+	/**
+	 * Return boolean confirming global reference
+	 * 
+	 * @return boolean true = has global reference, false = does not have global
+	 *         reference
+	 */
 	public boolean hasGlobalReference() {
 		return hasGlobalReference;
 	}
 
+	/**
+	 * Set boolean confirming if global reference is present
+	 * 
+	 * @param hasGlobalReference boolean parameter, true = has global reference,
+	 *                           false = does not have global
+	 */
 	public void setHasGlobalReference(boolean hasGlobalReference) {
 		this.hasGlobalReference = hasGlobalReference;
 	}
 
+	/**
+	 * Return Step action
+	 * 
+	 * @return step action
+	 */
 	public String getStepAction() {
 		return stepAction;
 	}
 
+	/**
+	 * Set Step action
+	 * 
+	 * @param stepAction step action
+	 */
 	public void setStepAction(String stepAction) {
 		this.stepAction = stepAction;
 	}

@@ -53,6 +53,11 @@ import javax.swing.table.TableColumn;
 
 import com.artos.interfaces.TestScenarioRunnable;
 
+/**
+ * UI test selector for BDD test cases
+ * @author ArpitShah
+ *
+ */
 public class BDDGUITestSelector {
 
 	private TestContext context;

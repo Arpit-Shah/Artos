@@ -103,6 +103,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class PromptBuilder implements ItemListener {
 
 	int PANEL_MAX_WIDTH = 700;
+	int fontSize = 17;
 	String title = "CountDown Timer";
 	String btnYesText = "Yes";
 	String btnNoText = "No";
@@ -113,7 +114,6 @@ public class PromptBuilder implements ItemListener {
 	boolean rightButtonPressed = false;
 	boolean isBlocking = false;
 	String inputBoxText = "";
-	List<JPanel> JPanelList = new ArrayList<JPanel>();
 	List<String[]> ActionList = new ArrayList<String[]>();
 	List<JPanel> JPanelImageList = new ArrayList<JPanel>();
 
@@ -147,124 +147,144 @@ public class PromptBuilder implements ItemListener {
 	}
 
 	/**
-	 * Starts GUI with count down timer
+	 * Set time for count down timer in non-blocking mode
 	 * 
-	 * @throws Exception if any IO error occurred.
+	 * @param millis     time in milliseconds for count down timer
+	 * @param btnOptions button options
+	 * @param isBlocking true = creates countdown latch to block app after execution
+	 * @param strTitle   prompt Title
 	 */
-	public void start() throws Exception {
+	public PromptBuilder(long millis, ButtonOptions btnOptions, boolean isBlocking, String strTitle) {
+		this.ctdwnLatch = null;
+		this.countdownTime = millis;
+		setButtonOptions(btnOptions);
+		setCtdwnLatch(new CountDownLatch(1));
+		this.isBlocking = isBlocking;
+		this.title = strTitle;
+	}
 
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		Font font = new Font("Arial", Font.BOLD, 20);
-
-		// Table
-		JPanel infoPanel = new JPanel();
-		String[] columnNames = { "Action", "Description" };
-		String[][] tableData = new String[ActionList.size()][2];
-		for (int i = 0; i < ActionList.size(); i++) {
-			tableData[i][0] = ActionList.get(i)[0];
-			tableData[i][1] = ActionList.get(i)[1];
-		}
-		JTable testTableView = new JTable(tableData, columnNames);
-		testTableView.setDefaultRenderer(Object.class, new PaintTableCellRenderer());
-		testTableView.setFont(font);
-		testTableView.setFillsViewportHeight(true);
-		testTableView.getColumnModel().getColumn(0).setPreferredWidth(100);
-		testTableView.getColumnModel().getColumn(1).setPreferredWidth(PANEL_MAX_WIDTH - 100);
-		testTableView.setRowHeight(30);
-		testTableView.setShowGrid(false);
-		testTableView.setBackground(jf.getBackground());
-		infoPanel.setPreferredSize(new Dimension(700, ActionList.size() * 35));
-		infoPanel.add(testTableView);
-
-		// Input box panel
-		Dimension ibim = new Dimension(PANEL_MAX_WIDTH, 35);
-		JPanel inputBoxPanel = new JPanel();
-		textField = new JTextField(16);
-		textField.setPreferredSize(ibim);
-		textField.setHorizontalAlignment(SwingConstants.LEFT);
-		textField.setFont(font);
-		inputBoxPanel.add(textField);
-
-		// Time Panel
-		Dimension timePanelDim = new Dimension(PANEL_MAX_WIDTH + 50, 70);
-		jltime = new JLabel("00:00:00", SwingConstants.CENTER);
-		jltime.setForeground(Color.WHITE);
-		jltime.setBackground(Color.BLACK);
-		jltime.setOpaque(true);
-		jltime.setFont(new Font("Arial", Font.BOLD, 50));
-		jltime.setPreferredSize(timePanelDim);
-		JPanel timePanel = new JPanel();
-		timePanel.setForeground(Color.BLACK);
-		timePanel.add(jltime);
-		timePanel.setPreferredSize(timePanelDim);
-
-		// Button Panel
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout());
-		jbtnYes = new JButton(btnYesText);
-		jbtnNo = new JButton(btnNoText);
-		Dimension buttondim = new Dimension(100, 40);
-		jbtnYes.setPreferredSize(buttondim);
-		jbtnNo.setPreferredSize(buttondim);
-		jbtnYes.setFont(new Font("Arial", Font.BOLD, 12));
-		jbtnNo.setFont(new Font("Arial", Font.BOLD, 12));
-		buttonPanel.add(jbtnYes);
-		buttonPanel.add(jbtnNo);
-		Event e = new Event();
-		jbtnYes.addActionListener(e);
-		jbtnNo.addActionListener(e);
-
-		// Frame Layout
-		BoxLayout boxlayt = new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS);
-		jf.getContentPane().setLayout(boxlayt);
-		jf.getContentPane().add(timePanel);
-
-		jf.getContentPane().add(infoPanel);
-
-		for (JPanel jp : JPanelList) {
-			jf.getContentPane().add(jp);
-		}
-
-		if (isShowInputBox()) {
-			jf.getContentPane().add(inputBoxPanel);
-		}
-
-		if (!isHideButtons()) {
-			jf.getContentPane().add(buttonPanel);
-		}
-		jf.setBackground(Color.BLACK);
-		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jf.setTitle(title);
-		jf.pack();
-		jf.setLocationByPlatform(true);
+	/**
+	 * Starts GUI with count down timer
+	 */
+	public void start() {
 
 		try {
-			URL pix64 = getClass().getResource("/com/artos/icons/artos_icon64x64.png");
-			URL pix32 = getClass().getResource("/com/artos/icons/artos_icon32x32.png");
-			URL pix16 = getClass().getResource("/com/artos/icons/artos_icon16x16.png");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-			BufferedImage img64x64 = ImageIO.read(pix64);
-			BufferedImage img32x32 = ImageIO.read(pix32);
-			BufferedImage img16x16 = ImageIO.read(pix16);
-			List<BufferedImage> imgList = new ArrayList<>();
-			imgList.add(img64x64);
-			imgList.add(img32x32);
-			imgList.add(img16x16);
-			jf.setIconImages(imgList);
-		} catch (Exception IllegalArgumentException) {
-			System.err.println("Icons can not be found");
-		}
-		jf.setVisible(true);
+			Font font = new Font("Arial", Font.BOLD, fontSize);
 
-		// Ensure first button is in focus
-		jf.getRootPane().setDefaultButton(jbtnYes);
-		jbtnYes.requestFocus();
+			// Table
+			JPanel infoPanel = new JPanel();
+			String[] columnNames = { "Action", "Description" };
+			String[][] tableData = new String[ActionList.size()][2];
+			for (int i = 0; i < ActionList.size(); i++) {
+				tableData[i][0] = ActionList.get(i)[0];
+				tableData[i][1] = ActionList.get(i)[1];
+			}
+			JTable testTableView = new JTable(tableData, columnNames);
+			testTableView.setDefaultRenderer(Object.class, new PaintTableCellRenderer());
+			testTableView.setFont(font);
+			testTableView.setFillsViewportHeight(true);
+			testTableView.getColumnModel().getColumn(0).setPreferredWidth(100);
+			testTableView.getColumnModel().getColumn(1).setPreferredWidth(PANEL_MAX_WIDTH - 100);
+			testTableView.setRowHeight(30);
+			testTableView.setShowGrid(false);
+			testTableView.setBackground(jf.getBackground());
+			infoPanel.setPreferredSize(new Dimension(700, ActionList.size() * 35));
+			infoPanel.add(testTableView);
 
-		// Start Timer
-		updateDisplay();
+			// Input box panel
+			Dimension ibim = new Dimension(PANEL_MAX_WIDTH, 35);
+			JPanel inputBoxPanel = new JPanel();
+			textField = new JTextField(16);
+			textField.setPreferredSize(ibim);
+			textField.setHorizontalAlignment(SwingConstants.LEFT);
+			textField.setFont(font);
+			inputBoxPanel.add(textField);
 
-		if (isBlocking) {
-			getCtdwnLatch().await();
+			// Time Panel
+			Dimension timePanelDim = new Dimension(PANEL_MAX_WIDTH + 50, 70);
+			jltime = new JLabel("00:00:00", SwingConstants.CENTER);
+			jltime.setForeground(Color.WHITE);
+			jltime.setBackground(Color.BLACK);
+			jltime.setOpaque(true);
+			jltime.setFont(new Font("Arial", Font.BOLD, 50));
+			jltime.setPreferredSize(timePanelDim);
+			JPanel timePanel = new JPanel();
+			timePanel.setForeground(Color.BLACK);
+			timePanel.add(jltime);
+			timePanel.setPreferredSize(timePanelDim);
+
+			// Button Panel
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.setLayout(new FlowLayout());
+			jbtnYes = new JButton(btnYesText);
+			jbtnNo = new JButton(btnNoText);
+			Dimension buttondim = new Dimension(100, 40);
+			jbtnYes.setPreferredSize(buttondim);
+			jbtnNo.setPreferredSize(buttondim);
+			jbtnYes.setFont(new Font("Arial", Font.BOLD, 12));
+			jbtnNo.setFont(new Font("Arial", Font.BOLD, 12));
+			buttonPanel.add(jbtnYes);
+			buttonPanel.add(jbtnNo);
+			Event e = new Event();
+			jbtnYes.addActionListener(e);
+			jbtnNo.addActionListener(e);
+
+			// Frame Layout
+			BoxLayout boxlayt = new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS);
+			jf.getContentPane().setLayout(boxlayt);
+			jf.getContentPane().add(timePanel);
+
+			jf.getContentPane().add(infoPanel);
+
+			if (isShowInputBox()) {
+				jf.getContentPane().add(inputBoxPanel);
+			}
+
+			for (JPanel jp : JPanelImageList) {
+				jf.getContentPane().add(jp);
+			}
+
+			if (!isHideButtons()) {
+				jf.getContentPane().add(buttonPanel);
+			}
+			jf.setBackground(Color.BLACK);
+			jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			jf.setTitle(title);
+			jf.pack();
+			jf.setLocationByPlatform(true);
+
+			try {
+				URL pix64 = getClass().getResource("/com/artos/icons/artos_icon64x64.png");
+				URL pix32 = getClass().getResource("/com/artos/icons/artos_icon32x32.png");
+				URL pix16 = getClass().getResource("/com/artos/icons/artos_icon16x16.png");
+
+				BufferedImage img64x64 = ImageIO.read(pix64);
+				BufferedImage img32x32 = ImageIO.read(pix32);
+				BufferedImage img16x16 = ImageIO.read(pix16);
+				List<BufferedImage> imgList = new ArrayList<>();
+				imgList.add(img64x64);
+				imgList.add(img32x32);
+				imgList.add(img16x16);
+				jf.setIconImages(imgList);
+			} catch (Exception IllegalArgumentException) {
+				System.err.println("Icons can not be found");
+			}
+			jf.setVisible(true);
+
+			// Ensure first button is in focus
+			jf.getRootPane().setDefaultButton(jbtnYes);
+			jbtnYes.requestFocus();
+
+			// Start Timer
+			updateDisplay();
+
+			if (isBlocking) {
+				getCtdwnLatch().await();
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -286,19 +306,19 @@ public class PromptBuilder implements ItemListener {
 
 				if (versionVal.contains("Validate")) {
 					c.setForeground(Color.BLUE);
-					c.setFont(new Font("Arial", Font.BOLD, 20));
+					c.setFont(new Font("Arial", Font.BOLD, fontSize));
 				} else if (versionVal.contains("Action")) {
 					c.setForeground(Color.RED);
-					c.setFont(new Font("Arial", Font.BOLD, 20));
+					c.setFont(new Font("Arial", Font.BOLD, fontSize));
 				} else {
 					c.setForeground(Color.BLACK);
-					c.setFont(new Font("Arial", Font.BOLD, 20));
+					c.setFont(new Font("Arial", Font.BOLD, fontSize));
 				}
 			} else {
 				// Here you should also stay at default
 				// stay at default
 				c.setForeground(Color.BLACK);
-				c.setFont(new Font("Arial", Font.TRUETYPE_FONT, 20));
+				c.setFont(new Font("Arial", Font.TRUETYPE_FONT, fontSize));
 			}
 			return c;
 		}
@@ -540,44 +560,47 @@ public class PromptBuilder implements ItemListener {
 	 * different experience
 	 * 
 	 * @param image = Image file
-	 * @throws Exception
 	 */
-	public void addImage(File image) throws Exception {
-		if (null != image) {
-			JPanel imagePanel = new JPanel();
-			JLabel iconlabel = null;
+	public void addImage(File image) {
+		try {
+			if (null != image) {
+				JPanel imagePanel = new JPanel();
+				JLabel iconlabel = null;
 
-			ImageIcon icon = new ImageIcon(image.getAbsolutePath());
-			BufferedImage bimg = ImageIO.read(image);
-			int width = bimg.getWidth();
-			int height = bimg.getHeight();
+				ImageIcon icon = new ImageIcon(image.getAbsolutePath());
+				BufferedImage bimg = ImageIO.read(image);
+				int width = bimg.getWidth();
+				int height = bimg.getHeight();
 
-			Image img = icon.getImage(); // transform it
-			Image scaledImage;
+				Image img = icon.getImage(); // transform it
+				Image scaledImage;
 
-			if (width <= PANEL_MAX_WIDTH && height <= 500) {
-				scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-			} else {
+				if (width <= PANEL_MAX_WIDTH && height <= 500) {
+					scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+				} else {
 
-				// Scale down width and height equally until it fits
-				scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-				for (int i = 1; i < 100; i++) {
-					int newWidth = width - (width * i / 100);
-					int newHeight = height - (height * i / 100);
-					if (newWidth < 700 && newHeight < 500) {
-						scaledImage = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-						break;
+					// Scale down width and height equally until it fits
+					scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+					for (int i = 1; i < 100; i++) {
+						int newWidth = width - (width * i / 100);
+						int newHeight = height - (height * i / 100);
+						if (newWidth < 700 && newHeight < 500) {
+							scaledImage = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+							break;
+						}
 					}
 				}
+
+				icon = new ImageIcon(scaledImage);
+
+				iconlabel = new JLabel();
+				iconlabel.setIcon(icon);
+				imagePanel.add(iconlabel);
+
+				JPanelImageList.add(imagePanel);
 			}
-
-			icon = new ImageIcon(scaledImage);
-
-			iconlabel = new JLabel();
-			iconlabel.setIcon(icon);
-			imagePanel.add(iconlabel);
-
-			JPanelList.add(imagePanel);
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 	}
 

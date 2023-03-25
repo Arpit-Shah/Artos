@@ -41,9 +41,6 @@ import com.artos.interfaces.ConnectableMessageParser;
 
 /**
  * This class listens for client connection and accepts single client connection with server
- * 
- * 
- *
  */
 public class TCPServer implements Connectable {
 	int nPort;

@@ -34,11 +34,6 @@ import com.mindbright.sshcommon.SSHSCP1;
 import com.mindbright.util.RandomSeed;
 import com.mindbright.util.SecureRandomAndPad;
 
-/**
- * 
- * 
- *
- */
 public class SCP {
 
 	private TestContext context;

@@ -27,11 +27,6 @@ import java.util.List;
 
 import com.artos.framework.Enums.ExceptionValue;
 
-/**
- * 
- * 
- *
- */
 public class TypeTest {
 
 	public static void main(String[] args) throws Exception {

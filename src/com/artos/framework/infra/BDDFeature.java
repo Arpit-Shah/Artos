@@ -24,23 +24,55 @@ package com.artos.framework.infra;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * BDDFeature Pojo
+ * 
+ * @author ArpitShah
+ *
+ */
 public class BDDFeature {
 
 	List<BDDScenario> Scenarios = new ArrayList<>();
 	BDDScenario background = null;
 
+	/**
+	 * Default Constructor
+	 */
+	public BDDFeature() {
+	}
+
+	/**
+	 * Returns the list of {@link BDDScenario} objects
+	 * 
+	 * @return List of {@link BDDScenario}
+	 */
 	public List<BDDScenario> getScenarios() {
 		return Scenarios;
 	}
 
+	/**
+	 * Sets the list of {@link BDDScenario} objects
+	 * 
+	 * @param scenarios List of {@link BDDScenario}
+	 */
 	public void setScenarios(List<BDDScenario> scenarios) {
 		Scenarios = scenarios;
 	}
 
+	/**
+	 * Returns the {@link BDDScenario} object representing the background for this feature.
+	 * 
+	 * @return {@link BDDScenario}
+	 */
 	public BDDScenario getBackground() {
 		return background;
 	}
 
+	/**
+	 * Sets the {@link BDDScenario} object representing the background for this feature.
+	 * 
+	 * @param background {@link BDDScenario}
+	 */
 	public void setBackground(BDDScenario background) {
 		this.background = background;
 	}

@@ -24,11 +24,6 @@ package com.artos.utils;
 import com.artos.framework.infra.TestContext;
 import com.artos.interfaces.Connectable;
 
-/**
- * 
- * 
- *
- */
 public class Heartbeat {
 	boolean isEnabled = false;
 	Connectable connector;

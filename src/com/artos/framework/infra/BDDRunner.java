@@ -62,20 +62,14 @@ public class BDDRunner {
 	 * ExtentReportListener is responsible for Extent report generation
 	 * </PRE>
 	 * 
-	 * @param context TestContext object
+	 * @param context                  TestContext object
 	 * @param externalListnerClassList external listener class list
-	 * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
-	 * @throws InstantiationException if this Class represents an abstract class,an interface, an array class, a primitive type, or void;or if the
-	 *             class has no nullary constructor;or if the instantiation fails for some other reason.
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
+	 * @throws Exception exception in case of error
 	 * @see TestContext
 	 * @see TestExecutionEventListener
 	 * @see ExtentReportListener
 	 */
-	protected BDDRunner(TestContext context, List<Class<?>> externalListnerClassList) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	protected BDDRunner(TestContext context, List<Class<?>> externalListnerClassList) throws Exception {
 		this.context = context;
 
 		// Register default listener
@@ -113,8 +107,9 @@ public class BDDRunner {
 	// ==================================================================================
 
 	/**
-	 * Runner for the framework. Responsible for generating test list after scanning a test suite, generate test script if required, show GUI test
-	 * selector if enabled
+	 * Runner for the framework. Responsible for generating test list after scanning
+	 * a test suite, generate test script if required, show GUI test selector if
+	 * enabled
 	 * 
 	 * @throws Exception Exception will be thrown if test execution failed
 	 */
@@ -169,8 +164,9 @@ public class BDDRunner {
 	}
 
 	/**
-	 * Finds all units for each of the test steps and store them inside TestStep object If any units are missing then generates skeleton method for
-	 * helping user. This will stop execution straight away.
+	 * Finds all units for each of the test steps and store them inside TestStep
+	 * object If any units are missing then generates skeleton method for helping
+	 * user. This will stop execution straight away.
 	 * 
 	 * @param feature BDD feature object
 	 */
@@ -179,7 +175,8 @@ public class BDDRunner {
 		List<String> mockMethodNames = new ArrayList<>();
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("\nSEEMS THAT YOU ARE MISSING SOME METHODS\nYou can implement missing steps with the snippets below:");
+		sb.append(
+				"\nSEEMS THAT YOU ARE MISSING SOME METHODS\nYou can implement missing steps with the snippets below:");
 
 		for (BDDScenario sc : scenarioList) {
 			for (BDDStep st : sc.getSteplist()) {
@@ -188,7 +185,8 @@ public class BDDRunner {
 				TestUnitObjectWrapper unit = stepDefinitionMap.get(description);
 				if (null == unit) {
 					missingStepMethods = true;
-					// System.err.println("[Warning] Step \"" + st.getStepDescription() + "\" can not be found in a step file");
+					// System.err.println("[Warning] Step \"" + st.getStepDescription() + "\" can
+					// not be found in a step file");
 					sb.append(buildMockFunction(mockMethodNames, st.getStepDescription().trim()));
 				}
 				st.setUnit(unit);
@@ -260,7 +258,8 @@ public class BDDRunner {
 		// add _ to avoid error in-case description has digit as first character
 		// replace all spaces with _
 		// replace all values between "" to empty space
-		sb.append("public void _" + stepDefinition.replaceAll("\\\".*?\\\"", "").trim().replaceAll("\\s", "_").toLowerCase()
+		sb.append("public void _"
+				+ stepDefinition.replaceAll("\\\".*?\\\"", "").trim().replaceAll("\\s", "_").toLowerCase()
 				+ "(TestContext context) throws Exception {");
 		sb.append("\n");
 		sb.append("\t");
@@ -301,7 +300,8 @@ public class BDDRunner {
 		sb.append(" SKIP:" + String.format("%-" + 4 + "s", context.getCurrentSkipCount()));
 		sb.append(" KTF:" + String.format("%-" + 4 + "s", context.getCurrentKTFCount()));
 		sb.append(" FAIL:" + String.format("%-" + 4 + "s", context.getCurrentFailCount()));
-		// Total does not make sense because parameterised test cases are considered as a test case
+		// Total does not make sense because parameterised test cases are considered as
+		// a test case
 		// sb.append(" TOTAL:" + transformedTestList.size());
 		sb.append(" [");
 		sb.append("FATAL:" + String.format("%-" + 4 + "s", context.getTotalFatalCount()));
@@ -315,16 +315,19 @@ public class BDDRunner {
 		PrintTotalUnitResult(scenarioList, sb);
 
 		// Print Test suite Start and Finish time
-		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteStartTime());
-		String finishTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss", context.getTestSuiteFinishTime());
+		String startTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss",
+				context.getTestSuiteStartTime());
+		String finishTimeStamp = new Transform().MilliSecondsToFormattedDate("dd-MM-yyyy hh:mm:ss",
+				context.getTestSuiteFinishTime());
 		sb.append("\n\n");
 		sb.append("Test start time : " + startTimeStamp);
 		sb.append("\n");
 		sb.append("Test finish time : " + finishTimeStamp);
 		sb.append("\n");
-		sb.append("Test duration : " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
-				TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration())
-						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
+		sb.append("Test duration : "
+				+ String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()),
+						TimeUnit.MILLISECONDS.toSeconds(context.getTestSuiteTimeDuration()) - TimeUnit.MINUTES
+								.toSeconds(TimeUnit.MILLISECONDS.toMinutes(context.getTestSuiteTimeDuration()))));
 
 		// Print Test suite summary
 		logger.info(sb.toString());
@@ -376,7 +379,8 @@ public class BDDRunner {
 			for (BDDScenario scenario : scenarioList) {
 
 				/*
-				 * If stopOnFail=true then test cases after first failure will not be executed which means TestOutcomeList will be empty
+				 * If stopOnFail=true then test cases after first failure will not be executed
+				 * which means TestOutcomeList will be empty
 				 */
 				if (scenario.getTestOutcomeList().isEmpty()) {
 					continue;
@@ -386,32 +390,37 @@ public class BDDRunner {
 					testErrorcount++;
 					sb.append("\n");
 					sb.append(String.format("%-4s%s", testErrorcount, scenario.getScenarioDescription()));
-					sb.append(scenario.getTestImportance() == Importance.UNDEFINED ? "" : " [" + scenario.getTestImportance().name() + "]");
+					sb.append(scenario.getTestImportance() == Importance.UNDEFINED ? ""
+							: " [" + scenario.getTestImportance().name() + "]");
 
 					for (BDDStep step : scenario.getSteplist()) {
 
 						TestUnitObjectWrapper unit = step.getUnit();
 						/*
-						 * If stopOnFail=true then test unit after first failure will not be executed which means TestUnitOutcomeList will be empty
+						 * If stopOnFail=true then test unit after first failure will not be executed
+						 * which means TestUnitOutcomeList will be empty
 						 */
 						if (unit.getTestUnitOutcomeList().isEmpty()) {
 							continue;
 						}
 
 						// If test case is without date provider
-						if ("".equals(unit.getDataProviderName()) && unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
+						if ("".equals(unit.getDataProviderName())
+								&& unit.getTestUnitOutcomeList().get(0) == TestStatus.FAIL) {
 							sb.append(String.format("\n"));
 							sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"));
-							sb.append(unit.getTestImportance() == Importance.UNDEFINED ? "" : " [" + unit.getTestImportance().name() + "]");
+							sb.append(unit.getTestImportance() == Importance.UNDEFINED ? ""
+									: " [" + unit.getTestImportance().name() + "]");
 
 							// If test case with data provider then go through each status of the list
 						} else if (!"".equals(unit.getDataProviderName())) {
 							for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 								if (unit.getTestUnitOutcomeList().get(j) == TestStatus.FAIL) {
 									sb.append(String.format("\n"));
-									sb.append(String.format("\t|-- %s",
-											unit.getTestUnitMethod().getName() + "(context)" + " : DataProvider[" + j + "]"));
-									sb.append(unit.getTestImportance() == Importance.UNDEFINED ? "" : " [" + unit.getTestImportance().name() + "]");
+									sb.append(String.format("\t|-- %s", unit.getTestUnitMethod().getName() + "(context)"
+											+ " : DataProvider[" + j + "]"));
+									sb.append(unit.getTestImportance() == Importance.UNDEFINED ? ""
+											: " [" + unit.getTestImportance().name() + "]");
 								}
 							}
 						}
@@ -441,8 +450,10 @@ public class BDDRunner {
 
 			// Run prior to each test suite
 			if (null != context.getBeforeTestSuite()) {
-				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getBeforeTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				notifyBeforeTestSuiteMethodExecutionStarted(context.getBeforeTestSuite().getName(),
+						context.getPrePostRunnableObj().getName());
+				context.getBeforeTestSuite()
+						.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyBeforeTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -483,8 +494,10 @@ public class BDDRunner {
 
 			// Run at the end of each test suit
 			if (null != context.getAfterTestSuite()) {
-				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(), context.getPrePostRunnableObj().getName());
-				context.getAfterTestSuite().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				notifyAfterTestSuiteMethodExecutionStarted(context.getAfterTestSuite().getName(),
+						context.getPrePostRunnableObj().getName());
+				context.getAfterTestSuite()
+						.invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
 				notifyAfterTestSuiteMethodExecutionFinished(context.getPrePostRunnableObj().getName());
 			}
 
@@ -520,7 +533,8 @@ public class BDDRunner {
 			// Run Pre Method prior to any scenario Execution
 			if (null != context.getBeforeTest()) {
 				notifyGlobalBeforeTestCaseMethodExecutionStarted(context.getBeforeTest().getName(), scenario);
-				context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				context.getBeforeTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+						context);
 				notifyGlobalBeforeTestCaseMethodExecutionFinished(scenario);
 			}
 		} catch (Throwable e) {
@@ -558,7 +572,8 @@ public class BDDRunner {
 			// Run Post Method prior to any test Execution
 			if (null != context.getAfterTest()) {
 				notifyGlobalAfterTestCaseMethodExecutionStarted(context.getAfterTest().getName(), scenario);
-				context.getAfterTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(), context);
+				context.getAfterTest().invoke(context.getPrePostRunnableObj().getDeclaredConstructor().newInstance(),
+						context);
 				notifyGlobalAfterTestCaseMethodExecutionFinished(scenario);
 			}
 		} catch (Throwable e) {
@@ -577,9 +592,11 @@ public class BDDRunner {
 	}
 
 	/**
-	 * Responsible for executing data provider method which upon successful execution returns an array of parameters. TestCase will be re-run using
-	 * all parameters available in the parameter array. If data provider method returns empty array or null then test case will be executed only once
-	 * with null arguments.
+	 * Responsible for executing data provider method which upon successful
+	 * execution returns an array of parameters. TestCase will be re-run using all
+	 * parameters available in the parameter array. If data provider method returns
+	 * empty array or null then test case will be executed only once with null
+	 * arguments.
 	 * 
 	 * @param scenario TestCase in format {@code TestObjectWrapper}
 	 */
@@ -587,7 +604,8 @@ public class BDDRunner {
 
 		try {
 
-			// Find the length of dataList, which will tell us how many time to iterate child test cases
+			// Find the length of dataList, which will tell us how many time to iterate
+			// child test cases
 			List<String> firstSet = scenario.getGlobalDataTable().values().iterator().next();
 			for (int i = 0; i < firstSet.size(); i++) {
 
@@ -626,11 +644,12 @@ public class BDDRunner {
 	}
 
 	/**
-	 * Responsible for execution of test cases (Considered as child test case) with given parameter. Parameterised object array index and value(s)
-	 * class type(s) will be printed prior to test execution for user's benefit.
+	 * Responsible for execution of test cases (Considered as child test case) with
+	 * given parameter. Parameterised object array index and value(s) class type(s)
+	 * will be printed prior to test execution for user's benefit.
 	 * 
 	 * @param scenario TestCase in format {@code TestObjectWrapper}
-	 * @param data Array of parameters
+	 * @param data     Array of parameters
 	 */
 	private void executeChildTest(BDDScenario scenario) {
 
@@ -641,7 +660,8 @@ public class BDDRunner {
 		// Map<String, String> stepParameter = context.getStepParameterMap();
 		//
 		// // Add global table parameters to Map
-		// for (Entry<String, List<String>> entry : scenario.getGlobalDataTable().entrySet()) {
+		// for (Entry<String, List<String>> entry :
+		// scenario.getGlobalDataTable().entrySet()) {
 		// String key = entry.getKey();
 		// List<String> value = entry.getValue();
 		// stepParameter.put(key, value.get(context.getTestParameterIndex()));
@@ -677,14 +697,27 @@ public class BDDRunner {
 	// Register, deRegister and Notify Event Listeners
 	// ==================================================================================
 
+	/**
+	 * register new {@link TestProgress} listener
+	 * 
+	 * @param listener {@link TestProgress} listener
+	 */
 	protected void registerListener(TestProgress listener) {
 		listenerList.add(listener);
 	}
 
+	/**
+	 * De-register {@link TestProgress} listener
+	 * 
+	 * @param listener {@link TestProgress} listener
+	 */
 	protected void deRegisterListener(TestProgress listener) {
 		listenerList.remove(listener);
 	}
 
+	/**
+	 * De-register all listeners
+	 */
 	protected void deRegisterAllListener() {
 		listenerList.clear();
 	}
