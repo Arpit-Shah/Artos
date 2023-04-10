@@ -477,6 +477,7 @@ public class BDDRunner {
 					}
 
 					// Print test case header and test plan in the log file
+					context.setCurrentTestScenario(scenario);
 					notifyPrintTestPlan(scenario);
 
 					notifyTestCaseExecutionStarted(scenario);

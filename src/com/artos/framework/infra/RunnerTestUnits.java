@@ -100,6 +100,7 @@ public class RunnerTestUnits {
 					}
 				}
 
+				context.setCurrentTestUnit(unit);
 				notifyPrintTestUnitPlan(unit);
 
 				if (null != unit.getDependencyList() && !unit.getDependencyList().isEmpty()) {

@@ -367,7 +367,7 @@ public class ArtosRunner {
 
 				// Go through each test case and execute it
 				for (TestObjectWrapper t : testList) {
-
+					
 					// If "stop on fail" is enabled then stop test execution
 					if (FWStaticStore.frameworkConfig.isStopOnFail() && context.getCurrentFailCount() > 0) {
 						context.getLogger().warn(FWStaticStore.ARTOS_STOP_ON_FAIL_STAMP);
@@ -375,6 +375,7 @@ public class ArtosRunner {
 					}
 
 					// Print test case header and test plan in the log file
+					context.setCurrentTestCase(t);
 					notifyPrintTestPlan(t);
 
 					if (null != t.getDependencyList() && !t.getDependencyList().isEmpty()) {

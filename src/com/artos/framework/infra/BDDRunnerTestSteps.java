@@ -96,6 +96,7 @@ public class BDDRunnerTestSteps {
 					}
 				}
 
+				context.setCurrentTestStep(step);
 				notifyPrintTestUnitPlan(step);
 
 				// if data provider name is not specified then only execute test once

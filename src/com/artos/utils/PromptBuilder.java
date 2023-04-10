@@ -53,6 +53,8 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.artos.framework.infra.TestContext;
+
 /**
  * The GUI is intended to offer a user interface that can assist users in
  * executing tests. It can be used in a blocking or non-blocking manner, and it
@@ -62,23 +64,23 @@ import javax.swing.table.DefaultTableCellRenderer;
  * 
  * <PRE>
  * 1. Display Count down Timer (Mandatory)
- * 2. Display Text (As many as user can fit in one screen, Ownership is on user to scale for resolution of the screen)
- * 3. Display image (As many as user can fit in one screen, Image will be auto-scaled to fit between 700x500px)
+ * 2. Display instruction and action (As many as user can fit in one screen, Ownership is on user to scale for resolution of the screen)
+ * 3. Display images (As many as user can fit in one screen, Image will be auto-scaled to fit between 700x500px)
  * 4. Display/hide 2 buttons
- * 5. Override button text
+ * 5. Display input box (Only one per instance)
  * </PRE>
  * 
  * <PRE>
  * // (Non-blocking) Count down timer + 2 button + no image + no text
- * PromptBuilder pb1 = new PromptBuilder(5000, ButtonOptions.PASS_FAIL, false);
+ * PromptBuilder pb1 = new PromptBuilder(context, 5000, ButtonOptions.PASS_FAIL, false);
  * pb1.start();
  * 
  * // (Blocking) Count down timer + no button + no image + no text
- * PromptBuilder pb2 = new PromptBuilder(5000, ButtonOptions.PASS_FAIL, true);
+ * PromptBuilder pb2 = new PromptBuilder(context, 5000, ButtonOptions.PASS_FAIL, true);
  * pb2.start();
  * 
  * // (Blocking) Count down timer + 2 button + no image + 4 line text
- * PromptBuilder pb3 = new PromptBuilder(5000, ButtonOptions.PASS_FAIL, true);
+ * PromptBuilder pb3 = new PromptBuilder(context, 5000, ButtonOptions.PASS_FAIL, true);
  * pb3.addString("Count down Timer : Blocking");
  * pb3.addString("Text 2");
  * pb3.addString("Text 3");
@@ -87,7 +89,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * 
  * // (Non-blocking) Count down timer + hide button + image + 2
  * // line text
- * PromptBuilder pb4 = new PromptBuilder(5000, ButtonOptions.PASS_FAIL, false);
+ * PromptBuilder pb4 = new PromptBuilder(context, 5000, ButtonOptions.PASS_FAIL, false);
  * pb4.setImage(new File("./assets/images/test.jpg"));
  * pb4.addString("Text 1");
  * pb4.addString("Text 2");
@@ -116,6 +118,7 @@ public class PromptBuilder implements ItemListener {
 	String inputBoxText = "";
 	List<String[]> ActionList = new ArrayList<String[]>();
 	List<JPanel> JPanelImageList = new ArrayList<JPanel>();
+	TestContext context;
 
 	private CountDownLatch ctdwnLatch = null;
 
@@ -134,33 +137,31 @@ public class PromptBuilder implements ItemListener {
 	/**
 	 * Set time for count down timer in non-blocking mode
 	 * 
+	 * @param context    {@link TestContext}
 	 * @param millis     time in milliseconds for count down timer
 	 * @param btnOptions button options
-	 * @param isBlocking true = creates countdown latch to block app after execution
+	 * @param isBlocking true = execution will be blocked until user press button,
+	 *                   false = execution will continue while prompt is shown
 	 */
-	public PromptBuilder(long millis, ButtonOptions btnOptions, boolean isBlocking) {
+	public PromptBuilder(TestContext context, long millis, ButtonOptions btnOptions, boolean isBlocking) {
+		this.context = context;
 		this.ctdwnLatch = null;
 		this.countdownTime = millis;
 		setButtonOptions(btnOptions);
 		setCtdwnLatch(new CountDownLatch(1));
 		this.isBlocking = isBlocking;
-	}
 
-	/**
-	 * Set time for count down timer in non-blocking mode
-	 * 
-	 * @param millis     time in milliseconds for count down timer
-	 * @param btnOptions button options
-	 * @param isBlocking true = creates countdown latch to block app after execution
-	 * @param strTitle   prompt Title
-	 */
-	public PromptBuilder(long millis, ButtonOptions btnOptions, boolean isBlocking, String strTitle) {
-		this.ctdwnLatch = null;
-		this.countdownTime = millis;
-		setButtonOptions(btnOptions);
-		setCtdwnLatch(new CountDownLatch(1));
-		this.isBlocking = isBlocking;
-		this.title = strTitle;
+		// Set UI Title
+		if (null != context.getCurrentTestCase()) {
+			this.title = context.getCurrentTestCase().getTestClassObject().getSimpleName();
+			if (null != context.getCurrentTestUnit()) {
+				this.title = this.title + " - " + context.getCurrentTestUnit().getTestUnitMethod().getName() + "()";
+			}
+		} else if (null != context.getCurrentTestScenario()) {
+			this.title = context.getCurrentTestScenario().getClass().getSimpleName();
+		} else {
+			// use default name
+		}
 	}
 
 	/**
@@ -395,7 +396,7 @@ public class PromptBuilder implements ItemListener {
 		// TODO Auto-generated method stub
 	}
 
-	// code for what happens when user presses the Yes or No button
+	// code for what happens when user presses the left or right button
 	private class Event implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -407,9 +408,21 @@ public class PromptBuilder implements ItemListener {
 
 			if (bname.equals(btnYesText)) {
 				setLeftButtonPressed(true);
+				context.getLogger().info("Instructions:");
+				for (int i = 0; i < ActionList.size(); i++) {
+					context.getLogger().info("(" + ActionList.get(i)[0] + ") " + ActionList.get(i)[1]);
+				}
+				context.getLogger().info("\nUser Action:");
+				context.getLogger().info("\"" + btnYesText + "\" button was pressed\n");
 				stop();
 			} else if (bname.equals(btnNoText)) {
 				setButtonNoPressed(true);
+				context.getLogger().info("User Action:");
+				for (int i = 0; i < ActionList.size(); i++) {
+					context.getLogger().info("(" + ActionList.get(i)[0] + ") " + ActionList.get(i)[1]);
+				}
+				context.getLogger().info("\nUser Action:");
+				context.getLogger().info("\"" + btnNoText + "\" button was pressed\n");
 				stop();
 			} else {
 				// Do nothing
@@ -491,7 +504,7 @@ public class PromptBuilder implements ItemListener {
 		return showInputBox;
 	}
 
-	public void setShowInputBox(boolean showInputBox) {
+	public void showInputBox(boolean showInputBox) {
 		this.showInputBox = showInputBox;
 	}
 
@@ -539,7 +552,7 @@ public class PromptBuilder implements ItemListener {
 	}
 
 	public enum AKW {
-		NONE("  -  "), ACTION("Action"), VALIDATE("Validate"), INFO("Info"), NOTE("Note");
+		NONE("  -  "), ACTION("Action"), VALIDATE("Validate"), INFO("Info"), PREP("Preparation"), NOTE("Note");
 
 		private final String text;
 

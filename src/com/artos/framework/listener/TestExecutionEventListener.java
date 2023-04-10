@@ -103,7 +103,7 @@ public class TestExecutionEventListener implements TestProgress {
 			sb.append("BDD Test Plan	: " + BDD);
 			sb.append("\n");
 		}
-		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+//		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
 	}
@@ -116,7 +116,7 @@ public class TestExecutionEventListener implements TestProgress {
 		sb.append("\n");
 		sb.append("Scenario: " + sc.getScenarioDescription());
 		sb.append("\n");
-		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+//		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
 	}
@@ -125,7 +125,7 @@ public class TestExecutionEventListener implements TestProgress {
 	public void printTestUnitPlan(TestUnitObjectWrapper unit) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_2);
 		sb.append("\n");
 		sb.append("Unit Name	: " + unit.getTestUnitMethod().getName());
 		sb.append("\n");
@@ -150,7 +150,6 @@ public class TestExecutionEventListener implements TestProgress {
 			sb.append("Step Definition	: " + unit.getStepDefinition());
 			sb.append("\n");
 		}
-		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
 	}
@@ -159,11 +158,10 @@ public class TestExecutionEventListener implements TestProgress {
 	public void printTestUnitPlan(BDDStep step) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
+		sb.append(FWStaticStore.ARTOS_LINE_BREAK_2);
 		sb.append("\n");
 		sb.append("Step: " + step.getStepAction() + " " + step.getStepDescription());
 		sb.append("\n");
-		sb.append(FWStaticStore.ARTOS_LINE_BREAK_1);
 
 		context.getLogger().info(sb.toString());
 	}

@@ -39,7 +39,8 @@ import com.artos.interfaces.TestProgress;
 import com.artos.utils.UDP;
 
 /**
- * This is TestContext which is wrapper around all objects/tools/loggers user may need during test case execution. This class is also responsible for
+ * This is TestContext which is wrapper around all objects/tools/loggers user
+ * may need during test case execution. This class is also responsible for
  * Summarising test results.
  */
 public class TestContext {
@@ -94,6 +95,12 @@ public class TestContext {
 	private Method afterTestUnit = null;
 	private Method afterFailedUnit = null;
 
+	// Current TestCase and Unit
+	private TestObjectWrapper currentTestCase = null;
+	private TestUnitObjectWrapper currentTestUnit = null;
+	private BDDScenario currentScenario = null;
+	private BDDStep currentTestStep = null;
+
 	// Test suite start time
 	private long testSuiteStartTime = 0;
 	// Test suite finish time
@@ -115,8 +122,10 @@ public class TestContext {
 	private Map<String, String> stepParameter = new HashMap<String, String>();
 
 	/**
-	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
-	 * soon as status is set to FAIL so user can pin point location of the failure
+	 * Sets Test status in memory. Status is not finalised until
+	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
+	 * warning as soon as status is set to FAIL so user can pin point location of
+	 * the failure
 	 * 
 	 * @param testStatus Test Status
 	 */
@@ -126,10 +135,12 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
-	 * soon as status is set to FAIL so user can pin point location of the failure
+	 * Sets Test status in memory. Status is not finalised until
+	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
+	 * warning as soon as status is set to FAIL so user can pin point location of
+	 * the failure
 	 * 
-	 * @param testStatus Test Status
+	 * @param testStatus  Test Status
 	 * @param description status description or reason
 	 */
 	public void setTestStatus(TestStatus testStatus, String description) {
@@ -137,18 +148,21 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Test status in memory. Status is not finalised until generateTestSummary() function is called. This function stamps "FAIL HERE" warning as
-	 * soon as status is set to FAIL so user can pin point location of the failure
+	 * Sets Test status in memory. Status is not finalised until
+	 * generateTestSummary() function is called. This function stamps "FAIL HERE"
+	 * warning as soon as status is set to FAIL so user can pin point location of
+	 * the failure
 	 * 
-	 * @param testStatus Test Status
-	 * @param snapshot Image file required to upload to report or null
+	 * @param testStatus  Test Status
+	 * @param snapshot    Image file required to upload to report or null
 	 * @param description status description or reason
 	 */
 	public void setTestStatus(TestStatus testStatus, File snapshot, String description) {
 
 		/*
-		 * Print status set by user and description/reason. User can not down grade (FAIL=>KTF=>SKIP=>PASS) finalTest status but down graded status is
-		 * allowed to be printed.
+		 * Print status set by user and description/reason. User can not down grade
+		 * (FAIL=>KTF=>SKIP=>PASS) finalTest status but down graded status is allowed to
+		 * be printed.
 		 */
 		if (null == description) {
 			getLogger().info("[" + TestStatus.getEnumName(testStatus.getValue()) + "]: ");
@@ -159,16 +173,18 @@ public class TestContext {
 		}
 
 		/*
-		 * This Method maintains Unit Test Status. User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed test
-		 * case status can not become KTF, SKIP or PASS.
+		 * This Method maintains Unit Test Status. User is not allows to down grade test
+		 * status (FAIL=>KTF=>SKIP=>PASS). Which means once failed test case status can
+		 * not become KTF, SKIP or PASS.
 		 */
 		if (testStatus.getValue() >= currentUnitTestStatus.getValue()) {
 			currentUnitTestStatus = testStatus;
 		}
 
 		/*
-		 * This Method maintains Test Case Test Status. User is not allows to down grade test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed
-		 * test case status can not become KTF, SKIP or PASS.
+		 * This Method maintains Test Case Test Status. User is not allows to down grade
+		 * test status (FAIL=>KTF=>SKIP=>PASS). Which means once failed test case status
+		 * can not become KTF, SKIP or PASS.
 		 */
 		if (testStatus.getValue() >= currentTestStatus.getValue()) {
 			currentTestStatus = testStatus;
@@ -183,7 +199,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Concludes final test result and generates summary report. This also includes bugTicketNumber if provided
+	 * Concludes final test result and generates summary report. This also includes
+	 * bugTicketNumber if provided
 	 * 
 	 * @param t {@link TestObjectWrapper}
 	 */
@@ -233,16 +250,18 @@ public class TestContext {
 
 		long totalTestTime = t.getTestFinishTime() - t.getTestStartTime();
 		// Finalise and add test result in log file
-		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n" + FWStaticStore.ARTOS_LINE_BREAK_1);
+		getLogger().info("\nTest Result : {}", getCurrentTestStatus().name() + "\n");
 
 		// Finalise and add test summary to Summary report
-		appendSummaryReport(t, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
-				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
+		appendSummaryReport(t, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(),
+				getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
 		notifyTestResult(t, getCurrentTestStatus(), null, getStrBugTrackingReference());
-		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		// Update test object with final outcome, if parameterised test cases then
+		// status will be tracked in list
 		t.getTestOutcomeList().add(getCurrentTestStatus());
 
-		// Go through test unit of each log and print status of each test units into report
+		// Go through test unit of each log and print status of each test units into
+		// report
 		for (int i = 0; i < t.getTestUnitList().size(); i++) {
 			TestUnitObjectWrapper unit = t.getTestUnitList().get(i);
 			long totalTestUnitTime = unit.getTestUnitFinishTime() - unit.getTestUnitStartTime();
@@ -250,11 +269,13 @@ public class TestContext {
 			// go through outcome list of test unit and print them all
 			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
 				if (unit.getDataProviderName().equals("")) {
-					appendUnitSummaryReport(t, unit, unit.getTestUnitOutcomeList().get(j), unit.getTestUnitMethod().getName() + "(context)",
-							unit.getBugTrackingNumber(), totalTestUnitTime);
+					appendUnitSummaryReport(t, unit, unit.getTestUnitOutcomeList().get(j),
+							unit.getTestUnitMethod().getName() + "(context)", unit.getBugTrackingNumber(),
+							totalTestUnitTime);
 				} else { // if data provider then append data provider number
 					appendUnitSummaryReport(t, unit, unit.getTestUnitOutcomeList().get(j),
-							unit.getTestUnitMethod().getName() + "(context)" + " : data[" + j + "]", unit.getBugTrackingNumber(), totalTestUnitTime);
+							unit.getTestUnitMethod().getName() + "(context)" + " : data[" + j + "]",
+							unit.getBugTrackingNumber(), totalTestUnitTime);
 				}
 			}
 		}
@@ -314,17 +335,22 @@ public class TestContext {
 			setCurrentUnitKTFCount(getCurrentUnitKTFCount() + 1);
 		}
 
-		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		// Update test object with final outcome, if parameterised test cases then
+		// status will be tracked in list
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
-				+ unit.getTestUnitMethod().getName() + "(context)");
+//		getLogger().info("\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
+//				+ unit.getTestUnitMethod().getName() + "(context)");
+		getLogger().info("\nUnit Result : " + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()));
+		getLogger().info(FWStaticStore.ARTOS_LINE_BREAK_2);
 
 		// Log test unit summary into extent report
-		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
-		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "]: " + unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? ""
+				: " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null,
+				"\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
+						+ unit.getTestUnitMethod().getName() + "(context) " + bugTrackingNum);
 		notifyTestUnitResult(unit, getCurrentUnitTestStatus(), null, unit.getBugTrackingNumber());
 		// reset status for next test
 		resetUnitTestStatus();
@@ -375,16 +401,19 @@ public class TestContext {
 
 		long totalTestTime = scenario.getTestFinishTime() - scenario.getTestStartTime();
 		// Finalise and add test result in log file
-		getLogger().info("\nScenario Result : {}", getCurrentTestStatus().name() + "\n" + FWStaticStore.ARTOS_LINE_BREAK_1);
+		getLogger().info("\nScenario Result : {}", getCurrentTestStatus().name() + "\n");
 
 		// Finalise and add test summary to Summary report
-		appendSummaryReport(scenario, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(), getCurrentPassCount(), getCurrentFailCount(),
-				getCurrentSkipCount(), getCurrentKTFCount(), totalTestTime);
+		appendSummaryReport(scenario, getCurrentTestStatus(), strTestFQCN, getStrBugTrackingReference(),
+				getCurrentPassCount(), getCurrentFailCount(), getCurrentSkipCount(), getCurrentKTFCount(),
+				totalTestTime);
 		notifyTestResult(scenario, getCurrentTestStatus(), null, getStrBugTrackingReference());
-		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		// Update test object with final outcome, if parameterised test cases then
+		// status will be tracked in list
 		scenario.getTestOutcomeList().add(getCurrentTestStatus());
 
-		// Go through test unit of each log and print status of each test units into report
+		// Go through test unit of each log and print status of each test units into
+		// report
 		for (int i = 0; i < scenario.getSteplist().size(); i++) {
 			BDDStep step = scenario.getSteplist().get(i);
 			TestUnitObjectWrapper unit = step.getUnit();
@@ -392,11 +421,13 @@ public class TestContext {
 
 			// go through outcome list of test unit and print them all
 			for (int j = 0; j < unit.getTestUnitOutcomeList().size(); j++) {
-				appendUnitSummaryReport(scenario, unit, unit.getTestUnitOutcomeList().get(j), step.getStepAction() + " " + step.getStepDescription(),
-						unit.getBugTrackingNumber(), totalTestUnitTime);
+				appendUnitSummaryReport(scenario, unit, unit.getTestUnitOutcomeList().get(j),
+						step.getStepAction() + " " + step.getStepDescription(), unit.getBugTrackingNumber(),
+						totalTestUnitTime);
 			}
 
-			// This has to be done in BDD because same test can be called again in next scenario
+			// This has to be done in BDD because same test can be called again in next
+			// scenario
 			// This is to avoid mix up
 			unit.getTestUnitOutcomeList().clear();
 		}
@@ -452,17 +483,20 @@ public class TestContext {
 			setCurrentUnitKTFCount(getCurrentUnitKTFCount() + 1);
 		}
 
-		// Update test object with final outcome, if parameterised test cases then status will be tracked in list
+		// Update test object with final outcome, if parameterised test cases then
+		// status will be tracked in list
 		unit.getTestUnitOutcomeList().add(getCurrentUnitTestStatus());
 
 		// print test unit outcome on the console and log file
-		getLogger().info("[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: " + step.getStepAction() + " "
-				+ step.getStepDescription());
+		getLogger().info("[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
+				+ step.getStepAction() + " " + step.getStepDescription());
 
 		// Log test unit summary into extent report
-		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? "" : " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
-		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null, "\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue())
-				+ "]: " + step.getStepDescription() + " " + bugTrackingNum);
+		String bugTrackingNum = "".equals(unit.getBugTrackingNumber()) ? ""
+				: " [Bug_Reference: " + unit.getBugTrackingNumber() + "]";
+		notifyTestStatusUpdate(getCurrentUnitTestStatus(), null,
+				"\n[" + TestStatus.getEnumName(getCurrentUnitTestStatus().getValue()) + "]: "
+						+ step.getStepDescription() + " " + bugTrackingNum);
 		// notify step final outcome
 		notifyTestUnitResult(step, getCurrentUnitTestStatus(), null, unit.getBugTrackingNumber());
 		// reset status for next test
@@ -472,24 +506,29 @@ public class TestContext {
 	/**
 	 * Append test summary to summary report
 	 * 
-	 * @param t {@link TestObjectWrapper} object
-	 * @param status Test status
-	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
+	 * @param t                 {@link TestObjectWrapper} object
+	 * @param status            Test status
+	 * @param strTestFQCN       Test fully qualified class name (Example :
+	 *                          com.test.unit.Abc)
 	 * @param bugTrackingNumber BugTracking Number
-	 * @param passCount Current passed test count
-	 * @param failCount Current failed test count
-	 * @param skipCount Current skipped test count
-	 * @param ktfCount Current known to fail test count
-	 * @param testDuration Test duration
+	 * @param passCount         Current passed test count
+	 * @param failCount         Current failed test count
+	 * @param skipCount         Current skipped test count
+	 * @param ktfCount          Current known to fail test count
+	 * @param testDuration      Test duration
 	 */
-	private void appendSummaryReport(TestObjectWrapper t, TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount,
-			long failCount, long skipCount, long ktfCount, long testDuration) {
+	private void appendSummaryReport(TestObjectWrapper t, TestStatus status, String strTestFQCN,
+			String bugTrackingNumber, long passCount, long failCount, long skipCount, long ktfCount,
+			long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
-		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours)
+				- TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes)
+				- TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0")
+				.substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
@@ -498,10 +537,11 @@ public class TestContext {
 		String SkipCount = String.format("%-" + 4 + "s", skipCount);
 		String KTFCount = String.format("%-" + 4 + "s", ktfCount);
 		String FailCount = String.format("%-" + 4 + "s", failCount);
-		String TestImportance = String.format("%-" + 10 + "s", (t.getTestImportance() == Importance.UNDEFINED ? "" : t.getTestImportance().name()));
+		String TestImportance = String.format("%-" + 10 + "s",
+				(t.getTestImportance() == Importance.UNDEFINED ? "" : t.getTestImportance().name()));
 
-		String summaryString = testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:" + FailCount + " ["
-				+ TestImportance + "] " + testTime + " " + JiraRef;
+		String summaryString = testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount
+				+ " F:" + FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef;
 		getLogger().getSummaryLogger().info(summaryString);
 		notifyTestCaseSummary(t.getTestClassObject().getName(), summaryString);
 	}
@@ -509,24 +549,29 @@ public class TestContext {
 	/**
 	 * Append test summary to summary report
 	 * 
-	 * @param scenario {@link BDDScenario} object
-	 * @param status Test status
-	 * @param strTestFQCN Test fully qualified class name (Example : com.test.unit.Abc)
+	 * @param scenario          {@link BDDScenario} object
+	 * @param status            Test status
+	 * @param strTestFQCN       Test fully qualified class name (Example :
+	 *                          com.test.unit.Abc)
 	 * @param bugTrackingNumber BugTracking Number
-	 * @param passCount Current passed test count
-	 * @param failCount Current failed test count
-	 * @param skipCount Current skipped test count
-	 * @param ktfCount Current known to fail test count
-	 * @param testDuration Test duration
+	 * @param passCount         Current passed test count
+	 * @param failCount         Current failed test count
+	 * @param skipCount         Current skipped test count
+	 * @param ktfCount          Current known to fail test count
+	 * @param testDuration      Test duration
 	 */
-	private void appendSummaryReport(BDDScenario scenario, TestStatus status, String strTestFQCN, String bugTrackingNumber, long passCount,
-			long failCount, long skipCount, long ktfCount, long testDuration) {
+	private void appendSummaryReport(BDDScenario scenario, TestStatus status, String strTestFQCN,
+			String bugTrackingNumber, long passCount, long failCount, long skipCount, long ktfCount,
+			long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
-		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours)
+				- TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes)
+				- TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0")
+				.substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 100 + "s", strTestFQCN).replace(" ", ".").substring(0, 100);
@@ -538,8 +583,8 @@ public class TestContext {
 		String TestImportance = String.format("%-" + 10 + "s",
 				(scenario.getTestImportance() == Importance.UNDEFINED ? "" : scenario.getTestImportance().name()));
 
-		String summaryString = testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount + " F:" + FailCount + " ["
-				+ TestImportance + "] " + testTime + " " + JiraRef;
+		String summaryString = testStatus + " = " + testName + " P:" + PassCount + " S:" + SkipCount + " K:" + KTFCount
+				+ " F:" + FailCount + " [" + TestImportance + "] " + testTime + " " + JiraRef;
 		getLogger().getSummaryLogger().info(summaryString);
 		notifyTestCaseSummary(scenario.scenarioDescription, summaryString);
 
@@ -548,21 +593,24 @@ public class TestContext {
 	/**
 	 * Append test unit summary to summary report
 	 * 
-	 * @param t {@link TestObjectWrapper} object
-	 * @param unit {@link TestUnitObjectWrapper} object
-	 * @param status Test status
-	 * @param testUnitName Test unit name
+	 * @param t                 {@link TestObjectWrapper} object
+	 * @param unit              {@link TestUnitObjectWrapper} object
+	 * @param status            Test status
+	 * @param testUnitName      Test unit name
 	 * @param bugTrackingNumber BugTracking Number
-	 * @param testDuration Test duration
+	 * @param testDuration      Test duration
 	 */
-	private void appendUnitSummaryReport(TestObjectWrapper t, TestUnitObjectWrapper unit, TestStatus status, String testUnitName,
-			String bugTrackingNumber, long testDuration) {
+	private void appendUnitSummaryReport(TestObjectWrapper t, TestUnitObjectWrapper unit, TestStatus status,
+			String testUnitName, String bugTrackingNumber, long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
-		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours)
+				- TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes)
+				- TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0")
+				.substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 95 + "s", testUnitName).replace(" ", ".").substring(0, 95);
@@ -574,8 +622,8 @@ public class TestContext {
 		String TestImportance = String.format("%-" + 10 + "s",
 				(unit.getTestImportance() == Importance.UNDEFINED ? "" : unit.getTestImportance().name()));
 
-		String summaryString = "  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount + "  :" + KTFCount
-				+ " [" + TestImportance + "] " + testTime + " " + JiraRef;
+		String summaryString = "  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :"
+				+ SkipCount + "  :" + KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef;
 		getLogger().getSummaryLogger().info(summaryString);
 		notifyTestUnitSummary(t.getTestClassObject().getName(), summaryString);
 	}
@@ -583,21 +631,24 @@ public class TestContext {
 	/**
 	 * Append test unit summary to summary report
 	 * 
-	 * @param scenario {@link BDDScenario} object
-	 * @param unit {@link TestUnitObjectWrapper} object
-	 * @param status Test status
-	 * @param testUnitName Test unit name
+	 * @param scenario          {@link BDDScenario} object
+	 * @param unit              {@link TestUnitObjectWrapper} object
+	 * @param status            Test status
+	 * @param testUnitName      Test unit name
 	 * @param bugTrackingNumber BugTracking Number
-	 * @param testDuration Test duration
+	 * @param testDuration      Test duration
 	 */
-	private void appendUnitSummaryReport(BDDScenario scenario, TestUnitObjectWrapper unit, TestStatus status, String testUnitName,
-			String bugTrackingNumber, long testDuration) {
+	private void appendUnitSummaryReport(BDDScenario scenario, TestUnitObjectWrapper unit, TestStatus status,
+			String testUnitName, String bugTrackingNumber, long testDuration) {
 
 		long hours = TimeUnit.MILLISECONDS.toHours(testDuration);
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(testDuration) - TimeUnit.HOURS.toMinutes(hours);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
-		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds);
-		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0").substring(0, 22);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(testDuration) - TimeUnit.HOURS.toSeconds(hours)
+				- TimeUnit.MINUTES.toSeconds(minutes);
+		long millis = testDuration - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes)
+				- TimeUnit.SECONDS.toMillis(seconds);
+		String testTime = String.format("duration:%3d:%2d:%2d.%3d", hours, minutes, seconds, millis).replace(" ", "0")
+				.substring(0, 22);
 
 		String testStatus = String.format("%-" + 4 + "s", TestStatus.getEnumName(status.getValue()));
 		String testName = String.format("%-" + 95 + "s", testUnitName).substring(0, 95);
@@ -609,8 +660,8 @@ public class TestContext {
 		String TestImportance = String.format("%-" + 10 + "s",
 				(unit.getTestImportance() == Importance.UNDEFINED ? "" : unit.getTestImportance().name()));
 
-		String summaryString = "  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :" + SkipCount + "  :" + KTFCount
-				+ " [" + TestImportance + "] " + testTime + " " + JiraRef;
+		String summaryString = "  |--" + testStatus + " = " + testName + "  :" + PassCount + "  :" + FailCount + "  :"
+				+ SkipCount + "  :" + KTFCount + " [" + TestImportance + "] " + testTime + " " + JiraRef;
 		getLogger().getSummaryLogger().info(summaryString);
 		notifyTestUnitSummary(scenario.scenarioDescription, summaryString);
 	}
@@ -661,13 +712,16 @@ public class TestContext {
 		sb.append("\n");
 		sb.append("* Java Runtime Environment version => " + sysProp.getJavaRuntimeEnvironmentVersion());
 		sb.append("\n");
-		sb.append("* Java Virtual Machine specification version => " + sysProp.getJavaVirtualMachineSpecificationVersion());
+		sb.append("* Java Virtual Machine specification version => "
+				+ sysProp.getJavaVirtualMachineSpecificationVersion());
 		sb.append("\n");
-		sb.append("* Java Runtime Environment specification version => " + sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
+		sb.append("* Java Runtime Environment specification version => "
+				+ sysProp.getJavaRuntimeEnvironmentSpecificationVersion());
 		sb.append("\n");
 		sb.append("* Java class path => " + sysProp.getJavaClassPath());
 		sb.append("\n");
-		sb.append("* List of paths to search when loading libraries => " + sysProp.getListofPathstoSearchWhenLoadingLibraries());
+		sb.append("* List of paths to search when loading libraries => "
+				+ sysProp.getListofPathstoSearchWhenLoadingLibraries());
 		sb.append("\n");
 		sb.append("* Operating system name => " + sysProp.getOperatingSystemName());
 		sb.append("\n");
@@ -751,8 +805,8 @@ public class TestContext {
 	}
 
 	/**
-	 * @param formatBDD true = BDD string will be formatted
-	 * Prints test plan for current context
+	 * @param formatBDD true = BDD string will be formatted Prints test plan for
+	 *                  current context
 	 */
 	public void printTestPlan(boolean formatBDD) {
 		List<TestPlanWrapper> testPlanList = getTestPlan(true);
@@ -831,31 +885,31 @@ public class TestContext {
 			listener.testCaseStatusUpdate(testStatus, snapshot, Msg);
 		}
 	}
-	
+
 	private void notifyTestResult(TestObjectWrapper t, TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testResult(t, testStatus, snapshot, Msg);
 		}
 	}
-	
+
 	private void notifyTestResult(BDDScenario scenario, TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testResult(scenario, testStatus, snapshot, Msg);
 		}
 	}
-	
+
 	private void notifyTestUnitResult(TestUnitObjectWrapper unit, TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testUnitResult(unit, testStatus, snapshot, Msg);
 		}
 	}
-	
+
 	private void notifyTestUnitResult(BDDStep step, TestStatus testStatus, File snapshot, String Msg) {
 		for (TestProgress listener : listenerList) {
 			listener.testUnitResult(step, testStatus, snapshot, Msg);
 		}
 	}
-	
+
 	private void notifyTestCaseSummary(String FQCN, String description) {
 		for (TestProgress listener : listenerList) {
 			listener.testCaseSummaryPrinting(FQCN, description);
@@ -925,11 +979,13 @@ public class TestContext {
 	}
 
 	/**
-	 * This method should be exercised as initial line for every test case, this allows user to set properties of test case as known to fail. If known
-	 * to fail test case passes then it will be marked as a fail. Which will help user figure out if developer has fixed some feature without letting
-	 * them know and gives test engineer an opportunity to re-look at the test case behaviour.
+	 * This method should be exercised as initial line for every test case, this
+	 * allows user to set properties of test case as known to fail. If known to fail
+	 * test case passes then it will be marked as a fail. Which will help user
+	 * figure out if developer has fixed some feature without letting them know and
+	 * gives test engineer an opportunity to re-look at the test case behaviour.
 	 * 
-	 * @param knownToFail true|false
+	 * @param knownToFail             true|false
 	 * @param strBugTrackingReference Bug Tracking reference (Example : JIRA number)
 	 */
 	protected void setKnownToFail(boolean knownToFail, String strBugTrackingReference) {
@@ -955,7 +1011,8 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets Object which is available globally to all test cases. User must maintain Key for the HashTable
+	 * Sets Object which is available globally to all test cases. User must maintain
+	 * Key for the HashTable
 	 * 
 	 * @param key = Key to recognise an Object
 	 * @param obj = Object to be stored
@@ -985,9 +1042,10 @@ public class TestContext {
 	}
 
 	/**
-	 * Sets String which is available globally to all test cases. User must maintain Key for the HashTable
+	 * Sets String which is available globally to all test cases. User must maintain
+	 * Key for the HashTable
 	 * 
-	 * @param key = Key to recognise an Object
+	 * @param key   = Key to recognise an Object
 	 * @param value = Value to be stored
 	 */
 	public void setGlobalString(String key, String value) {
@@ -1381,6 +1439,38 @@ public class TestContext {
 
 	protected void setAfterFailedUnit(Method afterFailedUnit) {
 		this.afterFailedUnit = afterFailedUnit;
+	}
+
+	protected void setCurrentTestCase(TestObjectWrapper t) {
+		currentTestCase = t;
+	}
+
+	public TestObjectWrapper getCurrentTestCase() {
+		return currentTestCase;
+	}
+
+	protected void setCurrentTestUnit(TestUnitObjectWrapper unit) {
+		currentTestUnit = unit;
+	}
+
+	public TestUnitObjectWrapper getCurrentTestUnit() {
+		return currentTestUnit;
+	}
+
+	protected void setCurrentTestScenario(BDDScenario scenario) {
+		currentScenario = scenario;
+	}
+
+	public BDDScenario getCurrentTestScenario() {
+		return currentScenario;
+	}
+
+	protected void setCurrentTestStep(BDDStep step) {
+		currentTestStep = step;
+	}
+
+	public BDDStep getCurrentTestStep() {
+		return currentTestStep;
 	}
 
 }

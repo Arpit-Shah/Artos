@@ -160,6 +160,7 @@ public class CustomPrompt implements ItemListener {
 	/**
 	 * Do not use default constructor
 	 */
+	@SuppressWarnings("unused")
 	private CustomPrompt() {
 		// TODO Auto-generated constructor stub
 	}
