@@ -309,6 +309,12 @@ public class PromptBuilder implements ItemListener {
 					c.setForeground(Color.BLUE);
 					c.setFont(new Font("Arial", Font.BOLD, fontSize));
 				} else if (versionVal.contains("Action")) {
+					c.setForeground(Color.BLACK);
+					c.setFont(new Font("Arial", Font.BOLD, fontSize));
+				} else if (versionVal.contains("Important")) {
+					c.setForeground(Color.RED);
+					c.setFont(new Font("Arial", Font.BOLD, fontSize));
+				} else if (versionVal.contains("Warning")) {
 					c.setForeground(Color.RED);
 					c.setFont(new Font("Arial", Font.BOLD, fontSize));
 				} else {
@@ -551,8 +557,21 @@ public class PromptBuilder implements ItemListener {
 		}
 	}
 
+	/**
+	 * Add string to display instruction for user. User can add as many
+	 * line of text that can fit in one screen, Text is trimmed if goes above 700px
+	 * width panel. Ownership is on user to ensure content fit on the screen.
+	 * Different resolution of screens will have different experience
+	 * 
+	 * @param instruction
+	 */
+	public void addText(String instruction) {
+		addText(AKW.NONE, instruction);
+	}
+
 	public enum AKW {
-		NONE("  -  "), ACTION("Action"), VALIDATE("Validate"), INFO("Info"), PREP("Preparation"), NOTE("Note");
+		NONE("  -  "), ACTION("Action"), VALIDATE("Validate"), INFO("Info"), PREP("Preparation"), NOTE("Note"),
+		ENSURE("Ensure"), IMPORTANT("Important"), WARNING("Warning");
 
 		private final String text;
 
