@@ -68,6 +68,14 @@ public class Guard {
 	private static String constructMsg(final int reference, final int actual, final int delta) {
 		return "Finding:\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta;
 	}
+	
+	private static String constructMsg(final double reference, final double actual) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual;
+	}
+
+	private static String constructMsg(final double reference, final double actual, final double delta) {
+		return "Finding:\nReference : " + reference + "\n   Actual : " + actual + "\n   Delta : " + delta;
+	}
 
 	private static String constructMsg(final boolean reference, final boolean actual) {
 		return "Finding:\nReference : " + reference + "\n   Actual : " + actual;
@@ -1068,6 +1076,145 @@ public class Guard {
 	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
 	 */
 	public static void guardLessOrEqualsTo(final int reference, final int actual) throws ValueNotAsExpectedException {
+		if (!(actual <= reference)) {
+			throw new ValueNotAsExpectedException(strLessOrEqual_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+	
+	// *******************************************************************************************
+	// Double
+	// *******************************************************************************************
+	/**
+	 * Validates that two double values are equal. Appropriate boolean value will be returned based on comparison.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @return true | false
+	 */
+	public static boolean isEquals(final double reference, final double actual) {
+		return (reference == actual) ? true : false;
+	}
+
+	/**
+	 * Validates that two double values are equal with allowed {@code delta} on either side. Appropriate boolean value will be returned based on
+	 * comparison.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @param delta Variant allowed on either side of the reference value
+	 * @return true | false
+	 */
+	public static boolean isEquals(final double reference, final double actual, final double delta) {
+		// To ensure we do not exceed double max boundary
+		double MaxBoundry;
+		if (reference >= Double.MAX_VALUE - delta) {
+			MaxBoundry = Double.MAX_VALUE;
+		} else {
+			MaxBoundry = reference + delta;
+		}
+		// To ensure we do not exceed integer min boundary
+		double MinBoundry;
+		if (reference <= Double.MIN_VALUE + delta) {
+			MinBoundry = Double.MIN_VALUE;
+		} else {
+			MinBoundry = reference - delta;
+		}
+
+		return (actual >= MinBoundry && actual <= MaxBoundry) ? true : false;
+	}
+
+	/**
+	 * Validates that two double values are equal. If they are not, an {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * 
+	 * @param reference Reference integer value
+	 * @param actual Actual integer value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardEquals(final double reference, final double actual) throws ValueNotAsExpectedException {
+		if (!isEquals(reference, actual)) {
+			throw new ValueNotAsExpectedException(strEqual_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that two double values are equal with allowed {@code delta} on either side. If they are not, an {@link ValueNotAsExpectedException}
+	 * is thrown with the given message.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @param delta Variant allowed on either side of the reference value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardEquals(final double reference, final double actual, final double delta) throws ValueNotAsExpectedException {
+		if (!isEquals(reference, actual, delta)) {
+			throw new ValueNotAsExpectedException(strEqual_fail + "\n" + constructMsg(reference, actual, delta));
+		}
+	}
+
+	/**
+	 * Validates that two double values are <b>not</b> equal. If they are, an {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardNotEquals(final double reference, final double actual) throws ValueNotAsExpectedException {
+		if (isEquals(reference, actual)) {
+			throw new ValueNotAsExpectedException(strNotEqual_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} double value is greater than {@code actual} double value. If they are not, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardGreaterThan(final double reference, final double actual) throws ValueNotAsExpectedException {
+		if (!(actual > reference)) {
+			throw new ValueNotAsExpectedException(strGreater_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} double value is greater than or equal to {@code actual} double value. If they are not, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardGreaterOrEqualsTo(final double reference, final double actual) throws ValueNotAsExpectedException {
+		if (!(actual >= reference)) {
+			throw new ValueNotAsExpectedException(strGreaterOrEqual_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} double value is less than {@code actual} double value. If they are not, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardLessThan(final double reference, final double actual) throws ValueNotAsExpectedException {
+		if (!(actual < reference)) {
+			throw new ValueNotAsExpectedException(strLess_fail + "\n" + constructMsg(reference, actual));
+		}
+	}
+
+	/**
+	 * Validates that {@code reference} double value is less than or equal to {@code actual} double value. If they are not, an
+	 * {@link ValueNotAsExpectedException} is thrown with the given message.
+	 * 
+	 * @param reference Reference double value
+	 * @param actual Actual double value
+	 * @throws ValueNotAsExpectedException Exception is thrown if value is not meeting defined criteria
+	 */
+	public static void guardLessOrEqualsTo(final double reference, final double actual) throws ValueNotAsExpectedException {
 		if (!(actual <= reference)) {
 			throw new ValueNotAsExpectedException(strLessOrEqual_fail + "\n" + constructMsg(reference, actual));
 		}
