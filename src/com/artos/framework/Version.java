@@ -37,10 +37,16 @@ public class Version {
 	}
 
 	public String getBuildVersion() {
+		if(null == version) {
+			return "0.0.0";
+		}
 		return version;
 	}
 
 	public String getBuildDate() {
+		if(null == buidDate) {
+			return "0.0.0";
+		}
 		return buidDate;
 	}
 
