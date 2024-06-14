@@ -285,6 +285,18 @@ public class JUnitReportListener implements TestProgress {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public void localAfterFailedUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void localAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
 	public void globalBeforeTestCaseMethodExecutionStarted(String methodName, TestObjectWrapper t) {
