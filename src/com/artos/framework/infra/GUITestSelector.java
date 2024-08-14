@@ -21,8 +21,14 @@
  ******************************************************************************/
 package com.artos.framework.infra;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +53,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -64,6 +72,7 @@ import com.artos.interfaces.TestRunnable;
 
 /**
  * UI Test Selector for testcases
+ * 
  * @author ArpitShah
  *
  */
@@ -75,16 +84,18 @@ public class GUITestSelector {
 	private JTextField loopCountField;
 	private TestRunnable testRunner;
 	private ArrayList<TestObjectWrapper> selectedTests;
+	private JTextField searchField; // Search bar text field
 
 	/**
 	 * TestRunnerGui constructor
 	 * 
-	 * @param context TestContext
-	 * @param testList List of Tests defined in Main class
+	 * @param context    TestContext
+	 * @param testList   List of Tests defined in Main class
 	 * @param testRunner A TestRunner implementation that will execute the tests
 	 * @throws Exception if gui could not launch
 	 */
-	public GUITestSelector(TestContext context, List<TestObjectWrapper> testList, TestRunnable testRunner) throws Exception {
+	public GUITestSelector(TestContext context, List<TestObjectWrapper> testList, TestRunnable testRunner)
+			throws Exception {
 		// UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 		// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -158,15 +169,49 @@ public class GUITestSelector {
 			}
 		});
 
-		container.setSize(new Dimension(500, 550));
+		container.setSize(new Dimension(500, 600));
 		container.setResizable(false);
 		container.setLocation(new Point(100, 50));
 	}
 
 	/**
-	 * Initialise all the components that will be placed in the main container (including listeners)
+	 * Initialise all the components that will be placed in the main container
+	 * (including listeners)
 	 */
 	private void initMainViewComponents() {
+		// Create search bar
+
+		searchField = new JTextField(20) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				if (getText().isEmpty()) {
+					Graphics2D g2d = (Graphics2D) g.create();
+					g2d.setColor(Color.GRAY);
+					g2d.drawString("Search...", 5, g.getFontMetrics().getAscent() + 5);
+					g2d.dispose();
+				}
+			}
+		};
+		searchField.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				filterTable();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				filterTable();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				filterTable();
+			}
+		});
+
 		// to execute all tests
 		JButton execAll = new JButton("Execute all");
 		execAll.addActionListener(new ActionListener() {
@@ -235,17 +280,49 @@ public class GUITestSelector {
 		// so we can scroll the table view if there are a lot of tests
 		JScrollPane scrollPane = new JScrollPane(testTableView);
 
-		// basic layout, no constraints (any suggestions here?)
-		FlowLayout layout = new FlowLayout();
-		layout.setVgap(10);
+		// Use GridBagLayout for more control over component placement
+		GridBagLayout layout = new GridBagLayout();
 		container.setLayout(layout);
+		GridBagConstraints gbc = new GridBagConstraints();
 
-		// add all components to the main container
-		container.getContentPane().add(execAll);
-		container.getContentPane().add(execSelected);
-		container.getContentPane().add(loopPanel);
-		container.getContentPane().add(scrollPane);
+		// Add search field
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(5, 5, 5, 5); // Padding
+		gbc.gridwidth = 4; // Span across all columns
+		container.add(searchField, gbc);
 
+		// Add buttons and loop count panel
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.gridwidth = 1; // Reset gridwidth to 1
+		gbc.fill = GridBagConstraints.NONE;
+		container.add(execAll, gbc);
+
+		gbc.gridx = 1;
+		container.add(execSelected, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridwidth = 1; // Span across columns 2 and 3
+		container.add(loopPanel, gbc);
+
+		// Add table
+		gbc.gridy = 2;
+		gbc.gridx = 0;
+		gbc.gridwidth = 4; // Span across all columns
+		gbc.weighty = 1.0; // Allow table to expand vertically
+		gbc.fill = GridBagConstraints.BOTH; // Allow table to expand both horizontally and vertically
+		container.add(scrollPane, gbc);
+
+	}
+
+	/**
+	 * Filters the table based on the search field input
+	 */
+	private void filterTable() {
+		String searchText = searchField.getText();
+		testRunnerDataModel.filter(searchText);
 	}
 
 	/**
@@ -317,22 +394,27 @@ public class GUITestSelector {
 
 @SuppressWarnings("serial")
 class TestRunnerDataModel extends AbstractTableModel {
-	private List<TestObjectWrapper> testList;
+	private List<TestObjectWrapper> originalTestList;
+	private List<TestObjectWrapper> filteredTestList;
 	private String[] columnNames;
 	private String[][] displayData;
 	private TestContext context;
 
 	public TestRunnerDataModel(TestContext context, List<TestObjectWrapper> testList) {
-		this.testList = testList;
+		this.originalTestList = new ArrayList<>(testList);
+		this.filteredTestList = new ArrayList<>(testList);
 		this.context = context;
+		initialiseColumnNames();
+		populateDisplayData();
+	}
 
+	private void initialiseColumnNames() {
 		// Enable if package name column is required
 		if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
 			columnNames = new String[] { "F", " # ", "Seq", "Test Name" };
 		} else {
 			columnNames = new String[] { "F", " # ", "Test Name" };
 		}
-		populateDisplayData();
 	}
 
 	/**
@@ -361,11 +443,11 @@ class TestRunnerDataModel extends AbstractTableModel {
 			}
 		}
 
-		displayData = new String[testList.size()][columnNames.length];
+		displayData = new String[filteredTestList.size()][columnNames.length];
 
-		for (int index = 0; index < testList.size(); ++index) {
+		for (int index = 0; index < filteredTestList.size(); ++index) {
 			// get only the actual test name
-			String fullTestName = testList.get(index).getTestClassObject().getName();
+			String fullTestName = filteredTestList.get(index).getTestClassObject().getName();
 			int last = fullTestName.lastIndexOf(".") + 1;
 			String testName = fullTestName.substring(last);
 
@@ -379,7 +461,7 @@ class TestRunnerDataModel extends AbstractTableModel {
 
 			if (FWStaticStore.frameworkConfig.isEnableGUITestSelectorSeqNumber()) {
 				// column2 - test seq
-				displayData[index][2] = Integer.toString(testList.get(index).getTestsequence());
+				displayData[index][2] = Integer.toString(filteredTestList.get(index).getTestsequence());
 				// column3 - test name
 				displayData[index][3] = testName;
 			} else {
@@ -389,9 +471,26 @@ class TestRunnerDataModel extends AbstractTableModel {
 		}
 	}
 
+	public void filter(String query) {
+		filteredTestList.clear();
+		if (query.isEmpty()) {
+			filteredTestList.addAll(originalTestList);
+		} else {
+			String lowerCaseQuery = query.toLowerCase();
+			for (TestObjectWrapper test : originalTestList) {
+				String testName = test.getTestClassObject().getName().toLowerCase();
+				if (testName.contains(lowerCaseQuery)) {
+					filteredTestList.add(test);
+				}
+			}
+		}
+		populateDisplayData();
+		fireTableDataChanged();
+	}
+
 	@Override
 	public int getRowCount() {
-		return testList.size();
+		return filteredTestList.size();
 	}
 
 	@Override
@@ -410,10 +509,10 @@ class TestRunnerDataModel extends AbstractTableModel {
 	}
 
 	public List<TestObjectWrapper> getTestList() {
-		return testList;
+		return filteredTestList;
 	}
 
 	public TestObjectWrapper getTestAt(int rowIndex) {
-		return testList.get(rowIndex);
+		return filteredTestList.get(rowIndex);
 	}
 }
