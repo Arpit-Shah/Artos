@@ -331,7 +331,7 @@ public class ScanTestSuite {
 	 * @param sortBySeqNum Enables sorting of the test cases (Sorting happens within package scope)
 	 * @param removeSkippedTests Enables removal of test cases which are marked 'Skip'
 	 * @return List of {@code TestExecutable}
-	 * @throws Exception
+	 * @throws Exception exceptions
 	 */
 	public List<TestExecutable> getTestList(boolean sortBySeqNum, boolean removeSkippedTests) throws Exception {
 		List<TestExecutable> testList = new ArrayList<TestExecutable>();

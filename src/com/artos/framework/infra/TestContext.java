@@ -773,7 +773,6 @@ public class TestContext {
 	/**
 	 * Generates test plan using annotation provided in the test case classes
 	 * 
-	 * @param context            Test Context
 	 * @param removeSkippedTests true = remove skipped test from test plan, false =
 	 *                           print all test plan
 	 * @return {@code TestPlanWrapper} list

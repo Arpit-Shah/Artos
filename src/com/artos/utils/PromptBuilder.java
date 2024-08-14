@@ -548,8 +548,8 @@ public class PromptBuilder implements ItemListener {
 	 * width panel. Ownership is on user to ensure content fit on the screen.
 	 * Different resolution of screens will have different experience
 	 * 
-	 * @param actionKeyWord
-	 * @param instruction
+	 * @param actionKeyWord action keyword
+	 * @param instruction instruction
 	 */
 	public void addText(AKW actionKeyWord, String instruction) {
 		if (null != instruction) {
@@ -563,7 +563,7 @@ public class PromptBuilder implements ItemListener {
 	 * width panel. Ownership is on user to ensure content fit on the screen.
 	 * Different resolution of screens will have different experience
 	 * 
-	 * @param instruction
+	 * @param instruction instruction
 	 */
 	public void addText(String instruction) {
 		addText(AKW.NONE, instruction);

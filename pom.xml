@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>1.0.00</version>
+	<version>1.0.01</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -54,17 +54,6 @@
 		<developer>
 			<name>Swapna Soni</name>
 			<id>SSo</id>
-			<email>artos.framework@gmail.com</email>
-			<url>https://www.theartos.com</url>
-			<organization>Artos</organization>
-			<organizationUrl>http://www.theartos.com</organizationUrl>
-			<roles>
-				<role>contributor</role>
-			</roles>
-		</developer>
-		<developer>
-			<name>Dulani Kumarage</name>
-			<id>DKu</id>
 			<email>artos.framework@gmail.com</email>
 			<url>https://www.theartos.com</url>
 			<organization>Artos</organization>

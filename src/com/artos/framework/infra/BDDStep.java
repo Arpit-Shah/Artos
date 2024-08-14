@@ -57,7 +57,7 @@ public class BDDStep {
 	/**
 	 * Returns step description
 	 * 
-	 * @return step description
+	 * @return step description step description
 	 */
 	public String getStepDescription() {
 		return stepDescription;
@@ -66,7 +66,7 @@ public class BDDStep {
 	/**
 	 * Set step description
 	 * 
-	 * @param stepDescription
+	 * @param stepDescription step description
 	 */
 	public void setStepDescription(String stepDescription) {
 		this.stepDescription = stepDescription;

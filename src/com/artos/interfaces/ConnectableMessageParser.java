@@ -41,7 +41,7 @@ public interface ConnectableMessageParser {
 	/**
 	 * method to return left over bytes after parsing provided input
 	 * 
-	 * @return
+	 * @return byte array
 	 */
 	public byte[] getLeftOverBytes();
 }
