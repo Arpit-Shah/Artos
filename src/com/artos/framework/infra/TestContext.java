@@ -778,7 +778,7 @@ public class TestContext {
 	 *                           print all test plan
 	 * @return {@code TestPlanWrapper} list
 	 */
-	private List<TestPlanWrapper> getTestPlan(boolean removeSkippedTests) {
+	public List<TestPlanWrapper> getTestPlan(boolean removeSkippedTests) {
 
 		String packageName = "";
 		if (null != getPrePostRunnableObj().getPackage()) {

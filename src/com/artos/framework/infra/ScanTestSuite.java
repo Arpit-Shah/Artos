@@ -33,9 +33,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
 
 import com.artos.annotation.AfterFailedUnit;
 import com.artos.annotation.AfterTest;
@@ -103,7 +102,8 @@ public class ScanTestSuite {
 	private void scan(String packageName) {
 
 		// Find all annotation
-		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
+//		reflection = new Reflections(packageName, new MethodAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner(false));
+		reflection = new Reflections(new ConfigurationBuilder().forPackage(packageName).setScanners(Scanners.MethodsAnnotated, Scanners.TypesAnnotated, Scanners.SubTypes.filterResultsBy(s -> true)));
 
 		// GetAllDataProviderMethods => Filter Public methods => Get UpperCase DataProviderName => Store it
 		reflection.getMethodsAnnotatedWith(DataProvider.class).stream().filter(m -> Modifier.isPublic(m.getModifiers())).forEach(m -> {

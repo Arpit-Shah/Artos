@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!-- Project Info -->
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -11,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>0.0.19</version>
+	<version>1.0.00</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -104,11 +103,23 @@
 
 	<!-- Dependencies -->
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>25.0-jre</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream--> 
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.20</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.11</version>
+			<version>0.10.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
 		<dependency>
@@ -311,10 +322,10 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/classes/com/artos/icons</outputDirectory>   <!-- output directory -->
+							<outputDirectory>${basedir}/target/classes/com/artos/icons</outputDirectory> <!-- output directory -->
 							<resources>
 								<resource>
-									<directory>${basedir}/src/com/artos/icons</directory>         <!-- source directory -->
+									<directory>${basedir}/src/com/artos/icons</directory> <!-- source directory -->
 									<filtering>true</filtering>
 								</resource>
 							</resources>
@@ -327,10 +338,10 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/classes/com/artos/template</outputDirectory>   <!-- output directory -->
+							<outputDirectory>${basedir}/target/classes/com/artos/template</outputDirectory> <!-- output directory -->
 							<resources>
 								<resource>
-									<directory>${basedir}/src/com/artos/template</directory>         <!-- source directory -->
+									<directory>${basedir}/src/com/artos/template</directory> <!-- source directory -->
 									<filtering>true</filtering>
 								</resource>
 							</resources>
@@ -345,10 +356,10 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/classes/com/artos/version</outputDirectory>   <!-- output directory -->
+							<outputDirectory>${basedir}/target/classes/com/artos/version</outputDirectory> <!-- output directory -->
 							<resources>
 								<resource>
-									<directory>${basedir}/src/com/artos/version</directory>         <!-- source directory -->
+									<directory>${basedir}/src/com/artos/version</directory> <!-- source directory -->
 									<filtering>true</filtering>
 								</resource>
 							</resources>

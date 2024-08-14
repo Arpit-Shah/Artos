@@ -250,9 +250,11 @@ public class TestTransform {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void testBytes2ToInt_ByteArray_DifferentByteOrder() {
 		byte[] test1 = _tfm.strHexToByteArray("7F FF");
 		int expectedResult1 = 32767;
+		
 		int resultArray1 = _tfm.bytes2ToInt(test1, ByteOrder.BIG_ENDIAN);
 		assertEquals(expectedResult1, resultArray1);
 
@@ -268,6 +270,7 @@ public class TestTransform {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void testBytes2ToInt_BadPath_Overflow() {
 		// bad path with extra byte, should only take first 4 bytes into
 		// consideration
@@ -278,6 +281,7 @@ public class TestTransform {
 	}
 
 	@Test(expected = BufferUnderflowException.class)
+	@SuppressWarnings("deprecation")
 	public void testBytes2ToInt_BadPath_Underflow() {
 		// bad path with value smaller than 4 bytes
 		byte[] test2 = _tfm.strHexToByteArray("FF");
