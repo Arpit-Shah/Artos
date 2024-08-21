@@ -6,7 +6,9 @@ This project is distributed under MIT License. Please read "LICENSE.md" file for
 
 | Release     |Download Link  							                                                                |
 |-------------|:-------------------------------------------------------------------------------------------:|
-| 0.0.19      |[artos-0.0.19.jar](https://repo1.maven.org/maven2/com/theartos/artos/0.0.19/artos-0.0.19.jar) |
+| 1.0.02      |[artos-1.0.02.jar](https://repo1.maven.org/maven2/com/theartos/artos/1.0.02/artos-1.0.02.jar) |
+| 1.0.01      |[artos-1.0.01.jar](https://repo1.maven.org/maven2/com/theartos/artos/1.0.01/artos-1.0.01.jar) |
+| 1.0.00      |[artos-1.0.00.jar](https://repo1.maven.org/maven2/com/theartos/artos/1.0.00/artos-1.0.00.jar) |
 | 0.0.18      |[artos-0.0.18.jar](https://repo1.maven.org/maven2/com/theartos/artos/0.0.18/artos-0.0.18.jar) |
 | 0.0.17-beta-1|[artos-0.0.17-beta-1.jar](https://repo1.maven.org/maven2/com/theartos/artos/0.0.17-beta-1/artos-0.0.17-beta-1.jar) |
 | 0.0.16      |[artos-0.0.16.jar](https://repo1.maven.org/maven2/com/theartos/artos/0.0.16/artos-0.0.16.jar) |
