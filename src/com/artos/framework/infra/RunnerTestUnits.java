@@ -376,8 +376,12 @@ public class RunnerTestUnits {
 		if (null == e.getCause()) {
 			throw e;
 		} else {
-			// Cast cause into Exception because Executor service can not handle throwable
-			throw (Exception) e.getCause();
+			Throwable cause = e.getCause();
+			if (cause instanceof Exception) {
+				throw (Exception) cause;
+			}
+			// Preserve original error details while keeping runner flow compatible with Exception-based signatures.
+			throw new Exception("Invocation target threw non-Exception: " + cause.getClass().getName(), cause);
 		}
 	}
 

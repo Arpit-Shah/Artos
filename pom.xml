@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.theartos</groupId>
 	<artifactId>artos</artifactId>
-	<version>1.0.02</version>
+	<version>1.0.03</version>
 
 	<!-- Organisation Info -->
 	<organization>
@@ -76,19 +76,11 @@
 		<!-- Enable time stamp so version file can be replaced with time stamp -->
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm</maven.build.timestamp.format>
+		<central.publishing.plugin.version>0.10.0</central.publishing.plugin.version>
+		<central.autoPublish>true</central.autoPublish>
+		<central.waitUntil>published</central.waitUntil>
+		<maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
 	</properties>
-
-	<!-- Distribution Model -->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 
 	<!-- Dependencies -->
 	<dependencies>
@@ -134,13 +126,6 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.55</version>
 		</dependency>
-		<dependency>
-			<groupId>com.arpitos</groupId>
-			<artifactId>mindterm</artifactId>
-			<version>0.0.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/mindterm.signed.jar</systemPath>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -185,16 +170,33 @@
 				</configuration>
 			</plugin>
 
-			<!-- Nexus sonatype stagin Plugins -->
+			<!-- Sonatype Central Portal publishing plugin -->
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>${central.publishing.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					<publishingServerId>central</publishingServerId>
+					<autoPublish>${central.autoPublish}</autoPublish>
+					<waitUntil>${central.waitUntil}</waitUntil>
+				</configuration>
+			</plugin>
+
+			<!-- Clean stale signature artifacts to avoid accidental .asc.asc bundle content -->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.3.2</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${project.build.directory}</directory>
+							<includes>
+								<include>**/*.asc</include>
+								<include>**/*.asc.asc</include>
+							</includes>
+						</fileset>
+					</filesets>
 				</configuration>
 			</plugin>
 
@@ -237,7 +239,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
+				<version>${maven.gpg.plugin.version}</version>
+				<configuration>
+					<executable>C:\Program Files\GnuPG\bin\gpg.exe</executable>
+					<bestPractices>true</bestPractices>
+				</configuration>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
