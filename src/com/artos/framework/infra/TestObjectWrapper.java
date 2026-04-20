@@ -63,6 +63,7 @@ public class TestObjectWrapper {
 	Method methodAfterTestUnit = null;
 	Method methodBeforeTestCase = null;
 	Method methodAfterTestCase = null;
+	Method methodAfterFailedUnit = null;
 	List<TestUnitObjectWrapper> testUnitList = null;
 
 	// TestPlan
@@ -323,6 +324,14 @@ public class TestObjectWrapper {
 
 	public void setMethodBeforeTestCase(Method methodBeforeTestCase) {
 		this.methodBeforeTestCase = methodBeforeTestCase;
+	}
+	
+	public Method getMethodAfterFailedUnit() {
+		return methodAfterFailedUnit;
+	}
+
+	public void setMethodAfterFailedUnit(Method methodAfterFailedUnit) {
+		this.methodAfterFailedUnit = methodAfterFailedUnit;
 	}
 
 	public Method getMethodAfterTestCase() {

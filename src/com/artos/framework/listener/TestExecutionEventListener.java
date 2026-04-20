@@ -398,6 +398,16 @@ public class TestExecutionEventListener implements TestProgress {
 	public void localAfterTestUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
 		// logger.trace("\n---------------- Local After Test Unit Method Finished -------------------");
 	}
+	
+	@Override
+	public void localAfterFailedUnitMethodExecutionStarted(TestObjectWrapper t, TestUnitObjectWrapper unit) {
+		logger.info("\n=> " + t.getMethodAfterFailedUnit().getName() + "(context)");
+	}
+
+	@Override
+	public void localAfterFailedUnitMethodExecutionFinished(TestUnitObjectWrapper unit) {
+		// logger.trace("\n---------------- Local After Failed Unit Method Finished -------------------");
+	}
 
 	@Override
 	public void testUnitExecutionStarted(TestUnitObjectWrapper unit) {
